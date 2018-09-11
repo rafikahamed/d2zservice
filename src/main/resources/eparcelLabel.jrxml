@@ -77,21 +77,21 @@
 				<text><![CDATA[DELIVER TO]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="1" y="71" width="119" height="15" uuid="a601a683-c7db-4d24-9aec-0d2005557fd2"/>
+				<reportElement x="1" y="71" width="249" height="15" uuid="a601a683-c7db-4d24-9aec-0d2005557fd2"/>
 				<textElement>
 					<font fontName="Arial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="1" y="86" width="189" height="15" uuid="92138a07-6798-4dab-9ca1-66628b76bb71"/>
+				<reportElement x="1" y="86" width="249" height="15" uuid="92138a07-6798-4dab-9ca1-66628b76bb71"/>
 				<textElement>
 					<font fontName="Arial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeAddr1}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="1" y="101" width="189" height="15" uuid="4001379f-9f34-4cb8-85b8-dff1c158b25a"/>
+				<reportElement x="1" y="101" width="249" height="15" uuid="4001379f-9f34-4cb8-85b8-dff1c158b25a"/>
 				<textElement>
 					<font fontName="Arial" size="12"/>
 				</textElement>
@@ -305,8 +305,8 @@
 				</c:EAN128>
 			</componentElement>
 			<textField>
-				<reportElement x="0" y="-21" width="140" height="15" uuid="dca170a3-2e7b-494e-a882-2b246f843014"/>
-				<textFieldExpression><![CDATA[$F{shipperCity}.concat( " " ).concat($F{shipperState}).concat( " " ).concat($F{shipperPostcode})]]></textFieldExpression>
+				<reportElement x="0" y="-21" width="149" height="15" uuid="dca170a3-2e7b-494e-a882-2b246f843014"/>
+				<textFieldExpression><![CDATA["Buyer is Not to return in person"]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>
