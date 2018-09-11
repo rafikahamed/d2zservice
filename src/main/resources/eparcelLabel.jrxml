@@ -119,7 +119,7 @@
 			</componentElement>
 			<image hAlign="Center" vAlign="Middle">
 				<reportElement x="1" y="0" width="357" height="50" uuid="63d0b5f7-568e-4dc4-9fd5-5db50af1ce6f"/>
-				<imageExpression><![CDATA["E:/Ranjani/PrintLabelYaseer-master/PrintLabelYaseer-master/D2ZParcelPrint/Images/eParcel.jpg"]]></imageExpression>
+				<imageExpression><![CDATA["src/main/resources/eParcel.jpg"]]></imageExpression>
 			</image>
 			<textField>
 				<reportElement x="273" y="105" width="60" height="20" uuid="7c8b49d6-3136-474e-a9ae-20a5e2b2d776"/>

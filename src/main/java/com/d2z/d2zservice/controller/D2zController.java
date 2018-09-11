@@ -1,5 +1,7 @@
 package com.d2z.d2zservice.controller;
 
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.List;
 import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,11 +52,6 @@ public class D2zController {
     public String consignmentDelete(@RequestBody List<FileUploadData> fileData) {
 		return null;
     }
-	
-//	@RequestMapping( method = RequestMethod.POST, path = "/printLabel-zebra", consumes=MediaType.APPLICATION_JSON)
-//    public String printLabelZebra(@RequestBody List<SenderData> senderData) {
-//		return null;
-//    }
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/generateLabel")
 	public ResponseEntity<byte[]> generateLabel(@RequestBody List<SenderData> senderData) {

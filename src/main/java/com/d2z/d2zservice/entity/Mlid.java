@@ -12,22 +12,26 @@ import javax.persistence.*;
 @Table(name="MLID")
 @NamedQuery(name="Mlid.findAll", query="SELECT m FROM Mlid m")
 public class Mlid implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	private String destinationzone;
+
+	@Column(name="InjectionState")
+	private String injectionState;
 
 	@Column(name="Maxweight")
 	private String maxweight;
 
 	@Column(name="Minweight")
 	private String minweight;
-	
+
 	@Column(name="MLID")
 	private String mlid;
 
-	@Column(name="Service_type")
-	private String service_type;
-
+	@Column(name="ServiceType")
+	private String serviceType;
+	
 	@Id
 	@Column(name="ZoneID")
 	private String zoneID;
@@ -41,6 +45,14 @@ public class Mlid implements Serializable {
 
 	public void setDestinationzone(String destinationzone) {
 		this.destinationzone = destinationzone;
+	}
+
+	public String getInjectionState() {
+		return this.injectionState;
+	}
+
+	public void setInjectionState(String injectionState) {
+		this.injectionState = injectionState;
 	}
 
 	public String getMaxweight() {
@@ -67,12 +79,12 @@ public class Mlid implements Serializable {
 		this.mlid = mlid;
 	}
 
-	public String getService_type() {
-		return this.service_type;
+	public String getServiceType() {
+		return this.serviceType;
 	}
 
-	public void setService_type(String service_type) {
-		this.service_type = service_type;
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
 	}
 
 	public String getZoneID() {
@@ -82,5 +94,6 @@ public class Mlid implements Serializable {
 	public void setZoneID(String zoneID) {
 		this.zoneID = zoneID;
 	}
+
 
 }

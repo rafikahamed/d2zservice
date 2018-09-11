@@ -21,6 +21,8 @@ import java.sql.Timestamp;
                               })
 })
 public class SenderdataMaster implements Serializable {
+	
+
 	private static final long serialVersionUID = 1L;
 
 	@Column(name="AirwayBill")
@@ -74,6 +76,9 @@ public class SenderdataMaster implements Serializable {
 	@Column(name="Filename")
 	private String filename;
 
+	@Column(name="InjectionState")
+	private String injectionState;
+
 	@Column(name="IsDeleted")
 	private String isDeleted;
 
@@ -88,7 +93,7 @@ public class SenderdataMaster implements Serializable {
 
 	@Column(name="Reference_number")
 	private String reference_number;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="row_id")
@@ -277,6 +282,14 @@ public class SenderdataMaster implements Serializable {
 		this.filename = filename;
 	}
 
+	public String getInjectionState() {
+		return this.injectionState;
+	}
+
+	public void setInjectionState(String injectionState) {
+		this.injectionState = injectionState;
+	}
+
 	public String getIsDeleted() {
 		return this.isDeleted;
 	}
@@ -326,7 +339,7 @@ public class SenderdataMaster implements Serializable {
 	}
 
 	public String getSender_Files_ID() {
-		return sender_Files_ID;
+		return this.sender_Files_ID;
 	}
 
 	public void setSender_Files_ID(String sender_Files_ID) {
