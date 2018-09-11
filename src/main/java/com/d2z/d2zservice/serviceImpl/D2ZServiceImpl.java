@@ -1,5 +1,9 @@
 package com.d2z.d2zservice.serviceImpl;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,6 +30,12 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRSaver;
+import uk.org.okapibarcode.backend.DataMatrix;
+import uk.org.okapibarcode.backend.DataMatrix.ForceMode;
+import uk.org.okapibarcode.backend.OkapiException;
+import uk.org.okapibarcode.backend.Symbol;
+import uk.org.okapibarcode.backend.Symbol.DataType;
+import uk.org.okapibarcode.output.Java2DRenderer;
 
 @Service
 public class D2ZServiceImpl implements ID2ZService{
@@ -62,12 +72,15 @@ public class D2ZServiceImpl implements ID2ZService{
 
 	@Override
 	public byte[] generateLabel(List<SenderData> senderData) {
+		
+		for(SenderData data : senderData){
+			data.setDatamatrixImage(generateDataMatrix(data.getDatamatrix()));
+		}
 		JRBeanCollectionDataSource beanColDataSource =
 		         new JRBeanCollectionDataSource(senderData);
 		 Map<String,Object> parameters = new HashMap<>();
-		 //byte[] labelAsBytes = jasperService.generatePDFLabel(parameters, beanColDataSource);
-		 
 		 byte[] bytes = null;
+		 //Blob blob = null;
 		    JasperReport jasperReport = null;
 		    try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 		    	
@@ -80,11 +93,50 @@ public class D2ZServiceImpl implements ID2ZService{
 		      JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, beanColDataSource);
 		      // return the PDF in bytes
 		      bytes = JasperExportManager.exportReportToPdf(jasperPrint);
+			// blob = new javax.sql.rowset.serial.SerialBlob(bytes);
+
 		    }
-		    catch (JRException | IOException e) {
+		    catch (JRException | IOException  e) {
 		      e.printStackTrace();
 		    }
 		    return bytes;
 	}
-	
+
+	private BufferedImage generateDataMatrix(String datamatrixInput) {
+		BufferedImage datamatrixImage = null;
+		 try{
+	            // Set up the DataMatrix object
+	            DataMatrix dataMatrix = new DataMatrix();
+	            // We need a GS1 DataMatrix barcode.
+	            dataMatrix.setDataType(DataType.GS1); 
+	            // 0 means size will be set automatically according to amount of data (smallest possible).
+	            dataMatrix.setPreferredSize(0); 
+	            // Don't want no funky rectangle shapes, if we can avoid it.
+	            dataMatrix.setForceMode(ForceMode.SQUARE); 
+	            dataMatrix.setContent(datamatrixInput);
+	            datamatrixImage= getMagnifiedBarcode(dataMatrix);
+	            //return getBase64FromByteArrayOutputStream(getMagnifiedBarcode(dataMatrix, MAGNIFICATION));
+	        } catch(OkapiException oe){
+	        	oe.printStackTrace();
+	        }
+         return datamatrixImage;
+
+		}
+
+	private  BufferedImage getMagnifiedBarcode(Symbol symbol){
+		 final int MAGNIFICATION = 10;
+		 final int BORDER_SIZE = 0 * MAGNIFICATION;
+        // Make DataMatrix object into bitmap
+        BufferedImage image = new BufferedImage((symbol.getWidth() * MAGNIFICATION) + (2 * BORDER_SIZE),
+                (symbol.getHeight() * MAGNIFICATION) + (2 * BORDER_SIZE),BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = image.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(0, 0,  (symbol.getWidth() * MAGNIFICATION) + (2 * BORDER_SIZE),
+                (symbol.getHeight() * MAGNIFICATION) + (2 * BORDER_SIZE));
+        Java2DRenderer renderer = new Java2DRenderer(g2d, 10, Color.WHITE, Color.BLACK);
+        renderer.render(symbol);
+        
+        return image;
+    }
 }

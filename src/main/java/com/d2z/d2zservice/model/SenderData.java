@@ -1,5 +1,7 @@
 package com.d2z.d2zservice.model;
 
+import java.awt.image.BufferedImage;
+
 public class SenderData {
 	
 	private int senderFileId;
@@ -21,6 +23,15 @@ public class SenderData {
 	private String barcodeLabelNumber;
 	private String datamatrix;
 	private String injectionState;
+	private BufferedImage datamatrixImage;
+
+	public BufferedImage getDatamatrixImage() {
+		return datamatrixImage;
+	}
+
+	public void setDatamatrixImage(BufferedImage datamatrixImage) {
+		this.datamatrixImage = datamatrixImage;
+	}
 
 	public String getInjectionState() {
 		return injectionState;

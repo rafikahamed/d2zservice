@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="eparcelLabel" pageWidth="378" pageHeight="563" columnWidth="358" leftMargin="10" rightMargin="10" topMargin="10" bottomMargin="10" uuid="497a1b87-dc25-40fb-8871-81fa7737ae82">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Data Adapter "/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<style name="labelStyle" isBlankWhenNull="true" fontName="Arial"/>
 	<queryString>
@@ -55,8 +55,8 @@
 	<field name="barcodeLabelNumber" class="java.lang.String">
 		<fieldDescription><![CDATA[barcodeLabelNumber]]></fieldDescription>
 	</field>
-	<field name="datamatrix" class="java.lang.String">
-		<fieldDescription><![CDATA[datamatrix]]></fieldDescription>
+	<field name="datamatrixImage" class="java.lang.Object">
+		<fieldDescription><![CDATA[datamatrixImage]]></fieldDescription>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -111,15 +111,13 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneePhone}]]></textFieldExpression>
 			</textField>
-			<componentElement>
-				<reportElement x="270" y="50" width="52" height="52" uuid="8655ae0c-6933-442c-b594-bab41327a06d"/>
-				<jr:QRCode xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<jr:codeExpression><![CDATA[$F{datamatrix}]]></jr:codeExpression>
-				</jr:QRCode>
-			</componentElement>
 			<image hAlign="Center" vAlign="Middle">
 				<reportElement x="1" y="0" width="357" height="50" uuid="63d0b5f7-568e-4dc4-9fd5-5db50af1ce6f"/>
-				<imageExpression><![CDATA["E:/Ranjani/PrintLabelYaseer-master/PrintLabelYaseer-master/D2ZParcelPrint/Images/eParcel.jpg"]]></imageExpression>
+				<imageExpression><![CDATA["src/main/resources/eParcel.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="270" y="50" width="52" height="52" uuid="6bea52eb-2308-425d-b45b-e8f87db99b37"/>
+				<imageExpression><![CDATA[$F{datamatrixImage}]]></imageExpression>
 			</image>
 			<textField>
 				<reportElement x="273" y="105" width="60" height="20" uuid="7c8b49d6-3136-474e-a9ae-20a5e2b2d776"/>
@@ -211,26 +209,26 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{barcodeLabelNumber}.substring( 18 )]]></textFieldExpression>
 			</textField>
-			<componentElement>
-				<reportElement x="10" y="77" width="338" height="75" uuid="59d0a8fc-b56d-4bf1-b304-0f08862723c5"/>
-				<c:EAN128 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" moduleWidth="1.4" textPosition="none" checksumMode="check">
-					<c:codeExpression><![CDATA[$F{barcodeLabelNumber}]]></c:codeExpression>
-				</c:EAN128>
-			</componentElement>
 			<textField>
-				<reportElement x="128" y="140" width="220" height="20" uuid="dbf8cf09-6823-45a2-bf98-ecefca01df40"/>
+				<reportElement x="128" y="152" width="220" height="20" uuid="dbf8cf09-6823-45a2-bf98-ecefca01df40"/>
 				<textElement>
 					<font fontName="Arial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{barcodeLabelNumber}.substring( 18 )]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="57" y="139" width="70" height="20" uuid="96ffe972-517a-4eb8-80cf-b17b5aa3c28a"/>
+				<reportElement x="57" y="153" width="70" height="20" uuid="96ffe972-517a-4eb8-80cf-b17b5aa3c28a"/>
 				<textElement>
 					<font fontName="Arial" size="12"/>
 				</textElement>
 				<text><![CDATA[AP Article Id:]]></text>
 			</staticText>
+			<componentElement>
+				<reportElement x="10" y="77" width="338" height="75" uuid="59d0a8fc-b56d-4bf1-b304-0f08862723c5"/>
+				<c:EAN128 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" moduleWidth="1.4" textPosition="none" checksumMode="check">
+					<c:codeExpression><![CDATA[$F{barcodeLabelNumber}]]></c:codeExpression>
+				</c:EAN128>
+			</componentElement>
 		</band>
 	</detail>
 	<pageFooter>
@@ -287,27 +285,27 @@
 				<reportElement x="0" y="-3" width="358" height="1" uuid="fc0f367d-a0be-4d9b-b0ca-8aecc6f7ee5c"/>
 			</line>
 			<staticText>
-				<reportElement x="0" y="17" width="30" height="15" uuid="c6b92165-89fc-4b03-b7b8-ed2df3c5bdee"/>
+				<reportElement x="0" y="8" width="30" height="15" uuid="c6b92165-89fc-4b03-b7b8-ed2df3c5bdee"/>
 				<text><![CDATA[Ref:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="30" y="17" width="100" height="15" uuid="8a4b12e3-a01e-40fe-b4f5-2e626ce1e552"/>
+				<reportElement x="30" y="8" width="100" height="15" uuid="8a4b12e3-a01e-40fe-b4f5-2e626ce1e552"/>
 				<textFieldExpression><![CDATA[$F{referenceNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="34" width="100" height="15" uuid="a1c803e9-26a3-46a4-8f42-9a7706b4fe8a"/>
+				<reportElement x="0" y="25" width="100" height="15" uuid="a1c803e9-26a3-46a4-8f42-9a7706b4fe8a"/>
 				<text><![CDATA[Internal use only]]></text>
 			</staticText>
-			<componentElement>
-				<reportElement x="10" y="49" width="170" height="31" uuid="59d0a8fc-b56d-4bf1-b304-0f08862723c5"/>
-				<c:EAN128 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" moduleWidth="1.4" textPosition="none" checksumMode="check">
-					<c:codeExpression><![CDATA[$F{barcodeLabelNumber}]]></c:codeExpression>
-				</c:EAN128>
-			</componentElement>
 			<textField>
 				<reportElement x="0" y="-21" width="149" height="15" uuid="dca170a3-2e7b-494e-a882-2b246f843014"/>
 				<textFieldExpression><![CDATA["Buyer is Not to return in person"]]></textFieldExpression>
 			</textField>
+			<componentElement>
+				<reportElement x="1" y="40" width="200" height="50" uuid="77a1f313-57be-462d-a9c2-7d3e23daed52"/>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="false" checksumRequired="false" barHeight="50" rotation="None">
+					<jr:codeExpression><![CDATA[$F{referenceNumber}]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
 		</band>
 	</pageFooter>
 </jasperReport>
