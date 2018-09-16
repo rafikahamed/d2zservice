@@ -1,8 +1,9 @@
 package com.d2z.d2zservice.model;
 
+import java.awt.image.BufferedImage;
+
 public class SenderData {
 	
-	private int senderFileId;
 	private String referenceNumber;
 	private String consigneeName;
 	private String consigneeAddr1;
@@ -21,6 +22,15 @@ public class SenderData {
 	private String barcodeLabelNumber;
 	private String datamatrix;
 	private String injectionState;
+	private BufferedImage datamatrixImage;
+
+	public BufferedImage getDatamatrixImage() {
+		return datamatrixImage;
+	}
+
+	public void setDatamatrixImage(BufferedImage datamatrixImage) {
+		this.datamatrixImage = datamatrixImage;
+	}
 
 	public String getInjectionState() {
 		return injectionState;
@@ -30,13 +40,6 @@ public class SenderData {
 		this.injectionState = injectionState;
 	}
 
-	public int getSenderFileId() {
-		return senderFileId;
-	}
-
-	public void setSenderFileId(int senderFileId) {
-		this.senderFileId = senderFileId;
-	}
 
 	public String getReferenceNumber() {
 		return referenceNumber;
@@ -176,7 +179,7 @@ public class SenderData {
 
 	@Override
 	public String toString() {
-		return "SenderData [senderFileId=" + senderFileId + ", referenceNumber=" + referenceNumber + ", consigneeName="
+		return "SenderData [referenceNumber=" + referenceNumber + ", consigneeName="
 				+ consigneeName + ", consigneeAddr1=" + consigneeAddr1 + ", consigneeSuburb=" + consigneeSuburb
 				+ ", consigneeState=" + consigneeState + ", consigneePostcode=" + consigneePostcode
 				+ ", consigneePhone=" + consigneePhone + ", weight=" + weight + ", shipperName=" + shipperName

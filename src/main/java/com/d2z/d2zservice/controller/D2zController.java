@@ -1,9 +1,9 @@
 package com.d2z.d2zservice.controller;
 
-import java.sql.Blob;
-import java.sql.SQLException;
 import java.util.List;
 import javax.ws.rs.core.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,12 +15,15 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.SenderData;
+import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.service.ID2ZService;
 
 @RestController
 @RequestMapping(value = "/v1/d2z")
 public class D2zController {
+	
+	Logger logger = LoggerFactory.getLogger(D2zController.class);
 	
 	@Autowired
     private  ID2ZService d2zService;
@@ -48,14 +51,17 @@ public class D2zController {
 		return fileListData;
     }
 	
-	@RequestMapping( method = RequestMethod.POST, path = "/consignment-delete", consumes=MediaType.APPLICATION_JSON)
-    public String consignmentDelete(@RequestBody List<FileUploadData> fileData) {
-		return null;
+	@RequestMapping( method = RequestMethod.POST, path = "/consignment-delete")
+    public UserMessage consignmentDelete(@RequestBody String refrenceNumlist) {
+		UserMessage fileDeleteMsg = d2zService.consignmentDelete(refrenceNumlist);
+		return fileDeleteMsg;
     }
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/generateLabel")
 	public ResponseEntity<byte[]> generateLabel(@RequestBody List<SenderData> senderData) {
 		byte[] bytes = d2zService.generateLabel(senderData);
+		System.out.println("Byte Response ----->");
+		System.out.println(bytes.toString());
 	    return ResponseEntity
 	      .ok()
 	      // Specify content type as PDF
@@ -65,9 +71,10 @@ public class D2zController {
 	      .body(bytes);
     }
 	
-	@RequestMapping( method = RequestMethod.POST, path = "/printLabel-pdf", consumes=MediaType.APPLICATION_JSON)
-    public String printLabelPdf(@RequestBody FileUploadData fileData) {
-		return null;
+	@RequestMapping( method = RequestMethod.GET, path = "/tracking-list")
+    public List<TrackingDetails> trackingDetails(@RequestParam("fileName") String fileName) {
+		List<TrackingDetails> trackingDetails = d2zService.trackingDetails(fileName);
+		return trackingDetails;
 	}
 		
 }

@@ -18,10 +18,14 @@ import java.sql.Timestamp;
                               procedureName = "GenerateBarCodeLabelNumber_files_id_test",
                               parameters = {
                                  @StoredProcedureParameter(mode = ParameterMode.IN, name = "Sender_file_id", type = String.class)
-                              })
+                              }),
+   @NamedStoredProcedureQuery(name = "consignee_delete", 
+							  procedureName = "deleteConsignment",
+							  parameters = {
+							      @StoredProcedureParameter(mode = ParameterMode.IN, name = "Reference_number", type = String.class)
+							  })
 })
 public class SenderdataMaster implements Serializable {
-	
 
 	private static final long serialVersionUID = 1L;
 

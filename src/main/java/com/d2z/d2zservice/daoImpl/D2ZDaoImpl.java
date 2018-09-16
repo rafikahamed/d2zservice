@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.model.FileUploadData;
+import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 
 @Repository
@@ -64,6 +65,19 @@ public class D2ZDaoImpl implements ID2ZDao{
 	public List<SenderdataMaster> consignmentFileData(String fileName) {
 		List<SenderdataMaster> listOfFileNames= senderDataRepository.fetchConsignmentData(fileName);
 		return listOfFileNames;
+	}
+
+	@Override
+	public String consignmentDelete(String refrenceNumlist) {
+		//Calling Delete Store Procedure
+		senderDataRepository.consigneeDelete(refrenceNumlist);
+		return "Data Saved Successfully";
+	}
+
+	@Override
+	public List<String> trackingDetails(String fileName) {
+		List<String> trackingDetails= senderDataRepository.fetchTrackingDetails(fileName);
+		return trackingDetails;
 	}
 
 }
