@@ -75,7 +75,6 @@ public class D2ZServiceImpl implements ID2ZService{
 	public List<TrackingDetails> trackingDetails(String fileName) {
 		List<TrackingDetails> trackingDetailsList = new ArrayList<TrackingDetails>();
 		TrackingDetails trackingDetails = null;
-		// TODO Auto-generated method stub
 		List<String> trackingService = d2zDao.trackingDetails(fileName);
 		Iterator itr = trackingService.iterator();
 		 while(itr.hasNext()) {   
@@ -143,8 +142,8 @@ public class D2ZServiceImpl implements ID2ZService{
 		}
 
 	private  BufferedImage getMagnifiedBarcode(Symbol symbol){
-		 final int MAGNIFICATION = 10;
-		 final int BORDER_SIZE = 0 * MAGNIFICATION;
+		final int MAGNIFICATION = 10;
+		final int BORDER_SIZE = 0 * MAGNIFICATION;
         // Make DataMatrix object into bitmap
         BufferedImage image = new BufferedImage((symbol.getWidth() * MAGNIFICATION) + (2 * BORDER_SIZE),
                 (symbol.getHeight() * MAGNIFICATION) + (2 * BORDER_SIZE),BufferedImage.TYPE_INT_RGB);
@@ -158,5 +157,51 @@ public class D2ZServiceImpl implements ID2ZService{
         
         return image;
     }
+
+	@Override
+	public  byte[] trackingLabel(String refBarNum) {
+		SenderData trackingLabel = new SenderData();
+		List<SenderData> trackingLabelList = new ArrayList<SenderData>();
+		String trackingLabelData = d2zDao.trackingLabel(refBarNum);
+		String[] trackingArray = trackingLabelData.split(",");
+		trackingLabel.setReferenceNumber(trackingArray[0]);
+		trackingLabel.setConsigneeName(trackingArray[1]);
+		trackingLabel.setConsigneeAddr1(trackingArray[2]);
+		trackingLabel.setConsigneeSuburb(trackingArray[3]);
+		trackingLabel.setConsigneeState(trackingArray[4]);
+		trackingLabel.setConsigneePostcode(trackingArray[5]);
+		trackingLabel.setConsigneePhone(trackingArray[6]);
+		trackingLabel.setWeight(trackingArray[7]);
+		trackingLabel.setShipperName(trackingArray[8]);
+		trackingLabel.setShipperAddr1(trackingArray[9]);
+		trackingLabel.setShipperAddr2(trackingArray[10]);
+		trackingLabel.setShipperCity(trackingArray[11]);
+		trackingLabel.setShipperState(trackingArray[12]);
+		trackingLabel.setShipperCountry(trackingArray[13]);
+		trackingLabel.setShipperPostcode(trackingArray[14]);
+		trackingLabel.setBarcodeLabelNumber(trackingArray[15]);
+		trackingLabel.setDatamatrix(trackingArray[16]);
+		trackingLabel.setInjectionState(trackingArray[17]);
+		trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix()));
+		trackingLabelList.add(trackingLabel);
+		JRBeanCollectionDataSource beanColDataSource =
+		         new JRBeanCollectionDataSource(trackingLabelList);
+		 Map<String,Object> parameters = new HashMap<>();
+		 byte[] bytes = null;
+		 //Blob blob = null;
+		    JasperReport jasperReport = null;
+		    try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
+		    	jasperReport  = JasperCompileManager.compileReport(getClass().getResource("/eparcelLabel.jrxml").openStream());
+		        JRSaver.saveObject(jasperReport, "label.jasper");
+		        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, beanColDataSource);
+		      // return the PDF in bytes
+		      bytes = JasperExportManager.exportReportToPdf(jasperPrint);
+			// blob = new javax.sql.rowset.serial.SerialBlob(bytes);
+		    }
+		    catch (JRException | IOException  e) {
+		      e.printStackTrace();
+		    }
+		    return bytes;
+	}
 	
 }

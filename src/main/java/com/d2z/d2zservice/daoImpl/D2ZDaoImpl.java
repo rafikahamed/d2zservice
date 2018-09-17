@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.model.FileUploadData;
-import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 
 @Repository
@@ -77,6 +76,12 @@ public class D2ZDaoImpl implements ID2ZDao{
 	@Override
 	public List<String> trackingDetails(String fileName) {
 		List<String> trackingDetails= senderDataRepository.fetchTrackingDetails(fileName);
+		return trackingDetails;
+	}
+
+	@Override
+	public String trackingLabel(String refBarNum) {
+		String trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNum);
 		return trackingDetails;
 	}
 

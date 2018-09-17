@@ -76,5 +76,19 @@ public class D2zController {
 		List<TrackingDetails> trackingDetails = d2zService.trackingDetails(fileName);
 		return trackingDetails;
 	}
+	
+	@RequestMapping( method = RequestMethod.POST, path = "/tracking-label")
+    public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum) {
+		byte[] bytes = d2zService.trackingLabel(refBarNum);
+		System.out.println("Byte Response ----->");
+		System.out.println(bytes.toString());
+	    return ResponseEntity
+	      .ok()
+	      // Specify content type as PDF
+	      .header("Content-Type", "application/pdf; charset=UTF-8")
+	      // Tell browser to display PDF if it can
+	      .header("Content-Disposition", "inline; filename=\"Label.pdf\"")
+	      .body(bytes);
+	}
 		
 }

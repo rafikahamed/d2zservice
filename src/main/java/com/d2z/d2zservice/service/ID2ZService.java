@@ -22,5 +22,7 @@ public interface ID2ZService {
 	public UserMessage consignmentDelete(String refrenceNumlist);
 
 	public List<TrackingDetails> trackingDetails(String fileName);
+
+	public byte[] trackingLabel(String refBarNum);
 	
 }
