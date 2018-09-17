@@ -120,7 +120,7 @@
 				<imageExpression><![CDATA[$F{datamatrixImage}]]></imageExpression>
 			</image>
 			<textField>
-				<reportElement x="273" y="105" width="60" height="20" uuid="7c8b49d6-3136-474e-a9ae-20a5e2b2d776"/>
+				<reportElement x="271" y="105" width="51" height="20" uuid="7c8b49d6-3136-474e-a9ae-20a5e2b2d776"/>
 				<box>
 					<pen lineWidth="1.5"/>
 				</box>
@@ -196,35 +196,35 @@
 				<reportElement x="-1" y="48" width="361" height="1" uuid="b3e8ac88-5549-4456-ada7-478190bc9c2d"/>
 			</line>
 			<staticText>
-				<reportElement x="59" y="57" width="70" height="20" uuid="b4a1eb33-4136-4af9-acae-f7cbdaf8b082"/>
+				<reportElement x="59" y="57" width="70" height="15" uuid="b4a1eb33-4136-4af9-acae-f7cbdaf8b082"/>
 				<textElement>
 					<font fontName="Arial" size="12"/>
 				</textElement>
 				<text><![CDATA[AP Article Id:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="129" y="57" width="218" height="20" uuid="ef325528-746f-4670-8076-b08a19118226"/>
+				<reportElement x="129" y="57" width="218" height="15" uuid="ef325528-746f-4670-8076-b08a19118226"/>
 				<textElement>
 					<font fontName="Arial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{barcodeLabelNumber}.substring( 18 )]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="128" y="152" width="220" height="20" uuid="dbf8cf09-6823-45a2-bf98-ecefca01df40"/>
+				<reportElement x="128" y="157" width="220" height="15" uuid="dbf8cf09-6823-45a2-bf98-ecefca01df40"/>
 				<textElement>
 					<font fontName="Arial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{barcodeLabelNumber}.substring( 18 )]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="57" y="153" width="70" height="20" uuid="96ffe972-517a-4eb8-80cf-b17b5aa3c28a"/>
+				<reportElement x="57" y="157" width="70" height="15" uuid="96ffe972-517a-4eb8-80cf-b17b5aa3c28a"/>
 				<textElement>
 					<font fontName="Arial" size="12"/>
 				</textElement>
 				<text><![CDATA[AP Article Id:]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement x="10" y="77" width="338" height="75" uuid="59d0a8fc-b56d-4bf1-b304-0f08862723c5"/>
+				<reportElement x="13" y="74" width="338" height="83" uuid="59d0a8fc-b56d-4bf1-b304-0f08862723c5"/>
 				<c:EAN128 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" moduleWidth="1.4" textPosition="none" checksumMode="check">
 					<c:codeExpression><![CDATA[$F{barcodeLabelNumber}]]></c:codeExpression>
 				</c:EAN128>
