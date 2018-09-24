@@ -2,12 +2,16 @@ package com.d2z.d2zservice.daoImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.repository.SenderDataRepository;
+import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 
 @Repository
 public class D2ZDaoImpl implements ID2ZDao{
@@ -15,6 +19,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	@Autowired
 	SenderDataRepository senderDataRepository;
 
+	@Autowired
+	TrackAndTraceRepository trackAndTraceRepository;
+	
 	@Override
 	public List<FileUploadData> exportParcel(List<FileUploadData> fileData) {
 		List<SenderdataMaster> fileObjList = new ArrayList<SenderdataMaster>();
@@ -73,6 +80,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 		return "Data Saved Successfully";
 	}
 
+	
 	@Override
 	public List<String> trackingDetails(String fileName) {
 		List<String> trackingDetails= senderDataRepository.fetchTrackingDetails(fileName);
@@ -90,6 +98,11 @@ public class D2ZDaoImpl implements ID2ZDao{
 		//Calling Delete Store Procedure
 		senderDataRepository.manifestCreation(manifestNumber, refrenceNumber);
 		return "Manifest Updated Successfully";
+	}
+
+	public List<Trackandtrace> trackParcel(String refNbr) {
+		List<Trackandtrace> trackAndTrace = trackAndTraceRepository.fetchTrackEventByRefNbr(refNbr);
+		return trackAndTrace;
 	}
 
 }

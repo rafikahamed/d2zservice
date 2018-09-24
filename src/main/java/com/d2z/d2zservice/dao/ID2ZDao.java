@@ -2,6 +2,7 @@ package com.d2z.d2zservice.dao;
 
 import java.util.List;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.model.FileUploadData;
 
 public interface ID2ZDao {
@@ -19,5 +20,7 @@ public interface ID2ZDao {
 	public String trackingLabel(String refBarNum);
 
 	public String manifestCreation(String manifestNumber, String refrenceNumber);
+
+	List<Trackandtrace> trackParcel(String refNbr);
 
 }

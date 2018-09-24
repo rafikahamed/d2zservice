@@ -9,7 +9,7 @@ import java.sql.Timestamp;
  * 
  */
 @Entity
-@Table(name="trackandtrace")
+@Table(name="TrackAndtrace")
 @NamedQuery(name="Trackandtrace.findAll", query="SELECT t FROM Trackandtrace t")
 public class Trackandtrace implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -20,8 +20,8 @@ public class Trackandtrace implements Serializable {
 	@Column(name="BarcodelabelNumber")
 	private String barcodelabelNumber;
 
-	@Column(name="Client_Id")
-	private String client_Id;
+	//@Column(name="Client_Id")
+	//private String client_Id;
 
 	@Column(name="CourierEvents")
 	private String courierEvents;
@@ -76,13 +76,13 @@ public class Trackandtrace implements Serializable {
 		this.barcodelabelNumber = barcodelabelNumber;
 	}
 
-	public String getClient_Id() {
+/*	public String getClient_Id() {
 		return this.client_Id;
 	}
 
 	public void setClient_Id(String client_Id) {
 		this.client_Id = client_Id;
-	}
+	}*/
 
 	public String getCourierEvents() {
 		return this.courierEvents;
