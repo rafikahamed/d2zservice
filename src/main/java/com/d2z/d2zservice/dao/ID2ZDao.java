@@ -18,4 +18,6 @@ public interface ID2ZDao {
 
 	public String trackingLabel(String refBarNum);
 
+	public String manifestCreation(String manifestNumber, String refrenceNumber);
+
 }

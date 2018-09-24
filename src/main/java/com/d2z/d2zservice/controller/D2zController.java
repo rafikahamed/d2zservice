@@ -57,6 +57,12 @@ public class D2zController {
 		return fileDeleteMsg;
     }
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/manifest-creation")
+    public UserMessage manifestCreation(@RequestParam("manifestNumber") String manifestNumber, @RequestParam("refrenceNumber") String refrenceNumber) {
+		UserMessage manifestUpdateMsg = d2zService.manifestCreation(manifestNumber, refrenceNumber);
+		return manifestUpdateMsg;
+    }
+	
 	@RequestMapping( method = RequestMethod.POST, path = "/generateLabel")
 	public ResponseEntity<byte[]> generateLabel(@RequestBody List<SenderData> senderData) {
 		byte[] bytes = d2zService.generateLabel(senderData);

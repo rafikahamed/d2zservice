@@ -85,4 +85,11 @@ public class D2ZDaoImpl implements ID2ZDao{
 		return trackingDetails;
 	}
 
+	@Override
+	public String manifestCreation(String manifestNumber, String refrenceNumber) {
+		//Calling Delete Store Procedure
+		senderDataRepository.manifestCreation(manifestNumber, refrenceNumber);
+		return "Manifest Updated Successfully";
+	}
+
 }

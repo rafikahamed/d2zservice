@@ -24,5 +24,7 @@ public interface ID2ZService {
 	public List<TrackingDetails> trackingDetails(String fileName);
 
 	public byte[] trackingLabel(String refBarNum);
+
+	public UserMessage manifestCreation(String manifestNumber, String refrenceNumber);
 	
 }

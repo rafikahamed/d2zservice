@@ -203,5 +203,13 @@ public class D2ZServiceImpl implements ID2ZService{
 		    }
 		    return bytes;
 	}
+
+	@Override
+	public UserMessage manifestCreation(String manifestNumber, String refrenceNumber) {
+		String fileUploadData= d2zDao.manifestCreation(manifestNumber, refrenceNumber);
+		UserMessage userMsg = new UserMessage();
+		userMsg.setMessage(fileUploadData);
+		return userMsg;
+	}
 	
 }
