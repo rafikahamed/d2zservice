@@ -7,12 +7,16 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZDao;
+import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.model.FileUploadData;
+import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.TrackingDetails;
+import com.d2z.d2zservice.repository.PostcodeZoneRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
+import com.d2z.d2zservice.util.D2ZCommonUtil;
 
 @Repository
 public class D2ZDaoImpl implements ID2ZDao{
@@ -22,6 +26,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 
 	@Autowired
 	TrackAndTraceRepository trackAndTraceRepository;
+	
+	@Autowired
+	PostcodeZoneRepository postcodeZoneRepository;
 	
 	@Override
 	public List<FileUploadData> exportParcel(List<FileUploadData> fileData) {
@@ -94,6 +101,60 @@ public class D2ZDaoImpl implements ID2ZDao{
 		return trackAndTrace;
 	}
 
+	@Override
+	public String createConsignments(List<SenderData> orderDetailList) {
 
+		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
+		String fileSeqId = "D2ZAPI"+senderDataRepository.fetchNextSeq();
+		for(SenderData senderDataValue: orderDetailList) {
+			SenderdataMaster senderDataObj = new SenderdataMaster();
+			senderDataObj.setSender_Files_ID(fileSeqId);
+			senderDataObj.setReference_number(senderDataValue.getReferenceNumber());
+			senderDataObj.setConsignee_name(senderDataValue.getConsigneeName());
+			senderDataObj.setConsignee_addr1(senderDataValue.getConsigneeAddr1());
+			senderDataObj.setConsignee_Suburb(senderDataValue.getConsigneeSuburb());
+			senderDataObj.setConsignee_State(senderDataValue.getConsigneeState());
+			senderDataObj.setConsignee_Postcode(senderDataValue.getConsigneePostcode());
+			senderDataObj.setConsignee_Phone(senderDataValue.getConsigneePhone());
+			senderDataObj.setProduct_Description(senderDataValue.getProductDescription());
+			senderDataObj.setValue(senderDataValue.getValue());
+			senderDataObj.setCurrency(senderDataValue.getCurrency());
+			senderDataObj.setShippedQuantity(senderDataValue.getShippedQuantity());
+			senderDataObj.setWeight(Double.parseDouble(senderDataValue.getWeight()));
+			senderDataObj.setDimensions_Length(senderDataValue.getDimensionsLength());
+			senderDataObj.setDimensions_Width(senderDataValue.getDimensionsWidth());
+			senderDataObj.setDimensions_Height(senderDataValue.getDimensionsHeight());
+			senderDataObj.setServicetype(senderDataValue.getServicetype());
+			senderDataObj.setDeliverytype(senderDataValue.getDeliverytype());
+			senderDataObj.setShipper_Name(senderDataValue.getShipperName());
+			senderDataObj.setShipper_Addr1(senderDataValue.getShipperAddr1());
+			senderDataObj.setShipper_Addr2(senderDataValue.getShipperAddr2());
+			senderDataObj.setShipper_City(senderDataValue.getShipperCity());
+			senderDataObj.setShipper_State(senderDataValue.getShipperState());
+			senderDataObj.setShipper_Postcode(senderDataValue.getShipperPostcode());
+			senderDataObj.setShipper_Country(senderDataValue.getShipperCountry());
+			senderDataObj.setFilename("D2ZAPI"+D2ZCommonUtil.getCurrentTimestamp());
+			senderDataList.add(senderDataObj);
+		}
+		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
+		senderDataRepository.inOnlyTest(fileSeqId);
+		return fileSeqId;
+	}
+
+    public List<PostcodeZone> fetchAllPostCodeZone(){
+    	List<PostcodeZone> postCodeZoneList= postcodeZoneRepository.fetchAllData();
+    	return postCodeZoneList;
+    }
+    
+    public List<String> fetchAllReferenceNumbers(){
+    	List<String> referenceNumber_DB= senderDataRepository.fetchAllReferenceNumbers();
+    	return referenceNumber_DB;
+    }
+
+	@Override
+	public List<String> fetchBySenderFileID(String senderFileID) {
+		List<String> senderDataMaster = senderDataRepository.fetchBySenderFileId(senderFileID);
+		return senderDataMaster;
+	}
 
 }

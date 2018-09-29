@@ -2,10 +2,14 @@ package com.d2z.d2zservice.service;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.SenderData;
+import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.TrackParcel;
 import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.UserMessage;
@@ -25,5 +29,7 @@ public interface ID2ZService {
 	public List<TrackingDetails> trackingDetails(String fileName);
 
 	List<TrackParcel> trackParcel(List<String> referenceNumbers);
-	
+
+	public List<SenderDataResponse> createConsignments(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException;
+
 }

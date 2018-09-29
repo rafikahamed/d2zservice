@@ -1,10 +1,14 @@
 package com.d2z.d2zservice.repository;
 
 import java.util.List;
+
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.d2z.d2zservice.entity.SenderdataMaster;
 
 //This will be AUTO IMPLEMENTED by Spring into a Bean called FileDetailsRepository
@@ -32,5 +36,13 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 		 
 	 @Query(nativeQuery = true, value="Select reference_number, consignee_name, substring(barcodelabelnumber,19,23) from senderdata_master t where filename=:fileName  and manifest_number is null") 
 	 List<String> fetchTrackingDetails(@Param("fileName") String fileName);
+	 
+	 @Query(nativeQuery = true, value="Select reference_number from senderdata_master t") 
+	 List<String> fetchAllReferenceNumbers();
+	 
+	 @Query(nativeQuery = true, value="Select reference_number, datamatrix from senderdata_master t where sender_Files_ID=:senderFileID") 
+	 List<String> fetchBySenderFileId(@Param("senderFileID") String senderFileID);
+	 
+	 
 	 
 }

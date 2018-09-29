@@ -99,7 +99,8 @@ public class SenderdataMaster implements Serializable {
 	private String reference_number;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_GEN")
+	@SequenceGenerator(name = "SEQ_GEN", sequenceName = "RowIDSeqNum", allocationSize = 10) 
 	@Column(name="row_id")
 	private int rowId;
 
