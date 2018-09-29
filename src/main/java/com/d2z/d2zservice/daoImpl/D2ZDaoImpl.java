@@ -2,6 +2,7 @@ package com.d2z.d2zservice.daoImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -16,6 +17,7 @@ import com.d2z.d2zservice.repository.PostcodeZoneRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
+import com.d2z.singleton.D2ZSingleton;
 
 @Repository
 public class D2ZDaoImpl implements ID2ZDao{
@@ -115,6 +117,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 
 	@Override
 	public String createConsignments(List<SenderData> orderDetailList) {
+		
+		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
 
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		String fileSeqId = "D2ZAPI"+senderDataRepository.fetchNextSeq();
@@ -125,7 +129,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setConsignee_name(senderDataValue.getConsigneeName());
 			senderDataObj.setConsignee_addr1(senderDataValue.getConsigneeAddr1());
 			senderDataObj.setConsignee_Suburb(senderDataValue.getConsigneeSuburb());
-			senderDataObj.setConsignee_State(senderDataValue.getConsigneeState());
+			senderDataObj.setConsignee_State(postCodeStateMap.get(senderDataValue.getConsigneePostcode()));
 			senderDataObj.setConsignee_Postcode(senderDataValue.getConsigneePostcode());
 			senderDataObj.setConsignee_Phone(senderDataValue.getConsigneePhone());
 			senderDataObj.setProduct_Description(senderDataValue.getProductDescription());
@@ -167,6 +171,12 @@ public class D2ZDaoImpl implements ID2ZDao{
 	public List<String> fetchBySenderFileID(String senderFileID) {
 		List<String> senderDataMaster = senderDataRepository.fetchBySenderFileId(senderFileID);
 		return senderDataMaster;
+	}
+
+	@Override
+	public List<Trackandtrace> trackParcelByArticleID(String articleID) {
+		List<Trackandtrace> trackAndTrace = trackAndTraceRepository.fetchTrackEventByArticleID(articleID);
+		return trackAndTrace;
 	}
 
 }

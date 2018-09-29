@@ -225,8 +225,72 @@ public class D2ZServiceImpl implements ID2ZService{
 		return userMsg;
 	}
 	
-	public List<TrackParcel> trackParcel(List<String> referenceNumbers) {
+/*	public List<TrackParcel> trackParcel(List<String> referenceNumbers,List<String> articleIDs) {
 		List<TrackParcel> trackParcelList  = new ArrayList<TrackParcel>();
+		if(!referenceNumbers.isEmpty()) {
+			trackParcelList = trackParcelByRefNbr(referenceNumbers);
+		}
+		else if(!articleIDs.isEmpty()) {
+			trackParcelList = trackParcelByArticleID(articleIDs);
+		}
+		return trackParcelList;
+	}*/
+
+	public List<TrackParcel> trackParcelByArticleID(List<String> articleIDs) {
+		List<TrackParcel> trackParcelList  = new ArrayList<TrackParcel>();
+
+		for(String articleID :articleIDs ) {
+			List<Trackandtrace> trackAndTraceList= d2zDao.trackParcelByArticleID(articleID);
+			TrackParcel trackParcel = new TrackParcel();
+			//List<TrackEventDetails> trackEventDetails = new ArrayList<TrackEventDetails>();
+			for (Trackandtrace daoObj : trackAndTraceList) {
+				trackParcel.setReferenceNumber(daoObj.getReference_number());
+				trackParcel.setBarcodelabelNumber(daoObj.getBarcodelabelNumber().substring(18));
+				
+				switch(daoObj.getTrackEventDetails().toUpperCase()) {
+					
+					case "CONSIGNMENT CREATED":
+						trackParcel.setConsignmentCreated(daoObj.getTrackEventDateOccured());
+						break;
+					case "SHIPMENT ALLOCATED":
+						trackParcel.setShipmentCreated(daoObj.getTrackEventDateOccured());
+						break;
+					case "HELD BY CUSTOMS":
+						trackParcel.setHeldByCustoms(daoObj.getTrackEventDateOccured());
+						break;
+					case "CLEARED CUSTOMS":
+						trackParcel.setClearedCustoms(daoObj.getTrackEventDateOccured());
+						break;
+					case "RECEIVED":
+						trackParcel.setReceived(daoObj.getTrackEventDateOccured());
+						break;
+					case "PROCESSED BY FACILITY":
+						trackParcel.setProcessedByFacility(daoObj.getTrackEventDateOccured());
+						break;
+					case "IN TRANSIT":
+						trackParcel.setInTransit(daoObj.getTrackEventDateOccured());
+						break;
+					case "DELIVERED":
+						trackParcel.setDelivered(daoObj.getTrackEventDateOccured());
+						break;
+				}
+				
+				/*TrackEventDetails trackEventDetail =  new TrackEventDetails();
+				trackEventDetail.setTrackEventDateOccured(daoObj.getTrackEventDateOccured());
+				trackEventDetail.setTrackEventDetails(daoObj.getTrackEventDetails());
+				
+				trackEventDetails.add(trackEventDetail);
+				trackParcel.setTrackEventDetails(trackEventDetails);*/
+
+			}
+			trackParcelList.add(trackParcel);
+		}
+		return trackParcelList;
+	}
+
+	public List<TrackParcel> trackParcelByRefNbr(List<String> referenceNumbers) {
+		List<TrackParcel> trackParcelList  = new ArrayList<TrackParcel>();
+
 		for(String refNbr :referenceNumbers ) {
 			List<Trackandtrace> trackAndTraceList= d2zDao.trackParcel(refNbr);
 			TrackParcel trackParcel = new TrackParcel();
@@ -272,9 +336,9 @@ public class D2ZServiceImpl implements ID2ZService{
 
 			}
 			trackParcelList.add(trackParcel);
-
 		}
 		return trackParcelList;
+		
 	}
 
 	@Override

@@ -13,4 +13,8 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 	 @Query("SELECT t FROM Trackandtrace t where t.reference_number = :refNumber") 
 	 List<Trackandtrace> fetchTrackEventByRefNbr(@Param("refNumber") String refNumber);
 
+	// @Query(nativeQuery = true, value="SELECT reference_number,barcodelabelnumber,trackEventDateOccured,trackEventDetails FROM Trackandtrace where substring(barcodelabelnumber,19,23) = :articleID") 
+	 @Query("SELECT t FROM Trackandtrace t where SUBSTRING(barcodelabelNumber,19,23) = :articleID")
+	 List<Trackandtrace> fetchTrackEventByArticleID(String articleID);
+
 }

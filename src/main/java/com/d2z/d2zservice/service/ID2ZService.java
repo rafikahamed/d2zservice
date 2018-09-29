@@ -32,8 +32,10 @@ public interface ID2ZService {
 
 	public UserMessage manifestCreation(String manifestNumber, String refrenceNumber);
 
-	List<TrackParcel> trackParcel(List<String> referenceNumbers);
+	List<TrackParcel> trackParcelByRefNbr(List<String> referenceNumbers);
 
 	public List<SenderDataResponse> createConsignments(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException;
+
+	public List<TrackParcel> trackParcelByArticleID(List<String> articleIDs);
 
 }

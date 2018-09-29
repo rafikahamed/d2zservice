@@ -34,4 +34,6 @@ public interface ID2ZDao {
 	
 	public List<String> fetchBySenderFileID(String senderFileID);
 
+	public List<Trackandtrace> trackParcelByArticleID(String articleID);
+
 }

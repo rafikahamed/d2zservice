@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -106,12 +107,16 @@ public class D2zController {
 	      .body(bytes);
 	}
 
-	@RequestMapping( method = RequestMethod.GET, path = "/trackParcel")
-    public List<TrackParcel> trackParcel(@RequestParam("referenceNumber") List<String> referenceNumbers) {
-		List<TrackParcel> trackParcelResponse = d2zService.trackParcel(referenceNumbers);
+	@RequestMapping( method = RequestMethod.GET, path = "/trackParcel/referenceNumber/{referenceNumbers}")
+    public List<TrackParcel> trackParcel(@PathVariable List<String> referenceNumbers) {
+		List<TrackParcel> trackParcelResponse = d2zService.trackParcelByRefNbr(referenceNumbers);
 		return trackParcelResponse;
     }
-
+	@RequestMapping( method = RequestMethod.GET, path = "/trackParcel/articleID/{articleIDs}")
+    public List<TrackParcel> trackParcelByArticleID(@PathVariable List<String> articleIDs) {
+		List<TrackParcel> trackParcelResponse = d2zService.trackParcelByArticleID(articleIDs);
+		return trackParcelResponse;
+    }
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/consignments")
 	 public List<SenderDataResponse> createConsignments( @RequestBody List<@Valid SenderData> orderDetailList) throws ReferenceNumberNotUniqueException {
