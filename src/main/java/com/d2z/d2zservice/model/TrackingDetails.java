@@ -25,6 +25,4 @@ public class TrackingDetails {
 		this.barCodeLabelNumber = barCodeLabelNumber;
 	}
 	
-	
-
 }

@@ -2,17 +2,16 @@ package com.d2z.d2zservice.daoImpl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.SenderData;
-import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
@@ -96,10 +95,23 @@ public class D2ZDaoImpl implements ID2ZDao{
 	}
 
 	@Override
+	public String trackingLabel(String refBarNum) {
+		String trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNum);
+		return trackingDetails;
+	}
+
+	@Override
+	public String manifestCreation(String manifestNumber, String refrenceNumber) {
+		//Calling Delete Store Procedure
+		senderDataRepository.manifestCreation(manifestNumber, refrenceNumber);
+		return "Manifest Updated Successfully";
+	}
+
 	public List<Trackandtrace> trackParcel(String refNbr) {
 		List<Trackandtrace> trackAndTrace = trackAndTraceRepository.fetchTrackEventByRefNbr(refNbr);
 		return trackAndTrace;
 	}
+
 
 	@Override
 	public String createConsignments(List<SenderData> orderDetailList) {

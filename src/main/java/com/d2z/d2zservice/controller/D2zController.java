@@ -66,6 +66,12 @@ public class D2zController {
 		return fileDeleteMsg;
     }
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/manifest-creation")
+    public UserMessage manifestCreation(@RequestParam("manifestNumber") String manifestNumber, @RequestParam("refrenceNumber") String refrenceNumber) {
+		UserMessage manifestUpdateMsg = d2zService.manifestCreation(manifestNumber, refrenceNumber);
+		return manifestUpdateMsg;
+    }
+	
 	@RequestMapping( method = RequestMethod.POST, path = "/generateLabel")
 	public ResponseEntity<byte[]> generateLabel(@RequestBody List<SenderData> senderData) {
 		byte[] bytes = d2zService.generateLabel(senderData);
@@ -86,16 +92,31 @@ public class D2zController {
 		return trackingDetails;
 	}
 	
+	@RequestMapping( method = RequestMethod.POST, path = "/tracking-label")
+    public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum) {
+		byte[] bytes = d2zService.trackingLabel(refBarNum);
+		System.out.println("Byte Response ----->");
+		System.out.println(bytes.toString());
+	    return ResponseEntity
+	      .ok()
+	      // Specify content type as PDF
+	      .header("Content-Type", "application/pdf; charset=UTF-8")
+	      // Tell browser to display PDF if it can
+	      .header("Content-Disposition", "inline; filename=\"Label.pdf\"")
+	      .body(bytes);
+	}
+
 	@RequestMapping( method = RequestMethod.GET, path = "/trackParcel")
     public List<TrackParcel> trackParcel(@RequestParam("referenceNumber") List<String> referenceNumbers) {
 		List<TrackParcel> trackParcelResponse = d2zService.trackParcel(referenceNumbers);
 		return trackParcelResponse;
     }
+
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/consignments")
 	 public List<SenderDataResponse> createConsignments( @RequestBody List<@Valid SenderData> orderDetailList) throws ReferenceNumberNotUniqueException {
 		List<SenderDataResponse> senderDataResponse = d2zService.createConsignments(orderDetailList);
 		return senderDataResponse;
     }	
-	
+
 }
