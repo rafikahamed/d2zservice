@@ -243,13 +243,6 @@ public class D2ZServiceImpl implements ID2ZService{
 			 senderDataResponse.setBarcodeLabelNumber("]d2".concat(obj[1].toString().replaceAll("\\[|\\]", "")));
 			 senderDataResponseList.add(senderDataResponse);
        }
-		/*List<SenderDataResponse> senderDataResponse = insertedOrder.stream().map(daoObj -> {
-			SenderDataResponse senderData = new SenderDataResponse();
-			senderData.setReferenceNumber(daoObj.getReference_number());
-			String barcodeLabelNumber = "]d2".concat(daoObj.getDatamatrix().replaceAll("\\[|\\]", ""));
-			senderData.setBarcodeLabelNumber(barcodeLabelNumber);
-			return senderData;
-		}).collect(Collectors.toList());*/
 		
 		return senderDataResponseList;
 	}
