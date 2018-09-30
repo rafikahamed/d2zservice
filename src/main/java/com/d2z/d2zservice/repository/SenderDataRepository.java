@@ -36,12 +36,12 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 @Query(nativeQuery = true, value="SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
 	 		" weight, shipper_Name, shipper_Addr1, shipper_Addr2, shipper_City, shipper_State, shipper_Country,\n" + 
 	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState FROM senderdata_master\n" + 
-	 		" WHERE reference_number= :refBarNum" + 
+	 		" WHERE reference_number=:refBarNum" + 
 	 		" UNION\n" + 
 	 		" SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
 	 		" weight, shipper_Name, shipper_Addr1, shipper_Addr2, shipper_City, shipper_State, shipper_Country,\n" + 
 	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState FROM senderdata_master\n" + 
-	 		" WHERE BarcodelabelNumber like '%:refBarNum%'") 
+	 		" WHERE BarcodelabelNumber like '%'||:refBarNum||'%' ") 
 	 String fetchTrackingLabel(@Param("refBarNum") String refBarNum);
 	 
 	@Procedure(name = "manifest_creation")
