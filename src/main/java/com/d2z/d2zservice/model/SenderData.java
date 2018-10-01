@@ -36,7 +36,7 @@ public class SenderData {
 	private BigDecimal dimensionsHeight;
 	@Digits( fraction =2, message = "Invalid Dimensions Width", integer = 10)
 	private BigDecimal dimensionsWidth;
-	@Pattern(regexp="[1-5][pP]", message = "Invalid Service Type")
+	@Pattern(regexp="^[1-5][pP][a-zA-Z]*$", message = "Invalid Service Type")
 	private String servicetype;
 	private String deliverytype;
 	@Pattern(regexp="^[a-zA-Z ]+$", message = "Shipper Name must contain only alphabets")
