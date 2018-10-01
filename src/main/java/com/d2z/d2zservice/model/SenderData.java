@@ -1,17 +1,45 @@
 package com.d2z.d2zservice.model;
 
 import java.awt.image.BufferedImage;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 
-public class SenderData {
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
+public class SenderData {	
 	
+	private int userID;
+	private String senderFilesID;
 	private String referenceNumber;
+	@Pattern(regexp="^[a-zA-Z ]+$", message = "Consignee Name must contain only alphabets")
 	private String consigneeName;
 	private String consigneeAddr1;
+	@NotNull(message = "Consignee Suburb is mandatory")
 	private String consigneeSuburb;
 	private String consigneeState;
+	@NotNull(message = "Consignee Postcode is mandatory")
 	private String consigneePostcode;
 	private String consigneePhone;
+	private String productDescription;
+	@Digits( fraction =2, message = "Invalid Value", integer = 10)
+	private double value;
+	private String currency;
+	private int shippedQuantity;
+	@Digits( fraction =2, message = "Invalid Weight", integer = 10)
 	private String weight;
+	private BigDecimal cubicWeight;
+	@Digits( fraction =2, message = "Invalid Dimensions Length", integer = 10)
+	private BigDecimal dimensionsLength;
+	@Digits( fraction =2, message = "Invalid Dimensions Height", integer = 10)
+	private BigDecimal dimensionsHeight;
+	@Digits( fraction =2, message = "Invalid Dimensions Width", integer = 10)
+	private BigDecimal dimensionsWidth;
+	@Pattern(regexp="[1-5][pP]", message = "Invalid Service Type")
+	private String servicetype;
+	private String deliverytype;
+	@Pattern(regexp="^[a-zA-Z ]+$", message = "Shipper Name must contain only alphabets")
 	private String shipperName;
 	private String shipperAddr1;
 	private String shipperAddr2;
@@ -20,9 +48,187 @@ public class SenderData {
 	private String shipperCountry;
 	private String shipperPostcode;
 	private String barcodeLabelNumber;
-	private String datamatrix;
+	private String datamatrix;		
+	private String customsStatus;
+	private String manifestNumber;
+	private String airwayBill;
+	private String palletId;
+	private String filename;
+	private String status;
+	private String isDeleted;
+	private int rowId;
+	private Timestamp timestamp;
 	private String injectionState;
 	private BufferedImage datamatrixImage;
+
+	
+	public int getUserID() {
+		return userID;
+	}
+
+	public void setUserID(int userID) {
+		this.userID = userID;
+	}
+
+	public String getSenderFilesID() {
+		return senderFilesID;
+	}
+
+	public void setSenderFilesID(String senderFilesID) {
+		this.senderFilesID = senderFilesID;
+	}
+
+	public String getProductDescription() {
+		return productDescription;
+	}
+
+	public void setProductDescription(String productDescription) {
+		this.productDescription = productDescription;
+	}
+
+	public double getValue() {
+		return value;
+	}
+
+	public void setValue(double value) {
+		this.value = value;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public int getShippedQuantity() {
+		return shippedQuantity;
+	}
+
+	public void setShippedQuantity(int shippedQuantity) {
+		this.shippedQuantity = shippedQuantity;
+	}
+
+	public BigDecimal getCubicWeight() {
+		return cubicWeight;
+	}
+
+	public void setCubicWeight(BigDecimal cubicWeight) {
+		this.cubicWeight = cubicWeight;
+	}
+
+	public BigDecimal getDimensionsLength() {
+		return dimensionsLength;
+	}
+
+	public void setDimensionsLength(BigDecimal dimensionsLength) {
+		this.dimensionsLength = dimensionsLength;
+	}
+
+	public BigDecimal getDimensionsHeight() {
+		return dimensionsHeight;
+	}
+
+	public void setDimensionsHeight(BigDecimal dimensionsHeight) {
+		this.dimensionsHeight = dimensionsHeight;
+	}
+
+	public BigDecimal getDimensionsWidth() {
+		return dimensionsWidth;
+	}
+
+	public void setDimensionsWidth(BigDecimal dimensionsWidth) {
+		this.dimensionsWidth = dimensionsWidth;
+	}
+
+	public String getServicetype() {
+		return servicetype;
+	}
+
+	public void setServicetype(String servicetype) {
+		this.servicetype = servicetype;
+	}
+
+	public String getDeliverytype() {
+		return deliverytype;
+	}
+
+	public void setDeliverytype(String deliverytype) {
+		this.deliverytype = deliverytype;
+	}
+
+	public String getCustomsStatus() {
+		return customsStatus;
+	}
+
+	public void setCustomsStatus(String customsStatus) {
+		this.customsStatus = customsStatus;
+	}
+
+	public String getManifestNumber() {
+		return manifestNumber;
+	}
+
+	public void setManifestNumber(String manifestNumber) {
+		this.manifestNumber = manifestNumber;
+	}
+
+	public String getAirwayBill() {
+		return airwayBill;
+	}
+
+	public void setAirwayBill(String airwayBill) {
+		this.airwayBill = airwayBill;
+	}
+
+	public String getPalletId() {
+		return palletId;
+	}
+
+	public void setPalletId(String palletId) {
+		this.palletId = palletId;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(String isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+	public int getRowId() {
+		return rowId;
+	}
+
+	public void setRowId(int rowId) {
+		this.rowId = rowId;
+	}
+
+	public Timestamp getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Timestamp timestamp) {
+		this.timestamp = timestamp;
+	}
 
 	public BufferedImage getDatamatrixImage() {
 		return datamatrixImage;

@@ -1,29 +1,32 @@
 package com.d2z.d2zservice.controller;
 
 import java.util.List;
-
+import javax.validation.Valid;
 import javax.ws.rs.core.MediaType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.SenderData;
+import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.TrackParcel;
 import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.service.ID2ZService;
 
 @RestController
+@Validated
 @RequestMapping(value = "/v1/d2z")
 public class D2zController {
 	
@@ -101,11 +104,21 @@ public class D2zController {
 	      .body(bytes);
 	}
 
-	@RequestMapping( method = RequestMethod.GET, path = "/trackParcel")
-    public List<TrackParcel> trackParcel(@RequestParam("referenceNumber") List<String> referenceNumbers) {
-		List<TrackParcel> trackParcelResponse = d2zService.trackParcel(referenceNumbers);
+	@RequestMapping( method = RequestMethod.GET, path = "/trackParcel/referenceNumber/{referenceNumbers}")
+    public List<TrackParcel> trackParcel(@PathVariable List<String> referenceNumbers) {
+		List<TrackParcel> trackParcelResponse = d2zService.trackParcelByRefNbr(referenceNumbers);
 		return trackParcelResponse;
     }
+	@RequestMapping( method = RequestMethod.GET, path = "/trackParcel/articleID/{articleIDs}")
+    public List<TrackParcel> trackParcelByArticleID(@PathVariable List<String> articleIDs) {
+		List<TrackParcel> trackParcelResponse = d2zService.trackParcelByArticleID(articleIDs);
+		return trackParcelResponse;
+    }
+	
+	@RequestMapping(method = RequestMethod.POST, path = "/consignments")
+	 public List<SenderDataResponse> createConsignments( @RequestBody List<@Valid SenderData> orderDetailList) throws ReferenceNumberNotUniqueException {
+		List<SenderDataResponse> senderDataResponse = d2zService.createConsignments(orderDetailList);
+		return senderDataResponse;
+    }	
 
-		
 }

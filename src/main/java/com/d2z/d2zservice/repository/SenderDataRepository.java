@@ -33,6 +33,13 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 @Query(nativeQuery = true, value="Select reference_number, consignee_name, substring(barcodelabelnumber,19,23) from senderdata_master t where filename=:fileName  and manifest_number is null") 
 	 List<String> fetchTrackingDetails(@Param("fileName") String fileName);
 	 
+
+	 @Query(nativeQuery = true, value="Select reference_number from senderdata_master t") 
+	 List<String> fetchAllReferenceNumbers();
+	 
+	 @Query(nativeQuery = true, value="Select reference_number, datamatrix from senderdata_master t where sender_Files_ID=:senderFileID") 
+	 List<String> fetchBySenderFileId(@Param("senderFileID") String senderFileID);
+	 
 	 @Query(nativeQuery = true, value="SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
 	 		" weight, shipper_Name, shipper_Addr1, shipper_Addr2, shipper_City, shipper_State, shipper_Country,\n" + 
 	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState FROM senderdata_master\n" + 
@@ -41,7 +48,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		" SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
 	 		" weight, shipper_Name, shipper_Addr1, shipper_Addr2, shipper_City, shipper_State, shipper_Country,\n" + 
 	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState FROM senderdata_master\n" + 
-	 		" WHERE BarcodelabelNumber like '%'||:refBarNum||'%' ") 
+	 		" WHERE BarcodelabelNumber like '%'+:refBarNum+'%'") 
 	 String fetchTrackingLabel(@Param("refBarNum") String refBarNum);
 	 
 	@Procedure(name = "manifest_creation")

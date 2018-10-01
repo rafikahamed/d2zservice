@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,14 +19,17 @@ import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
+import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.SenderData;
+import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.TrackEventDetails;
 import com.d2z.d2zservice.model.TrackParcel;
 import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.service.ID2ZService;
+import com.d2z.d2zservice.validation.D2ZValidator;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -48,6 +52,9 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Autowired
     private ID2ZDao d2zDao;
 
+	@Autowired
+    private D2ZValidator d2zValidator;
+	
 	@Override
 	public UserMessage exportParcel(List<FileUploadData> fileData) {
 		List<FileUploadData> fileUploadData= d2zDao.exportParcel(fileData);
@@ -218,29 +225,141 @@ public class D2ZServiceImpl implements ID2ZService{
 		return userMsg;
 	}
 	
-	public List<TrackParcel> trackParcel(List<String> referenceNumbers) {
+/*	public List<TrackParcel> trackParcel(List<String> referenceNumbers,List<String> articleIDs) {
 		List<TrackParcel> trackParcelList  = new ArrayList<TrackParcel>();
-		for(String refNbr :referenceNumbers ) {
-			List<Trackandtrace> trackAndTraceList= d2zDao.trackParcel(refNbr);
+		if(!referenceNumbers.isEmpty()) {
+			trackParcelList = trackParcelByRefNbr(referenceNumbers);
+		}
+		else if(!articleIDs.isEmpty()) {
+			trackParcelList = trackParcelByArticleID(articleIDs);
+		}
+		return trackParcelList;
+	}*/
+
+	public List<TrackParcel> trackParcelByArticleID(List<String> articleIDs) {
+		List<TrackParcel> trackParcelList  = new ArrayList<TrackParcel>();
+
+		for(String articleID :articleIDs ) {
+			List<Trackandtrace> trackAndTraceList= d2zDao.trackParcelByArticleID(articleID);
 			TrackParcel trackParcel = new TrackParcel();
-			List<TrackEventDetails> trackEventDetails = new ArrayList<TrackEventDetails>();
+			//List<TrackEventDetails> trackEventDetails = new ArrayList<TrackEventDetails>();
 			for (Trackandtrace daoObj : trackAndTraceList) {
-				trackParcel.setReferenceNumber(refNbr);
-				trackParcel.setBarcodelabelNumber(daoObj.getBarcodelabelNumber());
+				trackParcel.setReferenceNumber(daoObj.getReference_number());
+				trackParcel.setBarcodelabelNumber(daoObj.getBarcodelabelNumber().substring(18));
 				
+				switch(daoObj.getTrackEventDetails().toUpperCase()) {
+					
+					case "CONSIGNMENT CREATED":
+						trackParcel.setConsignmentCreated(daoObj.getTrackEventDateOccured());
+						break;
+					case "SHIPMENT ALLOCATED":
+						trackParcel.setShipmentCreated(daoObj.getTrackEventDateOccured());
+						break;
+					case "HELD BY CUSTOMS":
+						trackParcel.setHeldByCustoms(daoObj.getTrackEventDateOccured());
+						break;
+					case "CLEARED CUSTOMS":
+						trackParcel.setClearedCustoms(daoObj.getTrackEventDateOccured());
+						break;
+					case "RECEIVED":
+						trackParcel.setReceived(daoObj.getTrackEventDateOccured());
+						break;
+					case "PROCESSED BY FACILITY":
+						trackParcel.setProcessedByFacility(daoObj.getTrackEventDateOccured());
+						break;
+					case "IN TRANSIT":
+						trackParcel.setInTransit(daoObj.getTrackEventDateOccured());
+						break;
+					case "DELIVERED":
+						trackParcel.setDelivered(daoObj.getTrackEventDateOccured());
+						break;
+				}
 				
-				TrackEventDetails trackEventDetail =  new TrackEventDetails();
+				/*TrackEventDetails trackEventDetail =  new TrackEventDetails();
 				trackEventDetail.setTrackEventDateOccured(daoObj.getTrackEventDateOccured());
 				trackEventDetail.setTrackEventDetails(daoObj.getTrackEventDetails());
 				
 				trackEventDetails.add(trackEventDetail);
-				trackParcel.setTrackEventDetails(trackEventDetails);
+				trackParcel.setTrackEventDetails(trackEventDetails);*/
 
 			}
 			trackParcelList.add(trackParcel);
-
 		}
 		return trackParcelList;
+	}
+
+	public List<TrackParcel> trackParcelByRefNbr(List<String> referenceNumbers) {
+		List<TrackParcel> trackParcelList  = new ArrayList<TrackParcel>();
+
+		for(String refNbr :referenceNumbers ) {
+			List<Trackandtrace> trackAndTraceList= d2zDao.trackParcel(refNbr);
+			TrackParcel trackParcel = new TrackParcel();
+			//List<TrackEventDetails> trackEventDetails = new ArrayList<TrackEventDetails>();
+			for (Trackandtrace daoObj : trackAndTraceList) {
+				trackParcel.setReferenceNumber(refNbr);
+				trackParcel.setBarcodelabelNumber(daoObj.getBarcodelabelNumber());
+				
+				switch(daoObj.getTrackEventDetails().toUpperCase()) {
+					
+					case "CONSIGNMENT CREATED":
+						trackParcel.setConsignmentCreated(daoObj.getTrackEventDateOccured());
+						break;
+					case "SHIPMENT ALLOCATED":
+						trackParcel.setShipmentCreated(daoObj.getTrackEventDateOccured());
+						break;
+					case "HELD BY CUSTOMS":
+						trackParcel.setHeldByCustoms(daoObj.getTrackEventDateOccured());
+						break;
+					case "CLEARED CUSTOMS":
+						trackParcel.setClearedCustoms(daoObj.getTrackEventDateOccured());
+						break;
+					case "RECEIVED":
+						trackParcel.setReceived(daoObj.getTrackEventDateOccured());
+						break;
+					case "PROCESSED BY FACILITY":
+						trackParcel.setProcessedByFacility(daoObj.getTrackEventDateOccured());
+						break;
+					case "IN TRANSIT":
+						trackParcel.setInTransit(daoObj.getTrackEventDateOccured());
+						break;
+					case "DELIVERED":
+						trackParcel.setDelivered(daoObj.getTrackEventDateOccured());
+						break;
+				}
+				
+				/*TrackEventDetails trackEventDetail =  new TrackEventDetails();
+				trackEventDetail.setTrackEventDateOccured(daoObj.getTrackEventDateOccured());
+				trackEventDetail.setTrackEventDetails(daoObj.getTrackEventDetails());
+				
+				trackEventDetails.add(trackEventDetail);
+				trackParcel.setTrackEventDetails(trackEventDetails);*/
+
+			}
+			trackParcelList.add(trackParcel);
+		}
+		return trackParcelList;
+		
+	}
+
+	@Override
+	public List<SenderDataResponse> createConsignments(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException {
+		
+		d2zValidator.isReferenceNumberUnique(orderDetailList);
+		d2zValidator.isPostCodeValid(orderDetailList);
+		String senderFileID = d2zDao.createConsignments(orderDetailList);
+		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
+		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
+		SenderDataResponse senderDataResponse = null;
+		Iterator itr = insertedOrder.iterator();
+		 while(itr.hasNext()) {   
+			 Object[] obj = (Object[]) itr.next();
+			 senderDataResponse = new SenderDataResponse();
+			 senderDataResponse.setReferenceNumber(obj[0].toString());
+			 senderDataResponse.setBarcodeLabelNumber("]d2".concat(obj[1].toString().replaceAll("\\[|\\]", "")));
+			 senderDataResponseList.add(senderDataResponse);
+       }
+		
+		return senderDataResponseList;
 	}
 
 }

@@ -4,21 +4,28 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-@EnableAutoConfiguration
+@SpringBootApplication(exclude = {ErrorMvcAutoConfiguration.class})
+@EnableAutoConfiguration 
+@EnableWebMvc
 @ComponentScan({ "com.d2z.d2zservice.*"})
 @EnableJpaRepositories(basePackages="com.d2z.d2zservice.repository")
 @EnableTransactionManagement
 @EntityScan(basePackages="com.d2z.d2zservice.entity")
 public class D2zServiceApplication {
-
+	
 	public static void main(String[] args) {
 		SpringApplication.run(D2zServiceApplication.class, args);
 	}
@@ -33,4 +40,5 @@ public class D2zServiceApplication {
             }
         };
     }
+	
 }
