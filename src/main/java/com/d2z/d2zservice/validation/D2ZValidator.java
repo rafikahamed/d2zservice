@@ -23,6 +23,7 @@ public class D2ZValidator {
 	public void isPostCodeValid(List<SenderData> senderData) {
 		
 		List<String> postCodeZoneList = D2ZSingleton.getInstance().getPostCodeZoneList();
+		System.out.println(postCodeZoneList.toString());
 		//postCodeZoneList.forEach(System.out::println);
 		
 		//System.out.println("Incoming suburb & postcode");

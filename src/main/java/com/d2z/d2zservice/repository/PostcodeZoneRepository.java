@@ -9,7 +9,7 @@ import com.d2z.d2zservice.entity.PostcodeZone;
 
 public interface PostcodeZoneRepository extends CrudRepository<PostcodeZone, Long>{
 	
-	 @Query("SELECT p FROM PostcodeZone p") 
+	 @Query("SELECT p FROM PostcodeZone p ORDER BY p.suburb ASC") 
 	 List<PostcodeZone> fetchAllData();
 
 }

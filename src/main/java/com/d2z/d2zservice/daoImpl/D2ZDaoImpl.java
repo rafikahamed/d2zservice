@@ -138,7 +138,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setDimensions_Length(senderDataValue.getDimensionsLength());
 			senderDataObj.setDimensions_Width(senderDataValue.getDimensionsWidth());
 			senderDataObj.setDimensions_Height(senderDataValue.getDimensionsHeight());
-			senderDataObj.setServicetype(senderDataValue.getServicetype());
+			senderDataObj.setServicetype(senderDataValue.getServiceType());
 			senderDataObj.setDeliverytype(senderDataValue.getDeliverytype());
 			senderDataObj.setShipper_Name(senderDataValue.getShipperName());
 			senderDataObj.setShipper_Addr1(senderDataValue.getShipperAddr1());

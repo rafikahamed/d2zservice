@@ -115,7 +115,7 @@ public class D2zController {
 		return trackParcelResponse;
     }
 	
-	@RequestMapping(method = RequestMethod.POST, path = "/consignments")
+	@RequestMapping(method = RequestMethod.POST, path = "/consignments-create")
 	 public List<SenderDataResponse> createConsignments( @RequestBody List<@Valid SenderData> orderDetailList) throws ReferenceNumberNotUniqueException {
 		List<SenderDataResponse> senderDataResponse = d2zService.createConsignments(orderDetailList);
 		return senderDataResponse;

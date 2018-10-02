@@ -326,14 +326,12 @@ public class D2ZServiceImpl implements ID2ZService{
 						trackParcel.setDelivered(daoObj.getTrackEventDateOccured());
 						break;
 				}
-				
 				/*TrackEventDetails trackEventDetail =  new TrackEventDetails();
 				trackEventDetail.setTrackEventDateOccured(daoObj.getTrackEventDateOccured());
 				trackEventDetail.setTrackEventDetails(daoObj.getTrackEventDetails());
 				
 				trackEventDetails.add(trackEventDetail);
 				trackParcel.setTrackEventDetails(trackEventDetails);*/
-
 			}
 			trackParcelList.add(trackParcel);
 		}
