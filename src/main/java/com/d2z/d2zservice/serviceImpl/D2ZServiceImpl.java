@@ -11,11 +11,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
@@ -24,13 +21,11 @@ import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
-import com.d2z.d2zservice.model.TrackEventDetails;
 import com.d2z.d2zservice.model.TrackParcel;
 import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.validation.D2ZValidator;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -360,4 +355,10 @@ public class D2ZServiceImpl implements ID2ZService{
 		return senderDataResponseList;
 	}
 
+	@Override
+	public List<SenderdataMaster> fetchManifestData(String fileName) {
+		List<SenderdataMaster> fileData= d2zDao.fetchManifestData(fileName);
+		return fileData;
+	}
+	
 }

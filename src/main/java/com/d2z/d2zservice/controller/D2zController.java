@@ -58,6 +58,12 @@ public class D2zController {
 		return fileListData;
     }
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/manifest-data")
+    public List<SenderdataMaster> fetchManifestData(@RequestParam("fileName") String fileName) {
+		List<SenderdataMaster> fileListData = d2zService.fetchManifestData(fileName);
+		return fileListData;
+    }
+	
 	@RequestMapping( method = RequestMethod.POST, path = "/consignment-delete")
     public UserMessage consignmentDelete(@RequestBody String refrenceNumlist) {
 		UserMessage fileDeleteMsg = d2zService.consignmentDelete(refrenceNumlist);

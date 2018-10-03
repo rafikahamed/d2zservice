@@ -38,4 +38,6 @@ public interface ID2ZService {
 
 	public List<TrackParcel> trackParcelByArticleID(List<String> articleIDs);
 
+	public List<SenderdataMaster> fetchManifestData(String fileName);
+
 }

@@ -36,4 +36,6 @@ public interface ID2ZDao {
 
 	public List<Trackandtrace> trackParcelByArticleID(String articleID);
 
+	public List<SenderdataMaster> fetchManifestData(String fileName);
+
 }

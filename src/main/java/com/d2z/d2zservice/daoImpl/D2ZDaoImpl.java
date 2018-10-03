@@ -79,6 +79,12 @@ public class D2ZDaoImpl implements ID2ZDao{
 		List<SenderdataMaster> listOfFileNames= senderDataRepository.fetchConsignmentData(fileName);
 		return listOfFileNames;
 	}
+	
+	@Override
+	public List<SenderdataMaster> fetchManifestData(String fileName) {
+		List<SenderdataMaster> allConsignmentData= senderDataRepository.fetchManifestData(fileName);
+		return allConsignmentData;
+	}
 
 	@Override
 	public String consignmentDelete(String refrenceNumlist) {
@@ -87,7 +93,6 @@ public class D2ZDaoImpl implements ID2ZDao{
 		return "Data Saved Successfully";
 	}
 
-	
 	@Override
 	public List<String> trackingDetails(String fileName) {
 		List<String> trackingDetails= senderDataRepository.fetchTrackingDetails(fileName);
@@ -147,7 +152,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setShipper_State(senderDataValue.getShipperState());
 			senderDataObj.setShipper_Postcode(senderDataValue.getShipperPostcode());
 			senderDataObj.setShipper_Country(senderDataValue.getShipperCountry());
-			senderDataObj.setFilename("D2ZAPI"+D2ZCommonUtil.getCurrentTimestamp());
+			//senderDataObj.setFilename("D2ZAPI"+D2ZCommonUtil.getCurrentTimestamp());
+			senderDataObj.setFilename(senderDataValue.getFileName());
 			senderDataList.add(senderDataObj);
 		}
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);

@@ -53,7 +53,7 @@ public class SenderData {
 	private String manifestNumber;
 	private String airwayBill;
 	private String palletId;
-	private String filename;
+	private String fileName;
 	private String status;
 	private String isDeleted;
 	private int rowId;
@@ -190,12 +190,12 @@ public class SenderData {
 		this.palletId = palletId;
 	}
 
-	public String getFilename() {
-		return filename;
+	public String getFileName() {
+		return fileName;
 	}
 
-	public void setFilename(String filename) {
-		this.filename = filename;
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
 	public String getStatus() {
