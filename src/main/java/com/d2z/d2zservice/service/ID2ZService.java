@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.FileUploadData;
@@ -39,5 +40,7 @@ public interface ID2ZService {
 	public List<TrackParcel> trackParcelByArticleID(List<String> articleIDs);
 
 	public List<SenderdataMaster> fetchManifestData(String fileName);
+
+	public User login(String userName, String passWord);
 
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.FileUploadData;
@@ -36,8 +37,9 @@ public class D2zController {
     private  ID2ZService d2zService;
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/login")
-    public String login(@RequestParam("userName") String userName, @RequestParam("passWord") String passWord) {
-		return null;
+    public User login(@RequestParam("userName") String userName, @RequestParam("passWord") String passWord) {
+		User userDetails = d2zService.login(userName,passWord);
+		return userDetails;
     }
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/consignment-fileUpload", consumes=MediaType.APPLICATION_JSON)

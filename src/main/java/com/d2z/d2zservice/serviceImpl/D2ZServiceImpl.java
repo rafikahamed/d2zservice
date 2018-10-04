@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
+import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.FileUploadData;
@@ -359,6 +360,12 @@ public class D2ZServiceImpl implements ID2ZService{
 	public List<SenderdataMaster> fetchManifestData(String fileName) {
 		List<SenderdataMaster> fileData= d2zDao.fetchManifestData(fileName);
 		return fileData;
+	}
+
+	@Override
+	public User login(String userName, String passWord) {
+		User userData = d2zDao.login(userName, passWord);
+		return userData;
 	}
 	
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
+import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.SenderData;
 
@@ -37,5 +38,7 @@ public interface ID2ZDao {
 	public List<Trackandtrace> trackParcelByArticleID(String articleID);
 
 	public List<SenderdataMaster> fetchManifestData(String fileName);
+
+	public User login(String userName, String passWord);
 
 }

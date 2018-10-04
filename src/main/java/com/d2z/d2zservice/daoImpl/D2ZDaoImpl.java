@@ -9,12 +9,13 @@ import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
+import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
-import com.d2z.d2zservice.util.D2ZCommonUtil;
+import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.singleton.D2ZSingleton;
 
 @Repository
@@ -28,6 +29,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	PostcodeZoneRepository postcodeZoneRepository;
+	
+	@Autowired
+	UserRepository userRepository;
 	
 	@Override
 	public List<FileUploadData> exportParcel(List<FileUploadData> fileData) {
@@ -181,6 +185,12 @@ public class D2ZDaoImpl implements ID2ZDao{
 	public List<Trackandtrace> trackParcelByArticleID(String articleID) {
 		List<Trackandtrace> trackAndTrace = trackAndTraceRepository.fetchTrackEventByArticleID(articleID);
 		return trackAndTrace;
+	}
+
+	@Override
+	public User login(String userName, String passWord) {
+		User userDaetils = userRepository.fetchUserDetails(userName, passWord);
+		return userDaetils;
 	}
 
 }
