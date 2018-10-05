@@ -29,6 +29,12 @@ import java.sql.Timestamp;
 	  parameters = {
 	      @StoredProcedureParameter(mode = ParameterMode.IN, name = "ManifestNumber", type = String.class),
 	      @StoredProcedureParameter(mode = ParameterMode.IN, name = "Reference_number", type = String.class)
+	  }),
+   @NamedStoredProcedureQuery(name = "shipment_allocation", 
+	  procedureName = "ShipmentAllocation",
+	  parameters = {
+	      @StoredProcedureParameter(mode = ParameterMode.IN, name = "Airwaybill", type = String.class),
+	      @StoredProcedureParameter(mode = ParameterMode.IN, name = "Reference_number", type = String.class)
 	  })
 })
 public class SenderdataMaster implements Serializable {

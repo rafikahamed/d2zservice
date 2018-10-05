@@ -18,11 +18,13 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.TrackParcel;
 import com.d2z.d2zservice.model.TrackingDetails;
+import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.service.ID2ZService;
 
@@ -128,5 +130,32 @@ public class D2zController {
 		List<SenderDataResponse> senderDataResponse = d2zService.createConsignments(orderDetailList);
 		return senderDataResponse;
     }	
+	
+	@RequestMapping(method = RequestMethod.PUT, path = "/consignments")
+	 public UserMessage editConsignments(@RequestBody List<@Valid EditConsignmentRequest> requestList) {
+		UserMessage userMsg = d2zService.editConsignments(requestList);
+		return userMsg;
+  }	
+	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/{referenceNumbers}/shipment/{shipmentNumber}")
+	 public UserMessage allocateShipment(@PathVariable String referenceNumbers,@PathVariable String shipmentNumber) {
+		UserMessage userMsg = d2zService.allocateShipment(referenceNumbers,shipmentNumber);
+		return userMsg;
+ }	
+	@RequestMapping(method = RequestMethod.POST, path = "/user")
+	 public UserMessage addUser(@Valid @RequestBody UserDetails userDetails) {
+		UserMessage userMsg = d2zService.addUser(userDetails);
+		return userMsg;
+ }	
 
+	@RequestMapping(method = RequestMethod.PUT, path = "/user")
+	 public UserMessage updateUser(@Valid @RequestBody UserDetails userDetails) {
+		UserMessage userMsg = d2zService.updateUser(userDetails);
+		return userMsg;
+}	
+	
+	@RequestMapping(method = RequestMethod.PUT, path = "/user/delete/{companyName}")
+	 public UserMessage deleteUser(@PathVariable String companyName) {
+		UserMessage userMsg = d2zService.deleteUser(companyName);
+		return userMsg;
+}	
 }

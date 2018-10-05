@@ -6,6 +6,8 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,14 +19,18 @@ import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
+import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.TrackParcel;
 import com.d2z.d2zservice.model.TrackingDetails;
+import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import net.sf.jasperreports.engine.JRException;
@@ -50,6 +56,9 @@ public class D2ZServiceImpl implements ID2ZService{
 
 	@Autowired
     private D2ZValidator d2zValidator;
+	
+	@Autowired
+	UserRepository userRepository;
 	
 	@Override
 	public UserMessage exportParcel(List<FileUploadData> fileData) {
@@ -357,6 +366,98 @@ public class D2ZServiceImpl implements ID2ZService{
 	}
 
 	@Override
+	public UserMessage editConsignments(List<EditConsignmentRequest> requestList) {
+		String msg = d2zDao.editConsignments(requestList);
+		UserMessage userMsg = new UserMessage();
+		userMsg.setMessage(msg);
+		return userMsg;
+	}
+
+	@Override
+	public UserMessage allocateShipment(String referenceNumbers, String shipmentNumber) {
+		String msg = d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
+		UserMessage userMsg = new UserMessage();
+		userMsg.setMessage(msg);
+		return userMsg;
+	}
+
+	@Override
+	public UserMessage addUser(UserDetails userData) {
+		UserMessage userMsg = new UserMessage();
+		User existingUser = userRepository.fetchUserbyCompanyName(userData.getCompanyName());
+		if(existingUser == null) {
+			List<String> existingUserNames = userRepository.fetchAllUserName();
+			if(existingUserNames.contains(userData.getUserName())){
+				userMsg.setMessage("UserName already exist");
+				userMsg.setUserName(userData.getUserName());
+				return userMsg;
+			}
+ 			User savedUser = d2zDao.addUser(userData);
+			if(savedUser.getUser_Id()!= 0) {
+				List<UserService> savedUserService = d2zDao.addUserService(savedUser,userData.getServiceType());
+				if(savedUserService.size()!=0) {
+					userMsg.setMessage("User Added Successfully");
+					userMsg.setUserName(userData.getUserName());
+				}
+			}
+			else {
+				userMsg.setMessage("Unable to Add User");
+				userMsg.setUserName(userData.getUserName());
+			}
+		}else {
+			 
+			userMsg.setMessage("Company Name already exist");
+			userMsg.setCompanyName(userData.getCompanyName());
+		}
+		
+		return userMsg;
+	}
+
+	@Override
+	public UserMessage updateUser(UserDetails userDetails) {
+		UserMessage userMsg = new UserMessage();
+		User existingUser = userRepository.fetchUserbyCompanyName(userDetails.getCompanyName());
+		if(existingUser == null) {
+			userMsg.setMessage("Company Name does not exist");
+			userMsg.setCompanyName(userDetails.getCompanyName());
+			return userMsg;
+		}
+		else {
+			 if(!existingUser.getUser_Name().equals(userDetails.getUserName())) {
+				List<String> existingUserNames = userRepository.fetchAllUserName();
+				if(existingUserNames.contains(userDetails.getUserName())) {
+					userMsg.setMessage("UserName already exist");
+					userMsg.setUserName(userDetails.getUserName());
+					return userMsg;
+				}
+				existingUser.setUser_Name(userDetails.getUserName());
+			 }
+				existingUser.setAddress(userDetails.getAddress());
+				existingUser.setState(userDetails.getState());
+				existingUser.setSuburb(userDetails.getSuburb());
+				existingUser.setPostcode(userDetails.getPostCode());
+				existingUser.setCountry(userDetails.getCountry());
+				existingUser.setEmailAddress(userDetails.getEmailAddress());
+				existingUser.setUser_Password(userDetails.getPassword());
+				existingUser.setModifiedTimestamp(Timestamp.from(Instant.now()));
+				User updatedUser = d2zDao.updateUser(existingUser);
+				d2zDao.updateUserService(updatedUser,userDetails);
+				userMsg.setMessage("Updated Successfully");
+				
+		}
+		return userMsg;
+	}
+
+	@Override
+	public UserMessage deleteUser(String companyName) {
+		UserMessage userMsg = new UserMessage();
+		userMsg.setCompanyName(companyName);
+		String msg = d2zDao.deleteUser(companyName);
+		userMsg.setMessage(msg);
+		return userMsg;
+	}
+
+
 	public List<SenderdataMaster> fetchManifestData(String fileName) {
 		List<SenderdataMaster> fileData= d2zDao.fetchManifestData(fileName);
 		return fileData;
@@ -368,4 +469,5 @@ public class D2ZServiceImpl implements ID2ZService{
 		return userData;
 	}
 	
+
 }

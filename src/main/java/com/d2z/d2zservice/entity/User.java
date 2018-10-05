@@ -48,13 +48,18 @@ public class User implements Serializable {
 	@Column(name="Timestamp")
 	private Timestamp timestamp;
 
+	@Column(name="ModifiedTimestamp")
+	private Timestamp modifiedTimestamp;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="User_Id")
 	private int user_Id;
 
 	@Column(name="User_IsDeleted")
 	private boolean user_IsDeleted;
 	
-	@Id
+	
 	@Column(name="User_Name")
 	private String user_Name;
 
@@ -183,5 +188,11 @@ public class User implements Serializable {
 	public void setUser_Password(String user_Password) {
 		this.user_Password = user_Password;
 	}
+	public Timestamp getModifiedTimestamp() {
+		return modifiedTimestamp;
+	}
 
+	public void setModifiedTimestamp(Timestamp modifiedTimestamp) {
+		this.modifiedTimestamp = modifiedTimestamp;
+	}
 }
