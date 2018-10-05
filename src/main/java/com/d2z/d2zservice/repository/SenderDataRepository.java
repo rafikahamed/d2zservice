@@ -2,13 +2,12 @@ package com.d2z.d2zservice.repository;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.Modifying;
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.d2z.d2zservice.entity.SenderdataMaster;
 
 //This will be AUTO IMPLEMENTED by Spring into a Bean called FileDetailsRepository
@@ -28,13 +27,13 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 @Query(value="SELECT DISTINCT t.filename FROM SenderdataMaster t") 
 	 List<String> fetchFileName();
 
-	 @Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName") 
+	 @Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y'") 
 	 List<SenderdataMaster> fetchConsignmentData(@Param("fileName") String fileName);
 	 
 	 @Procedure(name = "consignee_delete")
 	 void consigneeDelete(@Param("Reference_number") String Reference_number);
 		 
-	 @Query(nativeQuery = true, value="Select reference_number, consignee_name, substring(barcodelabelnumber,19,23) from senderdata_master t where filename=:fileName  and manifest_number is null") 
+	 @Query(nativeQuery = true, value="Select reference_number, consignee_name, substring(barcodelabelnumber,19,23) from senderdata_master where filename=:fileName and manifest_number is null and IsDeleted != 'Y'") 
 	 List<String> fetchTrackingDetails(@Param("fileName") String fileName);
 	 
 
@@ -47,21 +46,16 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 @Query(nativeQuery = true, value="SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
 	 		" weight, shipper_Name, shipper_Addr1, shipper_Addr2, shipper_City, shipper_State, shipper_Country,\n" + 
 	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState FROM senderdata_master\n" + 
-	 		" WHERE reference_number= :refBarNum" + 
+	 		" WHERE reference_number=:refBarNum and isDeleted != 'Y'" + 
 	 		" UNION\n" + 
 	 		" SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
 	 		" weight, shipper_Name, shipper_Addr1, shipper_Addr2, shipper_City, shipper_State, shipper_Country,\n" + 
 	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState FROM senderdata_master\n" + 
-	 		" WHERE BarcodelabelNumber like '%:refBarNum%'") 
+	 		" WHERE BarcodelabelNumber like '%'+:refBarNum+'%' and isDeleted != 'Y'") 
 	 String fetchTrackingLabel(@Param("refBarNum") String refBarNum);
 	 
 	@Procedure(name = "manifest_creation")
 	void manifestCreation(@Param("ManifestNumber") String ManifestNumber, @Param("Reference_number") String Reference_number);
-
-	 @Transactional
-	 @Modifying
-	 @Query("update SenderdataMaster t set t.weight = :weight where t.reference_number = :reference_number")
-	 int editConsignments(@Param("reference_number") String referenceNumber, @Param("weight") double weight);
 
 	 @Query("Select t from SenderdataMaster t where t.reference_number = :reference_number") 
 	 SenderdataMaster fetchByReferenceNumbers(@Param("reference_number") String referenceNumber);
@@ -69,4 +63,8 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 @Procedure(name = "shipment_allocation")
 	void allocateShipment(@Param("Reference_number") String Reference_number, @Param("Airwaybill") String Airwaybill);
 	 
+
+	@Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y' and t.manifest_number is null") 
+	List<SenderdataMaster> fetchManifestData(@Param("fileName") String fileName);
+
 }

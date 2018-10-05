@@ -1,10 +1,8 @@
 package com.d2z.d2zservice.controller;
 
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.ws.rs.core.MediaType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
@@ -42,8 +39,9 @@ public class D2zController {
     private  ID2ZService d2zService;
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/login")
-    public String login(@RequestParam("userName") String userName, @RequestParam("passWord") String passWord) {
-		return null;
+    public User login(@RequestParam("userName") String userName, @RequestParam("passWord") String passWord) {
+		User userDetails = d2zService.login(userName,passWord);
+		return userDetails;
     }
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/consignment-fileUpload", consumes=MediaType.APPLICATION_JSON)
@@ -61,6 +59,12 @@ public class D2zController {
 	@RequestMapping( method = RequestMethod.GET, path = "/consignment-fileData")
     public List<SenderdataMaster> consignmentFileData(@RequestParam("fileName") String fileName) {
 		List<SenderdataMaster> fileListData = d2zService.consignmentFileData(fileName);
+		return fileListData;
+    }
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/manifest-data")
+    public List<SenderdataMaster> fetchManifestData(@RequestParam("fileName") String fileName) {
+		List<SenderdataMaster> fileListData = d2zService.fetchManifestData(fileName);
 		return fileListData;
     }
 	
@@ -121,7 +125,7 @@ public class D2zController {
 		return trackParcelResponse;
     }
 	
-	@RequestMapping(method = RequestMethod.POST, path = "/consignments")
+	@RequestMapping(method = RequestMethod.POST, path = "/consignments-create")
 	 public List<SenderDataResponse> createConsignments( @RequestBody List<@Valid SenderData> orderDetailList) throws ReferenceNumberNotUniqueException {
 		List<SenderDataResponse> senderDataResponse = d2zService.createConsignments(orderDetailList);
 		return senderDataResponse;

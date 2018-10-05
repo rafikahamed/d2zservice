@@ -13,29 +13,17 @@ import javax.persistence.*;
 @NamedQuery(name="PostcodeZone.findAll", query="SELECT p FROM PostcodeZone p")
 public class PostcodeZone implements Serializable {
 	private static final long serialVersionUID = 1L;
-
-	@Column(name="Postcode")
-	private String postcode;
-
+	
+	@EmbeddedId
+	private PostCodeId postcodeId;
+	
 	@Column(name="State")
 	private String state;
-	
-	@Id
-	@Column(name="Suburb")
-	private String suburb;
 
 	@Column(name="Zone")
 	private String zone;
 
 	public PostcodeZone() {
-	}
-
-	public String getPostcode() {
-		return this.postcode;
-	}
-
-	public void setPostcode(String postcode) {
-		this.postcode = postcode;
 	}
 
 	public String getState() {
@@ -46,12 +34,12 @@ public class PostcodeZone implements Serializable {
 		this.state = state;
 	}
 
-	public String getSuburb() {
-		return this.suburb;
+	public PostCodeId getPostcodeId() {
+		return postcodeId;
 	}
 
-	public void setSuburb(String suburb) {
-		this.suburb = suburb;
+	public void setPostcodeId(PostCodeId postcodeId) {
+		this.postcodeId = postcodeId;
 	}
 
 	public String getZone() {
@@ -61,5 +49,5 @@ public class PostcodeZone implements Serializable {
 	public void setZone(String zone) {
 		this.zone = zone;
 	}
-
+	
 }

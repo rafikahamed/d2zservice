@@ -49,4 +49,8 @@ public interface ID2ZService {
 
 	public UserMessage deleteUser(String companyName);
 
+	public List<SenderdataMaster> fetchManifestData(String fileName);
+
+	public User login(String userName, String passWord);
+
 }

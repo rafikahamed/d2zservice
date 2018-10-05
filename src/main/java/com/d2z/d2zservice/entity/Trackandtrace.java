@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 @Table(name="TrackAndtrace")
 @NamedQuery(name="Trackandtrace.findAll", query="SELECT t FROM Trackandtrace t")
 public class Trackandtrace implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	@Column(name="AirwayBill")
@@ -20,14 +21,14 @@ public class Trackandtrace implements Serializable {
 	@Column(name="BarcodelabelNumber")
 	private String barcodelabelNumber;
 
-	//@Column(name="Client_Id")
-	//private String client_Id;
-
 	@Column(name="CourierEvents")
 	private String courierEvents;
 
 	@Column(name="FileName")
 	private String fileName;
+
+	@Column(name="IsDeleted")
+	private String isDeleted;
 
 	@Column(name="Reference_number")
 	private String reference_number;
@@ -57,6 +58,9 @@ public class Trackandtrace implements Serializable {
 	@Column(name="TrackSequence")
 	private int trackSequence;
 
+	@Column(name="User_Id")
+	private String user_Id;
+
 	public Trackandtrace() {
 	}
 
@@ -76,14 +80,6 @@ public class Trackandtrace implements Serializable {
 		this.barcodelabelNumber = barcodelabelNumber;
 	}
 
-/*	public String getClient_Id() {
-		return this.client_Id;
-	}
-
-	public void setClient_Id(String client_Id) {
-		this.client_Id = client_Id;
-	}*/
-
 	public String getCourierEvents() {
 		return this.courierEvents;
 	}
@@ -98,6 +94,14 @@ public class Trackandtrace implements Serializable {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	public String getIsDeleted() {
+		return this.isDeleted;
+	}
+
+	public void setIsDeleted(String isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 
 	public String getReference_number() {
@@ -171,5 +175,14 @@ public class Trackandtrace implements Serializable {
 	public void setTrackSequence(int trackSequence) {
 		this.trackSequence = trackSequence;
 	}
+
+	public String getUser_Id() {
+		return this.user_Id;
+	}
+
+	public void setUser_Id(String user_Id) {
+		this.user_Id = user_Id;
+	}
+
 
 }

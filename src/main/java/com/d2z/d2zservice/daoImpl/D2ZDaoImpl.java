@@ -5,10 +5,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
@@ -44,6 +42,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	UserServiceRepository userServiceRepository;
+
 	@Override
 	public List<FileUploadData> exportParcel(List<FileUploadData> fileData) {
 		List<SenderdataMaster> fileObjList = new ArrayList<SenderdataMaster>();
@@ -94,6 +93,12 @@ public class D2ZDaoImpl implements ID2ZDao{
 		List<SenderdataMaster> listOfFileNames= senderDataRepository.fetchConsignmentData(fileName);
 		return listOfFileNames;
 	}
+	
+	@Override
+	public List<SenderdataMaster> fetchManifestData(String fileName) {
+		List<SenderdataMaster> allConsignmentData= senderDataRepository.fetchManifestData(fileName);
+		return allConsignmentData;
+	}
 
 	@Override
 	public String consignmentDelete(String refrenceNumlist) {
@@ -102,7 +107,6 @@ public class D2ZDaoImpl implements ID2ZDao{
 		return "Data Saved Successfully";
 	}
 
-	
 	@Override
 	public List<String> trackingDetails(String fileName) {
 		List<String> trackingDetails= senderDataRepository.fetchTrackingDetails(fileName);
@@ -153,7 +157,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setDimensions_Length(senderDataValue.getDimensionsLength());
 			senderDataObj.setDimensions_Width(senderDataValue.getDimensionsWidth());
 			senderDataObj.setDimensions_Height(senderDataValue.getDimensionsHeight());
-			senderDataObj.setServicetype(senderDataValue.getServicetype());
+			senderDataObj.setServicetype(senderDataValue.getServiceType());
 			senderDataObj.setDeliverytype(senderDataValue.getDeliverytype());
 			senderDataObj.setShipper_Name(senderDataValue.getShipperName());
 			senderDataObj.setShipper_Addr1(senderDataValue.getShipperAddr1());
@@ -162,7 +166,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setShipper_State(senderDataValue.getShipperState());
 			senderDataObj.setShipper_Postcode(senderDataValue.getShipperPostcode());
 			senderDataObj.setShipper_Country(senderDataValue.getShipperCountry());
-			senderDataObj.setFilename("D2ZAPI"+D2ZCommonUtil.getCurrentTimestamp());
+			//senderDataObj.setFilename("D2ZAPI"+D2ZCommonUtil.getCurrentTimestamp());
+			senderDataObj.setFilename(senderDataValue.getFileName());
 			senderDataList.add(senderDataObj);
 		}
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
@@ -194,6 +199,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	}
 
 	@Override
+
 	public String editConsignments(List<EditConsignmentRequest> requestList) {
 		/*requestList.forEach(obj->{
 			senderDataRepository.editConsignments(obj.getReferenceNumber(), obj.getWeight());
@@ -341,4 +347,11 @@ public class D2ZDaoImpl implements ID2ZDao{
 		}
 		return "User deleted successfully";
 	}
+
+	public User login(String userName, String passWord) {
+		User userDaetils = userRepository.fetchUserDetails(userName, passWord);
+		return userDaetils;
+	}
+
+
 }

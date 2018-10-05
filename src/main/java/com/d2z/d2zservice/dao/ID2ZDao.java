@@ -54,4 +54,8 @@ public interface ID2ZDao {
 
 	public String deleteUser(String companyName);
 
+	public List<SenderdataMaster> fetchManifestData(String fileName);
+
+	public User login(String userName, String passWord);
+
 }
