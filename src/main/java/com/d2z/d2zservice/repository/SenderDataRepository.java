@@ -57,5 +57,16 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 
 	@Procedure(name = "manifest_creation")
 	void manifestCreation(@Param("ManifestNumber") String ManifestNumber, @Param("Reference_number") String Reference_number);
+
+	 @Transactional
+	 @Modifying
+	 @Query("update SenderdataMaster t set t.weight = :weight where t.reference_number = :reference_number")
+	 int editConsignments(@Param("reference_number") String referenceNumber, @Param("weight") double weight);
+
+	 @Query("Select t from SenderdataMaster t where t.reference_number = :reference_number") 
+	 SenderdataMaster fetchByReferenceNumbers(@Param("reference_number") String referenceNumber);
+	 
+	 @Procedure(name = "shipment_allocation")
+	void allocateShipment(@Param("Reference_number") String Reference_number, @Param("Airwaybill") String Airwaybill);
 	 
 }

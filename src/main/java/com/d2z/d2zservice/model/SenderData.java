@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 public class SenderData {	
@@ -16,10 +16,10 @@ public class SenderData {
 	@Pattern(regexp="^[a-zA-Z ]+$", message = "Consignee Name must contain only alphabets")
 	private String consigneeName;
 	private String consigneeAddr1;
-	@NotNull(message = "Consignee Suburb is mandatory")
+	@NotEmpty(message = "Consignee Suburb is mandatory")
 	private String consigneeSuburb;
 	private String consigneeState;
-	@NotNull(message = "Consignee Postcode is mandatory")
+	@NotEmpty(message = "Consignee Postcode is mandatory")
 	private String consigneePostcode;
 	private String consigneePhone;
 	private String productDescription;

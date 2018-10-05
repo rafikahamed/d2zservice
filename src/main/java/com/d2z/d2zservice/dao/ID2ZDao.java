@@ -5,8 +5,12 @@ import java.util.List;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
+import com.d2z.d2zservice.entity.User;
+import com.d2z.d2zservice.entity.UserService;
+import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.SenderData;
+import com.d2z.d2zservice.model.UserDetails;
 
 public interface ID2ZDao {
 	
@@ -35,5 +39,19 @@ public interface ID2ZDao {
 	public List<String> fetchBySenderFileID(String senderFileID);
 
 	public List<Trackandtrace> trackParcelByArticleID(String articleID);
+
+	public String editConsignments(List<EditConsignmentRequest> requestList);
+
+	public String allocateShipment(String referenceNumbers, String shipmentNumber);
+
+	public User addUser(UserDetails userData);
+
+	public List<UserService> addUserService(User user,List<String> serviceType);
+
+	public User updateUser(User existingUser);
+
+	public void updateUserService(User existingUser, UserDetails userDetails);
+
+	public String deleteUser(String companyName);
 
 }
