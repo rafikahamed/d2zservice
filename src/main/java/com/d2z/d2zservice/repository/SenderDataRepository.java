@@ -1,9 +1,6 @@
 package com.d2z.d2zservice.repository;
 
 import java.util.List;
-
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
@@ -35,7 +32,6 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 		 
 	 @Query(nativeQuery = true, value="Select reference_number, consignee_name, substring(barcodelabelnumber,19,23) from senderdata_master where filename=:fileName and manifest_number is null and IsDeleted != 'Y'") 
 	 List<String> fetchTrackingDetails(@Param("fileName") String fileName);
-	 
 
 	 @Query(nativeQuery = true, value="Select reference_number from senderdata_master t") 
 	 List<String> fetchAllReferenceNumbers();
@@ -57,14 +53,19 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Procedure(name = "manifest_creation")
 	void manifestCreation(@Param("ManifestNumber") String ManifestNumber, @Param("Reference_number") String Reference_number);
 
-	 @Query("Select t from SenderdataMaster t where t.reference_number = :reference_number") 
-	 SenderdataMaster fetchByReferenceNumbers(@Param("reference_number") String referenceNumber);
+	@Query("Select t from SenderdataMaster t where t.reference_number = :reference_number") 
+	SenderdataMaster fetchByReferenceNumbers(@Param("reference_number") String referenceNumber);
 	 
-	 @Procedure(name = "shipment_allocation")
+	@Procedure(name = "shipment_allocation")
 	void allocateShipment(@Param("Reference_number") String Reference_number, @Param("Airwaybill") String Airwaybill);
-	 
 
 	@Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y' and t.manifest_number is null") 
 	List<SenderdataMaster> fetchManifestData(@Param("fileName") String fileName);
+
+	@Query("SELECT DISTINCT t.manifest_number FROM SenderdataMaster t") 
+	List<String> fetchManifestNumber();
+	
+	 @Query("SELECT t FROM SenderdataMaster t where t.manifest_number = :manifestNumber") 
+	 List<SenderdataMaster> fetchConsignmentByManifest(@Param("manifestNumber") String manifestNumber);
 
 }
