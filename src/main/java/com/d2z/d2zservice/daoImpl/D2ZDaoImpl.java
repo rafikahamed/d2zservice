@@ -22,7 +22,6 @@ import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
-import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.singleton.D2ZSingleton;
 
 @Repository

@@ -9,6 +9,7 @@
 		<class>com.d2z.d2zservice.entity.Trackandtrace</class>
 		<class>com.d2z.d2zservice.entity.User</class>
 		<class>com.d2z.d2zservice.entity.UserRole</class>
+		<class>com.d2z.d2zservice.entity.UserService</class>
 		<class>com.d2z.d2zservice.entity.PostCodeId</class>
 	</persistence-unit>
 </persistence>
