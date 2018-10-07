@@ -67,4 +67,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y' and t.manifest_number is null") 
 	List<SenderdataMaster> fetchManifestData(@Param("fileName") String fileName);
 
+	@Query("SELECT t FROM SenderdataMaster t where t.airwayBill = :shipmentNumber") 
+	List<SenderdataMaster> fetchShipmentData(@Param("shipmentNumber") String shipmentNumber);
+
 }

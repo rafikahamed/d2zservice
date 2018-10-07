@@ -53,4 +53,6 @@ public interface ID2ZService {
 
 	public User login(String userName, String passWord);
 
+	public byte[] downloadShipmentData(String shipmentNumber);
+
 }

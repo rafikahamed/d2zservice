@@ -353,5 +353,11 @@ public class D2ZDaoImpl implements ID2ZDao{
 		return userDaetils;
 	}
 
+	@Override
+	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber) {
+		List<SenderdataMaster> senderData = senderDataRepository.fetchShipmentData(shipmentNumber);
+		return senderData;
+	}
+
 
 }

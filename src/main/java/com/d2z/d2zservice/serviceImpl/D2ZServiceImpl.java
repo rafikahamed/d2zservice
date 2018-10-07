@@ -13,19 +13,23 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
+import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
+import com.d2z.d2zservice.model.ShipmentDetails;
 import com.d2z.d2zservice.model.TrackParcel;
 import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.UserDetails;
@@ -33,6 +37,7 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.validation.D2ZValidator;
+
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -59,6 +64,9 @@ public class D2ZServiceImpl implements ID2ZService{
 	
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	ShipmentDetailsWriter shipmentWriter;
 	
 	@Override
 	public UserMessage exportParcel(List<FileUploadData> fileData) {
@@ -467,6 +475,39 @@ public class D2ZServiceImpl implements ID2ZService{
 	public User login(String userName, String passWord) {
 		User userData = d2zDao.login(userName, passWord);
 		return userData;
+	}
+
+	@Override
+	public byte[] downloadShipmentData(String shipmentNumber) {
+		List<SenderdataMaster> senderDataList  = d2zDao.fetchShipmentData(shipmentNumber);
+		System.out.println(senderDataList.size()+" records");
+		List<ShipmentDetails> shipmentDetails = new ArrayList<ShipmentDetails>();
+		for(SenderdataMaster senderData : senderDataList) {
+			ShipmentDetails shipmentData = new ShipmentDetails();
+			shipmentData.setReferenceNumber(senderData.getReference_number());
+			shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19,30));
+			shipmentData.setConsigneeName(senderData.getConsignee_name());
+			shipmentData.setConsigneeAddress(senderData.getConsignee_addr1());
+			shipmentData.setWeight(senderData.getWeight());
+			shipmentData.setConsigneePhone(senderData.getConsignee_Phone());
+			shipmentData.setConsigneeSuburb(senderData.getConsignee_Suburb());
+			shipmentData.setConsigneeState(senderData.getConsignee_State());
+			shipmentData.setConsigneePostcode(senderData.getConsignee_Postcode());
+			shipmentData.setDestination("AUSTRALIA");
+			shipmentData.setQuantity(senderData.getShippedQuantity());
+			shipmentData.setCommodity(senderData.getProduct_Description());
+			shipmentData.setValue(senderData.getValue());
+			shipmentData.setShipperName(senderData.getShipper_Name());
+			shipmentData.setShipperAddress(senderData.getShipper_Addr1());
+			shipmentData.setShipperCity(senderData.getShipper_City());
+			shipmentData.setShipperState(senderData.getShipper_State());
+			shipmentData.setShipperPostcode(senderData.getShipper_Postcode());
+			shipmentData.setShipperCountry(senderData.getShipper_Country());
+			shipmentData.setShipperContact(senderData.getAirwayBill());
+			shipmentDetails.add(shipmentData);
+		}
+		byte[] bytes = shipmentWriter.generateShipmentxls(shipmentDetails);
+		return bytes;
 	}
 	
 

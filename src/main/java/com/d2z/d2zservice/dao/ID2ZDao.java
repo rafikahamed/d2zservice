@@ -58,4 +58,7 @@ public interface ID2ZDao {
 
 	public User login(String userName, String passWord);
 
+	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber);
+
+
 }
