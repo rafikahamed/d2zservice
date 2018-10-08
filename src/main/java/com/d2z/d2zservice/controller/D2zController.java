@@ -148,8 +148,7 @@ public class D2zController {
  }	
 	@RequestMapping(method = RequestMethod.POST, path = "/user")
 	 public UserMessage addUser(@Valid @RequestBody UserDetails userDetails) {
-		UserMessage userMsg = d2zService.addUser(userDetails);
-		return userMsg;
+		return d2zService.addUser(userDetails);
  }	
 
 	@RequestMapping(method = RequestMethod.PUT, path = "/user")
