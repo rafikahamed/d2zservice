@@ -1,11 +1,12 @@
 package com.d2z.d2zservice.controller;
 
-import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+
 import javax.validation.Valid;
 import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
@@ -30,7 +32,6 @@ import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.service.ID2ZService;
-import com.d2z.d2zservice.util.D2ZCommonUtil;
 
 @RestController
 @Validated

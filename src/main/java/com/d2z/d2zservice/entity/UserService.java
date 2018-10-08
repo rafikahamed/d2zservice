@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 
 @Entity
@@ -45,6 +47,17 @@ public class UserService implements Serializable {
 	@Column(name="ModifiedTimestamp")
 	private Timestamp modifiedTimestamp;
 	
+	@ManyToOne
+    @JoinColumn(name = "User_Id",insertable=false, updatable=false)
+    private User users;
+
+    public User getUsers() {
+		return users;
+    }
+
+    public void setUsers(User users) {
+        this.users = users;
+    }
 	public Timestamp getModifiedTimestamp() {
 		return modifiedTimestamp;
 	}
