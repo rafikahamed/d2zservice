@@ -38,6 +38,11 @@ public class D2zBrokerController {
 		return brokerD2zService.getManifestList();
     }
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/shipmentList")
+    public List<DropDownModel> fetchShipmentList() {
+		return brokerD2zService.fetchShipmentList();
+    }
+	
 	@RequestMapping( method = RequestMethod.GET, path = "/consignment-details")
     public List<SenderdataMaster> consignmentDetails(@RequestParam("manifestNumber") String manifestNumber) {
 		return brokerD2zService.consignmentDetails(manifestNumber);

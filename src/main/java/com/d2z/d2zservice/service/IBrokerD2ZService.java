@@ -15,4 +15,6 @@ public interface IBrokerD2ZService {
 
 	public List<SenderdataMaster> consignmentDetails(String manifestNumber);
 
+	public List<DropDownModel> fetchShipmentList();
+
 }

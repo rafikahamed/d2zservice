@@ -1,8 +1,5 @@
 package com.d2z.d2zservice.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 import javax.validation.Valid;
 import javax.ws.rs.core.MediaType;
@@ -25,12 +22,12 @@ import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
+import com.d2z.d2zservice.model.ShipmentDetails;
 import com.d2z.d2zservice.model.TrackParcel;
 import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.service.ID2ZService;
-import com.d2z.d2zservice.util.D2ZCommonUtil;
 
 @RestController
 @Validated
@@ -44,6 +41,7 @@ public class D2zController {
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/login")
     public User login(@RequestParam("userName") String userName, @RequestParam("passWord") String passWord) {
+		System.out.println("Inside Login User Name");
 		User userDetails = d2zService.login(userName,passWord);
 		return userDetails;
     }
@@ -162,15 +160,22 @@ public class D2zController {
 		UserMessage userMsg = d2zService.deleteUser(companyName);
 		return userMsg;
 }	
+//	@RequestMapping( method = RequestMethod.GET, path = "/consignments/shipment")
+//    public ResponseEntity<byte[]> downloadShipmentData(@RequestParam("shipmentNumber") String shipmentNumber) {
+//    	byte[] bytes = d2zService.downloadShipmentData(shipmentNumber);
+//    	 String fileName = shipmentNumber+"_"+Timestamp.from(Instant.now())+".xlsx";
+//    	
+//    	 return ResponseEntity
+//    		      .ok()
+//    		      .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+//    		      // Tell browser to display PDF if it can
+//    		      .header("Content-Disposition", "inline; filename="+fileName)
+//    		      .body(bytes);	
+//    }
+	
 	@RequestMapping( method = RequestMethod.GET, path = "/consignments/shipment")
-    public ResponseEntity<byte[]> downloadShipmentData(@RequestParam("shipmentNumber") String shipmentNumber) {
-    	byte[] bytes = d2zService.downloadShipmentData(shipmentNumber);
-    	 String fileName = shipmentNumber+"_"+Timestamp.from(Instant.now())+".xlsx";
-    	
-    	 return ResponseEntity
-    		      .ok()
-    		      .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    		      // Tell browser to display PDF if it can
-    		      .header("Content-Disposition", "inline; filename="+fileName)
-    		      .body(bytes);	}
+    public List<ShipmentDetails> downloadShipmentData(@RequestParam("shipmentNumber") String shipmentNumber) {
+		List<ShipmentDetails> senderData = d2zService.downloadShipmentData(shipmentNumber);
+    	return senderData;
+    }
 }

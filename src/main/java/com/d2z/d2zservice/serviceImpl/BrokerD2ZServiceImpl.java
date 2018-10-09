@@ -56,4 +56,19 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 		return consignmentDetails;
 	}
 
+	@Override
+	public List<DropDownModel> fetchShipmentList() {
+		List<String> listOfShipment = d2zDao.fetchShipmentList();
+		List<DropDownModel> shipmentDropDownList= new ArrayList<DropDownModel>();
+		for(String manifestId:listOfShipment) {
+			if(manifestId != null) {
+				DropDownModel dropDownVaL = new DropDownModel();
+				dropDownVaL.setName(manifestId);
+				dropDownVaL.setValue(manifestId);
+				shipmentDropDownList.add(dropDownVaL);
+			}
+		}
+		return shipmentDropDownList;
+	}
+
 }

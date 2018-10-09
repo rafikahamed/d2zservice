@@ -70,6 +70,9 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	
 	 @Query("SELECT t FROM SenderdataMaster t where t.manifest_number = :manifestNumber") 
 	 List<SenderdataMaster> fetchConsignmentByManifest(@Param("manifestNumber") String manifestNumber);
+	 
+	 @Query("SELECT DISTINCT t.airwayBill FROM SenderdataMaster t") 
+	 List<String> fetchShipmentList();
 
 
 }

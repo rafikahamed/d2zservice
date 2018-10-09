@@ -10,6 +10,7 @@ import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
+import com.d2z.d2zservice.model.ShipmentDetails;
 import com.d2z.d2zservice.model.TrackParcel;
 import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.UserDetails;
@@ -53,6 +54,7 @@ public interface ID2ZService {
 
 	public User login(String userName, String passWord);
 
-	public byte[] downloadShipmentData(String shipmentNumber);
+//	public byte[] downloadShipmentData(String shipmentNumber);
+	public List<ShipmentDetails> downloadShipmentData(String shipmentNumber);
 
 }

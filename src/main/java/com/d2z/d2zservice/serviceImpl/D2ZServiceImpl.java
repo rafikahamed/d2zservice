@@ -478,7 +478,8 @@ public class D2ZServiceImpl implements ID2ZService{
 	}
 
 	@Override
-	public byte[] downloadShipmentData(String shipmentNumber) {
+	//public byte[] downloadShipmentData(String shipmentNumber) {
+	public List<ShipmentDetails>  downloadShipmentData(String shipmentNumber) {
 		List<SenderdataMaster> senderDataList  = d2zDao.fetchShipmentData(shipmentNumber);
 		System.out.println(senderDataList.size()+" records");
 		List<ShipmentDetails> shipmentDetails = new ArrayList<ShipmentDetails>();
@@ -506,9 +507,9 @@ public class D2ZServiceImpl implements ID2ZService{
 			shipmentData.setShipperContact(senderData.getAirwayBill());
 			shipmentDetails.add(shipmentData);
 		}
-		byte[] bytes = shipmentWriter.generateShipmentxls(shipmentDetails);
-		return bytes;
+//		byte[] bytes = shipmentWriter.generateShipmentxls(shipmentDetails);
+//		return bytes;
+		return shipmentDetails;
 	}
-	
 
 }
