@@ -1,8 +1,18 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 
 /**
@@ -66,7 +76,18 @@ public class User implements Serializable {
 	@Column(name="User_Password")
 	private String user_Password;
 
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    private Set<UserService> userService;
+
 	public User() {
+	}
+	
+	public Set<UserService> getUserService() {
+		return userService;
+	}
+
+	public void setUserService(Set<UserService> userService) {
+		this.userService = userService;
 	}
 
 	public String getAddress() {
