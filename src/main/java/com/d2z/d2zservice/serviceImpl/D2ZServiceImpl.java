@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,11 +71,23 @@ public class D2ZServiceImpl implements ID2ZService{
 	ShipmentDetailsWriter shipmentWriter;
 	
 	@Override
-	public UserMessage exportParcel(List<FileUploadData> fileData) {
-		List<FileUploadData> fileUploadData= d2zDao.exportParcel(fileData);
-		UserMessage userMsg = new UserMessage();
-		userMsg.setMessage("File data upload successfully to the D2Z System");
-		return userMsg;
+	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException{
+		d2zValidator.isReferenceNumberUnique(orderDetailList);
+		d2zValidator.isPostCodeValid(orderDetailList);
+		String senderFileID = d2zDao.exportParcel(orderDetailList);
+		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
+		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
+		SenderDataResponse senderDataResponse = null;
+		Iterator itr = insertedOrder.iterator();
+		 while(itr.hasNext()) {   
+			 Object[] obj = (Object[]) itr.next();
+			 senderDataResponse = new SenderDataResponse();
+			 senderDataResponse.setReferenceNumber(obj[0].toString());
+			 senderDataResponse.setBarcodeLabelNumber("]d2".concat(obj[1].toString().replaceAll("\\[|\\]", "")));
+			 senderDataResponseList.add(senderDataResponse);
+       }
+		
+		return senderDataResponseList;
 	}
 	
 	@Override
@@ -472,9 +486,23 @@ public class D2ZServiceImpl implements ID2ZService{
 	}
 
 	@Override
-	public User login(String userName, String passWord) {
+	public UserDetails login(String userName, String passWord) {
 		User userData = d2zDao.login(userName, passWord);
-		return userData;
+		UserDetails userDetails = new UserDetails();
+		userDetails.setAddress(userData.getAddress());
+		userDetails.setCompanyName(userData.getCompanyName());
+		userDetails.setContactName(userData.getName());
+		userDetails.setContactPhoneNumber(userData.getPhoneNumber());
+		userDetails.setCountry(userData.getCountry());
+		userDetails.setEmailAddress(userData.getEmailAddress());
+		userDetails.setPassword(userData.getUser_Password());
+		userDetails.setPostCode(userData.getPostcode());
+		userDetails.setState(userData.getState());
+		userDetails.setSuburb(userData.getSuburb());
+		userDetails.setUserName(userData.getUser_Name());
+		userDetails.setRole_Id(userData.getRole_Id());
+		userDetails.setServiceType(null);
+		return userDetails;
 	}
 
 	@Override

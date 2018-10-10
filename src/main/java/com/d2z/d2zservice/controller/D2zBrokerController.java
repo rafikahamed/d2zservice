@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.ShipmentDetails;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.service.IBrokerD2ZService;
 
@@ -44,9 +45,20 @@ public class D2zBrokerController {
 		return brokerD2zService.fetchShipmentList();
     }
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/api-shipmentList")
+    public List<DropDownModel> fetchApiShipmentList() {
+		return brokerD2zService.fetchApiShipmentList();
+    }
+	
 	@RequestMapping( method = RequestMethod.GET, path = "/consignment-details")
     public List<SenderdataMaster> consignmentDetails(@RequestParam("manifestNumber") String manifestNumber) {
 		return brokerD2zService.consignmentDetails(manifestNumber);
+    }
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/direct-injection")
+    public List<ShipmentDetails> directInjection(@RequestParam("companyName") String companyName) {
+		List<ShipmentDetails> senderData = brokerD2zService.directInjection(companyName);
+    	return senderData;
     }
 
 }

@@ -22,6 +22,7 @@ import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
+import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.singleton.D2ZSingleton;
 
 @Repository
@@ -41,44 +42,45 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	UserServiceRepository userServiceRepository;
-
+	
 	@Override
-	public List<FileUploadData> exportParcel(List<FileUploadData> fileData) {
-		List<SenderdataMaster> fileObjList = new ArrayList<SenderdataMaster>();
-		String fileSeqId = "D2Z"+senderDataRepository.fetchNextSeq();
-		for(FileUploadData fileDataValue: fileData) {
+	public String exportParcel(List<SenderData> orderDetailList) {
+		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
+		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
+		String fileSeqId = "D2ZUI"+senderDataRepository.fetchNextSeq().toString();
+		for(SenderData senderDataValue: orderDetailList) {
 			SenderdataMaster senderDataObj = new SenderdataMaster();
 			senderDataObj.setSender_Files_ID(fileSeqId);
-			senderDataObj.setReference_number(fileDataValue.getReferenceNumber());
-			senderDataObj.setConsignee_name(fileDataValue.getConsigneeName());
-			senderDataObj.setConsignee_addr1(fileDataValue.getConsigneeAddr1());
-			senderDataObj.setConsignee_Suburb(fileDataValue.getConsigneeSubUrb());
-			senderDataObj.setConsignee_State(fileDataValue.getConsigneeState());
-			senderDataObj.setConsignee_Postcode(fileDataValue.getConsigneePostCode());
-			senderDataObj.setConsignee_Phone(fileDataValue.getConsigneePhone());
-			senderDataObj.setProduct_Description(fileDataValue.getProductDes());
-			senderDataObj.setValue(fileDataValue.getValue());
-			senderDataObj.setShippedQuantity(fileDataValue.getShippedQty());
-			senderDataObj.setWeight( fileDataValue.getCubicWeight().doubleValue());
-			senderDataObj.setDimensions_Length(fileDataValue.getDimLength());
-			senderDataObj.setDimensions_Width(fileDataValue.getDimWidth());
-			senderDataObj.setDimensions_Height(fileDataValue.getDimHeight());
-			senderDataObj.setServicetype(fileDataValue.getServiceType());
-			senderDataObj.setDeliverytype(fileDataValue.getDeliveryType());
-			senderDataObj.setShipper_Name(fileDataValue.getShipperName());
-			senderDataObj.setShipper_Addr1(fileDataValue.getShipperAddrs1());
-			senderDataObj.setShipper_Addr2(fileDataValue.getShipperAddres2());
-			senderDataObj.setShipper_City(fileDataValue.getShipperCity());
-			senderDataObj.setShipper_State(fileDataValue.getShipperState());
-			senderDataObj.setShipper_Postcode(fileDataValue.getShipperPostCode());
-			senderDataObj.setShipper_Country(fileDataValue.getShipperCountry());
-			senderDataObj.setFilename(fileDataValue.getFileName());
-			fileObjList.add(senderDataObj);
+			senderDataObj.setReference_number(senderDataValue.getReferenceNumber());
+			senderDataObj.setConsignee_name(senderDataValue.getConsigneeName());
+			senderDataObj.setConsignee_addr1(senderDataValue.getConsigneeAddr1());
+			senderDataObj.setConsignee_Suburb(senderDataValue.getConsigneeSuburb());
+			senderDataObj.setConsignee_State(postCodeStateMap.get(senderDataValue.getConsigneePostcode()));
+			senderDataObj.setConsignee_Postcode(senderDataValue.getConsigneePostcode());
+			senderDataObj.setConsignee_Phone(senderDataValue.getConsigneePhone());
+			senderDataObj.setProduct_Description(senderDataValue.getProductDescription());
+			senderDataObj.setValue(senderDataValue.getValue());
+			senderDataObj.setCurrency(senderDataValue.getCurrency());
+			senderDataObj.setShippedQuantity(senderDataValue.getShippedQuantity());
+			senderDataObj.setWeight(Double.parseDouble(senderDataValue.getWeight()));
+			senderDataObj.setDimensions_Length(senderDataValue.getDimensionsLength());
+			senderDataObj.setDimensions_Width(senderDataValue.getDimensionsWidth());
+			senderDataObj.setDimensions_Height(senderDataValue.getDimensionsHeight());
+			senderDataObj.setServicetype(senderDataValue.getServiceType());
+			senderDataObj.setDeliverytype(senderDataValue.getDeliverytype());
+			senderDataObj.setShipper_Name(senderDataValue.getShipperName());
+			senderDataObj.setShipper_Addr1(senderDataValue.getShipperAddr1());
+			senderDataObj.setShipper_Addr2(senderDataValue.getShipperAddr2());
+			senderDataObj.setShipper_City(senderDataValue.getShipperCity());
+			senderDataObj.setShipper_State(senderDataValue.getShipperState());
+			senderDataObj.setShipper_Postcode(senderDataValue.getShipperPostcode());
+			senderDataObj.setShipper_Country(senderDataValue.getShipperCountry());
+			senderDataObj.setFilename(senderDataValue.getFileName());
+			senderDataList.add(senderDataObj);
 		}
-		senderDataRepository.saveAll(fileObjList);
-		//Calling Store Procedure
+		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
 		senderDataRepository.inOnlyTest(fileSeqId);
-		return fileData;
+		return fileSeqId;
 	}
 
 	@Override
@@ -133,9 +135,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 
 	@Override
 	public String createConsignments(List<SenderData> orderDetailList) {
-		
 		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
-
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		String fileSeqId = "D2ZAPI"+senderDataRepository.fetchNextSeq();
 		for(SenderData senderDataValue: orderDetailList) {
@@ -165,15 +165,15 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setShipper_State(senderDataValue.getShipperState());
 			senderDataObj.setShipper_Postcode(senderDataValue.getShipperPostcode());
 			senderDataObj.setShipper_Country(senderDataValue.getShipperCountry());
-			//senderDataObj.setFilename("D2ZAPI"+D2ZCommonUtil.getCurrentTimestamp());
-			senderDataObj.setFilename(senderDataValue.getFileName());
+			senderDataObj.setFilename("D2ZAPI"+D2ZCommonUtil.getCurrentTimestamp());
+			//senderDataObj.setFilename(senderDataValue.getFileName());
 			senderDataList.add(senderDataObj);
 		}
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
 		senderDataRepository.inOnlyTest(fileSeqId);
 		return fileSeqId;
 	}
-
+	
     public List<PostcodeZone> fetchAllPostCodeZone(){
     	List<PostcodeZone> postCodeZoneList= (List<PostcodeZone>) postcodeZoneRepository.findAll();
     	System.out.println(postCodeZoneList.size());
@@ -198,7 +198,6 @@ public class D2ZDaoImpl implements ID2ZDao{
 	}
 
 	@Override
-
 	public String editConsignments(List<EditConsignmentRequest> requestList) {
 		/*requestList.forEach(obj->{
 			senderDataRepository.editConsignments(obj.getReferenceNumber(), obj.getWeight());

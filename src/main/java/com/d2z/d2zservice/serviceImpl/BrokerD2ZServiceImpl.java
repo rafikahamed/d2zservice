@@ -13,6 +13,7 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.ShipmentDetails;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.service.IBrokerD2ZService;
 
@@ -92,5 +93,52 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 		}
 		return shipmentDropDownList;
 	}
+
+	@Override
+	public List<ShipmentDetails> directInjection(String companyName) {
+		List<SenderdataMaster> senderDataList  = d2zDao.directInjection(companyName);
+		List<ShipmentDetails> shipmentDetails = new ArrayList<ShipmentDetails>();
+		for(SenderdataMaster senderData : senderDataList) {
+			ShipmentDetails shipmentData = new ShipmentDetails();
+			shipmentData.setReferenceNumber(senderData.getReference_number());
+			shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19,30));
+			shipmentData.setConsigneeName(senderData.getConsignee_name());
+			shipmentData.setConsigneeAddress(senderData.getConsignee_addr1());
+			shipmentData.setWeight(senderData.getWeight());
+			shipmentData.setConsigneePhone(senderData.getConsignee_Phone());
+			shipmentData.setConsigneeSuburb(senderData.getConsignee_Suburb());
+			shipmentData.setConsigneeState(senderData.getConsignee_State());
+			shipmentData.setConsigneePostcode(senderData.getConsignee_Postcode());
+			shipmentData.setDestination("AUSTRALIA");
+			shipmentData.setQuantity(senderData.getShippedQuantity());
+			shipmentData.setCommodity(senderData.getProduct_Description());
+			shipmentData.setValue(senderData.getValue());
+			shipmentData.setShipperName(senderData.getShipper_Name());
+			shipmentData.setShipperAddress(senderData.getShipper_Addr1());
+			shipmentData.setShipperCity(senderData.getShipper_City());
+			shipmentData.setShipperState(senderData.getShipper_State());
+			shipmentData.setShipperPostcode(senderData.getShipper_Postcode());
+			shipmentData.setShipperCountry(senderData.getShipper_Country());
+			shipmentData.setShipperContact(senderData.getAirwayBill());
+			shipmentDetails.add(shipmentData);
+		}
+		return shipmentDetails;
+	}
+
+	@Override
+	public List<DropDownModel> fetchApiShipmentList() {
+		List<String> listOfApiShipment = d2zDao.fetchApiShipmentList();
+		List<DropDownModel> apiShipmentDropDownList= new ArrayList<DropDownModel>();
+		for(String shipmentId:listOfApiShipment) {
+			if(shipmentId != null) {
+				DropDownModel dropDownVaL = new DropDownModel();
+				dropDownVaL.setName(shipmentId);
+				dropDownVaL.setValue(shipmentId);
+				apiShipmentDropDownList.add(dropDownVaL);
+			}
+		}
+		return apiShipmentDropDownList;
+	}
+	
 
 }

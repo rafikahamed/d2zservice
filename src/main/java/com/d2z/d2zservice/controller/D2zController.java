@@ -2,7 +2,6 @@ package com.d2z.d2zservice.controller;
 
 import java.util.List;
 import javax.validation.Valid;
-import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +14,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.d2z.d2zservice.entity.SenderdataMaster;
-import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
-import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
@@ -40,15 +37,14 @@ public class D2zController {
     private  ID2ZService d2zService;
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/login")
-    public User login(@RequestParam("userName") String userName, @RequestParam("passWord") String passWord) {
-		System.out.println("Inside Login User Name");
-		User userDetails = d2zService.login(userName,passWord);
+    public UserDetails login(@RequestParam("userName") String userName, @RequestParam("passWord") String passWord) {
+		UserDetails userDetails = d2zService.login(userName,passWord);
 		return userDetails;
     }
 	
-	@RequestMapping( method = RequestMethod.POST, path = "/consignment-fileUpload", consumes=MediaType.APPLICATION_JSON)
-    public UserMessage consignmentFileUpload(@RequestBody List<FileUploadData> fileData) {
-		UserMessage successMsg = d2zService.exportParcel(fileData);
+	@RequestMapping( method = RequestMethod.POST, path = "/consignment-fileUpload")
+    public List<SenderDataResponse> consignmentFileUpload( @RequestBody List<@Valid SenderData> orderDetailList) throws ReferenceNumberNotUniqueException{
+		List<SenderDataResponse> successMsg = d2zService.exportParcel(orderDetailList);
 		return successMsg;
     }
 	
@@ -137,28 +133,30 @@ public class D2zController {
 	 public UserMessage editConsignments(@RequestBody List<@Valid EditConsignmentRequest> requestList) {
 		UserMessage userMsg = d2zService.editConsignments(requestList);
 		return userMsg;
-  }	
+	}
+	
 	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/{referenceNumbers}/shipment/{shipmentNumber}")
 	 public UserMessage allocateShipment(@PathVariable String referenceNumbers,@PathVariable String shipmentNumber) {
 		UserMessage userMsg = d2zService.allocateShipment(referenceNumbers,shipmentNumber);
 		return userMsg;
- }	
+	}
+	
 	@RequestMapping(method = RequestMethod.POST, path = "/user")
 	 public UserMessage addUser(@Valid @RequestBody UserDetails userDetails) {
 		return d2zService.addUser(userDetails);
- }	
+	}	
 
 	@RequestMapping(method = RequestMethod.PUT, path = "/user")
 	 public UserMessage updateUser(@Valid @RequestBody UserDetails userDetails) {
 		UserMessage userMsg = d2zService.updateUser(userDetails);
 		return userMsg;
-}	
+	}	
 	
 	@RequestMapping(method = RequestMethod.PUT, path = "/user/delete/{companyName}")
 	 public UserMessage deleteUser(@PathVariable String companyName) {
 		UserMessage userMsg = d2zService.deleteUser(companyName);
 		return userMsg;
-}	
+	}	
 //	@RequestMapping( method = RequestMethod.GET, path = "/consignments/shipment")
 //    public ResponseEntity<byte[]> downloadShipmentData(@RequestParam("shipmentNumber") String shipmentNumber) {
 //    	byte[] bytes = d2zService.downloadShipmentData(shipmentNumber);
