@@ -49,8 +49,8 @@ public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
 	}
 
 	@Override
-	public List<SenderdataMaster> directInjection(String companyName) {
-		List<SenderdataMaster> senderData = senderDataRepository.fetchDirectInjectionData(companyName);
+	public List<String> directInjection(String companyName) {
+		List<String> senderData = senderDataRepository.fetchDirectInjectionData(companyName);
 		return senderData;
 	}
 

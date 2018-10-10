@@ -17,7 +17,7 @@ public interface ID2ZBrokerDao {
 
 	public List<String> fetchShipmentList();
 
-	public List<SenderdataMaster> directInjection(String companyName);
+	public List<String> directInjection(String companyName);
 
 	public List<String> fetchApiShipmentList();
 

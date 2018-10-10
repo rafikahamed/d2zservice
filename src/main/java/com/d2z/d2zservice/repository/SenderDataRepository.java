@@ -77,9 +77,9 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 @Query("SELECT DISTINCT t.airwayBill FROM SenderdataMaster t where t.filename like '%D2ZAPI%' and t.sender_Files_ID like '%D2ZAPI%' ") 
 	 List<String> fetchApiShipmentList();
 	 
-	 @Query(nativeQuery = true, value="select * from senderdata_master \n" + 
+	 @Query(nativeQuery = true, value="select reference_number, substring(barcodelabelnumber,19,23), consignee_name, consignee_Postcode, weight, Shipper_Name from senderdata_master \n" + 
 	 		"where user_id in (select user_id from users where CompanyName=:companyName)\n" + 
 	 		"and filename like '%API%' and sender_files_id like '%API%' and airwaybill is null")
-	 List<SenderdataMaster> fetchDirectInjectionData(@Param("companyName") String companyName);
+	 List<String> fetchDirectInjectionData(@Param("companyName") String companyName);
 
 }
