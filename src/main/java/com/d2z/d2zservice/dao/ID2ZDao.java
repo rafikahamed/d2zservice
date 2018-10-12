@@ -9,6 +9,7 @@ import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.FileUploadData;
+import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UserDetails;
 
@@ -40,7 +41,7 @@ public interface ID2ZDao {
 
 	public List<Trackandtrace> trackParcelByArticleID(String articleID);
 
-	public String editConsignments(List<EditConsignmentRequest> requestList);
+	public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList);
 
 	public String allocateShipment(String referenceNumbers, String shipmentNumber);
 
@@ -59,6 +60,14 @@ public interface ID2ZDao {
 	public User login(String userName, String passWord);
 
 	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber);
+
+	public List<String> fetchServiceTypeByUserName(String userName);
+
+	public Trackandtrace getLatestStatusByReferenceNumber(String referenceNumber);
+
+	public Trackandtrace getLatestStatusByArticleID(String articleID);
+
+	public List<String> findRefNbrByShipmentNbr(String[] referenceNumber);
 
 
 }

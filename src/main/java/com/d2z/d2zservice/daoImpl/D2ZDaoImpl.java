@@ -5,8 +5,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
@@ -15,6 +17,7 @@ import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.FileUploadData;
+import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
@@ -199,22 +202,33 @@ public class D2ZDaoImpl implements ID2ZDao{
 
 	@Override
 
-	public String editConsignments(List<EditConsignmentRequest> requestList) {
+	public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList) {
 		/*requestList.forEach(obj->{
 			senderDataRepository.editConsignments(obj.getReferenceNumber(), obj.getWeight());
 		});*/
+		List<String> incorrectRefNbrs = new ArrayList<String>();
+		int updatedRows=0;
 		Timestamp start = Timestamp.from(Instant.now());
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		for(EditConsignmentRequest obj : requestList) {
 			SenderdataMaster senderData = senderDataRepository.fetchByReferenceNumbers(obj.getReferenceNumber());
+			if(senderData!=null) {
+			updatedRows++;
 			senderData.setWeight(obj.getWeight());
 			senderDataList.add(senderData);
+		}
+			else {
+				incorrectRefNbrs.add(obj.getReferenceNumber());
+			}
 		}
 		senderDataRepository.saveAll(senderDataList);
 		Timestamp end = Timestamp.from(Instant.now());
 		long callDuration = end.getTime() - start.getTime();
 		System.out.println("Call Duration : "+callDuration);
-		return "Weight updated successfully!";
+		ResponseMessage responseMsg = new ResponseMessage();
+		responseMsg.setResponseMessage(updatedRows+ " rows updated");
+		responseMsg.setMessageDetail(incorrectRefNbrs);
+		return responseMsg;
 	}
 
 	@Override
@@ -356,6 +370,27 @@ public class D2ZDaoImpl implements ID2ZDao{
 	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber) {
 		List<SenderdataMaster> senderData = senderDataRepository.fetchShipmentData(shipmentNumber);
 		return senderData;
+	}
+
+	@Override
+	public List<String> fetchServiceTypeByUserName(String userName) {
+		List<String> serviceTypeList = userServiceRepository.fetchAllServiceTypeByUserName(userName);
+		return serviceTypeList;
+	}
+
+	@Override
+	public Trackandtrace getLatestStatusByReferenceNumber(String referenceNumber) {
+		return trackAndTraceRepository.getLatestStatusByReferenceNumber(referenceNumber);
+	}
+
+	@Override
+	public Trackandtrace getLatestStatusByArticleID(String articleID) {
+		return trackAndTraceRepository.getLatestStatusByArticleID(articleID);
+	}
+
+	@Override
+	public List<String> findRefNbrByShipmentNbr(String[] referenceNumbers) {
+		return senderDataRepository.findRefNbrByShipmentNbr(referenceNumbers);
 	}
 
 

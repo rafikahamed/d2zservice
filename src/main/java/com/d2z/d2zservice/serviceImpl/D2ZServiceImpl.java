@@ -24,9 +24,12 @@ import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
+import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.FileUploadData;
+import com.d2z.d2zservice.model.ParcelStatus;
+import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
@@ -353,11 +356,12 @@ public class D2ZServiceImpl implements ID2ZService{
 	}
 
 	@Override
-	public List<SenderDataResponse> createConsignments(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException {
+	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail) throws ReferenceNumberNotUniqueException {
 		
-		d2zValidator.isReferenceNumberUnique(orderDetailList);
-		d2zValidator.isPostCodeValid(orderDetailList);
-		String senderFileID = d2zDao.createConsignments(orderDetailList);
+		d2zValidator.isReferenceNumberUnique(orderDetail.getSenderData());
+		d2zValidator.isServiceValid(orderDetail);
+		d2zValidator.isPostCodeValid(orderDetail.getSenderData());
+		String senderFileID = d2zDao.createConsignments(orderDetail.getSenderData());
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
@@ -374,18 +378,22 @@ public class D2ZServiceImpl implements ID2ZService{
 	}
 
 	@Override
-	public UserMessage editConsignments(List<EditConsignmentRequest> requestList) {
-		String msg = d2zDao.editConsignments(requestList);
-		UserMessage userMsg = new UserMessage();
-		userMsg.setMessage(msg);
-		return userMsg;
+	public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList) {
+		return d2zDao.editConsignments(requestList);
 	}
 
 	@Override
-	public UserMessage allocateShipment(String referenceNumbers, String shipmentNumber) {
+	public ResponseMessage allocateShipment(String referenceNumbers, String shipmentNumber) {
+		ResponseMessage userMsg = new ResponseMessage();
+
+		String[] refNbrs = referenceNumbers.split(",");
+		List<String> incorrectRefNbr = d2zDao.findRefNbrByShipmentNbr(refNbrs);
+		if(!incorrectRefNbr.isEmpty()) {
+			userMsg.setResponseMessage("Shipment Number already allocated");
+			userMsg.setMessageDetail(incorrectRefNbr);
+		}
 		String msg = d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
-		UserMessage userMsg = new UserMessage();
-		userMsg.setMessage(msg);
+		userMsg.setResponseMessage(msg);
 		return userMsg;
 	}
 
@@ -508,6 +516,42 @@ public class D2ZServiceImpl implements ID2ZService{
 		}
 		byte[] bytes = shipmentWriter.generateShipmentxls(shipmentDetails);
 		return bytes;
+	}
+
+	@Override
+	public List<ParcelStatus> getStatusByRefNbr(List<String> referenceNumbers) {
+		List<ParcelStatus> trackParcelList  = new ArrayList<ParcelStatus>();
+
+		for(String referenceNumber :referenceNumbers ) {
+			Trackandtrace trackAndTrace= d2zDao.getLatestStatusByReferenceNumber(referenceNumber);
+			ParcelStatus trackParcel = new ParcelStatus();
+			trackParcel.setReferenceNumber(trackAndTrace.getReference_number());
+			trackParcel.setBarcodelabelNumber(trackAndTrace.getBarcodelabelNumber().substring(18));
+			trackParcel.setTrackEventDateOccured(trackAndTrace.getTrackEventDateOccured());
+			trackParcel.setTrackEventDetails(trackAndTrace.getTrackEventDetails());
+			trackParcelList.add(trackParcel);
+		}
+		
+		return trackParcelList;
+	}
+
+	@Override
+	public List<ParcelStatus> getStatusByArticleID(List<String> articleIDs) {
+
+		List<ParcelStatus> trackParcelList  = new ArrayList<ParcelStatus>();
+
+		for(String articleID :articleIDs ) {
+			Trackandtrace trackAndTrace= d2zDao.getLatestStatusByArticleID(articleID);
+			ParcelStatus trackParcel = new ParcelStatus();
+			trackParcel.setReferenceNumber(trackAndTrace.getReference_number());
+			trackParcel.setBarcodelabelNumber(trackAndTrace.getBarcodelabelNumber().substring(18));
+			trackParcel.setTrackEventDateOccured(trackAndTrace.getTrackEventDateOccured());
+			trackParcel.setTrackEventDetails(trackAndTrace.getTrackEventDetails());
+			trackParcelList.add(trackParcel);
+		}
+		
+		return trackParcelList;
+	
 	}
 	
 

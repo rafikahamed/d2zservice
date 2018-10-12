@@ -9,7 +9,8 @@ import java.sql.Timestamp;
  * 
  */
 @Entity
-@Table(name="TrackAndtrace")
+@Table(name="TrackAndtrace", uniqueConstraints=
+@UniqueConstraint(columnNames = {"reference_number", "trackEventDetails"}))
 @NamedQuery(name="Trackandtrace.findAll", query="SELECT t FROM Trackandtrace t")
 public class Trackandtrace implements Serializable {
 
@@ -46,7 +47,7 @@ public class Trackandtrace implements Serializable {
 	private String trackEventCode;
 
 	@Column(name="TrackEventDateOccured")
-	private String trackEventDateOccured;
+	private Timestamp trackEventDateOccured;
 
 	@Column(name="TrackEventDetails")
 	private String trackEventDetails;
@@ -60,6 +61,17 @@ public class Trackandtrace implements Serializable {
 
 	@Column(name="User_Id")
 	private String user_Id;
+
+	@Column(name="ArticleID")
+	private String articleID;
+	
+	public String getArticleID() {
+		return articleID;
+	}
+
+	public void setArticleID(String articleID) {
+		this.articleID = articleID;
+	}
 
 	public Trackandtrace() {
 	}
@@ -144,11 +156,11 @@ public class Trackandtrace implements Serializable {
 		this.trackEventCode = trackEventCode;
 	}
 
-	public String getTrackEventDateOccured() {
+	public Timestamp getTrackEventDateOccured() {
 		return this.trackEventDateOccured;
 	}
 
-	public void setTrackEventDateOccured(String trackEventDateOccured) {
+	public void setTrackEventDateOccured(Timestamp trackEventDateOccured) {
 		this.trackEventDateOccured = trackEventDateOccured;
 	}
 

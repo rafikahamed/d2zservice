@@ -12,20 +12,29 @@ public class SenderData {
 	
 	private int userID;
 	private String senderFilesID;
+	@NotEmpty(message = "Reference Number is mandatory")
 	private String referenceNumber;
+	@NotEmpty(message = "Consignee Name is mandatory")
 	@Pattern(regexp="^[a-zA-Z ]+$", message = "Consignee Name must contain only alphabets")
 	private String consigneeName;
+	private String consigneeCompany;
+	@NotEmpty(message = "Consignee Address is mandatory")
 	private String consigneeAddr1;
 	@NotEmpty(message = "Consignee Suburb is mandatory")
 	private String consigneeSuburb;
+	@NotEmpty(message = "Consignee State is mandatory")
 	private String consigneeState;
 	@NotEmpty(message = "Consignee Postcode is mandatory")
 	private String consigneePostcode;
 	private String consigneePhone;
+	@NotEmpty(message = "Product Description is mandatory")
 	private String productDescription;
+	@NotEmpty(message = "Value is mandatory")
 	@Digits( fraction =2, message = "Invalid Value", integer = 10)
 	private double value;
+	@NotEmpty(message = "Currency is mandatory")
 	private String currency;
+	@NotEmpty(message = "Shipped Quantity is mandatory")
 	private int shippedQuantity;
 	@Digits( fraction =2, message = "Invalid Weight", integer = 10)
 	private String weight;
@@ -36,16 +45,23 @@ public class SenderData {
 	private BigDecimal dimensionsHeight;
 	@Digits( fraction =2, message = "Invalid Dimensions Width", integer = 10)
 	private BigDecimal dimensionsWidth;
-	@Pattern(regexp="^[1-5][pP][a-zA-Z]*$", message = "Invalid Service Type")
+	@NotEmpty(message = "Service Type is mandatory")
+	//@Pattern(regexp="^[1-5][pP][a-zA-Z]*$", message = "Invalid Service Type")
 	private String serviceType;
 	private String deliverytype;
+	@NotEmpty(message = "Shipped Name is mandatory")
 	@Pattern(regexp="^[a-zA-Z ]+$", message = "Shipper Name must contain only alphabets")
 	private String shipperName;
+	@NotEmpty(message = "Shipped Address is mandatory")
 	private String shipperAddr1;
 	private String shipperAddr2;
+	@NotEmpty(message = "Shipped City is mandatory")
 	private String shipperCity;
+	@NotEmpty(message = "Shipped State is mandatory")
 	private String shipperState;
+	@NotEmpty(message = "Shipped Country is mandatory")
 	private String shipperCountry;
+	@NotEmpty(message = "Shipped Postcode is mandatory")
 	private String shipperPostcode;
 	private String barcodeLabelNumber;
 	private String datamatrix;		
@@ -61,7 +77,14 @@ public class SenderData {
 	private String injectionState;
 	private BufferedImage datamatrixImage;
 
-	
+	public String getConsigneeCompany() {
+		return consigneeCompany;
+	}
+
+	public void setConsigneeCompany(String consigneeCompany) {
+		this.consigneeCompany = consigneeCompany;
+	}
+
 	public int getUserID() {
 		return userID;
 	}

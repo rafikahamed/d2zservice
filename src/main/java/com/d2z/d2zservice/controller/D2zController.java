@@ -119,7 +119,7 @@ public class D2zController {
 	      .body(bytes);
 	}
 
-	@RequestMapping( method = RequestMethod.GET, path = "/trackParcel/referenceNumber/{referenceNumbers}")
+    @RequestMapping( method = RequestMethod.GET, path = "/trackParcel/referenceNumber/{referenceNumbers}")
     public List<TrackParcel> trackParcel(@PathVariable List<String> referenceNumbers) {
 		List<TrackParcel> trackParcelResponse = d2zService.trackParcelByRefNbr(referenceNumbers);
 		return trackParcelResponse;
@@ -130,22 +130,6 @@ public class D2zController {
 		return trackParcelResponse;
     }
 	
-	@RequestMapping(method = RequestMethod.POST, path = "/consignments-create")
-	 public List<SenderDataResponse> createConsignments( @RequestBody List<@Valid SenderData> orderDetailList) throws ReferenceNumberNotUniqueException {
-		List<SenderDataResponse> senderDataResponse = d2zService.createConsignments(orderDetailList);
-		return senderDataResponse;
-    }	
-	
-	@RequestMapping(method = RequestMethod.PUT, path = "/consignments")
-	 public UserMessage editConsignments(@RequestBody List<@Valid EditConsignmentRequest> requestList) {
-		UserMessage userMsg = d2zService.editConsignments(requestList);
-		return userMsg;
-  }	
-	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/{referenceNumbers}/shipment/{shipmentNumber}")
-	 public UserMessage allocateShipment(@PathVariable String referenceNumbers,@PathVariable String shipmentNumber) {
-		UserMessage userMsg = d2zService.allocateShipment(referenceNumbers,shipmentNumber);
-		return userMsg;
- }	
 	@RequestMapping(method = RequestMethod.POST, path = "/user")
 	 public UserMessage addUser(@Valid @RequestBody UserDetails userDetails) {
 		return d2zService.addUser(userDetails);

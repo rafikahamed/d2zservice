@@ -71,5 +71,8 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 @Query("SELECT t FROM SenderdataMaster t where t.manifest_number = :manifestNumber") 
 	 List<SenderdataMaster> fetchConsignmentByManifest(@Param("manifestNumber") String manifestNumber);
 
+	 @Query("SELECT reference_number FROM SenderdataMaster t where t.reference_number in :referenceNumbers and t.airwayBill is not null") 
+	List<String> findRefNbrByShipmentNbr(@Param("referenceNumbers") String[] referenceNumbers);
+
 
 }
