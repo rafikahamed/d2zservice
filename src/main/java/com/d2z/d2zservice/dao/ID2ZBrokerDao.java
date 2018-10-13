@@ -15,4 +15,10 @@ public interface ID2ZBrokerDao {
 
 	public List<SenderdataMaster> consignmentDetails(String manifestNumber);
 
+	public List<String> fetchShipmentList();
+
+	public List<String> directInjection(String companyName);
+
+	public List<String> fetchApiShipmentList();
+
 }

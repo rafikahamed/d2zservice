@@ -17,13 +17,13 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 	 @Query("SELECT t FROM Trackandtrace t where SUBSTRING(barcodelabelNumber,19,40) = :articleID and isDeleted != 'Y'")
 	 List<Trackandtrace> fetchTrackEventByArticleID(String articleID);
 
-	 @Procedure(name = "UpdateTracking")
+	 @Procedure(name = "update-tracking")
 	void updateTracking();
 
-	 @Query(value="SELECT 1 * FROM Trackandtrace  where reference_number = :referenceNumber and isDeleted != 'Y' order by trackEventDateOccured desc LIMIT 1", nativeQuery=true) 
-	 Trackandtrace getLatestStatusByReferenceNumber(@Param("referenceNumber") String referenceNumber);
+	 @Query("SELECT t FROM Trackandtrace t where t.reference_number = :referenceNumber and t.isDeleted != 'Y' order by trackEventDateOccured desc") 
+	 List<Trackandtrace> getLatestStatusByReferenceNumber(@Param("referenceNumber") String referenceNumber);
 
-	 @Query(value="SELECT 1  * FROM Trackandtrace where SUBSTRING(barcodelabelNumber,19,40) = :articleID and isDeleted != 'Y' order by trackEventDateOccured desc LIMIT 1", nativeQuery=true)
-	Trackandtrace getLatestStatusByArticleID(String articleID);
+	 @Query("SELECT t FROM Trackandtrace t where SUBSTRING(barcodelabelNumber,19,40) = :articleID and isDeleted != 'Y' order by trackEventDateOccured desc")
+	 List<Trackandtrace> getLatestStatusByArticleID(String articleID);
 
 }

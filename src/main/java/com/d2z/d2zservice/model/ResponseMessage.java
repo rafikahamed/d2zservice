@@ -1,23 +1,24 @@
 package com.d2z.d2zservice.model;
 
-import java.util.List;
+import java.util.Map;
 
 public class ResponseMessage {
 
 	private String responseMessage;
-	private List<String> messageDetail;
+	private Map<String,String> messageDetail;
 	public String getResponseMessage() {
 		return responseMessage;
 	}
 	public void setResponseMessage(String responseMessage) {
 		this.responseMessage = responseMessage;
 	}
-	public List<String> getMessageDetail() {
+	public Map<String, String> getMessageDetail() {
 		return messageDetail;
 	}
-	public void setMessageDetail(List<String> messageDetail) {
+	public void setMessageDetail(Map<String, String> messageDetail) {
 		this.messageDetail = messageDetail;
 	}
+	
 	
 	
 	

@@ -42,4 +42,22 @@ public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
 		return consignmentData;
 	}
 
+	@Override
+	public List<String> fetchShipmentList() {
+		List<String> shipmentDetails = senderDataRepository.fetchShipmentList();
+		return shipmentDetails;
+	}
+
+	@Override
+	public List<String> directInjection(String companyName) {
+		List<String> senderData = senderDataRepository.fetchDirectInjectionData(companyName);
+		return senderData;
+	}
+
+	@Override
+	public List<String> fetchApiShipmentList() {
+		List<String> shipmentDetails = senderDataRepository.fetchApiShipmentList();
+		return shipmentDetails;
+	}
+
 }

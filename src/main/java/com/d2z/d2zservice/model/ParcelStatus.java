@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 
 public class ParcelStatus {
 	private String referenceNumber;
-	private String barcodelabelNumber;
+	private String articleID;
 	private String trackEventDetails;
 	private Timestamp trackEventDateOccured;
 	public String getReferenceNumber() {
@@ -13,11 +13,12 @@ public class ParcelStatus {
 	public void setReferenceNumber(String referenceNumber) {
 		this.referenceNumber = referenceNumber;
 	}
-	public String getBarcodelabelNumber() {
-		return barcodelabelNumber;
+	
+	public String getArticleID() {
+		return articleID;
 	}
-	public void setBarcodelabelNumber(String barcodelabelNumber) {
-		this.barcodelabelNumber = barcodelabelNumber;
+	public void setArticleID(String articleID) {
+		this.articleID = articleID;
 	}
 	public String getTrackEventDetails() {
 		return trackEventDetails;

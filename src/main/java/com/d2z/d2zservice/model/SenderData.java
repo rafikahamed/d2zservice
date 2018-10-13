@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 public class SenderData {	
@@ -29,12 +30,12 @@ public class SenderData {
 	private String consigneePhone;
 	@NotEmpty(message = "Product Description is mandatory")
 	private String productDescription;
-	@NotEmpty(message = "Value is mandatory")
+	@NotNull(message = "Value is mandatory")
 	@Digits( fraction =2, message = "Invalid Value", integer = 10)
 	private double value;
 	@NotEmpty(message = "Currency is mandatory")
 	private String currency;
-	@NotEmpty(message = "Shipped Quantity is mandatory")
+	@NotNull(message = "Shipped Quantity is mandatory")
 	private int shippedQuantity;
 	@Digits( fraction =2, message = "Invalid Weight", integer = 10)
 	private String weight;

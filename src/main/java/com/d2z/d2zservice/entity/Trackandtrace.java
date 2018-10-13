@@ -12,6 +12,8 @@ import java.sql.Timestamp;
 @Table(name="TrackAndtrace", uniqueConstraints=
 @UniqueConstraint(columnNames = {"reference_number", "trackEventDetails"}))
 @NamedQuery(name="Trackandtrace.findAll", query="SELECT t FROM Trackandtrace t")
+@NamedStoredProcedureQuery(name = "update-tracking", 
+procedureName = "UpdateTracking")
 public class Trackandtrace implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -53,6 +55,8 @@ public class Trackandtrace implements Serializable {
 	private String trackEventDetails;
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_GEN")
+	@SequenceGenerator(name = "SEQ_GEN", sequenceName = "TrackIDSeqNum") 
 	@Column(name="TrackID")
 	private long trackID;
 

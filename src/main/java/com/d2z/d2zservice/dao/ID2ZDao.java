@@ -15,7 +15,7 @@ import com.d2z.d2zservice.model.UserDetails;
 
 public interface ID2ZDao {
 	
-	public List<FileUploadData> exportParcel(List<FileUploadData> fileData);
+	public String exportParcel(List<SenderData> orderDetailList);
 
 	public List<String> fileList();
 
@@ -31,8 +31,8 @@ public interface ID2ZDao {
 
 	List<Trackandtrace> trackParcel(String refNbr);
 
-	public String createConsignments(List<SenderData> orderDetailList);
-
+	public String createConsignments(List<SenderData> orderDetailList,int userId);
+	
 	public List<PostcodeZone> fetchAllPostCodeZone();
 	
 	public List<String> fetchAllReferenceNumbers();

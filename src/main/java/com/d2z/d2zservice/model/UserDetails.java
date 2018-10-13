@@ -26,9 +26,15 @@ public class UserDetails {
 	@NotEmpty(message = "Service Type is mandatory")
 	private List<String> serviceType;
 	private String contactPhoneNumber;
+	private int role_Id;
 	private List<String> deletedServiceTypes;
 	
-
+	public int getRole_Id() {
+		return role_Id;
+	}
+	public void setRole_Id(int role_Id) {
+		this.role_Id = role_Id;
+	}
 	public List<String> getDeletedServiceTypes() {
 		return deletedServiceTypes;
 	}

@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
+import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
@@ -72,11 +75,23 @@ public class D2ZServiceImpl implements ID2ZService{
 	ShipmentDetailsWriter shipmentWriter;
 	
 	@Override
-	public UserMessage exportParcel(List<FileUploadData> fileData) {
-		List<FileUploadData> fileUploadData= d2zDao.exportParcel(fileData);
-		UserMessage userMsg = new UserMessage();
-		userMsg.setMessage("File data upload successfully to the D2Z System");
-		return userMsg;
+	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException{
+		d2zValidator.isReferenceNumberUnique(orderDetailList);
+		d2zValidator.isPostCodeValid(orderDetailList);
+		String senderFileID = d2zDao.exportParcel(orderDetailList);
+		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
+		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
+		SenderDataResponse senderDataResponse = null;
+		Iterator itr = insertedOrder.iterator();
+		 while(itr.hasNext()) {   
+			 Object[] obj = (Object[]) itr.next();
+			 senderDataResponse = new SenderDataResponse();
+			 senderDataResponse.setReferenceNumber(obj[0].toString());
+			 senderDataResponse.setBarcodeLabelNumber("]d2".concat(obj[1].toString().replaceAll("\\[|\\]", "")));
+			 senderDataResponseList.add(senderDataResponse);
+       }
+		
+		return senderDataResponseList;
 	}
 	
 	@Override
@@ -357,11 +372,15 @@ public class D2ZServiceImpl implements ID2ZService{
 
 	@Override
 	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail) throws ReferenceNumberNotUniqueException {
-		
-		d2zValidator.isReferenceNumberUnique(orderDetail.getSenderData());
+		Integer userId = userRepository.fetchUserIdbyUserName(orderDetail.getUserName());
+		if(userId == null) {
+			throw new InvalidUserException("User does not exist",orderDetail.getUserName());
+		}
+		System.out.println(userId);
+		d2zValidator.isReferenceNumberUnique(orderDetail.getConsignmentData());
 		d2zValidator.isServiceValid(orderDetail);
-		d2zValidator.isPostCodeValid(orderDetail.getSenderData());
-		String senderFileID = d2zDao.createConsignments(orderDetail.getSenderData());
+		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(),userId);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
@@ -370,7 +389,9 @@ public class D2ZServiceImpl implements ID2ZService{
 			 Object[] obj = (Object[]) itr.next();
 			 senderDataResponse = new SenderDataResponse();
 			 senderDataResponse.setReferenceNumber(obj[0].toString());
-			 senderDataResponse.setBarcodeLabelNumber("]d2".concat(obj[1].toString().replaceAll("\\[|\\]", "")));
+			 String barcode = obj[1].toString();
+			 String formattedBarcode = barcode.substring(0,barcode.length()-6).concat("120000");
+			 senderDataResponse.setBarcodeLabelNumber("]d2".concat(formattedBarcode.replaceAll("\\[|\\]", "")));
 			 senderDataResponseList.add(senderDataResponse);
        }
 		
@@ -388,9 +409,13 @@ public class D2ZServiceImpl implements ID2ZService{
 
 		String[] refNbrs = referenceNumbers.split(",");
 		List<String> incorrectRefNbr = d2zDao.findRefNbrByShipmentNbr(refNbrs);
+		
 		if(!incorrectRefNbr.isEmpty()) {
+			Map<String, String> msgDetails = new HashMap<String,String>();
+			msgDetails.put("Shipment Number already allocated for Reference Numbers", incorrectRefNbr.toString());
 			userMsg.setResponseMessage("Shipment Number already allocated");
-			userMsg.setMessageDetail(incorrectRefNbr);
+			userMsg.setMessageDetail(msgDetails);
+			return userMsg;
 		}
 		String msg = d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
 		userMsg.setResponseMessage(msg);
@@ -480,13 +505,28 @@ public class D2ZServiceImpl implements ID2ZService{
 	}
 
 	@Override
-	public User login(String userName, String passWord) {
+	public UserDetails login(String userName, String passWord) {
 		User userData = d2zDao.login(userName, passWord);
-		return userData;
+		UserDetails userDetails = new UserDetails();
+		userDetails.setAddress(userData.getAddress());
+		userDetails.setCompanyName(userData.getCompanyName());
+		userDetails.setContactName(userData.getName());
+		userDetails.setContactPhoneNumber(userData.getPhoneNumber());
+		userDetails.setCountry(userData.getCountry());
+		userDetails.setEmailAddress(userData.getEmailAddress());
+		userDetails.setPassword(userData.getUser_Password());
+		userDetails.setPostCode(userData.getPostcode());
+		userDetails.setState(userData.getState());
+		userDetails.setSuburb(userData.getSuburb());
+		userDetails.setUserName(userData.getUser_Name());
+		userDetails.setRole_Id(userData.getRole_Id());
+		userDetails.setServiceType(null);
+		return userDetails;
 	}
 
 	@Override
-	public byte[] downloadShipmentData(String shipmentNumber) {
+	//public byte[] downloadShipmentData(String shipmentNumber) {
+	public List<ShipmentDetails>  downloadShipmentData(String shipmentNumber) {
 		List<SenderdataMaster> senderDataList  = d2zDao.fetchShipmentData(shipmentNumber);
 		System.out.println(senderDataList.size()+" records");
 		List<ShipmentDetails> shipmentDetails = new ArrayList<ShipmentDetails>();
@@ -514,9 +554,11 @@ public class D2ZServiceImpl implements ID2ZService{
 			shipmentData.setShipperContact(senderData.getAirwayBill());
 			shipmentDetails.add(shipmentData);
 		}
-		byte[] bytes = shipmentWriter.generateShipmentxls(shipmentDetails);
-		return bytes;
+//		byte[] bytes = shipmentWriter.generateShipmentxls(shipmentDetails);
+//		return bytes;
+		return shipmentDetails;
 	}
+
 
 	@Override
 	public List<ParcelStatus> getStatusByRefNbr(List<String> referenceNumbers) {
@@ -526,7 +568,7 @@ public class D2ZServiceImpl implements ID2ZService{
 			Trackandtrace trackAndTrace= d2zDao.getLatestStatusByReferenceNumber(referenceNumber);
 			ParcelStatus trackParcel = new ParcelStatus();
 			trackParcel.setReferenceNumber(trackAndTrace.getReference_number());
-			trackParcel.setBarcodelabelNumber(trackAndTrace.getBarcodelabelNumber().substring(18));
+			trackParcel.setArticleID(trackAndTrace.getBarcodelabelNumber().substring(18));
 			trackParcel.setTrackEventDateOccured(trackAndTrace.getTrackEventDateOccured());
 			trackParcel.setTrackEventDetails(trackAndTrace.getTrackEventDetails());
 			trackParcelList.add(trackParcel);
@@ -544,7 +586,7 @@ public class D2ZServiceImpl implements ID2ZService{
 			Trackandtrace trackAndTrace= d2zDao.getLatestStatusByArticleID(articleID);
 			ParcelStatus trackParcel = new ParcelStatus();
 			trackParcel.setReferenceNumber(trackAndTrace.getReference_number());
-			trackParcel.setBarcodelabelNumber(trackAndTrace.getBarcodelabelNumber().substring(18));
+			trackParcel.setArticleID(trackAndTrace.getBarcodelabelNumber().substring(18));
 			trackParcel.setTrackEventDateOccured(trackAndTrace.getTrackEventDateOccured());
 			trackParcel.setTrackEventDetails(trackAndTrace.getTrackEventDetails());
 			trackParcelList.add(trackParcel);

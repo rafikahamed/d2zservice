@@ -32,6 +32,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 			trackingDetailsList.add(trackingDetails);
 		}
 		List<Trackandtrace> insertedData= (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackingDetailsList);
+		trackAndTraceRepository.updateTracking();
 		return insertedData;
 	}
 	

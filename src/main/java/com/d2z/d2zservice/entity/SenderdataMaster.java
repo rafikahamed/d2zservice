@@ -160,6 +160,17 @@ public class SenderdataMaster implements Serializable {
 	@Column(name="Weight")
 	private double weight;
 
+	@Column(name="ConsigneeCompany")
+	private String consigneeCompany;
+	
+	public String getConsigneeCompany() {
+		return consigneeCompany;
+	}
+
+	public void setConsigneeCompany(String consigneeCompany) {
+		this.consigneeCompany = consigneeCompany;
+	}
+
 	public SenderdataMaster() {
 	}
 

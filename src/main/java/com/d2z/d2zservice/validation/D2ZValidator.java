@@ -78,7 +78,7 @@ public class D2ZValidator {
 	public void isServiceValid(CreateConsignmentRequest orderDetail) {
 		List<String> incorrectRefNbr = new ArrayList<String>();
 		List<String> serviceType_DB = d2zDao.fetchServiceTypeByUserName(orderDetail.getUserName());
-		List<SenderData> orderDetailList = orderDetail.getSenderData();
+		List<SenderData> orderDetailList = orderDetail.getConsignmentData();
 		for(SenderData senderData : orderDetailList) {
 			if(!serviceType_DB.contains(senderData.getServiceType())) {
 				incorrectRefNbr.add(senderData.getReferenceNumber());
