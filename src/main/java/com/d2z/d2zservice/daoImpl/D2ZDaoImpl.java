@@ -17,7 +17,6 @@ import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
-import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UserDetails;
@@ -395,13 +394,13 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public Trackandtrace getLatestStatusByReferenceNumber(String referenceNumber) {
-		List<Trackandtrace> trackAndTraceList =  trackAndTraceRepository.getLatestStatusByReferenceNumber(referenceNumber);
+		List<Trackandtrace> trackAndTraceList =  trackAndTraceRepository.fetchTrackEventByRefNbr(referenceNumber);
 		return trackAndTraceList.get(0);
 	}
 
 	@Override
 	public Trackandtrace getLatestStatusByArticleID(String articleID) {
-		List<Trackandtrace> trackAndTraceList =  trackAndTraceRepository.getLatestStatusByArticleID(articleID);
+		List<Trackandtrace> trackAndTraceList =  trackAndTraceRepository.fetchTrackEventByArticleID(articleID);
 		return trackAndTraceList.get(0);
 	}
 

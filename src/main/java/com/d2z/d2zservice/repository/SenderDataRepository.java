@@ -1,10 +1,12 @@
 package com.d2z.d2zservice.repository;
 
 import java.util.List;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+
 import com.d2z.d2zservice.entity.SenderdataMaster;
 
 //This will be AUTO IMPLEMENTED by Spring into a Bean called FileDetailsRepository

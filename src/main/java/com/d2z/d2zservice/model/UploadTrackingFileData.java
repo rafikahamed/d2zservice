@@ -1,13 +1,14 @@
 package com.d2z.d2zservice.model;
 
-import java.sql.Timestamp;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class UploadTrackingFileData {
 
 	private String referenceNumber;
-	private String articleID;
+	private String connoteNo;
 	private String trackEventDetails;
-	private Timestamp trackEventDateOccured;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+	private String trackEventDateOccured;
 	private String fileName;
 	
 	public String getFileName() {
@@ -22,11 +23,12 @@ public class UploadTrackingFileData {
 	public void setReferenceNumber(String referenceNumber) {
 		this.referenceNumber = referenceNumber;
 	}
-	public String getArticleID() {
-		return articleID;
+
+	public String getConnoteNo() {
+		return connoteNo;
 	}
-	public void setArticleID(String articleID) {
-		this.articleID = articleID;
+	public void setConnoteNo(String connoteNo) {
+		this.connoteNo = connoteNo;
 	}
 	public String getTrackEventDetails() {
 		return trackEventDetails;
@@ -34,10 +36,10 @@ public class UploadTrackingFileData {
 	public void setTrackEventDetails(String trackEventDetails) {
 		this.trackEventDetails = trackEventDetails;
 	}
-	public Timestamp getTrackEventDateOccured() {
+	public String getTrackEventDateOccured() {
 		return trackEventDateOccured;
 	}
-	public void setTrackEventDateOccured(Timestamp trackEventDateOccured) {
+	public void setTrackEventDateOccured(String trackEventDateOccured) {
 		this.trackEventDateOccured = trackEventDateOccured;
 	}
 

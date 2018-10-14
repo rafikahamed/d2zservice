@@ -19,10 +19,7 @@ import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.ResponseMessage;
-import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
-import com.d2z.d2zservice.model.TrackParcel;
-import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.service.ID2ZService;
 
 @RestController

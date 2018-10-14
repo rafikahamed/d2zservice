@@ -1,16 +1,24 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the trackandtrace database table.
  * 
  */
 @Entity
-@Table(name="TrackAndtrace", uniqueConstraints=
-@UniqueConstraint(columnNames = {"reference_number", "trackEventDetails"}))
+@Table(name="TrackAndtrace")
 @NamedQuery(name="Trackandtrace.findAll", query="SELECT t FROM Trackandtrace t")
 @NamedStoredProcedureQuery(name = "update-tracking", 
 procedureName = "UpdateTracking")
@@ -56,7 +64,7 @@ public class Trackandtrace implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_GEN")
-	@SequenceGenerator(name = "SEQ_GEN", sequenceName = "TrackIDSeqNum") 
+	@SequenceGenerator(name = "SEQ_GEN", sequenceName = "TrackIDSeqNum", allocationSize = 20) 
 	@Column(name="TrackID")
 	private long trackID;
 
@@ -66,15 +74,17 @@ public class Trackandtrace implements Serializable {
 	@Column(name="User_Id")
 	private String user_Id;
 
-	@Column(name="ArticleID")
-	private String articleID;
+	@Column(name="ConnoteNo")
+	private String connoteNo;
 	
-	public String getArticleID() {
-		return articleID;
+
+
+	public String getConnoteNo() {
+		return connoteNo;
 	}
 
-	public void setArticleID(String articleID) {
-		this.articleID = articleID;
+	public void setConnoteNo(String connoteNo) {
+		this.connoteNo = connoteNo;
 	}
 
 	public Trackandtrace() {

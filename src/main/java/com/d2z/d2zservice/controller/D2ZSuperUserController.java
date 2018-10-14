@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.d2z.d2zservice.exception.InvalidDateException;
+import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
@@ -26,8 +28,13 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
     private  ISuperUserD2ZService superUserD2zService;
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/track-fileUpload", consumes=MediaType.APPLICATION_JSON)
-    public UserMessage uploadTrackingFile(@RequestBody List<UploadTrackingFileData> fileData) {
+    public UserMessage uploadTrackingFile(@RequestBody List<UploadTrackingFileData> fileData) throws InvalidDateException {
 		UserMessage successMsg = superUserD2zService.uploadTrackingFile(fileData);
+		return successMsg;
+    }
+	@RequestMapping( method = RequestMethod.POST, path = "/track-arrivalReportUpload", consumes=MediaType.APPLICATION_JSON)
+    public UserMessage uploadArrivalReport(@RequestBody List<ArrivalReportFileData> fileData) throws InvalidDateException {
+		UserMessage successMsg = superUserD2zService.uploadArrivalReport(fileData);
 		return successMsg;
     }
 

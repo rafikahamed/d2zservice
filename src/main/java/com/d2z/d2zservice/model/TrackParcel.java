@@ -1,19 +1,17 @@
 package com.d2z.d2zservice.model;
 
-import java.sql.Timestamp;
-
 public class TrackParcel {
 
 	private String referenceNumber;
 	private String barcodelabelNumber;
-	private Timestamp consignmentCreated;
-	private Timestamp shipmentCreated;
-	private Timestamp heldByCustoms;
-	private Timestamp clearedCustoms;
-	private Timestamp received;
-	private Timestamp processedByFacility;
-	private Timestamp inTransit;
-	private Timestamp delivered;
+	private String consignmentCreated;
+	private String shipmentCreated;
+	private String heldByCustoms;
+	private String clearedCustoms;
+	private String received;
+	private String processedByFacility;
+	private String inTransit;
+	private String delivered;
 	
 	public String getReferenceNumber() {
 		return referenceNumber;
@@ -28,53 +26,54 @@ public class TrackParcel {
 	public void setBarcodelabelNumber(String barcodelabelNumber) {
 		this.barcodelabelNumber = barcodelabelNumber;
 	}
-	public Timestamp getConsignmentCreated() {
+	public String getConsignmentCreated() {
 		return consignmentCreated;
 	}
-	public void setConsignmentCreated(Timestamp consignmentCreated) {
+	public void setConsignmentCreated(String consignmentCreated) {
 		this.consignmentCreated = consignmentCreated;
 	}
-	public Timestamp getShipmentCreated() {
+	public String getShipmentCreated() {
 		return shipmentCreated;
 	}
-	public void setShipmentCreated(Timestamp shipmentCreated) {
+	public void setShipmentCreated(String shipmentCreated) {
 		this.shipmentCreated = shipmentCreated;
 	}
-	public Timestamp getHeldByCustoms() {
+	public String getHeldByCustoms() {
 		return heldByCustoms;
 	}
-	public void setHeldByCustoms(Timestamp heldByCustoms) {
+	public void setHeldByCustoms(String heldByCustoms) {
 		this.heldByCustoms = heldByCustoms;
 	}
-	public Timestamp getClearedCustoms() {
+	public String getClearedCustoms() {
 		return clearedCustoms;
 	}
-	public void setClearedCustoms(Timestamp clearedCustoms) {
+	public void setClearedCustoms(String clearedCustoms) {
 		this.clearedCustoms = clearedCustoms;
 	}
-	public Timestamp getReceived() {
+	public String getReceived() {
 		return received;
 	}
-	public void setReceived(Timestamp received) {
+	public void setReceived(String received) {
 		this.received = received;
 	}
-	public Timestamp getProcessedByFacility() {
+	public String getProcessedByFacility() {
 		return processedByFacility;
 	}
-	public void setProcessedByFacility(Timestamp processedByFacility) {
+	public void setProcessedByFacility(String processedByFacility) {
 		this.processedByFacility = processedByFacility;
 	}
-	public Timestamp getInTransit() {
+	public String getInTransit() {
 		return inTransit;
 	}
-	public void setInTransit(Timestamp inTransit) {
+	public void setInTransit(String inTransit) {
 		this.inTransit = inTransit;
 	}
-	public Timestamp getDelivered() {
+	public String getDelivered() {
 		return delivered;
 	}
-	public void setDelivered(Timestamp delivered) {
+	public void setDelivered(String delivered) {
 		this.delivered = delivered;
 	}
+	
 	
 }

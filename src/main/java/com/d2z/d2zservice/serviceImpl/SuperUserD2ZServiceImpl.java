@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.Trackandtrace;
+import com.d2z.d2zservice.exception.InvalidDateException;
+import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
@@ -17,9 +19,21 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
     private ID2ZSuperUserDao d2zDao;
 	
 	@Override
-	public UserMessage uploadTrackingFile(List<UploadTrackingFileData> fileData) {
+	public UserMessage uploadTrackingFile(List<UploadTrackingFileData> fileData) throws InvalidDateException {
 		UserMessage userMsg = new UserMessage();
 		List<Trackandtrace> insertedData = d2zDao.uploadTrackingFile(fileData);
+		if(insertedData.isEmpty()) {
+			userMsg.setMessage("Failed to upload data");
+			return userMsg;
+		}
+		userMsg.setMessage("Data uploaded successfully");
+		return userMsg;
+	}
+
+	@Override
+	public UserMessage uploadArrivalReport(List<ArrivalReportFileData> fileData) throws InvalidDateException {
+		UserMessage userMsg = new UserMessage();
+		List<Trackandtrace> insertedData = d2zDao.uploadArrivalReport(fileData);
 		if(insertedData.isEmpty()) {
 			userMsg.setMessage("Failed to upload data");
 			return userMsg;

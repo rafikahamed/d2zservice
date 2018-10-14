@@ -78,5 +78,12 @@ public class CustomizedExceptionHandler extends ResponseEntityExceptionHandler {
 			    return new ResponseEntity<Object>(
 			    		errorResponse, new HttpHeaders(), errorResponse.getStatus());
 	  }
+	 @ExceptionHandler(InvalidDateException.class)
+	  public final ResponseEntity<Object> handleInvalidDateException(InvalidDateException ex, WebRequest request) {
+		 ErrorResponse errorResponse = 
+			      new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
+			    return new ResponseEntity<Object>(
+			    		errorResponse, new HttpHeaders(), errorResponse.getStatus());
+	  }
 }
 

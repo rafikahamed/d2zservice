@@ -1,6 +1,7 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 

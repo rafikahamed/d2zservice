@@ -1,12 +1,10 @@
 package com.d2z.d2zservice.model;
 
-import java.sql.Timestamp;
-
 public class ParcelStatus {
 	private String referenceNumber;
 	private String articleID;
 	private String trackEventDetails;
-	private Timestamp trackEventDateOccured;
+	private String trackEventDateOccured;
 	public String getReferenceNumber() {
 		return referenceNumber;
 	}
@@ -26,12 +24,13 @@ public class ParcelStatus {
 	public void setTrackEventDetails(String trackEventDetails) {
 		this.trackEventDetails = trackEventDetails;
 	}
-	public Timestamp getTrackEventDateOccured() {
+	public String getTrackEventDateOccured() {
 		return trackEventDateOccured;
 	}
-	public void setTrackEventDateOccured(Timestamp trackEventDateOccured) {
+	public void setTrackEventDateOccured(String trackEventDateOccured) {
 		this.trackEventDateOccured = trackEventDateOccured;
 	}
+	
 	
 	
 }

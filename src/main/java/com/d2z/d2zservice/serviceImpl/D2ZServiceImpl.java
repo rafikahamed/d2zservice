@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +28,6 @@ import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
-import com.d2z.d2zservice.model.FileUploadData;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
@@ -281,28 +278,28 @@ public class D2ZServiceImpl implements ID2ZService{
 				switch(daoObj.getTrackEventDetails().toUpperCase()) {
 					
 					case "CONSIGNMENT CREATED":
-						trackParcel.setConsignmentCreated(daoObj.getTrackEventDateOccured());
+						trackParcel.setConsignmentCreated(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 					case "SHIPMENT ALLOCATED":
-						trackParcel.setShipmentCreated(daoObj.getTrackEventDateOccured());
+						trackParcel.setShipmentCreated(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 					case "HELD BY CUSTOMS":
-						trackParcel.setHeldByCustoms(daoObj.getTrackEventDateOccured());
+						trackParcel.setHeldByCustoms(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 					case "CLEARED CUSTOMS":
-						trackParcel.setClearedCustoms(daoObj.getTrackEventDateOccured());
+						trackParcel.setClearedCustoms(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 					case "RECEIVED":
-						trackParcel.setReceived(daoObj.getTrackEventDateOccured());
+						trackParcel.setReceived(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 					case "PROCESSED BY FACILITY":
-						trackParcel.setProcessedByFacility(daoObj.getTrackEventDateOccured());
+						trackParcel.setProcessedByFacility(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 					case "IN TRANSIT":
-						trackParcel.setInTransit(daoObj.getTrackEventDateOccured());
+						trackParcel.setInTransit(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 					case "DELIVERED":
-						trackParcel.setDelivered(daoObj.getTrackEventDateOccured());
+						trackParcel.setDelivered(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 				}
 				
@@ -333,28 +330,28 @@ public class D2ZServiceImpl implements ID2ZService{
 				switch(daoObj.getTrackEventDetails().toUpperCase()) {
 					
 					case "CONSIGNMENT CREATED":
-						trackParcel.setConsignmentCreated(daoObj.getTrackEventDateOccured());
+						trackParcel.setConsignmentCreated(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 					case "SHIPMENT ALLOCATED":
-						trackParcel.setShipmentCreated(daoObj.getTrackEventDateOccured());
+						trackParcel.setShipmentCreated(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 					case "HELD BY CUSTOMS":
-						trackParcel.setHeldByCustoms(daoObj.getTrackEventDateOccured());
+						trackParcel.setHeldByCustoms(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 					case "CLEARED CUSTOMS":
-						trackParcel.setClearedCustoms(daoObj.getTrackEventDateOccured());
+						trackParcel.setClearedCustoms(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 					case "RECEIVED":
-						trackParcel.setReceived(daoObj.getTrackEventDateOccured());
+						trackParcel.setReceived(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 					case "PROCESSED BY FACILITY":
-						trackParcel.setProcessedByFacility(daoObj.getTrackEventDateOccured());
+						trackParcel.setProcessedByFacility(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 					case "IN TRANSIT":
-						trackParcel.setInTransit(daoObj.getTrackEventDateOccured());
+						trackParcel.setInTransit(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 					case "DELIVERED":
-						trackParcel.setDelivered(daoObj.getTrackEventDateOccured());
+						trackParcel.setDelivered(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 				}
 				/*TrackEventDetails trackEventDetail =  new TrackEventDetails();
@@ -569,7 +566,7 @@ public class D2ZServiceImpl implements ID2ZService{
 			ParcelStatus trackParcel = new ParcelStatus();
 			trackParcel.setReferenceNumber(trackAndTrace.getReference_number());
 			trackParcel.setArticleID(trackAndTrace.getBarcodelabelNumber().substring(18));
-			trackParcel.setTrackEventDateOccured(trackAndTrace.getTrackEventDateOccured());
+			trackParcel.setTrackEventDateOccured(String.valueOf(trackAndTrace.getTrackEventDateOccured()));
 			trackParcel.setTrackEventDetails(trackAndTrace.getTrackEventDetails());
 			trackParcelList.add(trackParcel);
 		}
@@ -587,7 +584,7 @@ public class D2ZServiceImpl implements ID2ZService{
 			ParcelStatus trackParcel = new ParcelStatus();
 			trackParcel.setReferenceNumber(trackAndTrace.getReference_number());
 			trackParcel.setArticleID(trackAndTrace.getBarcodelabelNumber().substring(18));
-			trackParcel.setTrackEventDateOccured(trackAndTrace.getTrackEventDateOccured());
+			trackParcel.setTrackEventDateOccured(String.valueOf(trackAndTrace.getTrackEventDateOccured()));
 			trackParcel.setTrackEventDetails(trackAndTrace.getTrackEventDetails());
 			trackParcelList.add(trackParcel);
 		}
