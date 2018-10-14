@@ -5,8 +5,8 @@
 
 	<groupId>com.d2z</groupId>
 	<artifactId>d2z-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<version>0.0.2-SNAPSHOT</version>
+	<packaging>war</packaging>
 
 	<name>d2z-service</name>
 	<description>Demo project for Spring Boot</description>

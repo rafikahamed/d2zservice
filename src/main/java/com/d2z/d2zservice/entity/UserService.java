@@ -16,9 +16,6 @@ import javax.persistence.NamedQuery;
 @NamedQuery(name="UserService.findAll", query="SELECT u FROM UserService u")
 public class UserService implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -28,7 +25,10 @@ public class UserService implements Serializable {
 
 	@Column(name="User_Id")
 	private int userId;
-
+	
+	@Column(name="InjectionType")
+	private String injectionType;
+	
 	@Column(name="CompanyName")
 	private String companyName;
 
@@ -71,6 +71,14 @@ public class UserService implements Serializable {
 
 	public void setRowId(int rowId) {
 		this.rowId = rowId;
+	}
+	
+	public String getInjectionType() {
+		return this.injectionType;
+	}
+
+	public void setInjectionType(String injectionType) {
+		this.injectionType = injectionType;
 	}
 
 	public int getUserId() {

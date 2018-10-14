@@ -70,7 +70,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setDeliverytype(senderDataValue.getDeliverytype());
 			senderDataObj.setShipper_Name(senderDataValue.getShipperName());
 			senderDataObj.setShipper_Addr1(senderDataValue.getShipperAddr1());
-			senderDataObj.setShipper_Addr2(senderDataValue.getShipperAddr2());
+			//senderDataObj.setShipper_Addr2(senderDataValue.getShipperAddr2());
 			senderDataObj.setShipper_City(senderDataValue.getShipperCity());
 			senderDataObj.setShipper_State(senderDataValue.getShipperState());
 			senderDataObj.setShipper_Postcode(senderDataValue.getShipperPostcode());
@@ -160,7 +160,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setDeliverytype(senderDataValue.getDeliverytype());
 			senderDataObj.setShipper_Name(senderDataValue.getShipperName());
 			senderDataObj.setShipper_Addr1(senderDataValue.getShipperAddr1());
-			senderDataObj.setShipper_Addr2(senderDataValue.getShipperAddr2());
+			//senderDataObj.setShipper_Addr2(senderDataValue.getShipperAddr2());
 			senderDataObj.setShipper_City(senderDataValue.getShipperCity());
 			senderDataObj.setShipper_State(senderDataValue.getShipperState());
 			senderDataObj.setShipper_Postcode(senderDataValue.getShipperPostcode());
