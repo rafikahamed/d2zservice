@@ -236,12 +236,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		else {
 			responseMsg.setResponseMessage("Partially updated");
 		}
-		Map<String,String> msgDetail = new HashMap<String,String>();
-		msgDetail.put("Number of updated rows",String.valueOf(updatedRows));
-		if(!incorrectRefNbrs.isEmpty()) {
-		msgDetail.put("Invalid Reference Numbers",incorrectRefNbrs.toString());
-		}
-		responseMsg.setMessageDetail(msgDetail);
+		responseMsg.setMessageDetail(incorrectRefNbrs);
 		return responseMsg;
 	}
 
@@ -395,13 +390,21 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public Trackandtrace getLatestStatusByReferenceNumber(String referenceNumber) {
 		List<Trackandtrace> trackAndTraceList =  trackAndTraceRepository.fetchTrackEventByRefNbr(referenceNumber);
-		return trackAndTraceList.get(0);
+		Trackandtrace trackandTrace = null;
+		if(!trackAndTraceList.isEmpty()) {
+			trackandTrace = trackAndTraceList.get(0);
+		}
+		return trackandTrace;
 	}
 
 	@Override
 	public Trackandtrace getLatestStatusByArticleID(String articleID) {
 		List<Trackandtrace> trackAndTraceList =  trackAndTraceRepository.fetchTrackEventByArticleID(articleID);
-		return trackAndTraceList.get(0);
+		Trackandtrace trackandTrace = null;
+		if(!trackAndTraceList.isEmpty()) {
+			trackandTrace = trackAndTraceList.get(0);
+		}
+		return trackandTrace;
 	}
 
 	@Override

@@ -408,10 +408,8 @@ public class D2ZServiceImpl implements ID2ZService{
 		List<String> incorrectRefNbr = d2zDao.findRefNbrByShipmentNbr(refNbrs);
 		
 		if(!incorrectRefNbr.isEmpty()) {
-			Map<String, String> msgDetails = new HashMap<String,String>();
-			msgDetails.put("Shipment Number already allocated for Reference Numbers", incorrectRefNbr.toString());
 			userMsg.setResponseMessage("Shipment Number already allocated");
-			userMsg.setMessageDetail(msgDetails);
+			userMsg.setMessageDetail(incorrectRefNbr);
 			return userMsg;
 		}
 		String msg = d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
@@ -563,12 +561,14 @@ public class D2ZServiceImpl implements ID2ZService{
 
 		for(String referenceNumber :referenceNumbers ) {
 			Trackandtrace trackAndTrace= d2zDao.getLatestStatusByReferenceNumber(referenceNumber);
+			if(trackAndTrace!=null) {
 			ParcelStatus trackParcel = new ParcelStatus();
 			trackParcel.setReferenceNumber(trackAndTrace.getReference_number());
 			trackParcel.setArticleID(trackAndTrace.getBarcodelabelNumber().substring(18));
 			trackParcel.setTrackEventDateOccured(String.valueOf(trackAndTrace.getTrackEventDateOccured()));
 			trackParcel.setTrackEventDetails(trackAndTrace.getTrackEventDetails());
 			trackParcelList.add(trackParcel);
+			}
 		}
 		
 		return trackParcelList;
@@ -581,12 +581,14 @@ public class D2ZServiceImpl implements ID2ZService{
 
 		for(String articleID :articleIDs ) {
 			Trackandtrace trackAndTrace= d2zDao.getLatestStatusByArticleID(articleID);
+			if(trackAndTrace!=null) {
 			ParcelStatus trackParcel = new ParcelStatus();
 			trackParcel.setReferenceNumber(trackAndTrace.getReference_number());
 			trackParcel.setArticleID(trackAndTrace.getBarcodelabelNumber().substring(18));
 			trackParcel.setTrackEventDateOccured(String.valueOf(trackAndTrace.getTrackEventDateOccured()));
 			trackParcel.setTrackEventDetails(trackAndTrace.getTrackEventDetails());
 			trackParcelList.add(trackParcel);
+			}
 		}
 		
 		return trackParcelList;
