@@ -1,7 +1,9 @@
 package com.d2z.d2zservice.controller;
 
 import java.util.List;
+
 import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.DropDownModel;
-import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
@@ -112,7 +114,7 @@ public class D2zController {
 	      .body(bytes);
 	}
 
-	@RequestMapping( method = RequestMethod.GET, path = "/trackParcel/referenceNumber/{referenceNumbers}")
+    @RequestMapping( method = RequestMethod.GET, path = "/trackParcel/referenceNumber/{referenceNumbers}")
     public List<TrackParcel> trackParcel(@PathVariable List<String> referenceNumbers) {
 		List<TrackParcel> trackParcelResponse = d2zService.trackParcelByRefNbr(referenceNumbers);
 		return trackParcelResponse;
@@ -122,24 +124,6 @@ public class D2zController {
 		List<TrackParcel> trackParcelResponse = d2zService.trackParcelByArticleID(articleIDs);
 		return trackParcelResponse;
     }
-	
-	@RequestMapping(method = RequestMethod.POST, path = "/consignments-create")
-	 public List<SenderDataResponse> createConsignments( @RequestBody List<@Valid SenderData> orderDetailList) throws ReferenceNumberNotUniqueException {
-		List<SenderDataResponse> senderDataResponse = d2zService.createConsignments(orderDetailList);
-		return senderDataResponse;
-    }	
-	
-	@RequestMapping(method = RequestMethod.PUT, path = "/consignments")
-	 public UserMessage editConsignments(@RequestBody List<@Valid EditConsignmentRequest> requestList) {
-		UserMessage userMsg = d2zService.editConsignments(requestList);
-		return userMsg;
-	}
-	
-	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/{referenceNumbers}/shipment/{shipmentNumber}")
-	 public UserMessage allocateShipment(@PathVariable String referenceNumbers,@PathVariable String shipmentNumber) {
-		UserMessage userMsg = d2zService.allocateShipment(referenceNumbers,shipmentNumber);
-		return userMsg;
-	}
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/user")
 	 public UserMessage addUser(@Valid @RequestBody UserDetails userDetails) {
@@ -175,4 +159,4 @@ public class D2zController {
 		List<ShipmentDetails> senderData = d2zService.downloadShipmentData(shipmentNumber);
     	return senderData;
     }
-}
+}   

@@ -1,8 +1,10 @@
 package com.d2z.d2zservice.init;
 
 import static springfox.documentation.builders.PathSelectors.regex;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;

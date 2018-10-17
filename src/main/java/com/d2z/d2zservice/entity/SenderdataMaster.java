@@ -1,8 +1,19 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.math.BigDecimal;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.ParameterMode;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.StoredProcedureParameter;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the SENDERDATA_MASTER database table.
@@ -166,6 +177,14 @@ public class SenderdataMaster implements Serializable {
 
 	@Column(name="Weight")
 	private double weight;
+	
+	public String getConsigneeCompany() {
+		return consigneeCompany;
+	}
+
+	public void setConsigneeCompany(String consigneeCompany) {
+		this.consigneeCompany = consigneeCompany;
+	}
 
 	public SenderdataMaster() {
 	}
@@ -248,14 +267,6 @@ public class SenderdataMaster implements Serializable {
 
 	public void setConsignee_Suburb(String consignee_Suburb) {
 		this.consignee_Suburb = consignee_Suburb;
-	}
-
-	public String getConsigneeCompany() {
-		return this.consigneeCompany;
-	}
-
-	public void setConsigneeCompany(String consigneeCompany) {
-		this.consigneeCompany = consigneeCompany;
 	}
 
 	public BigDecimal getCubic_Weight() {

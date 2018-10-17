@@ -2,6 +2,16 @@ package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.sql.Timestamp;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the trackandtrace database table.
@@ -10,6 +20,8 @@ import javax.persistence.*;
 @Entity
 @Table(name="TrackAndtrace")
 @NamedQuery(name="Trackandtrace.findAll", query="SELECT t FROM Trackandtrace t")
+@NamedStoredProcedureQuery(name = "update-tracking", 
+procedureName = "UpdateTracking")
 public class Trackandtrace implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -19,9 +31,6 @@ public class Trackandtrace implements Serializable {
 
 	@Column(name="BarcodelabelNumber")
 	private String barcodelabelNumber;
-
-	@Column(name="ConnoteNo")
-	private String connoteNo;
 
 	@Column(name="CourierEvents")
 	private String courierEvents;
@@ -48,12 +57,14 @@ public class Trackandtrace implements Serializable {
 	private String trackEventCode;
 
 	@Column(name="TrackEventDateOccured")
-	private String trackEventDateOccured;
+	private Timestamp trackEventDateOccured;
 
 	@Column(name="TrackEventDetails")
 	private String trackEventDetails;
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_GEN")
+	@SequenceGenerator(name = "SEQ_GEN", sequenceName = "TrackIDSeqNum", allocationSize = 20) 
 	@Column(name="TrackID")
 	private long trackID;
 
@@ -62,6 +73,9 @@ public class Trackandtrace implements Serializable {
 
 	@Column(name="User_Id")
 	private String user_Id;
+
+	@Column(name="ConnoteNo")
+	private String connoteNo;
 
 	public Trackandtrace() {
 	}
@@ -154,11 +168,11 @@ public class Trackandtrace implements Serializable {
 		this.trackEventCode = trackEventCode;
 	}
 
-	public String getTrackEventDateOccured() {
+	public Timestamp getTrackEventDateOccured() {
 		return this.trackEventDateOccured;
 	}
 
-	public void setTrackEventDateOccured(String trackEventDateOccured) {
+	public void setTrackEventDateOccured(Timestamp trackEventDateOccured) {
 		this.trackEventDateOccured = trackEventDateOccured;
 	}
 

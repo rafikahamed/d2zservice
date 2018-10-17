@@ -1,10 +1,12 @@
 package com.d2z.d2zservice.repository;
 
 import java.util.List;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+
 import com.d2z.d2zservice.entity.SenderdataMaster;
 
 //This will be AUTO IMPLEMENTED by Spring into a Bean called FileDetailsRepository
@@ -70,6 +72,10 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	
 	 @Query("SELECT t FROM SenderdataMaster t where t.manifest_number = :manifestNumber") 
 	 List<SenderdataMaster> fetchConsignmentByManifest(@Param("manifestNumber") String manifestNumber);
+
+
+	 @Query("SELECT reference_number FROM SenderdataMaster t where t.reference_number in :referenceNumbers and t.airwayBill is not null") 
+	List<String> findRefNbrByShipmentNbr(@Param("referenceNumbers") String[] referenceNumbers);
 	 
 	 @Query("SELECT DISTINCT t.airwayBill FROM SenderdataMaster t where t.filename like '%D2ZUI%' and t.sender_Files_ID like '%D2ZUI%' ") 
 	 List<String> fetchShipmentList();

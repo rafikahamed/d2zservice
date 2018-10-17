@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
+import com.d2z.d2zservice.exception.InvalidServiceTypeException;
 import com.d2z.d2zservice.exception.InvalidSuburbPostcodeException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
+import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.singleton.D2ZSingleton;
 
@@ -72,4 +74,19 @@ public class D2ZValidator {
 			throw new ReferenceNumberNotUniqueException("Reference Number must be unique",duplicateRefNbr);
 		}
 	}
+
+	public void isServiceValid(CreateConsignmentRequest orderDetail) {
+		List<String> incorrectRefNbr = new ArrayList<String>();
+		List<String> serviceType_DB = d2zDao.fetchServiceTypeByUserName(orderDetail.getUserName());
+		List<SenderData> orderDetailList = orderDetail.getConsignmentData();
+		for(SenderData senderData : orderDetailList) {
+			if(!serviceType_DB.contains(senderData.getServiceType())) {
+				incorrectRefNbr.add(senderData.getReferenceNumber());
+			}
+		} 
+		if(!incorrectRefNbr.isEmpty()) {
+			throw new InvalidServiceTypeException("Invalid Service Type",incorrectRefNbr);
+		}
+	}
+
 }

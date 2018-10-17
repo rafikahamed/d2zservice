@@ -1,10 +1,14 @@
 package com.d2z.d2zservice.service;
 
 import java.util.List;
+
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
+import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
+import com.d2z.d2zservice.model.ParcelStatus;
+import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
@@ -33,13 +37,13 @@ public interface ID2ZService {
 
 	List<TrackParcel> trackParcelByRefNbr(List<String> referenceNumbers);
 
-	public List<SenderDataResponse> createConsignments(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException;
+	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail) throws ReferenceNumberNotUniqueException;
 
 	public List<TrackParcel> trackParcelByArticleID(List<String> articleIDs);
 
-	public UserMessage editConsignments(List<EditConsignmentRequest> requestList);
+	public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList);
 
-	public UserMessage allocateShipment(String referenceNumbers, String shipmentNumber);
+	public ResponseMessage allocateShipment(String referenceNumbers, String shipmentNumber);
 
 	public UserMessage addUser(UserDetails userDetails);
 
@@ -53,5 +57,9 @@ public interface ID2ZService {
 
 //	public byte[] downloadShipmentData(String shipmentNumber);
 	public List<ShipmentDetails> downloadShipmentData(String shipmentNumber);
+
+	public List<ParcelStatus> getStatusByRefNbr(List<String> referenceNumbers);
+
+	public List<ParcelStatus> getStatusByArticleID(List<String> articleIDs);
 
 }

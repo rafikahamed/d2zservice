@@ -3,10 +3,13 @@ package com.d2z.d2zservice.daoImpl;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
@@ -14,7 +17,7 @@ import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
-import com.d2z.d2zservice.model.FileUploadData;
+import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
@@ -134,14 +137,16 @@ public class D2ZDaoImpl implements ID2ZDao{
 
 
 	@Override
-	public String createConsignments(List<SenderData> orderDetailList) {
+	public String createConsignments(List<SenderData> orderDetailList, int userId) {
 		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		String fileSeqId = "D2ZAPI"+senderDataRepository.fetchNextSeq();
 		for(SenderData senderDataValue: orderDetailList) {
 			SenderdataMaster senderDataObj = new SenderdataMaster();
+			senderDataObj.setUser_ID(userId);
 			senderDataObj.setSender_Files_ID(fileSeqId);
 			senderDataObj.setReference_number(senderDataValue.getReferenceNumber());
+			senderDataObj.setConsigneeCompany(senderDataValue.getConsigneeCompany());
 			senderDataObj.setConsignee_name(senderDataValue.getConsigneeName());
 			senderDataObj.setConsignee_addr1(senderDataValue.getConsigneeAddr1());
 			senderDataObj.setConsignee_Suburb(senderDataValue.getConsigneeSuburb());
@@ -198,22 +203,46 @@ public class D2ZDaoImpl implements ID2ZDao{
 	}
 
 	@Override
-	public String editConsignments(List<EditConsignmentRequest> requestList) {
+
+public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList) {
 		/*requestList.forEach(obj->{
 			senderDataRepository.editConsignments(obj.getReferenceNumber(), obj.getWeight());
 		});*/
+		List<String> incorrectRefNbrs = new ArrayList<String>();
+		int updatedRows=0;
 		Timestamp start = Timestamp.from(Instant.now());
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		for(EditConsignmentRequest obj : requestList) {
 			SenderdataMaster senderData = senderDataRepository.fetchByReferenceNumbers(obj.getReferenceNumber());
+			if(senderData!=null) {
+			updatedRows++;
 			senderData.setWeight(obj.getWeight());
 			senderDataList.add(senderData);
+		}
+			else {
+				incorrectRefNbrs.add(obj.getReferenceNumber());
+			}
 		}
 		senderDataRepository.saveAll(senderDataList);
 		Timestamp end = Timestamp.from(Instant.now());
 		long callDuration = end.getTime() - start.getTime();
 		System.out.println("Call Duration : "+callDuration);
-		return "Weight updated successfully!";
+		ResponseMessage responseMsg = new ResponseMessage();
+		if(updatedRows==0) {
+			responseMsg.setResponseMessage("Update failed");
+		}else if(updatedRows == requestList.size()) {
+			responseMsg.setResponseMessage("Weight updated successfully");
+		}
+		else {
+			responseMsg.setResponseMessage("Partially updated");
+		}
+		Map<String,String> msgDetail = new HashMap<String,String>();
+		msgDetail.put("Number of updated rows",String.valueOf(updatedRows));
+		if(!incorrectRefNbrs.isEmpty()) {
+		msgDetail.put("Invalid Reference Numbers",incorrectRefNbrs.toString());
+		}
+		responseMsg.setMessageDetail(msgDetail);
+		return responseMsg;
 	}
 
 	@Override
@@ -355,6 +384,29 @@ public class D2ZDaoImpl implements ID2ZDao{
 	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber) {
 		List<SenderdataMaster> senderData = senderDataRepository.fetchShipmentData(shipmentNumber);
 		return senderData;
+	}
+
+	@Override
+	public List<String> fetchServiceTypeByUserName(String userName) {
+		List<String> serviceTypeList = userServiceRepository.fetchAllServiceTypeByUserName(userName);
+		return serviceTypeList;
+	}
+
+	@Override
+	public Trackandtrace getLatestStatusByReferenceNumber(String referenceNumber) {
+		List<Trackandtrace> trackAndTraceList =  trackAndTraceRepository.fetchTrackEventByRefNbr(referenceNumber);
+		return trackAndTraceList.get(0);
+	}
+
+	@Override
+	public Trackandtrace getLatestStatusByArticleID(String articleID) {
+		List<Trackandtrace> trackAndTraceList =  trackAndTraceRepository.fetchTrackEventByArticleID(articleID);
+		return trackAndTraceList.get(0);
+	}
+
+	@Override
+	public List<String> findRefNbrByShipmentNbr(String[] referenceNumbers) {
+		return senderDataRepository.findRefNbrByShipmentNbr(referenceNumbers);
 	}
 
 

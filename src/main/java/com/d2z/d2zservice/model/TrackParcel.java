@@ -1,7 +1,5 @@
 package com.d2z.d2zservice.model;
 
-import java.util.List;
-
 public class TrackParcel {
 
 	private String referenceNumber;

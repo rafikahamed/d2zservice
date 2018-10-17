@@ -8,7 +8,7 @@ public class EditConsignmentRequest {
 	@NotEmpty(message = "Reference Number cannot be empty")
 	private String referenceNumber;
 	@NotNull(message = "Weight cannot be empty")
-	private double weight;
+	private Double weight;
 	public String getReferenceNumber() {
 		return referenceNumber;
 	}
