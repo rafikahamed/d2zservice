@@ -387,8 +387,8 @@ public class D2ZServiceImpl implements ID2ZService{
 			 senderDataResponse = new SenderDataResponse();
 			 senderDataResponse.setReferenceNumber(obj[0].toString());
 			 String barcode = obj[1].toString();
-			 String formattedBarcode = barcode.substring(0,barcode.length()-6).concat("120000");
-			 senderDataResponse.setBarcodeLabelNumber("]d2".concat(formattedBarcode.replaceAll("\\[|\\]", "")));
+			 //String formattedBarcode = barcode.substring(0,barcode.length()-6).concat("120000");
+			 senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
 			 senderDataResponseList.add(senderDataResponse);
        }
 		
