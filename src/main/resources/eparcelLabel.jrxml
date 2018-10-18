@@ -91,11 +91,11 @@
 				<textFieldExpression><![CDATA[$F{consigneeAddr1}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="1" y="101" width="249" height="15" uuid="4001379f-9f34-4cb8-85b8-dff1c158b25a"/>
+				<reportElement x="1" y="101" width="249" height="19" uuid="4001379f-9f34-4cb8-85b8-dff1c158b25a"/>
 				<textElement>
-					<font fontName="Arial" size="12"/>
+					<font fontName="Arial" size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{consigneeSuburb}.concat(" ").concat($F{consigneeState}).concat(" ").concat( $F{consigneePostcode} )]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{consigneeSuburb}.concat(" ").concat($F{consigneeState}).concat(" ").concat( $F{consigneePostcode}).toUpperCase()]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="100" y="51" width="50" height="20" uuid="5961d0cb-d6b9-4e83-8603-e0dcbad1f16d"/>
@@ -120,7 +120,7 @@
 				<imageExpression><![CDATA[$F{datamatrixImage}]]></imageExpression>
 			</image>
 			<textField>
-				<reportElement x="271" y="105" width="51" height="20" uuid="7c8b49d6-3136-474e-a9ae-20a5e2b2d776"/>
+				<reportElement x="270" y="112" width="52" height="20" uuid="7c8b49d6-3136-474e-a9ae-20a5e2b2d776"/>
 				<box>
 					<pen lineWidth="1.5"/>
 				</box>
@@ -144,7 +144,7 @@
 				<text><![CDATA[DELIVERY INSTRUCTIONS]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="292" y="3" width="48" height="30" uuid="5dfcc6c1-29cd-4049-abcd-ce114710fba5"/>
+				<reportElement x="292" y="6" width="48" height="30" uuid="5dfcc6c1-29cd-4049-abcd-ce114710fba5"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="14" isBold="true"/>
 				</textElement>
@@ -210,21 +210,21 @@
 				<textFieldExpression><![CDATA[$F{barcodeLabelNumber}.substring( 18 )]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="128" y="157" width="220" height="15" uuid="dbf8cf09-6823-45a2-bf98-ecefca01df40"/>
+				<reportElement x="128" y="156" width="220" height="15" uuid="dbf8cf09-6823-45a2-bf98-ecefca01df40"/>
 				<textElement>
 					<font fontName="Arial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{barcodeLabelNumber}.substring( 18 )]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="57" y="157" width="70" height="15" uuid="96ffe972-517a-4eb8-80cf-b17b5aa3c28a"/>
+				<reportElement x="57" y="156" width="70" height="15" uuid="96ffe972-517a-4eb8-80cf-b17b5aa3c28a"/>
 				<textElement>
 					<font fontName="Arial" size="12"/>
 				</textElement>
 				<text><![CDATA[AP Article Id:]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement x="13" y="74" width="338" height="83" uuid="59d0a8fc-b56d-4bf1-b304-0f08862723c5"/>
+				<reportElement x="9" y="72" width="338" height="83" uuid="59d0a8fc-b56d-4bf1-b304-0f08862723c5"/>
 				<c:EAN128 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" moduleWidth="1.4" textPosition="none" checksumMode="check">
 					<c:codeExpression><![CDATA[$F{barcodeLabelNumber}]]></c:codeExpression>
 				</c:EAN128>
