@@ -13,15 +13,20 @@ import org.springframework.stereotype.Repository;
 
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.Trackandtrace;
+import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.exception.InvalidDateException;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
+import com.d2z.d2zservice.repository.UserRepository;
 @Repository
 public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 
 	@Autowired
 	TrackAndTraceRepository trackAndTraceRepository;
+	
+	@Autowired
+	UserRepository userRepository;
 	
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) throws InvalidDateException {
@@ -88,6 +93,17 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		List<Trackandtrace> insertedData= (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackingDetailsList);
 		trackAndTraceRepository.updateTracking();
 		return insertedData;	}
-	
 
+	@Override
+	public List<String> brokerCompanyDetails() {
+		List<String> companyDetails = userRepository.fetchBrokerCompanyName();
+		return companyDetails;
+	}
+
+	@Override
+	public User fetchUserDetails(String companyName) {
+		User userDetails = userRepository.fetchBrokerbyCompanyName(companyName);
+		return userDetails;
+	}
+	
 }

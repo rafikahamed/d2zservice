@@ -55,6 +55,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			SenderdataMaster senderDataObj = new SenderdataMaster();
 			senderDataObj.setSender_Files_ID(fileSeqId);
 			senderDataObj.setReference_number(senderDataValue.getReferenceNumber());
+			senderDataObj.setConsigneeCompany(senderDataValue.getConsigneeCompany());
 			senderDataObj.setConsignee_name(senderDataValue.getConsigneeName());
 			senderDataObj.setConsignee_addr1(senderDataValue.getConsigneeAddr1());
 			senderDataObj.setConsignee_Suburb(senderDataValue.getConsigneeSuburb());
@@ -79,6 +80,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setShipper_Postcode(senderDataValue.getShipperPostcode());
 			senderDataObj.setShipper_Country(senderDataValue.getShipperCountry());
 			senderDataObj.setFilename(senderDataValue.getFileName());
+			senderDataObj.setInnerItem(1);
+			senderDataObj.setInjectionType(senderDataValue.getInjectionType());
+			senderDataObj.setBagId(senderDataValue.getBagId());
 			senderDataList.add(senderDataObj);
 		}
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
@@ -108,7 +112,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	public String consignmentDelete(String refrenceNumlist) {
 		//Calling Delete Store Procedure
 		senderDataRepository.consigneeDelete(refrenceNumlist);
-		return "Data Saved Successfully";
+		return "Selected Consignments Deleted Successfully";
 	}
 
 	@Override
@@ -258,7 +262,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		userObj.setEmailAddress(userData.getEmailAddress());
 		userObj.setUser_Name(userData.getUserName());
 		userObj.setUser_Password(userData.getPassword());
-		userObj.setRole_Id(3);
+		userObj.setRole_Id(userData.getRole_Id());
 		userObj.setName(userData.getContactName());
 		userObj.setPhoneNumber(userData.getContactPhoneNumber());
 		userObj.setUser_IsDeleted(false);
@@ -277,6 +281,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		userService.setCompanyName(user.getCompanyName());
 		userService.setUser_Name(user.getUser_Name());
 		userService.setServiceType(serviceType);
+		if(serviceType.equalsIgnoreCase("UnTracked")) {
+			userService.setInjectionType("Origin Injection");
+		}else {
+			userService.setInjectionType("Direct Injection");
+		}
 		userService.setTimestamp(Timestamp.from(Instant.now()));
 		userService.setModifiedTimestamp(Timestamp.from(Instant.now()));
 		userServiceList.add(userService);
