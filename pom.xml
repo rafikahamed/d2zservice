@@ -129,7 +129,6 @@
     		<systemPath>${basedir}/src/main/resources/font/FontArial.jar</systemPath>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -141,6 +140,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-
 </project>
