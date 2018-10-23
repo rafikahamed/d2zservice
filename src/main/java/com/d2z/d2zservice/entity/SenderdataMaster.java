@@ -2,8 +2,6 @@ package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,7 +15,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 
-
 /**
  * The persistent class for the SENDERDATA_MASTER database table.
  * 
@@ -27,7 +24,7 @@ import javax.persistence.Table;
 @NamedQuery(name="SenderdataMaster.findAll", query="SELECT s FROM SenderdataMaster s")
 @NamedStoredProcedureQueries({
    @NamedStoredProcedureQuery(name = "in_only_test", 
-                              procedureName = "GenerateBarCodeLabelNumber_files_id_test",
+                              procedureName = "GenerateBarCodeLabelNumber",
                               parameters = {
                                  @StoredProcedureParameter(mode = ParameterMode.IN, name = "Sender_file_id", type = String.class)
                               }),
@@ -50,11 +47,17 @@ import javax.persistence.Table;
 	  })
 })
 public class SenderdataMaster implements Serializable {
-
+	
 	private static final long serialVersionUID = 1L;
+
+	@Column(name="Reference_number")
+	private String reference_number;
 
 	@Column(name="AirwayBill")
 	private String airwayBill;
+
+	@Column(name="BagId")
+	private String bagId;
 
 	@Column(name="BarcodelabelNumber")
 	private String barcodelabelNumber;
@@ -76,6 +79,9 @@ public class SenderdataMaster implements Serializable {
 
 	@Column(name="Consignee_Suburb")
 	private String consignee_Suburb;
+
+	@Column(name="ConsigneeCompany")
+	private String consigneeCompany;
 
 	@Column(name="Cubic_Weight")
 	private BigDecimal cubic_Weight;
@@ -107,21 +113,21 @@ public class SenderdataMaster implements Serializable {
 	@Column(name="InjectionState")
 	private String injectionState;
 
+	@Column(name="InjectionType")
+	private String injectionType;
+
+	@Column(name="InnerItem")
+	private int innerItem;
+
 	@Column(name="IsDeleted")
 	private String isDeleted;
 
 	@Column(name="Manifest_number")
 	private String manifest_number;
 
-	@Column(name="PalletId")
-	private String palletId;
-
 	@Column(name="Product_Description")
 	private String product_Description;
-
-	@Column(name="Reference_number")
-	private String reference_number;
-
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_GEN")
 	@SequenceGenerator(name = "SEQ_GEN", sequenceName = "RowIDSeqNum", allocationSize = 10) 
@@ -140,9 +146,6 @@ public class SenderdataMaster implements Serializable {
 	@Column(name="Shipper_Addr1")
 	private String shipper_Addr1;
 
-	@Column(name="Shipper_Addr2")
-	private String shipper_Addr2;
-
 	@Column(name="Shipper_City")
 	private String shipper_City;
 
@@ -158,11 +161,14 @@ public class SenderdataMaster implements Serializable {
 	@Column(name="Shipper_State")
 	private String shipper_State;
 
+	@Column(name="ShipperCompany")
+	private String shipperCompany;
+
 	@Column(name="Status")
 	private String status;
 
 	@Column(name="Timestamp")
-	private Timestamp timestamp;
+	private String timestamp;
 
 	@Column(name="User_ID")
 	private int user_ID;
@@ -171,9 +177,6 @@ public class SenderdataMaster implements Serializable {
 
 	@Column(name="Weight")
 	private double weight;
-
-	@Column(name="ConsigneeCompany")
-	private String consigneeCompany;
 	
 	public String getConsigneeCompany() {
 		return consigneeCompany;
@@ -186,12 +189,28 @@ public class SenderdataMaster implements Serializable {
 	public SenderdataMaster() {
 	}
 
+	public String getReference_number() {
+		return this.reference_number;
+	}
+
+	public void setReference_number(String reference_number) {
+		this.reference_number = reference_number;
+	}
+
 	public String getAirwayBill() {
 		return this.airwayBill;
 	}
 
 	public void setAirwayBill(String airwayBill) {
 		this.airwayBill = airwayBill;
+	}
+
+	public String getBagId() {
+		return this.bagId;
+	}
+
+	public void setBagId(String bagId) {
+		this.bagId = bagId;
 	}
 
 	public String getBarcodelabelNumber() {
@@ -330,6 +349,22 @@ public class SenderdataMaster implements Serializable {
 		this.injectionState = injectionState;
 	}
 
+	public String getInjectionType() {
+		return this.injectionType;
+	}
+
+	public void setInjectionType(String injectionType) {
+		this.injectionType = injectionType;
+	}
+
+	public int getInnerItem() {
+		return this.innerItem;
+	}
+
+	public void setInnerItem(int innerItem) {
+		this.innerItem = innerItem;
+	}
+
 	public String getIsDeleted() {
 		return this.isDeleted;
 	}
@@ -346,28 +381,12 @@ public class SenderdataMaster implements Serializable {
 		this.manifest_number = manifest_number;
 	}
 
-	public String getPalletId() {
-		return this.palletId;
-	}
-
-	public void setPalletId(String palletId) {
-		this.palletId = palletId;
-	}
-
 	public String getProduct_Description() {
 		return this.product_Description;
 	}
 
 	public void setProduct_Description(String product_Description) {
 		this.product_Description = product_Description;
-	}
-
-	public String getReference_number() {
-		return this.reference_number;
-	}
-
-	public void setReference_number(String reference_number) {
-		this.reference_number = reference_number;
 	}
 
 	public int getRowId() {
@@ -410,14 +429,6 @@ public class SenderdataMaster implements Serializable {
 		this.shipper_Addr1 = shipper_Addr1;
 	}
 
-	public String getShipper_Addr2() {
-		return this.shipper_Addr2;
-	}
-
-	public void setShipper_Addr2(String shipper_Addr2) {
-		this.shipper_Addr2 = shipper_Addr2;
-	}
-
 	public String getShipper_City() {
 		return this.shipper_City;
 	}
@@ -458,6 +469,14 @@ public class SenderdataMaster implements Serializable {
 		this.shipper_State = shipper_State;
 	}
 
+	public String getShipperCompany() {
+		return this.shipperCompany;
+	}
+
+	public void setShipperCompany(String shipperCompany) {
+		this.shipperCompany = shipperCompany;
+	}
+
 	public String getStatus() {
 		return this.status;
 	}
@@ -466,11 +485,11 @@ public class SenderdataMaster implements Serializable {
 		this.status = status;
 	}
 
-	public Timestamp getTimestamp() {
+	public String getTimestamp() {
 		return this.timestamp;
 	}
 
-	public void setTimestamp(Timestamp timestamp) {
+	public void setTimestamp(String timestamp) {
 		this.timestamp = timestamp;
 	}
 

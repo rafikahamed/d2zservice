@@ -77,6 +77,24 @@ public class SenderData {
 	private Timestamp timestamp;
 	private String injectionState;
 	private BufferedImage datamatrixImage;
+	private String InjectionType;
+	private String bagId;
+
+	public String getInjectionType() {
+		return InjectionType;
+	}
+
+	public void setInjectionType(String injectionType) {
+		InjectionType = injectionType;
+	}
+
+	public String getBagId() {
+		return bagId;
+	}
+
+	public void setBagId(String bagId) {
+		this.bagId = bagId;
+	}
 
 	public String getConsigneeCompany() {
 		return consigneeCompany;

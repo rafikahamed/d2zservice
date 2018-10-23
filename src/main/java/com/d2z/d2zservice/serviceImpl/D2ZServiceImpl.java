@@ -441,7 +441,6 @@ public class D2ZServiceImpl implements ID2ZService{
 				userMsg.setUserName(userData.getUserName());
 			}
 		}else {
-			 
 			userMsg.setMessage("Company Name already exist");
 			userMsg.setCompanyName(userData.getCompanyName());
 		}

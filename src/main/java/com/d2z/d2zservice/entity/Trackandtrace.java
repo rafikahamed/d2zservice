@@ -1,8 +1,8 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
+import javax.persistence.*;
 import java.sql.Timestamp;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -51,7 +51,7 @@ public class Trackandtrace implements Serializable {
 	private String signerName;
 
 	@Column(name="Timestamp")
-	private Timestamp timestamp;
+	private String timestamp;
 
 	@Column(name="TrackEventCode")
 	private String trackEventCode;
@@ -76,16 +76,6 @@ public class Trackandtrace implements Serializable {
 
 	@Column(name="ConnoteNo")
 	private String connoteNo;
-	
-
-
-	public String getConnoteNo() {
-		return connoteNo;
-	}
-
-	public void setConnoteNo(String connoteNo) {
-		this.connoteNo = connoteNo;
-	}
 
 	public Trackandtrace() {
 	}
@@ -104,6 +94,14 @@ public class Trackandtrace implements Serializable {
 
 	public void setBarcodelabelNumber(String barcodelabelNumber) {
 		this.barcodelabelNumber = barcodelabelNumber;
+	}
+
+	public String getConnoteNo() {
+		return this.connoteNo;
+	}
+
+	public void setConnoteNo(String connoteNo) {
+		this.connoteNo = connoteNo;
 	}
 
 	public String getCourierEvents() {
@@ -154,11 +152,11 @@ public class Trackandtrace implements Serializable {
 		this.signerName = signerName;
 	}
 
-	public Timestamp getTimestamp() {
+	public String getTimestamp() {
 		return this.timestamp;
 	}
 
-	public void setTimestamp(Timestamp timestamp) {
+	public void setTimestamp(String timestamp) {
 		this.timestamp = timestamp;
 	}
 
@@ -209,6 +207,5 @@ public class Trackandtrace implements Serializable {
 	public void setUser_Id(String user_Id) {
 		this.user_Id = user_Id;
 	}
-
 
 }
