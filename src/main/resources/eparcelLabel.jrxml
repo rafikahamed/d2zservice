@@ -3,7 +3,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="eparcelLabel" pageWidth="378" pageHeight="563" columnWidth="358" leftMargin="10" rightMargin="10" topMargin="10" bottomMargin="10" uuid="497a1b87-dc25-40fb-8871-81fa7737ae82">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<style name="labelStyle" isBlankWhenNull="true" fontName="Arial"/>
+	<style name="labelStyle" isBlankWhenNull="true" fontName="MyArial"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -72,42 +72,42 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement>
-					<font fontName="Arial" size="12" isBold="true"/>
+					<font fontName="MyArial" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[DELIVER TO]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="1" y="71" width="249" height="15" uuid="a601a683-c7db-4d24-9aec-0d2005557fd2"/>
 				<textElement>
-					<font fontName="Arial" size="12"/>
+					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="1" y="86" width="249" height="15" uuid="92138a07-6798-4dab-9ca1-66628b76bb71"/>
 				<textElement>
-					<font fontName="Arial" size="12"/>
+					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeAddr1}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="1" y="101" width="249" height="19" uuid="4001379f-9f34-4cb8-85b8-dff1c158b25a"/>
 				<textElement>
-					<font fontName="Arial" size="14"/>
+					<font fontName="MyArial" size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeSuburb}.concat(" ").concat($F{consigneeState}).concat(" ").concat( $F{consigneePostcode}).toUpperCase()]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="100" y="51" width="50" height="20" uuid="5961d0cb-d6b9-4e83-8603-e0dcbad1f16d"/>
 				<textElement>
-					<font fontName="Arial" size="12" isBold="true"/>
+					<font fontName="MyArial" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[PHONE:]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="150" y="51" width="100" height="19" uuid="39e1a67b-326c-459a-b06e-ce69a3a459a8"/>
 				<textElement>
-					<font fontName="Arial" size="12"/>
+					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneePhone}]]></textFieldExpression>
 			</textField>
@@ -139,14 +139,14 @@
 			<staticText>
 				<reportElement x="1" y="2" width="200" height="20" uuid="e8861318-4022-4caf-ba4f-f0846e8e9606"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" isBold="true"/>
+					<font fontName="MyArial" isBold="true"/>
 				</textElement>
 				<text><![CDATA[DELIVERY INSTRUCTIONS]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="292" y="6" width="48" height="30" uuid="5dfcc6c1-29cd-4049-abcd-ce114710fba5"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="14" isBold="true"/>
+					<font fontName="MyArial" size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{weight}.concat("kg")]]></textFieldExpression>
 			</textField>
@@ -160,7 +160,7 @@
 			<staticText>
 				<reportElement x="0" y="0" width="190" height="20" uuid="7088cf99-4141-473a-9754-3358a627ac9e"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font fontName="Arial" isBold="true"/>
+					<font fontName="MyArial" isBold="true"/>
 				</textElement>
 				<text><![CDATA[SIGNATURE ON DELIVERY REQUIRED]]></text>
 			</staticText>
@@ -170,21 +170,21 @@
 			<textField>
 				<reportElement x="260" y="6" width="88" height="20" uuid="d5335efc-ab5f-4d65-b774-aa8d4a4132c4"/>
 				<textElement textAlignment="Center">
-					<font fontName="Arial"/>
+					<font fontName="MyArial"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{barcodeLabelNumber}.substring( 18, 30 )]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="206" y="30" width="44" height="15" uuid="b962e244-74eb-44f1-9e34-f556c323353f"/>
 				<textElement>
-					<font fontName="Arial" isBold="true"/>
+					<font fontName="MyArial" isBold="true"/>
 				</textElement>
 				<text><![CDATA[PARCEL]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="274" y="30" width="32" height="18" uuid="6ef57e18-17f8-4e56-bebd-38ac5da15c25"/>
 				<textElement textAlignment="Center">
-					<font fontName="Arial"/>
+					<font fontName="MyArial"/>
 				</textElement>
 				<text><![CDATA[1/1]]></text>
 			</staticText>
@@ -198,28 +198,28 @@
 			<staticText>
 				<reportElement x="59" y="57" width="70" height="15" uuid="b4a1eb33-4136-4af9-acae-f7cbdaf8b082"/>
 				<textElement>
-					<font fontName="Arial" size="12"/>
+					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<text><![CDATA[AP Article Id:]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="129" y="57" width="218" height="15" uuid="ef325528-746f-4670-8076-b08a19118226"/>
 				<textElement>
-					<font fontName="Arial" size="12"/>
+					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{barcodeLabelNumber}.substring( 18 )]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="128" y="156" width="220" height="15" uuid="dbf8cf09-6823-45a2-bf98-ecefca01df40"/>
 				<textElement>
-					<font fontName="Arial" size="12"/>
+					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{barcodeLabelNumber}.substring( 18 )]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="57" y="156" width="70" height="15" uuid="96ffe972-517a-4eb8-80cf-b17b5aa3c28a"/>
 				<textElement>
-					<font fontName="Arial" size="12"/>
+					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<text><![CDATA[AP Article Id:]]></text>
 			</staticText>
@@ -239,14 +239,14 @@
 			<staticText>
 				<reportElement x="154" y="-87" width="197" height="25" uuid="f9e7ec39-6452-4c93-95fb-8db4e23a7f64"/>
 				<textElement>
-					<font fontName="Arial" size="9" isBold="true"/>
+					<font fontName="MyArial" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Aviation Security and Dangerous Goods Declaration]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="154" y="-62" width="198" height="58" uuid="5e7e8bb0-50c6-443b-a308-f1cee1a1ad91"/>
 				<textElement>
-					<font fontName="Arial" size="8"/>
+					<font fontName="MyArial" size="8"/>
 				</textElement>
 				<text><![CDATA[The sender acknowledges that this article may be carried by air and will be subject to aviation security and clearing procedures; and the sender declares that the article does not contain any dangerous or prohibited goods, explosive or incendiary devices. A false declaration is a criminal offence.]]></text>
 			</staticText>
@@ -256,28 +256,28 @@
 			<staticText>
 				<reportElement x="0" y="-82" width="100" height="15" uuid="10f9c6c8-ddb8-4d0a-a178-d84d51e31c0a"/>
 				<textElement>
-					<font fontName="Arial" isBold="true"/>
+					<font fontName="MyArial" isBold="true"/>
 				</textElement>
 				<text><![CDATA[SENDER]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="1" y="-67" width="139" height="15" uuid="fd473895-7f65-4525-a18d-12237e140300"/>
 				<textElement>
-					<font fontName="Arial"/>
+					<font fontName="MyArial"/>
 				</textElement>
 				<textFieldExpression><![CDATA["SW4"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="1" y="-52" width="139" height="15" uuid="74384646-f320-4f97-b252-5446ab2b0273"/>
 				<textElement>
-					<font fontName="Arial"/>
+					<font fontName="MyArial"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Unit 12, 1801 Botany Road"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="1" y="-37" width="139" height="15" uuid="7fd1e4c2-8511-4e79-bd2c-292dfd3b0b70"/>
 				<textElement>
-					<font fontName="Arial"/>
+					<font fontName="MyArial"/>
 				</textElement>
 				<textFieldExpression><![CDATA["BANKSMEADOW NSW 2019"]]></textFieldExpression>
 			</textField>

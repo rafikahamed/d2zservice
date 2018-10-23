@@ -121,6 +121,13 @@
     	  <artifactId>poi-ooxml</artifactId>
     	  <version>3.17</version>
 		</dependency>
+		<dependency>
+    		<groupId>local.jasperFontOverrides</groupId>
+   		    <artifactId>local.jasperFontOverrides</artifactId>
+    		<version>1.0</version>
+    		<scope>system</scope>
+    		<systemPath>${basedir}/src/main/resources/font/FontArial.jar</systemPath>
+		</dependency>
 	</dependencies>
 
 	<build>
