@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.model.ShipmentDetails;
 @Service
 public class ShipmentDetailsWriter {
@@ -104,5 +105,53 @@ public class ShipmentDetailsWriter {
 			e.printStackTrace();
 		}
        return xls;
+	}
+
+	public byte[] generateDeleteConsignmentsxls(List<SenderdataMaster> deletedConsignments) {
+		 String[] columns = {"REF NO.", "ARTICLE ID"};
+	      
+	 
+		Workbook workbook = new XSSFWorkbook();
+		Sheet sheet = workbook.createSheet("Deleted Consignments");
+		CellStyle style = workbook.createCellStyle();
+		Font font = workbook.createFont();//Create font
+	    font.setBold(true);//Make font bold
+	    style.setFont(font);
+		Row headerRow = sheet.createRow(0);
+		for(int i = 0; i < columns.length; i++) {
+           Cell cell = headerRow.createCell(i);
+           cell.setCellValue(columns[i]);
+           cell.setCellStyle(style);
+		}
+		int rowNum = 1;
+       for(SenderdataMaster data : deletedConsignments) {
+           Row row = sheet.createRow(rowNum++);
+           row.createCell(0).setCellValue(data.getReference_number());
+           row.createCell(1).setCellValue(data.getBarcodelabelNumber().substring(18));
+       }
+       for(int i = 0; i < columns.length; i++) {
+           sheet.autoSizeColumn(i);
+       }
+     /*  try {
+			FileOutputStream file = new FileOutputStream("shipment.xlsx");
+			workbook.write(file);
+			file.close();
+			workbook.close();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}*/
+       
+       byte[] xls = null;
+       try {
+       	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+       	workbook.write(baos);
+       	 xls = baos.toByteArray();
+       	workbook.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+      return xls;
 	}
 }

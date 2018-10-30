@@ -3,15 +3,6 @@ package com.d2z.d2zservice.entity;
 import java.io.Serializable;
 import javax.persistence.*;
 import java.sql.Timestamp;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQuery;
-import javax.persistence.NamedStoredProcedureQuery;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
 
 /**
  * The persistent class for the trackandtrace database table.
@@ -77,6 +68,10 @@ public class Trackandtrace implements Serializable {
 	@Column(name="ConnoteNo")
 	private String connoteNo;
 
+	@ManyToOne
+    @JoinColumn(name = "Reference_number",referencedColumnName = "Reference_number", insertable=false, updatable=false)
+    private SenderdataMaster senderData;
+	
 	public Trackandtrace() {
 	}
 

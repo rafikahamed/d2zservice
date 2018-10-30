@@ -7,10 +7,13 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
+import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
+import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.exception.InvalidDateException;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.DropDownModel;
@@ -25,8 +28,11 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	@Autowired
     private ID2ZSuperUserDao d2zDao;
 	
+	@Autowired
+	ShipmentDetailsWriter shipmentWriter;
+	
 	@Override
-	public UserMessage uploadTrackingFile(List<UploadTrackingFileData> fileData) throws InvalidDateException {
+	public UserMessage uploadTrackingFile(List<UploadTrackingFileData> fileData){
 		UserMessage userMsg = new UserMessage();
 		List<Trackandtrace> insertedData = d2zDao.uploadTrackingFile(fileData);
 		if(insertedData.isEmpty()) {
@@ -38,7 +44,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	}
 
 	@Override
-	public UserMessage uploadArrivalReport(List<ArrivalReportFileData> fileData) throws InvalidDateException {
+	public UserMessage uploadArrivalReport(List<ArrivalReportFileData> fileData) {
 		UserMessage userMsg = new UserMessage();
 		List<Trackandtrace> insertedData = d2zDao.uploadArrivalReport(fileData);
 		if(insertedData.isEmpty()) {
@@ -83,6 +89,21 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 		userDetails.setServiceType(serviceType);
 		return userDetails;
 	
+	}
+
+	@Override
+	public List<SenderdataMaster> exportDeteledConsignments(String fromDate, String toDate) {
+		return d2zDao.exportDeteledConsignments(fromDate,toDate);
+		//byte[] bytes = shipmentWriter.generateDeleteConsignmentsxls(deletedConsignments);
+		//return bytes;
+	}
+	@Override
+	public List<SenderdataMaster> exportConsignmentData(String fromDate, String toDate) {
+		return d2zDao.exportConsignments(fromDate, toDate);
+	}
+	@Override
+	public List<SenderdataMaster> exportShipmentData(String fromDate, String toDate) {
+		return d2zDao.exportShipment(fromDate, toDate);
 	}
 
 }
