@@ -23,4 +23,6 @@ public interface IBrokerD2ZService {
 
 	public List<DropDownModel> fetchApiShipmentList();
 
+	public List<SenderdataMaster> downloadShipmentData(String shipmentNumber);
+
 }
