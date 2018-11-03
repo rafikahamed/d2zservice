@@ -45,7 +45,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 				timestamp = new java.sql.Timestamp(parsedDate.getTime());
 
 			} catch (ParseException e) {
-				throw new InvalidDateException("Invalid Date");
+				throw new InvalidDateException("Invalid Date - yyyy-MM-dd hh:mm:ss");
 			}
 			trackingDetails.setTrackEventDateOccured(timestamp);
 			System.out.println(trackingDetails.getTrackEventDateOccured());
@@ -92,7 +92,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		}
 		List<Trackandtrace> insertedData= (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackingDetailsList);
 		trackAndTraceRepository.updateTracking();
-		return insertedData;	}
+		return insertedData;	
+	}
 
 	@Override
 	public List<String> brokerCompanyDetails() {

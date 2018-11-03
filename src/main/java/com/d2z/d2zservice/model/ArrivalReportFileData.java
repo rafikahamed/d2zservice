@@ -33,6 +33,5 @@ public class ArrivalReportFileData {
 		this.scannedDateTime = scannedDateTime;
 	}
 	
-	
 
 }
