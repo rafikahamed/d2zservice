@@ -62,4 +62,9 @@ public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
 		return shipmentDetails;
 	}
 
+	@Override
+	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber) {
+		return senderDataRepository.fetchShipmentData(shipmentNumber);
+	}
+
 }

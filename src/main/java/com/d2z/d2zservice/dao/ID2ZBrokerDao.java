@@ -21,4 +21,6 @@ public interface ID2ZBrokerDao {
 
 	public List<String> fetchApiShipmentList();
 
+	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber);
+
 }

@@ -129,5 +129,11 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 		}
 		return apiShipmentDropDownList;
 	}
+
+	@Override
+	public List<SenderdataMaster> downloadShipmentData(String shipmentNumber) {
+		// TODO Auto-generated method stub
+		return d2zDao.fetchShipmentData(shipmentNumber);
+	}
 	
 }

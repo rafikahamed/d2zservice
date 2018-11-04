@@ -1,5 +1,6 @@
 package com.d2z.d2zservice.repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
@@ -64,7 +65,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y' and t.manifest_number is null") 
 	List<SenderdataMaster> fetchManifestData(@Param("fileName") String fileName);
 
-	@Query("SELECT t FROM SenderdataMaster t where t.airwayBill = :shipmentNumber") 
+	@Query("SELECT t FROM SenderdataMaster t where t.airwayBill = :shipmentNumber and t.isDeleted != 'Y'") 
 	List<SenderdataMaster> fetchShipmentData(@Param("shipmentNumber") String shipmentNumber);
 
 	@Query("SELECT DISTINCT t.manifest_number FROM SenderdataMaster t") 
@@ -88,4 +89,12 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"and filename like '%API%' and sender_files_id like '%API%' and airwaybill is null")
 	 List<String> fetchDirectInjectionData(@Param("companyName") String companyName);
 
-}
+	 @Query("SELECT t FROM SenderdataMaster t where t.isDeleted = 'Y' and t.timestamp between :fromTimestamp and :toTimestamp") 
+	List<SenderdataMaster> fetchDeletedConsignments(@Param("fromTimestamp") String fromTimestamp , @Param("toTimestamp") String toTimestamp);
+
+	 @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.trackEventDateOccured between :fromTime and :toTime") 
+	List<SenderdataMaster> exportConsignments(@Param("fromTime") Timestamp fromTime , @Param("toTime") Timestamp toTime);
+
+	 @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'SHIPMENT ALLOCATED' and t.isDeleted != 'Y' and t.trackEventDateOccured between :fromTime and :toTime") 
+	List<SenderdataMaster> exportShipment(@Param("fromTime") Timestamp fromTime , @Param("toTime") Timestamp toTime);
+} 
