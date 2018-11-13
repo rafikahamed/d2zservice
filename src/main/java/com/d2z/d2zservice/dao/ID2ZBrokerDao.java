@@ -9,7 +9,7 @@ public interface ID2ZBrokerDao {
 	
 	public List<String> companyDetails();
 
-	public User fetchUserDetails(String companyName);
+	public User fetchUserDetails(String companyName, String roleId);
 
 	public List<String> getManifestList();
 

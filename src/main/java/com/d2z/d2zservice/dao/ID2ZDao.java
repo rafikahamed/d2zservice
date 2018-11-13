@@ -52,7 +52,7 @@ public interface ID2ZDao {
 
 	public void updateUserService(User existingUser, UserDetails userDetails);
 
-	public String deleteUser(String companyName);
+	public String deleteUser(String companyName, String roleId);
 
 	public List<SenderdataMaster> fetchManifestData(String fileName);
 

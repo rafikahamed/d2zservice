@@ -1,9 +1,13 @@
 package com.d2z.d2zservice.model;
 
+import java.sql.Timestamp;
+import java.util.List;
+
 public class TrackParcel {
 
 	private String referenceNumber;
 	private String barcodelabelNumber;
+	private String eventDetails;
 	private String consignmentCreated;
 	private String shipmentCreated;
 	private String heldByCustoms;
@@ -12,6 +16,21 @@ public class TrackParcel {
 	private String processedByFacility;
 	private String inTransit;
 	private String delivered;
+	private Timestamp trackEventDateOccured;
+	private List<TrackingEvents> trackingEvents;
+	
+	public List<TrackingEvents> getTrackingEvents() {
+		return trackingEvents;
+	}
+	public void setTrackingEvents(List<TrackingEvents> trackingEvents) {
+		this.trackingEvents = trackingEvents;
+	}
+	public Timestamp getTrackEventDateOccured() {
+		return trackEventDateOccured;
+	}
+	public void setTrackEventDateOccured(Timestamp trackEventDateOccured) {
+		this.trackEventDateOccured = trackEventDateOccured;
+	}
 	
 	public String getReferenceNumber() {
 		return referenceNumber;
@@ -74,6 +93,11 @@ public class TrackParcel {
 	public void setDelivered(String delivered) {
 		this.delivered = delivered;
 	}
-	
+	public String getEventDetails() {
+		return eventDetails;
+	}
+	public void setEventDetails(String eventDetails) {
+		this.eventDetails = eventDetails;
+	}
 	
 }

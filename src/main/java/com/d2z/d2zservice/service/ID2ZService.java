@@ -49,7 +49,7 @@ public interface ID2ZService {
 
 	public UserMessage updateUser(UserDetails userDetails);
 
-	public UserMessage deleteUser(String companyName);
+	public UserMessage deleteUser(String companyName, String roleId);
 
 	public List<SenderdataMaster> fetchManifestData(String fileName);
 

@@ -46,7 +46,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 			} catch (ParseException e) {
 				throw new InvalidDateException("Invalid Date");
 			}*/
-			trackingDetails.setTrackEventDateOccured(Timestamp.valueOf(fileDataValue.getTrackEventDateOccured()));
+			//trackingDetails.setTrackEventDateOccured(Timestamp.valueOf(fileDataValue.getTrackEventDateOccured()));
+			trackingDetails.setTrackEventDateOccured(fileDataValue.getTrackEventDateOccured());
 			System.out.println(trackingDetails.getTrackEventDateOccured());
 			trackingDetails.setFileName(fileDataValue.getFileName());
 			trackingDetails.setTimestamp(Timestamp.from(Instant.now()).toString());
@@ -82,7 +83,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 			} catch (ParseException e) {
 				throw new InvalidDateException("Invalid Date");
 			}*/
-	trackingDetails.setTrackEventDateOccured(Timestamp.valueOf(fileDataValue.getScannedDateTime()));
+			//trackingDetails.setTrackEventDateOccured(Timestamp.valueOf(fileDataValue.getScannedDateTime()));
+			trackingDetails.setTrackEventDateOccured(fileDataValue.getScannedDateTime());
 			System.out.println(trackingDetails.getTrackEventDateOccured());
 			trackingDetails.setFileName(fileDataValue.getFileName());
 			trackingDetails.setTimestamp(Timestamp.from(Instant.now()).toString());

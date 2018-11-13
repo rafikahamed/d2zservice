@@ -1,7 +1,6 @@
 package com.d2z.d2zservice.controller;
 
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.model.DirectInjectionDetails;
 import com.d2z.d2zservice.model.DropDownModel;
-import com.d2z.d2zservice.model.ShipmentDetails;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.service.IBrokerD2ZService;
 
@@ -32,8 +29,8 @@ public class D2zBrokerController {
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/user-details")
-    public UserDetails fetchUserDetails(@RequestParam("companyName") String companyName) {
-		return brokerD2zService.fetchUserDetails(companyName);
+    public UserDetails fetchUserDetails(@RequestParam("companyName") String companyName, @RequestParam("roleId") String roleId) {
+		return brokerD2zService.fetchUserDetails(companyName,roleId);
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/manifestList")

@@ -2,7 +2,6 @@ package com.d2z.d2zservice.repository;
 
 import java.sql.Timestamp;
 import java.util.List;
-
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
@@ -68,25 +67,24 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT t FROM SenderdataMaster t where t.airwayBill = :shipmentNumber and t.isDeleted != 'Y'") 
 	List<SenderdataMaster> fetchShipmentData(@Param("shipmentNumber") String shipmentNumber);
 
-	@Query("SELECT DISTINCT t.manifest_number FROM SenderdataMaster t") 
+	@Query("SELECT DISTINCT t.manifest_number FROM SenderdataMaster t where t.airwayBill is null") 
 	List<String> fetchManifestNumber();
 	
-	 @Query("SELECT t FROM SenderdataMaster t where t.manifest_number = :manifestNumber") 
+	 @Query("SELECT t FROM SenderdataMaster t where t.manifest_number = :manifestNumber and t.airwayBill is null") 
 	 List<SenderdataMaster> fetchConsignmentByManifest(@Param("manifestNumber") String manifestNumber);
 
-
 	 @Query("SELECT reference_number FROM SenderdataMaster t where t.reference_number in :referenceNumbers and t.airwayBill is not null") 
-	List<String> findRefNbrByShipmentNbr(@Param("referenceNumbers") String[] referenceNumbers);
+	 List<String> findRefNbrByShipmentNbr(@Param("referenceNumbers") String[] referenceNumbers);
 	 
-	 @Query("SELECT DISTINCT t.airwayBill FROM SenderdataMaster t where t.filename like '%D2ZUI%' and t.sender_Files_ID like '%D2ZUI%' ") 
+	 @Query("SELECT DISTINCT t.airwayBill FROM SenderdataMaster t where t.sender_Files_ID like '%D2ZUI%' ") 
 	 List<String> fetchShipmentList();
 	 
-	 @Query("SELECT DISTINCT t.airwayBill FROM SenderdataMaster t where t.filename like '%D2ZAPI%' and t.sender_Files_ID like '%D2ZAPI%' ") 
+	 @Query("SELECT DISTINCT t.airwayBill FROM SenderdataMaster t where t.sender_Files_ID like '%D2ZAPI%' ") 
 	 List<String> fetchApiShipmentList();
 	 
 	 @Query(nativeQuery = true, value="select reference_number, substring(barcodelabelnumber,19,23), consignee_name, consignee_Postcode, weight, Shipper_Name from senderdata_master \n" + 
 	 		"where user_id in (select user_id from users where CompanyName=:companyName)\n" + 
-	 		"and filename like '%API%' and sender_files_id like '%API%' and airwaybill is null")
+	 		"and sender_files_id like '%API%' and airwaybill is null")
 	 List<String> fetchDirectInjectionData(@Param("companyName") String companyName);
 
 	 @Query("SELECT t FROM SenderdataMaster t where t.isDeleted = 'Y' and t.timestamp between :fromTimestamp and :toTimestamp") 

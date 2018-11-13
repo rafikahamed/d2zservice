@@ -27,8 +27,8 @@ public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
 	}
 
 	@Override
-	public User fetchUserDetails(String companyName) {
-		User userDetails = userRepository.fetchUserbyCompanyName(companyName);
+	public User fetchUserDetails(String companyName, String roleId) {
+		User userDetails = userRepository.fetchUserbyCompanyName(companyName,Integer.parseInt(roleId));
 		return userDetails;
 	}
 

@@ -48,7 +48,7 @@ public class Trackandtrace implements Serializable {
 	private String trackEventCode;
 
 	@Column(name="TrackEventDateOccured")
-	private Timestamp trackEventDateOccured;
+	private String trackEventDateOccured;
 
 	@Column(name="TrackEventDetails")
 	private String trackEventDetails;
@@ -163,11 +163,11 @@ public class Trackandtrace implements Serializable {
 		this.trackEventCode = trackEventCode;
 	}
 
-	public Timestamp getTrackEventDateOccured() {
+	public String getTrackEventDateOccured() {
 		return this.trackEventDateOccured;
 	}
 
-	public void setTrackEventDateOccured(Timestamp trackEventDateOccured) {
+	public void setTrackEventDateOccured(String trackEventDateOccured) {
 		this.trackEventDateOccured = trackEventDateOccured;
 	}
 

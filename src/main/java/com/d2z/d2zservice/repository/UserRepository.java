@@ -19,8 +19,8 @@ public interface UserRepository extends CrudRepository<User, Long>{
 	 @Query("Select t.user_Name from User t where t.user_IsDeleted = false") 
 	 List<String> fetchAllUserName();
 
-	 @Query("SELECT u FROM User u where u.companyName = :companyName and u.role_Id=3") 
-	 User fetchUserbyCompanyName(@Param("companyName") String companyName);
+	 @Query("SELECT u FROM User u where u.companyName = :companyName and u.role_Id= :roleId") 
+	 User fetchUserbyCompanyName(@Param("companyName") String companyName, @Param("roleId") int roleId);
 
 	 @Query("Select user_Id from User t where t.user_Name = :userName and t.user_IsDeleted = false") 
 	 Integer fetchUserIdbyUserName(String userName);

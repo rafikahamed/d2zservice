@@ -137,8 +137,8 @@ public class D2zController {
 	}	
 	
 	@RequestMapping(method = RequestMethod.PUT, path = "/user/delete/{companyName}")
-	 public UserMessage deleteUser(@PathVariable String companyName) {
-		UserMessage userMsg = d2zService.deleteUser(companyName);
+	 public UserMessage deleteUser(@PathVariable String companyName, @PathVariable String roleId) {
+		UserMessage userMsg = d2zService.deleteUser(companyName, roleId);
 		return userMsg;
 	}	
 //	@RequestMapping( method = RequestMethod.GET, path = "/consignments/shipment")

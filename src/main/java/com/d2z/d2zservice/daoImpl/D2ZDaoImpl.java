@@ -358,8 +358,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}*/
 
 	@Override
-	public String deleteUser(String companyName) {
-		User existingUser = userRepository.fetchUserbyCompanyName(companyName);
+	public String deleteUser(String companyName, String roleId) {
+		User existingUser = userRepository.fetchUserbyCompanyName(companyName, Integer.parseInt(roleId));
 		if(existingUser==null) {
 			return "Company Name does not exist";
 		}

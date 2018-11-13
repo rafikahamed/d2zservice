@@ -19,7 +19,7 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 	 List<Trackandtrace> fetchTrackEventByArticleID(String articleID);
 
 	 @Procedure(name = "update-tracking")
-	void updateTracking();
+	 void updateTracking();
 
 	 /*@Query("SELECT t FROM Trackandtrace t where t.reference_number = :referenceNumber and t.isDeleted != 'Y' order by trackEventDateOccured desc") 
 	 List<Trackandtrace> getLatestStatusByReferenceNumber(@Param("referenceNumber") String referenceNumber);

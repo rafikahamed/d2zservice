@@ -38,8 +38,8 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 	}
 
 	@Override
-	public UserDetails fetchUserDetails(String companyName) {
-		User user = d2zDao.fetchUserDetails(companyName);
+	public UserDetails fetchUserDetails(String companyName, String roleId) {
+		User user = d2zDao.fetchUserDetails(companyName, roleId);
 		UserDetails userDetails = new UserDetails();
 		userDetails.setAddress(user.getAddress());
 		userDetails.setCompanyName(user.getCompanyName());

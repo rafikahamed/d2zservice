@@ -11,7 +11,7 @@ public interface IBrokerD2ZService {
 
 	public List<DropDownModel> companyDetails();
 
-	public UserDetails fetchUserDetails(String companyName);
+	public UserDetails fetchUserDetails(String companyName, String roleId);
 
 	public List<DropDownModel> getManifestList();
 
