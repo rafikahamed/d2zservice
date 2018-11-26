@@ -2,7 +2,6 @@ package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import java.sql.Timestamp;
 
 /**
  * The persistent class for the trackandtrace database table.

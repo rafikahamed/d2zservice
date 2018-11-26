@@ -91,8 +91,8 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	List<SenderdataMaster> fetchDeletedConsignments(@Param("fromTimestamp") String fromTimestamp , @Param("toTimestamp") String toTimestamp);
 
 	 @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.trackEventDateOccured between :fromTime and :toTime") 
-	List<SenderdataMaster> exportConsignments(@Param("fromTime") Timestamp fromTime , @Param("toTime") Timestamp toTime);
+	List<SenderdataMaster> exportConsignments(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
 
 	 @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'SHIPMENT ALLOCATED' and t.isDeleted != 'Y' and t.trackEventDateOccured between :fromTime and :toTime") 
-	List<SenderdataMaster> exportShipment(@Param("fromTime") Timestamp fromTime , @Param("toTime") Timestamp toTime);
+	List<SenderdataMaster> exportShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
 } 
