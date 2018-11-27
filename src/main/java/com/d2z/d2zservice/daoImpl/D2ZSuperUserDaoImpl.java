@@ -69,6 +69,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		List<Trackandtrace> trackingDetailsList = new ArrayList<Trackandtrace>();
 		for(ArrivalReportFileData fileDataValue: fileData) {	
 			Trackandtrace trackingDetails = new Trackandtrace();
+			trackingDetails.setReference_number(fileDataValue.getReferenceNumber());
 			trackingDetails.setConnoteNo(fileDataValue.getConnoteNo());
 			String trackEvent = "Shortage";
 			if("CLEAR".equalsIgnoreCase(fileDataValue.getStatus())) {
@@ -128,7 +129,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		String fromTime = fromDate.concat(" ").concat("00:00:00");
 		String toTime = toDate.concat(" ").concat("23:59:59");
 		List<SenderdataMaster> exportedConsignments = 
-				senderDataRepository.exportConsignments(Timestamp.valueOf(fromTime),Timestamp.valueOf(toTime));
+				senderDataRepository.exportConsignments(fromTime,toTime);
 		System.out.println(exportedConsignments.size());
 		return exportedConsignments;
 	}
@@ -137,7 +138,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	public List<SenderdataMaster> exportShipment(String fromDate, String toDate) {
 		String fromTime = fromDate.concat(" ").concat("00:00:00");
 		String toTime = toDate.concat(" ").concat("23:59:59");
-		List<SenderdataMaster> exportedShipment = senderDataRepository.exportShipment(Timestamp.valueOf(fromTime),Timestamp.valueOf(toTime));
+		List<SenderdataMaster> exportedShipment = senderDataRepository.exportShipment(fromTime,toTime);
 		System.out.println(exportedShipment.size());
 		return exportedShipment;
 	}

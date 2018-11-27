@@ -3,7 +3,7 @@ package com.d2z.d2zservice.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ArrivalReportFileData {
-	
+	private String referenceNumber;
 	private String connoteNo;
 	private String status;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -34,6 +34,11 @@ public class ArrivalReportFileData {
 	public void setScannedDateTime(String scannedDateTime) {
 		this.scannedDateTime = scannedDateTime;
 	}
-	
+	public String getReferenceNumber() {
+		return referenceNumber;
+	}
+	public void setReferenceNumber(String referenceNumber) {
+		this.referenceNumber = referenceNumber;
+	}
 
 }
