@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
@@ -27,6 +28,8 @@ import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.ETowerResponse;
+import com.d2z.d2zservice.model.ETowerTrackingDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -38,6 +41,7 @@ import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.TrackingEvents;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.validation.D2ZValidator;
@@ -71,7 +75,7 @@ public class D2ZServiceImpl implements ID2ZService{
 	
 	@Autowired
 	ShipmentDetailsWriter shipmentWriter;
-	
+
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException{
 		d2zValidator.isReferenceNumberUnique(orderDetailList);
@@ -598,6 +602,4 @@ public class D2ZServiceImpl implements ID2ZService{
 		return trackParcelList;
 	
 	}
-	
-
 }

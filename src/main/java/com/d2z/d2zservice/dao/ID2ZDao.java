@@ -7,6 +7,8 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
+import com.d2z.d2zservice.model.ETowerResponse;
+import com.d2z.d2zservice.model.ETowerTrackingDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
@@ -67,6 +69,7 @@ public interface ID2ZDao {
 	public Trackandtrace getLatestStatusByArticleID(String articleID);
 
 	public List<String> findRefNbrByShipmentNbr(String[] referenceNumber);
+
 
 
 }

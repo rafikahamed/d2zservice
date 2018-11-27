@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,6 +21,7 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.InvalidDateException;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ShipmentDetails;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
@@ -71,4 +73,9 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 	 public List<SenderdataMaster> exportShipmentData(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
 		return superUserD2zService.exportShipmentData(fromDate, toDate);
    }
+	@RequestMapping( method = RequestMethod.GET, path = "/track/etower/{trackingNumbers}")
+    public ResponseMessage trackingCode(@PathVariable List<String> trackingNumbers) {
+		return superUserD2zService.trackingEvent(trackingNumbers);
+		
+    }
 }

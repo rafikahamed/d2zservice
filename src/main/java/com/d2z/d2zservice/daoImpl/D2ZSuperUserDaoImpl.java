@@ -1,8 +1,11 @@
 package com.d2z.d2zservice.daoImpl;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -11,6 +14,8 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
+import com.d2z.d2zservice.model.ETowerTrackingDetails;
+import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
@@ -136,5 +141,49 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		System.out.println(exportedShipment.size());
 		return exportedShipment;
 	}
-	
+
+	@Override
+	public ResponseMessage insertTrackingDetails(List<List<ETowerTrackingDetails>> response) {
+		List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
+		ResponseMessage responseMsg =  new ResponseMessage();
+		if(response.isEmpty()) {
+			responseMsg.setResponseMessage("No Data from ETower");
+		}
+		else {
+		for(List<ETowerTrackingDetails> etowerResponse : response) {
+			for(ETowerTrackingDetails trackingDetails : etowerResponse) {
+				Trackandtrace trackandTrace = new Trackandtrace();
+				trackandTrace.setBarcodelabelNumber(trackingDetails.getTrackingNo());
+				trackandTrace.setFileName("eTowerAPI");
+				//Date date = Date.from(Instant.ofEpochSecond(trackingDetails.getEventTime()));
+				Date date = new Date((long)trackingDetails.getEventTime());
+				
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");  
+                String trackEventOccurred = dateFormat.format(date);
+                System.out.println("DAte: "+date);
+                System.out.println("String: "+trackEventOccurred);
+				trackandTrace.setTrackEventDateOccured(trackEventOccurred);
+				trackandTrace.setTrackEventCode(trackingDetails.getEventCode());
+				trackandTrace.setTrackEventDetails(trackingDetails.getActivity());
+				trackandTrace.setTimestamp(trackingDetails.getTimestamp());
+				trackandTrace.setReference_number(trackingDetails.getTrackingNo());
+				trackAndTraceList.add(trackandTrace);
+			}
+			
+			trackAndTraceRepository.saveAll(trackAndTraceList);
+			responseMsg.setResponseMessage("Data uploaded successfully from ETower");
+		}
+		}
+		return responseMsg;
+	}
+
+	@Override
+	public List<String> fetchTrackingNumbersForETowerCall() {
+		List<String> dbResult  =  trackAndTraceRepository.fetchTrackingNumbersForETowerCall();
+		return dbResult;
+		
+	}
+
+
+
 }

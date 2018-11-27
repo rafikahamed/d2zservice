@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
@@ -17,9 +18,12 @@ import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.exception.InvalidDateException;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.ETowerTrackingDetails;
+import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 
 @Service
@@ -30,6 +34,10 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	
 	@Autowired
 	ShipmentDetailsWriter shipmentWriter;
+	
+	@Autowired
+	private ETowerProxy proxy;
+	
 	
 	@Override
 	public UserMessage uploadTrackingFile(List<UploadTrackingFileData> fileData){
@@ -105,5 +113,26 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	public List<SenderdataMaster> exportShipmentData(String fromDate, String toDate) {
 		return d2zDao.exportShipment(fromDate, toDate);
 	}
+
+	@Override
+	public ResponseMessage trackingEvent(List<String> trackingNumbers) {
+		System.out.println(trackingNumbers);
+		List<List<ETowerTrackingDetails>> response = proxy.makeCallForTrackingEvents(trackingNumbers);
+		return d2zDao.insertTrackingDetails(response);
+	}
+
+	//@Scheduled(cron = "0 0 0/2 * * ?")
+	//@Scheduled(cron = "0 0/10 * * * ?")
+	public void scheduledTrackingEvent() {
+		List<String> trackingNumbers = d2zDao.fetchTrackingNumbersForETowerCall();
+		if(trackingNumbers.isEmpty()) {
+			System.out.println("ETower call not required");
+		}
+		else {
+			trackingEvent(trackingNumbers);
+		}
+	}
+
+
 
 }

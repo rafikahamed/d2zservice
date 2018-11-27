@@ -210,21 +210,21 @@
 				<textFieldExpression><![CDATA[$F{barcodeLabelNumber}.substring( 18 )]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="128" y="156" width="220" height="15" uuid="dbf8cf09-6823-45a2-bf98-ecefca01df40"/>
+				<reportElement x="128" y="151" width="220" height="15" uuid="dbf8cf09-6823-45a2-bf98-ecefca01df40"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{barcodeLabelNumber}.substring( 18 )]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="57" y="156" width="70" height="15" uuid="96ffe972-517a-4eb8-80cf-b17b5aa3c28a"/>
+				<reportElement x="57" y="151" width="70" height="15" uuid="96ffe972-517a-4eb8-80cf-b17b5aa3c28a"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<text><![CDATA[AP Article Id:]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement x="9" y="72" width="338" height="83" uuid="59d0a8fc-b56d-4bf1-b304-0f08862723c5"/>
+				<reportElement x="10" y="81" width="338" height="83" uuid="59d0a8fc-b56d-4bf1-b304-0f08862723c5"/>
 				<c:EAN128 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" moduleWidth="1.4" textPosition="none" checksumMode="check">
 					<c:codeExpression><![CDATA[$F{barcodeLabelNumber}]]></c:codeExpression>
 				</c:EAN128>
@@ -237,52 +237,52 @@
 				<reportElement x="-1" y="-92" width="361" height="1" uuid="58f819f4-5e03-4fa6-838e-952994682ffd"/>
 			</line>
 			<staticText>
-				<reportElement x="154" y="-87" width="197" height="25" uuid="f9e7ec39-6452-4c93-95fb-8db4e23a7f64"/>
+				<reportElement x="154" y="-86" width="197" height="25" uuid="f9e7ec39-6452-4c93-95fb-8db4e23a7f64"/>
 				<textElement>
 					<font fontName="MyArial" size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Aviation Security and Dangerous Goods Declaration]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="154" y="-62" width="198" height="58" uuid="5e7e8bb0-50c6-443b-a308-f1cee1a1ad91"/>
+				<reportElement x="154" y="-60" width="198" height="58" uuid="5e7e8bb0-50c6-443b-a308-f1cee1a1ad91"/>
 				<textElement>
 					<font fontName="MyArial" size="8"/>
 				</textElement>
 				<text><![CDATA[The sender acknowledges that this article may be carried by air and will be subject to aviation security and clearing procedures; and the sender declares that the article does not contain any dangerous or prohibited goods, explosive or incendiary devices. A false declaration is a criminal offence.]]></text>
 			</staticText>
 			<line>
-				<reportElement x="145" y="-91" width="1" height="87" uuid="9283bbad-0880-4df9-bba2-6eea5aba015c"/>
+				<reportElement x="147" y="-91" width="1" height="89" uuid="9283bbad-0880-4df9-bba2-6eea5aba015c"/>
 			</line>
 			<staticText>
-				<reportElement x="0" y="-82" width="100" height="15" uuid="10f9c6c8-ddb8-4d0a-a178-d84d51e31c0a"/>
+				<reportElement x="0" y="-84" width="100" height="15" uuid="10f9c6c8-ddb8-4d0a-a178-d84d51e31c0a"/>
 				<textElement>
 					<font fontName="MyArial" isBold="true"/>
 				</textElement>
 				<text><![CDATA[SENDER]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="1" y="-67" width="139" height="15" uuid="fd473895-7f65-4525-a18d-12237e140300"/>
+				<reportElement x="1" y="-69" width="139" height="15" uuid="fd473895-7f65-4525-a18d-12237e140300"/>
 				<textElement>
 					<font fontName="MyArial"/>
 				</textElement>
 				<textFieldExpression><![CDATA["SW4"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="1" y="-52" width="139" height="15" uuid="74384646-f320-4f97-b252-5446ab2b0273"/>
+				<reportElement x="1" y="-54" width="139" height="15" uuid="74384646-f320-4f97-b252-5446ab2b0273"/>
 				<textElement>
 					<font fontName="MyArial"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Unit 12, 1801 Botany Road"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="1" y="-37" width="139" height="15" uuid="7fd1e4c2-8511-4e79-bd2c-292dfd3b0b70"/>
+				<reportElement x="1" y="-39" width="139" height="15" uuid="7fd1e4c2-8511-4e79-bd2c-292dfd3b0b70"/>
 				<textElement>
 					<font fontName="MyArial"/>
 				</textElement>
 				<textFieldExpression><![CDATA["BANKSMEADOW NSW 2019"]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="0" y="-3" width="358" height="1" uuid="fc0f367d-a0be-4d9b-b0ca-8aecc6f7ee5c"/>
+				<reportElement x="0" y="-2" width="358" height="1" uuid="fc0f367d-a0be-4d9b-b0ca-8aecc6f7ee5c"/>
 			</line>
 			<staticText>
 				<reportElement x="0" y="8" width="30" height="15" uuid="c6b92165-89fc-4b03-b7b8-ed2df3c5bdee"/>
@@ -297,7 +297,7 @@
 				<text><![CDATA[Internal use only]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="0" y="-21" width="149" height="15" uuid="dca170a3-2e7b-494e-a882-2b246f843014"/>
+				<reportElement x="0" y="-24" width="147" height="15" uuid="dca170a3-2e7b-494e-a882-2b246f843014"/>
 				<textFieldExpression><![CDATA["Buyer is Not to return in person"]]></textFieldExpression>
 			</textField>
 			<componentElement>

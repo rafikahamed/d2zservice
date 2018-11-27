@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @ComponentScan({ "com.d2z.d2zservice.*"})
 @EnableJpaRepositories(basePackages="com.d2z.d2zservice.repository")
 @EnableTransactionManagement
+@EnableScheduling
 @EntityScan(basePackages="com.d2z.d2zservice.entity")
 public class D2zServiceApplication {
 	

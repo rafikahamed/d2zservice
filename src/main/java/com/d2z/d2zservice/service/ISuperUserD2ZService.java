@@ -6,6 +6,7 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.InvalidDateException;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
@@ -25,5 +26,7 @@ public interface ISuperUserD2ZService{
 	List<SenderdataMaster> exportConsignmentData(String fromDate, String toDate);
 
 	List<SenderdataMaster> exportShipmentData(String fromDate, String toDate);
+
+	public ResponseMessage trackingEvent(List<String> trackingNumbers);
 
 }

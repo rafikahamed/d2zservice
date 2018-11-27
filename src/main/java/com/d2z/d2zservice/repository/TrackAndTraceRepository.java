@@ -21,10 +21,8 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 	 @Procedure(name = "update-tracking")
 	 void updateTracking();
 
-	 /*@Query("SELECT t FROM Trackandtrace t where t.reference_number = :referenceNumber and t.isDeleted != 'Y' order by trackEventDateOccured desc") 
-	 List<Trackandtrace> getLatestStatusByReferenceNumber(@Param("referenceNumber") String referenceNumber);
-
-	 @Query("SELECT t FROM Trackandtrace t where SUBSTRING(barcodelabelNumber,19,40) = :articleID and isDeleted != 'Y' order by trackEventDateOccured desc")
-	 List<Trackandtrace> getLatestStatusByArticleID(String articleID);*/
+	 @Query(nativeQuery = true,value="SELECT DISTINCT barcodelabelNumber FROM Trackandtrace where fileName = 'eTowerAPI' and barcodelabelNumber NOT IN \n"+
+	 "(SELECT DISTINCT barcodelabelNumber FROM Trackandtrace where trackEventDetails = 'DELIVERED' and fileName = 'eTowerAPI')")
+	List<String> fetchTrackingNumbersForETowerCall();
 
 }
