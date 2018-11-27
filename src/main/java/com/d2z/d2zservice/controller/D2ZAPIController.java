@@ -16,12 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
-import com.d2z.d2zservice.model.ETowerResponse;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderDataResponse;
-import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.service.ID2ZService;
 
 @RestController
