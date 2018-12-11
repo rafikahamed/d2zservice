@@ -1,5 +1,6 @@
 package com.d2z.d2zservice.proxy;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +15,10 @@ import org.springframework.web.client.RestTemplate;
 
 import com.d2z.d2zservice.interceptor.ETowerHeaderRequestInterceptor;
 import com.d2z.d2zservice.model.ETowerTrackingDetails;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class ETowerProxy {
@@ -23,8 +28,8 @@ public class ETowerProxy {
 	public List<List<ETowerTrackingDetails>> makeCallForTrackingEvents(List<String> trackingNumber) {
 
 
-		String url = "http://qa-cn.etowertech.com/services/integration/shipper/trackingEvents/";
-
+		//String url = "http://qa-cn.etowertech.com/services/integration/shipper/trackingEvents/";
+		String url = "https://au.etowertech.com/services/integration/shipper/trackingEvents/";
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		requestFactory.setOutputStreaming(false);
         RestTemplate restTemplate = new RestTemplate(requestFactory);
@@ -39,5 +44,19 @@ public class ETowerProxy {
         ResponseEntity<List<List<ETowerTrackingDetails>>> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,new ParameterizedTypeReference<List<List<ETowerTrackingDetails>>>() {});
         List<List<ETowerTrackingDetails>> responseList = response.getBody();
         return responseList;
+	}
+	
+	public List<List<ETowerTrackingDetails>> stubETower() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		String respJson =  "[[{\"trackingNo\":\"2MB653554501000931509\",\"eventTime\":1540980455000,\"eventCode\":\"SCN\",\"activity\":\"PROCESSED AT ORIGIN HUB\",\"location\":\"\",\"referenceTrackingNo\":null,\"destCountry\":\"AU\",\"timeZone\":\"+0800\",\"timestamp\":\"2018-10-31 18:07:35\"},{\"trackingNo\":\"2MB653554501000931509\",\"eventTime\":1540975440000,\"eventCode\":\"RCV\",\"activity\":\"RECEIVED SHIPMENT\",\"location\":\"\",\"referenceTrackingNo\":null,\"destCountry\":\"AU\",\"timeZone\":\"+0800\",\"timestamp\":\"2018-10-31 16:44:00\"},{\"trackingNo\":\"2MB653554501000931509\",\"eventTime\":1540975351000,\"eventCode\":\"INF\",\"activity\":\"SHIPPING INFORMATION RECEIVED\",\"location\":\"\",\"referenceTrackingNo\":null,\"destCountry\":\"AU\",\"timeZone\":\"+0800\",\"timestamp\":\"2018-10-31 16:42:31\"},{\"trackingNo\":\"2MB653554501000931509\",\"eventTime\":1540995551000,\"eventCode\":\"DVR\",\"activity\":\"DELIVER\",\"location\":\"\",\"referenceTrackingNo\":null,\"destCountry\":\"AU\",\"timeZone\":\"+0800\",\"timestamp\":\"2018-10-31 20:42:31\"}]]";
+		TypeReference<List<List<ETowerTrackingDetails>>> mapType = new TypeReference<List<List<ETowerTrackingDetails>>>() {};
+		List<List<ETowerTrackingDetails>> jsonToList = null ;
+		try {
+			jsonToList = objectMapper.readValue(respJson, mapType);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return jsonToList;
 	}
 }

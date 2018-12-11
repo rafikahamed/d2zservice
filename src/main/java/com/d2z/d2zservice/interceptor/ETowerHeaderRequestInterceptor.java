@@ -34,9 +34,10 @@ public class ETowerHeaderRequestInterceptor implements ClientHttpRequestIntercep
 		String currentDate = currentDateFormat.format(new Date());
 		System.out.println("US: "+currentDateFormat.format(new Date()));
 		
-		String SECRET_KEY = "79db9e5OEeOpvgAVXUFWSD";
-        String authorizationHeader = "WallTech test5AdbzO5OEeOpvgAVXUFE0A:" + hmacGenerator.calculateHMAC(SECRET_KEY,request.getURI().toString(),request.getMethod().toString());
-
+		//String SECRET_KEY = "79db9e5OEeOpvgAVXUFWSD";
+		String SECRET_KEY = "zwmaAqqPaIHHQLecRmtSoA";
+       // String authorizationHeader = "WallTech test5AdbzO5OEeOpvgAVXUFE0A:" + hmacGenerator.calculateHMAC(SECRET_KEY,request.getURI().toString(),request.getMethod().toString());
+		 String authorizationHeader = "WallTech pclP23MTpyqGq_UQ3MkFjW:" + hmacGenerator.calculateHMAC(SECRET_KEY,request.getURI().toString(),request.getMethod().toString());
     	System.out.println("Before calling");
     	 HttpHeaders headers = request.getHeaders();
          headers.add("X-WallTech-Date", currentDate);
@@ -45,7 +46,6 @@ public class ETowerHeaderRequestInterceptor implements ClientHttpRequestIntercep
     	System.out.println("Request Body: "+ new String(body, "UTF-8"));
         logRequest(request, body);
         ClientHttpResponse response =  execution.execute(request, body);
-    	System.out.println("Response: "+response.getBody());
         logResponse(response);
         return response;
         
