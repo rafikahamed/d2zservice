@@ -154,7 +154,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		for(List<ETowerTrackingDetails> etowerResponse : response) {
 			for(ETowerTrackingDetails trackingDetails : etowerResponse) {
 				Trackandtrace trackandTrace = new Trackandtrace();
-				trackandTrace.setBarcodelabelNumber(trackingDetails.getTrackingNo());
+				trackandTrace.setArticleID(trackingDetails.getTrackingNo());
 				trackandTrace.setFileName("eTowerAPI");
 				//Date date = Date.from(Instant.ofEpochSecond(trackingDetails.getEventTime()));
 				Date date = new Date((long)trackingDetails.getEventTime());
@@ -163,11 +163,12 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
                 String trackEventOccurred = dateFormat.format(date);
                 System.out.println("DAte: "+date);
                 System.out.println("String: "+trackEventOccurred);
-				trackandTrace.setTrackEventDateOccured(trackEventOccurred);
+                trackandTrace.setTrackEventDateOccured(trackEventOccurred);
 				trackandTrace.setTrackEventCode(trackingDetails.getEventCode());
 				trackandTrace.setTrackEventDetails(trackingDetails.getActivity());
 				trackandTrace.setTimestamp(trackingDetails.getTimestamp());
 				trackandTrace.setReference_number(trackingDetails.getTrackingNo());
+				trackandTrace.setIsDeleted("N");
 				trackAndTraceList.add(trackandTrace);
 			}
 			

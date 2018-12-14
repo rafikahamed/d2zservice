@@ -182,7 +182,7 @@ public class SenderdataMaster implements Serializable {
 	@Column(name="Weight")
 	private double weight;
 	
-	@OneToMany(mappedBy="senderData", cascade=CascadeType.ALL)
+	@OneToMany(mappedBy="senderData")
     List<Trackandtrace> trackAndTrace = null;
 	
 	public String getConsigneeCompany() {

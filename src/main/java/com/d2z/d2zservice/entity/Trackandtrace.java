@@ -1,17 +1,7 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
-import javax.persistence.NamedStoredProcedureQuery;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+
 import javax.persistence.*;
 
 /**
@@ -20,16 +10,19 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="TrackAndtrace")
+@IdClass(TrackEventId.class)
 @NamedQuery(name="Trackandtrace.findAll", query="SELECT t FROM Trackandtrace t")
 @NamedStoredProcedureQuery(name = "update-tracking", 
 procedureName = "UpdateTracking")
 public class Trackandtrace implements Serializable {
 
-	private static final long serialVersionUID = 1L;
 
+	private static final long serialVersionUID = 1L;
+	
 	@Column(name="AirwayBill")
 	private String airwayBill;
 
+	
 	@Column(name="BarcodelabelNumber")
 	private String barcodelabelNumber;
 
@@ -57,17 +50,20 @@ public class Trackandtrace implements Serializable {
 	@Column(name="TrackEventCode")
 	private String trackEventCode;
 
+	@Id
 	@Column(name="TrackEventDateOccured")
 	private String trackEventDateOccured;
 
+	@Id
 	@Column(name="TrackEventDetails")
 	private String trackEventDetails;
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_GEN")
-	@SequenceGenerator(name = "SEQ_GEN", sequenceName = "TrackIDSeqNum", allocationSize = 20) 
-	@Column(name="TrackID")
-	private long trackID;
+	//@Id
+	//@GeneratedValue
+	//@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_GEN")
+	//@SequenceGenerator(name = "SEQ_GEN", sequenceName = "TrackIDSeqNum", allocationSize = 20) 
+	//@Column(name="TrackID")
+	//private long trackID;
 
 	@Column(name="TrackSequence")
 	private int trackSequence;
@@ -77,6 +73,18 @@ public class Trackandtrace implements Serializable {
 
 	@Column(name="ConnoteNo")
 	private String connoteNo;
+	
+	@Id
+	@Column(name="ArticleID")
+	private String articleID;
+
+	public String getArticleID() {
+		return articleID;
+	}
+
+	public void setArticleID(String articleID) {
+		this.articleID = articleID;
+	}
 
 	@ManyToOne
     @JoinColumn(name = "Reference_number",referencedColumnName = "Reference_number", insertable=false, updatable=false)
@@ -189,13 +197,13 @@ public class Trackandtrace implements Serializable {
 		this.trackEventDetails = trackEventDetails;
 	}
 
-	public long getTrackID() {
+	/*public long getTrackID() {
 		return this.trackID;
 	}
 
 	public void setTrackID(long trackID) {
 		this.trackID = trackID;
-	}
+	}*/
 
 	public int getTrackSequence() {
 		return this.trackSequence;

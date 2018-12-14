@@ -115,10 +115,11 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	public ResponseMessage trackingEvent(List<String> trackingNumbers) {
 		System.out.println(trackingNumbers);
 		List<List<ETowerTrackingDetails>> response = proxy.makeCallForTrackingEvents(trackingNumbers);
+		//List<List<ETowerTrackingDetails>> response = proxy.stubETower();
 		return d2zDao.insertTrackingDetails(response);
 	}
 
-	//@Scheduled(cron = "0 0 0/2 * * ?")
+	@Scheduled(cron = "0 0 0/2 * * ?")
 	//@Scheduled(cron = "0 0/10 * * * ?")
 	public void scheduledTrackingEvent() {
 		List<String> trackingNumbers = d2zDao.fetchTrackingNumbersForETowerCall();

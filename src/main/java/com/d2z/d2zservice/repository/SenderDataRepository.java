@@ -1,7 +1,7 @@
 package com.d2z.d2zservice.repository;
 
-import java.sql.Timestamp;
 import java.util.List;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
