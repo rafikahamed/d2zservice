@@ -71,7 +71,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		for(ArrivalReportFileData fileDataValue: fileData) {	
 			Trackandtrace trackingDetails = new Trackandtrace();
 			trackingDetails.setReference_number(fileDataValue.getReferenceNumber());
-			trackingDetails.setConnoteNo(fileDataValue.getConnoteNo());
+			trackingDetails.setArticleID(fileDataValue.getConnoteNo());
 			String trackEvent = "Shortage";
 			if("CLEAR".equalsIgnoreCase(fileDataValue.getStatus())) {
 				trackEvent = "Received and Clear";
