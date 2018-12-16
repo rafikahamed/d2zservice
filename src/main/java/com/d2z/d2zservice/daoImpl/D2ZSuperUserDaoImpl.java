@@ -39,7 +39,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		for(UploadTrackingFileData fileDataValue: fileData) {
 			Trackandtrace trackingDetails = new Trackandtrace();
 			trackingDetails.setReference_number(fileDataValue.getReferenceNumber());
-			trackingDetails.setConnoteNo(fileDataValue.getConnoteNo());
+			trackingDetails.setArticleID(fileDataValue.getConnoteNo());
 			trackingDetails.setTrackEventDetails(fileDataValue.getTrackEventDetails().toUpperCase());
 			/*System.out.println(fileDataValue.getTrackEventDateOccured());
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -57,9 +57,10 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 			trackingDetails.setFileName(fileDataValue.getFileName());
 			trackingDetails.setTimestamp(Timestamp.from(Instant.now()).toString());
 			trackingDetails.setIsDeleted("N");
+			trackAndTraceRepository.save(trackingDetails);
 			trackingDetailsList.add(trackingDetails);
 		}
-		List<Trackandtrace> insertedData= (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackingDetailsList);
+		List<Trackandtrace> insertedData=  (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackingDetailsList);
 		trackAndTraceRepository.updateTracking();
 		return insertedData;
 	}
