@@ -276,11 +276,15 @@ public class D2ZServiceImpl implements ID2ZService{
 			List<Trackandtrace> trackAndTraceList= d2zDao.trackParcelByArticleID(articleID);
 			TrackParcel trackParcel = new TrackParcel();
 			//List<TrackEventDetails> trackEventDetails = new ArrayList<TrackEventDetails>();
+			List<TrackingEvents> trackingEventList = new ArrayList<TrackingEvents>();
 			for (Trackandtrace daoObj : trackAndTraceList) {
+				TrackingEvents trackingEvents = new TrackingEvents();
 				trackParcel.setReferenceNumber(daoObj.getReference_number());
 				trackParcel.setBarcodelabelNumber(daoObj.getArticleID());
-				
-				switch(daoObj.getTrackEventDetails().toUpperCase()) {
+				trackingEvents.setEventDetails(daoObj.getTrackEventDetails());
+				trackingEvents.setTrackEventDateOccured(daoObj.getTrackEventDateOccured());
+				trackingEventList.add(trackingEvents);
+			/*	switch(daoObj.getTrackEventDetails().toUpperCase()) {
 					
 					case "CONSIGNMENT CREATED":
 						trackParcel.setConsignmentCreated(String.valueOf(daoObj.getTrackEventDateOccured()));
@@ -307,7 +311,7 @@ public class D2ZServiceImpl implements ID2ZService{
 						trackParcel.setDelivered(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
 				}
-				
+				*/
 				/*TrackEventDetails trackEventDetail =  new TrackEventDetails();
 				trackEventDetail.setTrackEventDateOccured(daoObj.getTrackEventDateOccured());
 				trackEventDetail.setTrackEventDetails(daoObj.getTrackEventDetails());
@@ -316,6 +320,8 @@ public class D2ZServiceImpl implements ID2ZService{
 				trackParcel.setTrackEventDetails(trackEventDetails);*/
 
 			}
+			trackParcel.setTrackingEvents(trackingEventList);
+
 			trackParcelList.add(trackParcel);
 		}
 		return trackParcelList;
@@ -337,7 +343,7 @@ public class D2ZServiceImpl implements ID2ZService{
 				trackingEvents.setEventDetails(daoObj.getTrackEventDetails());
 				trackingEvents.setTrackEventDateOccured(daoObj.getTrackEventDateOccured());
 				trackingEventList.add(trackingEvents);
-				switch(daoObj.getTrackEventDetails().toUpperCase()) {
+				/*switch(daoObj.getTrackEventDetails().toUpperCase()) {
 					
 					case "CONSIGNMENT CREATED":
 						trackParcel.setConsignmentCreated(String.valueOf(daoObj.getTrackEventDateOccured()));
@@ -363,7 +369,7 @@ public class D2ZServiceImpl implements ID2ZService{
 					case "DELIVERED":
 						trackParcel.setDelivered(String.valueOf(daoObj.getTrackEventDateOccured()));
 						break;
-				}
+				}*/
 			/*	TrackEventDetails trackEventDetail =  new TrackEventDetails();
 				trackEventDetail.setTrackEventDateOccured(daoObj.getTrackEventDateOccured());
 				trackEventDetail.setTrackEventDetails(daoObj.getTrackEventDetails());

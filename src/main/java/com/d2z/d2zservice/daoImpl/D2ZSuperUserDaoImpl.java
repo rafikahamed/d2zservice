@@ -170,6 +170,12 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 				trackandTrace.setTimestamp(trackingDetails.getTimestamp());
 				trackandTrace.setReference_number(trackingDetails.getTrackingNo());
 				trackandTrace.setIsDeleted("N");
+				if("ARRIVED AT DESTINATION AIRPORT".equalsIgnoreCase(trackandTrace.getTrackEventDetails()) ||
+						("COLLECTED FROM AIRPORT TERMINAL".equalsIgnoreCase(trackandTrace.getTrackEventDetails())) ||
+							("PREPARING TO DISPATCH".equalsIgnoreCase(trackandTrace.getTrackEventDetails())))
+					{
+					trackandTrace.setIsDeleted("Y");
+					}
 				trackAndTraceList.add(trackandTrace);
 			}
 			
