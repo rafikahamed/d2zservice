@@ -53,11 +53,11 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 			}*/
 			//trackingDetails.setTrackEventDateOccured(Timestamp.valueOf(fileDataValue.getTrackEventDateOccured()));
 			trackingDetails.setTrackEventDateOccured(fileDataValue.getTrackEventDateOccured());
-			System.out.println(trackingDetails.getTrackEventDateOccured());
+			System.out.println("ArticleID: "+trackingDetails.getArticleID()+",DateOccured: "+trackingDetails.getTrackEventDateOccured()+"Event: "+trackingDetails.getTrackEventDetails());
 			trackingDetails.setFileName(fileDataValue.getFileName());
 			trackingDetails.setTimestamp(Timestamp.from(Instant.now()).toString());
 			trackingDetails.setIsDeleted("N");
-			trackAndTraceRepository.save(trackingDetails);
+			//trackAndTraceRepository.save(trackingDetails);
 			trackingDetailsList.add(trackingDetails);
 		}
 		List<Trackandtrace> insertedData=  (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackingDetailsList);
@@ -166,8 +166,26 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
                 System.out.println("String: "+trackEventOccurred);
                 trackandTrace.setTrackEventDateOccured(trackEventOccurred);
 				trackandTrace.setTrackEventCode(trackingDetails.getEventCode());
-				trackandTrace.setTrackEventDetails(trackingDetails.getActivity());
-				trackandTrace.setTimestamp(trackingDetails.getTimestamp());
+				if(trackingDetails.getActivity()!=null) {
+					if(trackingDetails.getActivity().contains("Attempted Delivery") || trackingDetails.getActivity().contains("Unable to complete delivery") ) {
+						trackandTrace.setTrackEventDetails("ATTEMPTED DELIVERY");
+					}else if(trackingDetails.getActivity().contains("Collection")) {
+						trackandTrace.setTrackEventDetails("AWAITING COLLECTION");
+					}else if(trackingDetails.getActivity().contains("Delivered") || trackingDetails.getActivity().contains("Receiver requested Safe Drop") ) {
+						trackandTrace.setTrackEventDetails("DELIVERED");
+					}else if(trackingDetails.getActivity().contains("Accepted by Driver") || trackingDetails.getActivity().contains("With Australia Post for delivery today") 
+							|| trackingDetails.getActivity().contains("In Transit")) {
+						trackandTrace.setTrackEventDetails("IN TRANSIT");
+					}else if(trackingDetails.getActivity().contains("facility") || trackingDetails.getActivity().contains("Transferred") ) {
+						trackandTrace.setTrackEventDetails("ITEM PROCESSED BY FACILITY");
+					}else if(trackingDetails.getActivity().contains("Shipping information") || trackingDetails.getActivity().contains("Order Processed") 
+							|| trackingDetails.getActivity().contains("Order Accepted") || trackingDetails.getActivity().contains("Lodged")
+							|| trackingDetails.getActivity().contains("Manifested")) {
+						trackandTrace.setTrackEventDetails("SHIPPING INFORMATION RECEIVED");
+					}else {
+						trackandTrace.setTrackEventDetails(trackingDetails.getActivity());
+					}
+				}				trackandTrace.setTimestamp(trackingDetails.getTimestamp());
 				trackandTrace.setReference_number(trackingDetails.getTrackingNo());
 				trackandTrace.setIsDeleted("N");
 				if("ARRIVED AT DESTINATION AIRPORT".equalsIgnoreCase(trackandTrace.getTrackEventDetails()) ||
