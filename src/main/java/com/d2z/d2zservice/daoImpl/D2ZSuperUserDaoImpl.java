@@ -62,6 +62,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		}
 		List<Trackandtrace> insertedData=  (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackingDetailsList);
 		trackAndTraceRepository.updateTracking();
+		trackAndTraceRepository.deleteDuplicates();
 		return insertedData;
 	}
 
@@ -100,6 +101,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		}
 		List<Trackandtrace> insertedData= (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackingDetailsList);
 		trackAndTraceRepository.updateTracking();
+		trackAndTraceRepository.deleteDuplicates();
 		return insertedData;	
 	}
 
@@ -160,13 +162,13 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 				//Date date = Date.from(Instant.ofEpochSecond(trackingDetails.getEventTime()));
 				Date date = new Date((long)trackingDetails.getEventTime());
 				
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");  
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
                 String trackEventOccurred = dateFormat.format(date);
                 System.out.println("DAte: "+date);
                 System.out.println("String: "+trackEventOccurred);
                 trackandTrace.setTrackEventDateOccured(trackEventOccurred);
 				trackandTrace.setTrackEventCode(trackingDetails.getEventCode());
-				if(trackingDetails.getActivity()!=null) {
+			/*	if(trackingDetails.getActivity()!=null) {
 					if(trackingDetails.getActivity().contains("Attempted Delivery") || trackingDetails.getActivity().contains("Unable to complete delivery") ) {
 						trackandTrace.setTrackEventDetails("ATTEMPTED DELIVERY");
 					}else if(trackingDetails.getActivity().contains("Collection")) {
@@ -185,7 +187,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 					}else {
 						trackandTrace.setTrackEventDetails(trackingDetails.getActivity());
 					}
-				}				trackandTrace.setTimestamp(trackingDetails.getTimestamp());
+				}		*/
+				trackandTrace.setTrackEventDetails(trackingDetails.getActivity());
+				trackandTrace.setTimestamp(trackingDetails.getTimestamp());
 				trackandTrace.setReference_number(trackingDetails.getTrackingNo());
 				trackandTrace.setIsDeleted("N");
 				if("ARRIVED AT DESTINATION AIRPORT".equalsIgnoreCase(trackandTrace.getTrackEventDetails()) ||
@@ -198,6 +202,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 			}
 			
 			trackAndTraceRepository.saveAll(trackAndTraceList);
+			trackAndTraceRepository.updateTracking();
+			trackAndTraceRepository.deleteDuplicates();
 			responseMsg.setResponseMessage("Data uploaded successfully from ETower");
 		}
 		}

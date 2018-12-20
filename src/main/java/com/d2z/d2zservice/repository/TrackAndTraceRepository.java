@@ -22,6 +22,9 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 	 @Procedure(name = "update-tracking")
 	 void updateTracking();
 
+	 @Procedure(name = "delete-duplicate")
+	 void deleteDuplicates();
+	 
 	 @Query(nativeQuery = true,value="SELECT DISTINCT t.articleID FROM Trackandtrace t where t.fileName = 'eTowerAPI' and t.articleID NOT IN \n"+
 	 "(SELECT DISTINCT t.articleID FROM Trackandtrace t where t.trackEventDetails = 'DELIVERED' and t.fileName = 'eTowerAPI')")
 	List<String> fetchTrackingNumbersForETowerCall();

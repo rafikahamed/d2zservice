@@ -12,8 +12,13 @@ import javax.persistence.*;
 @Table(name="TrackAndtrace")
 @IdClass(TrackEventId.class)
 @NamedQuery(name="Trackandtrace.findAll", query="SELECT t FROM Trackandtrace t")
+@NamedStoredProcedureQueries({
 @NamedStoredProcedureQuery(name = "update-tracking", 
-procedureName = "UpdateTracking")
+procedureName = "UpdateTracking"),
+@NamedStoredProcedureQuery(name = "delete-duplicate", 
+procedureName = "deleteduplicate")
+})
+
 public class Trackandtrace implements Serializable {
 
 
