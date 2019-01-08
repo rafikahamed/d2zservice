@@ -4,19 +4,25 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
+import com.d2z.d2zservice.entity.BrokerRates;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
+import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.ETowerTrackingDetails;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
+import com.d2z.d2zservice.model.ZoneDetails;
+import com.d2z.d2zservice.model.ZoneRates;
+import com.d2z.d2zservice.repository.BrokerRatesRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
@@ -32,6 +38,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	
 	@Autowired
 	SenderDataRepository senderDataRepository;
+	
+	@Autowired
+	BrokerRatesRepository brokerRatesRepository;
 
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -53,9 +62,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 			}*/
 			//trackingDetails.setTrackEventDateOccured(Timestamp.valueOf(fileDataValue.getTrackEventDateOccured()));
 			trackingDetails.setTrackEventDateOccured(fileDataValue.getTrackEventDateOccured());
-			System.out.println("ArticleID: "+trackingDetails.getArticleID()+",DateOccured: "+trackingDetails.getTrackEventDateOccured()+"Event: "+trackingDetails.getTrackEventDetails());
 			trackingDetails.setFileName(fileDataValue.getFileName());
-			trackingDetails.setTimestamp(Timestamp.from(Instant.now()).toString());
+			trackingDetails.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
 			trackingDetails.setIsDeleted("N");
 			//trackAndTraceRepository.save(trackingDetails);
 			trackingDetailsList.add(trackingDetails);
@@ -95,7 +103,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 			trackingDetails.setTrackEventDateOccured(fileDataValue.getScannedDateTime());
 			System.out.println(trackingDetails.getTrackEventDateOccured());
 			trackingDetails.setFileName(fileDataValue.getFileName());
-			trackingDetails.setTimestamp(Timestamp.from(Instant.now()).toString());
+			trackingDetails.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+//			System.out.println("Instant : "+Timestamp.from(Instant.now()).toString());
 			trackingDetails.setIsDeleted("N");
 			trackingDetailsList.add(trackingDetails);
 		}
@@ -189,8 +198,10 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 					}
 				}		*/
 				trackandTrace.setTrackEventDetails(trackingDetails.getActivity());
-				trackandTrace.setTimestamp(trackingDetails.getTimestamp());
+				trackandTrace.setCourierEvents(trackingDetails.getActivity());
+				trackandTrace.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
 				trackandTrace.setReference_number(trackingDetails.getTrackingNo());
+				trackandTrace.setLocation(trackingDetails.getLocation());
 				trackandTrace.setIsDeleted("N");
 				if("ARRIVED AT DESTINATION AIRPORT".equalsIgnoreCase(trackandTrace.getTrackEventDetails()) ||
 						("COLLECTED FROM AIRPORT TERMINAL".equalsIgnoreCase(trackandTrace.getTrackEventDetails())) ||
@@ -218,5 +229,47 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	}
 
 
+	@Override
+	public String uploadBrokerRates(List<BrokerRatesData> brokerRatesData) {
+		String message = "";
+		List<BrokerRates> brokerRatesList = new ArrayList<BrokerRates>();
+		for(BrokerRatesData brokerRateData : brokerRatesData) {
+			
+			for(ZoneDetails zoneData : brokerRateData.getZone()) {
+				
+				
+				for(ZoneRates zoneRates : zoneData.getRates()) {
+					BrokerRates brokerRates_DB = brokerRatesRepository.findByCompositeKey(brokerRateData.getBrokerUserName(), brokerRateData.getInjectionType(), 
+							brokerRateData.getServiceType(), zoneData.getZoneID(), zoneRates.getMinWeight(), zoneRates.getMaxWeight());
+					if(null != brokerRates_DB) {
+						brokerRates_DB.setBackupInd("Y");
+						brokerRatesList.add(brokerRates_DB);
+					}
+					BrokerRates brokerRates = new  BrokerRates();
+					brokerRates.setBrokerUserName(brokerRateData.getBrokerUserName());
+					brokerRates.setInjectionType(brokerRateData.getInjectionType());
+					brokerRates.setServiceType(brokerRateData.getServiceType());
+					brokerRates.setGST(brokerRateData.getGST());
+					brokerRates.setZoneID(zoneData.getZoneID());
+					brokerRates.setRate(zoneRates.getRate());
+					brokerRates.setMaxWeight(zoneRates.getMaxWeight());
+					brokerRates.setMinWeight(zoneRates.getMinWeight());
+					brokerRates.setBackupInd("N");
+					brokerRates.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+					brokerRatesList.add(brokerRates);
+					
+				}
+			}
+			
+		}
+		List<BrokerRates> insertedData = (List<BrokerRates>) brokerRatesRepository.saveAll(brokerRatesList);
+		if(null!= insertedData && insertedData.size() > 0) {
+			message = "Data uploaded Successfully";
+		}
+		else {
+			message = "Failed to upload Data";
+		}
+		return message;
+	}
 
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.User;
+import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 
@@ -66,5 +67,8 @@ public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
 	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber) {
 		return senderDataRepository.fetchShipmentData(shipmentNumber);
 	}
+
+
+
 
 }

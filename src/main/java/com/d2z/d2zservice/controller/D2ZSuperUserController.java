@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
+import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -69,5 +70,10 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
     public ResponseMessage trackingCode(@PathVariable List<String> trackingNumbers) {
 		return superUserD2zService.trackingEvent(trackingNumbers);
 		
+    }
+	@RequestMapping( method = RequestMethod.POST, path = "/brokerRates", consumes=MediaType.APPLICATION_JSON)
+    public UserMessage uploadBrokerRates(@RequestBody List<BrokerRatesData> brokerRatesData) {
+		UserMessage successMsg = superUserD2zService.uploadBrokerRates(brokerRatesData);
+		return successMsg;
     }
 }

@@ -95,7 +95,22 @@ public class Trackandtrace implements Serializable {
     @JoinColumn(name = "Reference_number",referencedColumnName = "Reference_number", insertable=false, updatable=false)
     private SenderdataMaster senderData;
 	
+	
+	@Column(name="Location")
+	private String location;
+	
+	
 	public Trackandtrace() {
+	}
+
+	
+	
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
 	}
 
 	public String getAirwayBill() {

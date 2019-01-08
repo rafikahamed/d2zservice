@@ -5,6 +5,7 @@ import java.util.List;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.InvalidDateException;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
+import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -28,5 +29,7 @@ public interface ISuperUserD2ZService{
 	List<SenderdataMaster> exportShipmentData(String fromDate, String toDate);
 
 	public ResponseMessage trackingEvent(List<String> trackingNumbers);
+
+	public UserMessage uploadBrokerRates(List<BrokerRatesData> brokerRatesData);
 
 }

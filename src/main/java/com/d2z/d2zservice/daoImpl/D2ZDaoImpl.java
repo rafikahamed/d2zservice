@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -219,7 +220,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		});*/
 		List<String> incorrectRefNbrs = new ArrayList<String>();
 		int updatedRows=0;
-		Timestamp start = Timestamp.from(Instant.now());
+		//Timestamp start = Timestamp.from(Instant.now());
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		for(EditConsignmentRequest obj : requestList) {
 			SenderdataMaster senderData = senderDataRepository.fetchByReferenceNumbers(obj.getReferenceNumber());
@@ -233,9 +234,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 			}
 		}
 		senderDataRepository.saveAll(senderDataList);
-		Timestamp end = Timestamp.from(Instant.now());
+		/*Timestamp end = Timestamp.from(Instant.now());
 		long callDuration = end.getTime() - start.getTime();
-		System.out.println("Call Duration : "+callDuration);
+		System.out.println("Call Duration : "+callDuration);*/
 		ResponseMessage responseMsg = new ResponseMessage();
 		if(updatedRows==0) {
 			responseMsg.setResponseMessage("Update failed");
@@ -271,8 +272,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		userObj.setName(userData.getContactName());
 		userObj.setPhoneNumber(userData.getContactPhoneNumber());
 		userObj.setUser_IsDeleted(false);
-		userObj.setTimestamp(Timestamp.from(Instant.now()));
-		userObj.setModifiedTimestamp(Timestamp.from(Instant.now()));
+		userObj.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+		userObj.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 		User savedUser = userRepository.save(userObj);
 		return savedUser;
 	}
@@ -291,8 +292,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		}else {
 			userService.setInjectionType("Direct Injection");
 		}
-		userService.setTimestamp(Timestamp.from(Instant.now()));
-		userService.setModifiedTimestamp(Timestamp.from(Instant.now()));
+		userService.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+		userService.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 		userServiceList.add(userService);
 		}
 		List<UserService> savedUserService = (List<UserService>) userServiceRepository.saveAll(userServiceList);
@@ -318,14 +319,14 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					newUserService.setCompanyName(existingUser.getCompanyName());
 					newUserService.setUser_Name(existingUser.getUser_Name());
 					newUserService.setServiceType(serviceType);
-					newUserService.setTimestamp(Timestamp.from(Instant.now()));
-					newUserService.setModifiedTimestamp(Timestamp.from(Instant.now()));
+					newUserService.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+					newUserService.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 					userServiceList.add(newUserService);			
 					}
 				else {
 					if(userService.isService_isDeleted()) {
 						userService.setService_isDeleted(false);
-						userService.setModifiedTimestamp(Timestamp.from(Instant.now()));
+						userService.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 						userServiceList.add(userService);
 					}
 				}
@@ -336,7 +337,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 				UserService userService  = userServiceRepository.fetchbyCompanyNameAndServiceType(existingUser.getCompanyName(), serviceType);
 				if(userService!=null) {
 					userService.setService_isDeleted(true);
-					userService.setModifiedTimestamp(Timestamp.from(Instant.now()));
+					userService.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 					userServiceList.add(userService);
 				}
 				
@@ -370,13 +371,13 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		}
 		else {
 			existingUser.setUser_IsDeleted(true);
-			existingUser.setModifiedTimestamp(Timestamp.from(Instant.now()));
+			existingUser.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 			userRepository.save(existingUser);
 			List<UserService> userService_DB  = userServiceRepository.fetchbyCompanyName(companyName);
 			List<UserService> userServiceList = new ArrayList<UserService>();
 			for(UserService userService: userService_DB) {
 				userService.setService_isDeleted(true);
-				userService.setModifiedTimestamp(Timestamp.from(Instant.now()));
+				userService.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 				userServiceList.add(userService);
 			}
 			userServiceRepository.saveAll(userServiceList);

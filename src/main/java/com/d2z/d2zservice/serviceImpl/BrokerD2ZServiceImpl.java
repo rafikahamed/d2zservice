@@ -13,9 +13,11 @@ import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
+import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.DirectInjectionDetails;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.UserDetails;
+import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.service.IBrokerD2ZService;
 
 @Service
@@ -135,5 +137,6 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 		// TODO Auto-generated method stub
 		return d2zDao.fetchShipmentData(shipmentNumber);
 	}
+
 	
 }

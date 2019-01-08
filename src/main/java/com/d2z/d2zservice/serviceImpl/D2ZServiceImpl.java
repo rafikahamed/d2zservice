@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -490,7 +491,7 @@ public class D2ZServiceImpl implements ID2ZService{
 				existingUser.setCountry(userDetails.getCountry());
 				existingUser.setEmailAddress(userDetails.getEmailAddress());
 				existingUser.setUser_Password(userDetails.getPassword());
-				existingUser.setModifiedTimestamp(Timestamp.from(Instant.now()));
+				existingUser.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 				User updatedUser = d2zDao.updateUser(existingUser);
 				d2zDao.updateUserService(updatedUser,userDetails);
 				userMsg.setMessage("Updated Successfully");
