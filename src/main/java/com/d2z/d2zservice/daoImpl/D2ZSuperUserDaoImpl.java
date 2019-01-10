@@ -169,13 +169,13 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 				trackandTrace.setArticleID(trackingDetails.getTrackingNo());
 				trackandTrace.setFileName("eTowerAPI");
 				//Date date = Date.from(Instant.ofEpochSecond(trackingDetails.getEventTime()));
-				Date date = new Date((long)trackingDetails.getEventTime());
+				//Date date = new Date((long)trackingDetails.getEventTime());
 				
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
-                String trackEventOccurred = dateFormat.format(date);
-                System.out.println("DAte: "+date);
-                System.out.println("String: "+trackEventOccurred);
-                trackandTrace.setTrackEventDateOccured(trackEventOccurred);
+				//DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+              //  String trackEventOccurred = dateFormat.format(date);
+                //System.out.println("DAte: "+date);
+                //System.out.println("String: "+trackEventOccurred);
+                trackandTrace.setTrackEventDateOccured(trackingDetails.getTimestamp());
 				trackandTrace.setTrackEventCode(trackingDetails.getEventCode());
 			/*	if(trackingDetails.getActivity()!=null) {
 					if(trackingDetails.getActivity().contains("Attempted Delivery") || trackingDetails.getActivity().contains("Unable to complete delivery") ) {
