@@ -106,8 +106,21 @@ public class D2ZServiceImpl implements ID2ZService{
 	}
 
 	@Override
-	public List<DropDownModel> fileList() {
-		List<String> listOfFileNames= d2zDao.fileList();
+	public List<DropDownModel> fileList(Integer userId) {
+		List<String> listOfFileNames= d2zDao.fileList(userId);
+		List<DropDownModel> dropDownList= new ArrayList<DropDownModel>();
+		for(String fileName:listOfFileNames) {
+			DropDownModel dropDownVaL = new DropDownModel();
+			dropDownVaL.setName(fileName);
+			dropDownVaL.setValue(fileName);
+			dropDownList.add(dropDownVaL);
+		}
+		return dropDownList;
+	}
+	
+	@Override
+	public List<DropDownModel> labelFileList(Integer userId) {
+		List<String> listOfFileNames= d2zDao.labelFileList(userId);
 		List<DropDownModel> dropDownList= new ArrayList<DropDownModel>();
 		for(String fileName:listOfFileNames) {
 			DropDownModel dropDownVaL = new DropDownModel();
@@ -531,6 +544,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		userDetails.setSuburb(userData.getSuburb());
 		userDetails.setUserName(userData.getUser_Name());
 		userDetails.setRole_Id(userData.getRole_Id());
+		userDetails.setUser_id(userData.getUser_Id());
 		userDetails.setServiceType(null);
 		return userDetails;
 	}

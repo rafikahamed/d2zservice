@@ -89,6 +89,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setInnerItem(1);
 			senderDataObj.setInjectionType(senderDataValue.getInjectionType());
 			senderDataObj.setBagId(senderDataValue.getBagId());
+			senderDataObj.setUser_ID(senderDataValue.getUserID());
 			senderDataList.add(senderDataObj);
 		}
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
@@ -97,8 +98,14 @@ public class D2ZDaoImpl implements ID2ZDao{
 	}
 
 	@Override
-	public List<String> fileList() {
-		List<String> listOfFileNames= senderDataRepository.fetchFileName();
+	public List<String> fileList(Integer userId) {
+		List<String> listOfFileNames= senderDataRepository.fetchFileName(userId);
+		return listOfFileNames;
+	}
+	
+	@Override
+	public List<String> labelFileList(Integer userId) {
+		List<String> listOfFileNames= senderDataRepository.fetchLabelFileName(userId);
 		return listOfFileNames;
 	}
 

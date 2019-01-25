@@ -23,8 +23,11 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Procedure(name = "in_only_test")
 	void inOnlyTest(@Param("Sender_file_id") String Sender_file_id);
 	 
-	@Query(value="SELECT DISTINCT t.filename FROM SenderdataMaster t") 
-	List<String> fetchFileName();
+	@Query(value="SELECT DISTINCT t.filename FROM SenderdataMaster t where t.user_ID = :userId and t.isDeleted != 'Y' and t.manifest_number is null") 
+	List<String> fetchFileName(@Param("userId") Integer userId);
+	
+	@Query(value="SELECT DISTINCT t.filename FROM SenderdataMaster t where t.user_ID = :userId and t.isDeleted != 'Y'") 
+	List<String> fetchLabelFileName(@Param("userId") Integer userId);
 
 	@Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y'") 
 	List<SenderdataMaster> fetchConsignmentData(@Param("fileName") String fileName);
