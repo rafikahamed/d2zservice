@@ -12,6 +12,7 @@ import javax.persistence.Table;
 
 
 @Entity
+//D2ZRates
 @Table(name="D2ZRates")
 @NamedQuery(name="D2ZRates.findAll", query="SELECT d FROM D2ZRates d")
 public class D2ZRates implements Serializable {
