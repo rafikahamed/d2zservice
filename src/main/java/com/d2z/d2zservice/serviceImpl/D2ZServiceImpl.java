@@ -80,6 +80,7 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException{
 		d2zValidator.isReferenceNumberUnique(orderDetailList);
+		d2zValidator.isServiceValidUI(orderDetailList);
 		d2zValidator.isPostCodeValid(orderDetailList);
 		String senderFileID = d2zDao.exportParcel(orderDetailList);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);

@@ -43,21 +43,23 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 	public UserDetails fetchUserDetails(String companyName, String roleId) {
 		User user = d2zDao.fetchUserDetails(companyName, roleId);
 		UserDetails userDetails = new UserDetails();
-		userDetails.setAddress(user.getAddress());
-		userDetails.setCompanyName(user.getCompanyName());
-		userDetails.setContactName(user.getName());
-		userDetails.setContactPhoneNumber(user.getPhoneNumber());
-		userDetails.setCountry(user.getCountry());
-		userDetails.setEmailAddress(user.getEmailAddress());
-		userDetails.setPassword(user.getUser_Password());
-		userDetails.setPostCode(user.getPostcode());
-		userDetails.setState(user.getState());
-		userDetails.setSuburb(user.getSuburb());
-		userDetails.setUserName(user.getUser_Name());
-		Set<UserService> userServiceList = user.getUserService();
-		List<String> serviceType = userServiceList.stream().map(obj ->{
-			return obj.getServiceType();}).collect(Collectors.toList());
-		userDetails.setServiceType(serviceType);
+		if(user != null) {
+			userDetails.setAddress(user.getAddress());
+			userDetails.setCompanyName(user.getCompanyName());
+			userDetails.setContactName(user.getName());
+			userDetails.setContactPhoneNumber(user.getPhoneNumber());
+			userDetails.setCountry(user.getCountry());
+			userDetails.setEmailAddress(user.getEmailAddress());
+			userDetails.setPassword(user.getUser_Password());
+			userDetails.setPostCode(user.getPostcode());
+			userDetails.setState(user.getState());
+			userDetails.setSuburb(user.getSuburb());
+			userDetails.setUserName(user.getUser_Name());
+			Set<UserService> userServiceList = user.getUserService();
+			List<String> serviceType = userServiceList.stream().map(obj ->{
+				return obj.getServiceType();}).collect(Collectors.toList());
+			userDetails.setServiceType(serviceType);
+		}
 		return userDetails;
 	}
 

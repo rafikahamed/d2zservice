@@ -23,7 +23,6 @@ public class D2ZValidator {
     private ID2ZDao d2zDao;
 
 	public void isPostCodeValid(List<SenderData> senderData) {
-		
 		List<String> postCodeZoneList = D2ZSingleton.getInstance().getPostCodeZoneList();
 		System.out.println(postCodeZoneList.toString());
 		//postCodeZoneList.forEach(System.out::println);
@@ -42,7 +41,7 @@ public class D2ZValidator {
 		
 		List<String> incorrectPostcode_Suburb = new ArrayList<String>();
 		senderData.forEach(obj -> {
-			if(!postCodeZoneList.contains(obj.getConsigneeSuburb().toUpperCase().concat(obj.getConsigneePostcode()))) {
+			if(!postCodeZoneList.contains(obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim()))) {
 				incorrectPostcode_Suburb.add(obj.getReferenceNumber());
 			}
 		});
@@ -56,13 +55,11 @@ public class D2ZValidator {
 	public void isReferenceNumberUnique(List<SenderData> senderData) throws ReferenceNumberNotUniqueException{
 		
 		List<String> referenceNumber_DB = d2zDao.fetchAllReferenceNumbers();
-		
 		List<String> incomingRefNbr = senderData.stream().map(obj -> {
 			return obj.getReferenceNumber(); })
 				.collect(Collectors.toList());
-		
 		referenceNumber_DB.addAll(incomingRefNbr);
-		 
+
 		List<String> duplicateRefNbr = referenceNumber_DB.stream().collect(Collectors.groupingBy(Function.identity(),     
 	              Collectors.counting()))                                             
 	          .entrySet().stream()
@@ -77,9 +74,22 @@ public class D2ZValidator {
 
 	public void isServiceValid(CreateConsignmentRequest orderDetail) {
 		List<String> incorrectRefNbr = new ArrayList<String>();
-		List<String> serviceType_DB = d2zDao.fetchServiceTypeByUserName(orderDetail.getUserName());
+		List<String> serviceType_DB = d2zDao.fetchServiceTypeByUserName(orderDetail.getUserName().trim());
 		List<SenderData> orderDetailList = orderDetail.getConsignmentData();
 		for(SenderData senderData : orderDetailList) {
+			if(!serviceType_DB.contains(senderData.getServiceType().trim())) {
+				incorrectRefNbr.add(senderData.getReferenceNumber());
+			}
+		} 
+		if(!incorrectRefNbr.isEmpty()) {
+			throw new InvalidServiceTypeException("Invalid Service Type",incorrectRefNbr);
+		}
+	}
+	
+	public void isServiceValidUI(List<SenderData> orderDetail) {
+		List<String> incorrectRefNbr = new ArrayList<String>();
+		List<String> serviceType_DB = d2zDao.fetchServiceTypeByUserName(orderDetail.get(0).getUserName());
+		for(SenderData senderData : orderDetail) {
 			if(!serviceType_DB.contains(senderData.getServiceType())) {
 				incorrectRefNbr.add(senderData.getReferenceNumber());
 			}
