@@ -52,8 +52,14 @@ public class D2zController {
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/consignment-fileList")
-    public List<DropDownModel> fileList() {
-		List<DropDownModel> fileList = d2zService.fileList();
+    public List<DropDownModel> fileList(@RequestParam("userId") Integer userId) {
+		List<DropDownModel> fileList = d2zService.fileList(userId);
+		return fileList;
+    }
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/label-fileList")
+    public List<DropDownModel> labelFileList(@RequestParam("userId") Integer userId) {
+		List<DropDownModel> fileList = d2zService.labelFileList(userId);
 		return fileList;
     }
 	

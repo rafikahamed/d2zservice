@@ -22,7 +22,9 @@ public interface ID2ZService {
 	
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException;
 
-	public List<DropDownModel> fileList();
+	public List<DropDownModel> fileList(Integer userId);
+	
+	public List<DropDownModel> labelFileList(Integer userId);
 
 	public List<SenderdataMaster> consignmentFileData(String fileName);
 
