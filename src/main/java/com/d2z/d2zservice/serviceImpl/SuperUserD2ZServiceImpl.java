@@ -15,6 +15,7 @@ import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
+import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.ETowerTrackingDetails;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -139,6 +140,14 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 		userMsg.setMessage(uploadInvoiceData);
 		return userMsg;
 		}
+
+	@Override
+	public UserMessage uploadD2ZRates(List<D2ZRatesData> d2zRatesData) {
+		String uploadedD2ZRates = d2zDao.uploadD2ZRates(d2zRatesData);
+		UserMessage userMsg = new UserMessage();
+		userMsg.setMessage(uploadedD2ZRates);
+		return userMsg;
+	}
 	
 
 }

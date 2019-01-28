@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
+import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -74,6 +75,11 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 	@RequestMapping( method = RequestMethod.POST, path = "/brokerRates", consumes=MediaType.APPLICATION_JSON)
     public UserMessage uploadBrokerRates(@RequestBody List<BrokerRatesData> brokerRatesData) {
 		UserMessage successMsg = superUserD2zService.uploadBrokerRates(brokerRatesData);
+		return successMsg;
+    }
+	@RequestMapping( method = RequestMethod.POST, path = "/d2zRates", consumes=MediaType.APPLICATION_JSON)
+    public UserMessage uploadD2ZRates(@RequestBody List<D2ZRatesData> d2zRatesData) {
+		UserMessage successMsg = superUserD2zService.uploadD2ZRates(d2zRatesData);
 		return successMsg;
     }
 }

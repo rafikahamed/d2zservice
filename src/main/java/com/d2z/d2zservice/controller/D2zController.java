@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
@@ -165,4 +166,9 @@ public class D2zController {
 		List<ShipmentDetails> senderData = d2zService.downloadShipmentData(shipmentNumber);
     	return senderData;
     }
+	@RequestMapping(method = RequestMethod.POST, path = "/ebay/completeSale")
+	 public UserMessage uploadShipmentToEbay( @RequestBody Ebay_ShipmentDetails shipmentDetails) {
+		UserMessage userMsg = d2zService.uploadShipmentDetailsToEbay(shipmentDetails);
+		return userMsg;
+	}	
 }   

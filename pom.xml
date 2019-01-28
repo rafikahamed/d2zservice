@@ -129,6 +129,63 @@
     		<scope>system</scope>
     		<systemPath>${basedir}/src/main/resources/font/FontArial.jar</systemPath>
 		</dependency>
+		
+		<!--  ebay sdk core -->
+	<dependency>
+		<groupId>com.ebay</groupId>
+		<artifactId>ebaysdkcore</artifactId>
+		<version>967</version>
+		<scope>system</scope>
+		<systemPath>${project.basedir}/src/main/resources/ebay/ebaysdkcore.jar</systemPath>
+	</dependency>
+	<!--  ebay sdk calls -->
+	<dependency>
+		<groupId>com.ebay</groupId>
+		<artifactId>ebaycalls</artifactId>
+		<version>967</version>
+		<scope>system</scope>
+		<systemPath>${project.basedir}/src/main/resources/ebay/ebaycalls.jar</systemPath>
+	</dependency>
+	<!-- ebay sdk helper -->
+	<dependency>
+		<groupId>com.ebay</groupId>
+		<artifactId>helper</artifactId>
+		<version>967</version>
+		<scope>system</scope>
+		<systemPath>${project.basedir}/src/main/resources/ebay/helper.jar</systemPath>
+	</dependency>
+	<dependency>
+		<groupId>commons-logging</groupId>
+		<artifactId>commons-logging</artifactId>
+		<version>1.0.4</version>
+	</dependency>
+	<dependency>
+		<groupId>log4j</groupId>
+		<artifactId>log4j</artifactId>
+		<version>1.2.8</version>
+	</dependency>
+	
+
+
+<dependency>
+	<groupId>org.grlea.log.adapters</groupId>
+	<artifactId>simple-log-slf4j</artifactId>
+	<version>2.0.1</version>
+</dependency>
+	
+	
+	<!-- Xalan -->
+	<dependency>
+		<groupId>xalan</groupId>
+		<artifactId>xalan</artifactId>
+		<version>2.7.1</version>
+	</dependency>	
+	<dependency>
+        <groupId>com.sun.xml.ws</groupId>
+        <artifactId>jaxws-rt</artifactId>
+        <version>2.1.4</version>
+     </dependency>  
+  
 	</dependencies>
 	<build>
 		<plugins>

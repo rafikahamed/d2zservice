@@ -6,6 +6,7 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -63,5 +64,8 @@ public interface ID2ZService {
 	public List<ParcelStatus> getStatusByRefNbr(List<String> referenceNumbers);
 
 	public List<ParcelStatus> getStatusByArticleID(List<String> articleIDs);
+
+	public UserMessage uploadShipmentDetailsToEbay(Ebay_ShipmentDetails shipmentDetails);
+
 
 }
