@@ -12,17 +12,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.BrokerRates;
+import com.d2z.d2zservice.entity.D2ZRates;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
+import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.ETowerTrackingDetails;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.ZoneDetails;
 import com.d2z.d2zservice.model.ZoneRates;
 import com.d2z.d2zservice.repository.BrokerRatesRepository;
+import com.d2z.d2zservice.repository.D2ZRatesRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
@@ -42,6 +45,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	@Autowired
 	BrokerRatesRepository brokerRatesRepository;
 
+	@Autowired
+	D2ZRatesRepository d2zRatesRepository;
+	
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
 		List<Trackandtrace> trackingDetailsList = new ArrayList<Trackandtrace>();
@@ -263,6 +269,46 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 			
 		}
 		List<BrokerRates> insertedData = (List<BrokerRates>) brokerRatesRepository.saveAll(brokerRatesList);
+		if(null!= insertedData && insertedData.size() > 0) {
+			message = "Data uploaded Successfully";
+		}
+		else {
+			message = "Failed to upload Data";
+		}
+		return message;
+	}
+
+	@Override
+	public String uploadD2ZRates(List<D2ZRatesData> d2zRatesData) {
+		String message = "";
+		List<D2ZRates> d2zRatesList = new ArrayList<D2ZRates>();
+		for(D2ZRatesData d2zRateData : d2zRatesData) {
+			
+			for(ZoneDetails zoneData : d2zRateData.getZone()) {
+				
+				
+				for(ZoneRates zoneRates : zoneData.getRates()) {
+					D2ZRates d2zRates_DB = d2zRatesRepository.findByCompositeKey(d2zRateData.getMLID(), zoneData.getZoneID(), zoneRates.getMinWeight(), zoneRates.getMaxWeight());
+					if(null != d2zRates_DB) {
+						d2zRates_DB.setBackupInd("Y");
+						d2zRatesList.add(d2zRates_DB);
+					}
+					D2ZRates d2zRates = new  D2ZRates();
+					d2zRates.setMLID(d2zRateData.getMLID());
+					d2zRates.setGST(d2zRateData.getGST());
+					d2zRates.setZoneID(zoneData.getZoneID());
+					d2zRates.setRate(zoneRates.getRate());
+					d2zRates.setMaxWeight(zoneRates.getMaxWeight());
+					d2zRates.setMinWeight(zoneRates.getMinWeight());
+					d2zRates.setBackupInd("N");
+					d2zRates.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+					d2zRatesList.add(d2zRates);
+					
+				}
+			}
+			
+		}
+		List<D2ZRates> insertedData = (List<D2ZRates>) d2zRatesRepository.saveAll(d2zRatesList);
 		if(null!= insertedData && insertedData.size() > 0) {
 			message = "Data uploaded Successfully";
 		}

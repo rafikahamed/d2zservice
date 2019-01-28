@@ -6,6 +6,7 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.InvalidDateException;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
+import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -31,5 +32,7 @@ public interface ISuperUserD2ZService{
 	public ResponseMessage trackingEvent(List<String> trackingNumbers);
 
 	public UserMessage uploadBrokerRates(List<BrokerRatesData> brokerRatesData);
+
+	public UserMessage uploadD2ZRates(List<D2ZRatesData> d2zRatesData);
 
 }

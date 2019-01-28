@@ -8,6 +8,7 @@ import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.exception.InvalidDateException;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
+import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.ETowerTrackingDetails;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -33,5 +34,7 @@ public interface ID2ZSuperUserDao {
 	ResponseMessage insertTrackingDetails(List<List<ETowerTrackingDetails>> response);
 
 	public String uploadBrokerRates(List<BrokerRatesData> brokerRatesData);
+
+	String uploadD2ZRates(List<D2ZRatesData> d2zRatesData);
 
 }

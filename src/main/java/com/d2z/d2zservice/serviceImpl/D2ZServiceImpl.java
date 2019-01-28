@@ -31,6 +31,8 @@ import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.ETowerResponse;
 import com.d2z.d2zservice.model.ETowerTrackingDetails;
+import com.d2z.d2zservice.model.Ebay_Shipment;
+import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -43,9 +45,11 @@ import com.d2z.d2zservice.model.TrackingEvents;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.proxy.ETowerProxy;
+import com.d2z.d2zservice.proxy.EbayProxy;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.validation.D2ZValidator;
+import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -77,6 +81,9 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Autowired
 	ShipmentDetailsWriter shipmentWriter;
 
+	@Autowired
+	private EbayProxy proxy;
+	
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException{
 		d2zValidator.isReferenceNumberUnique(orderDetailList);
@@ -270,7 +277,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		return trackParcelList;
 	}*/
 
-	public List<TrackParcel> trackParcelByArticleID(List<String> articleIDs) {
+	public List<TrackParcel> trackParcelByArticleID(List<String> articleIDs ) {
 		List<TrackParcel> trackParcelList  = new ArrayList<TrackParcel>();
 
 		for(String articleID :articleIDs ) {
@@ -609,5 +616,27 @@ public class D2ZServiceImpl implements ID2ZService{
 		
 		return trackParcelList;
 	
+	}
+
+	@Override
+	public UserMessage uploadShipmentDetailsToEbay(Ebay_ShipmentDetails shipmentDetails) {
+		UserMessage userMsg = new UserMessage();
+		int successCount=0;
+		for(Ebay_Shipment shipment : shipmentDetails.getShipment()) {
+		CompleteSaleResponseType response = proxy.makeCalltoEbay_CompleteSale(shipment,shipmentDetails.getClientEbayToken());	
+		if(response!=null && "SUCCESS".equalsIgnoreCase(response.getAck().toString())) {
+			successCount++;
+		}
+		if(successCount == shipmentDetails.getShipment().size()) {
+			userMsg.setMessage("Data sucessfully uploaded to EBay Server");
+		}
+		else if(successCount==0) {
+			userMsg.setMessage("Failed to upload data to EBay Server");
+		}
+		else {
+			userMsg.setMessage("Data Partially uploaded to Ebay Server");
+		}
+		}
+		return userMsg;
 	}
 }
