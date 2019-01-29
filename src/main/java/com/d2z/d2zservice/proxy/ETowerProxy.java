@@ -30,6 +30,7 @@ public class ETowerProxy {
 
 		//String url = "http://qa-cn.etowertech.com/services/integration/shipper/trackingEvents/";
 		//Prod URL
+		//SSL cert issue fix
 		String url = "http://au.etowertech.com/services/integration/shipper/trackingEvents/";
 			//"https://au.etowertech.com/services/integration/shipper/trackingEvents/";
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
