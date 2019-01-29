@@ -30,7 +30,8 @@ public class ETowerProxy {
 
 		//String url = "http://qa-cn.etowertech.com/services/integration/shipper/trackingEvents/";
 		//Prod URL
-		String url = "https://au.etowertech.com/services/integration/shipper/trackingEvents/";
+		String url = "http://au.etowertech.com/services/integration/shipper/trackingEvents/";
+			//"https://au.etowertech.com/services/integration/shipper/trackingEvents/";
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		requestFactory.setOutputStreaming(false);
         RestTemplate restTemplate = new RestTemplate(requestFactory);
