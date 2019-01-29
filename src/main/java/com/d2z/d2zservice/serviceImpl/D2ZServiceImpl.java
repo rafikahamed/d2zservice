@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -553,7 +555,10 @@ public class D2ZServiceImpl implements ID2ZService{
 		userDetails.setUserName(userData.getUser_Name());
 		userDetails.setRole_Id(userData.getRole_Id());
 		userDetails.setUser_id(userData.getUser_Id());
-		userDetails.setServiceType(null);
+		Set<UserService> userServiceList = userData.getUserService();
+		List<String> serviceType = userServiceList.stream().map(obj ->{
+			return obj.getServiceType();}).collect(Collectors.toList());
+		userDetails.setServiceType(serviceType);
 		return userDetails;
 	}
 
