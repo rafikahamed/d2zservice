@@ -79,6 +79,15 @@ public class SenderData {
 	private BufferedImage datamatrixImage;
 	private String InjectionType;
 	private String bagId;
+	private String userName;
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
 	public String getInjectionType() {
 		return InjectionType;
