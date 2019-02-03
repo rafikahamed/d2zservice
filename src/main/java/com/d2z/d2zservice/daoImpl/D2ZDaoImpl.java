@@ -1,31 +1,29 @@
 package com.d2z.d2zservice.daoImpl;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
+import com.d2z.d2zservice.entity.Consignments;
+import com.d2z.d2zservice.entity.EbayResponse;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
-import com.d2z.d2zservice.model.ETowerResponse;
-import com.d2z.d2zservice.model.ETowerTrackingDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UserDetails;
+import com.d2z.d2zservice.repository.EbayResponseRepository;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
@@ -33,6 +31,7 @@ import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.singleton.D2ZSingleton;
+import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
 @Repository
 public class D2ZDaoImpl implements ID2ZDao{
@@ -51,6 +50,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	UserServiceRepository userServiceRepository;
+	
+	@Autowired
+	EbayResponseRepository ebayResponseRepository;
 	
 	@Override
 	public String exportParcel(List<SenderData> orderDetailList) {
@@ -433,4 +435,18 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public List<String> findRefNbrByShipmentNbr(String[] referenceNumbers) {
 		return senderDataRepository.findRefNbrByShipmentNbr(referenceNumbers);
 	}
+
+	@Override
+	public void logEbayResponse(CompleteSaleResponseType response) {
+				EbayResponse resp = new EbayResponse();
+				resp.setAck(response.getAck().toString());
+				if(null!= response.getErrors() && response.getErrors().length>0) {
+				resp.setShortMessage(response.getErrors(0).getShortMessage());
+				resp.setLongMessage(response.getErrors(0).getLongMessage());
+				}
+				ebayResponseRepository.save(resp);
+	}
+	
+	
+
 }

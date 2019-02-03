@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
+import com.d2z.d2zservice.model.BaggingResponse;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
@@ -66,6 +67,5 @@ public interface ID2ZService {
 	public List<ParcelStatus> getStatusByArticleID(List<String> articleIDs);
 
 	public UserMessage uploadShipmentDetailsToEbay(Ebay_ShipmentDetails shipmentDetails);
-
 
 }

@@ -1,6 +1,8 @@
 package com.d2z.d2zservice.dao;
 
 import java.util.List;
+
+import com.d2z.d2zservice.entity.Consignments;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
@@ -10,6 +12,7 @@ import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UserDetails;
+import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
 public interface ID2ZDao {
 	
@@ -68,5 +71,8 @@ public interface ID2ZDao {
 	public Trackandtrace getLatestStatusByArticleID(String articleID);
 
 	public List<String> findRefNbrByShipmentNbr(String[] referenceNumber);
+
+	public void logEbayResponse(CompleteSaleResponseType response);
+
 
 }

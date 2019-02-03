@@ -2,6 +2,7 @@ package com.d2z.d2zservice.dao;
 
 import java.util.List;
 
+import com.d2z.d2zservice.entity.Consignments;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.model.BrokerRatesData;
@@ -23,6 +24,8 @@ public interface ID2ZBrokerDao {
 	public List<String> fetchApiShipmentList();
 
 	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber);
+
+	List<List<Consignments>> fetchConsignmentsByState(List<String> referenceNumbers);
 
 
 }

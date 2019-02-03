@@ -296,10 +296,6 @@
 				<reportElement x="0" y="25" width="100" height="15" uuid="a1c803e9-26a3-46a4-8f42-9a7706b4fe8a"/>
 				<text><![CDATA[Internal use only]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="0" y="-24" width="147" height="15" uuid="dca170a3-2e7b-494e-a882-2b246f843014"/>
-				<textFieldExpression><![CDATA["Buyer is Not to return in person"]]></textFieldExpression>
-			</textField>
 			<componentElement>
 				<reportElement x="1" y="40" width="200" height="50" uuid="77a1f313-57be-462d-a9c2-7d3e23daed52"/>
 				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="false" checksumRequired="false" barHeight="50" rotation="None">

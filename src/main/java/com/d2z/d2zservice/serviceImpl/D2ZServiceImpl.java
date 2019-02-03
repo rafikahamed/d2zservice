@@ -7,19 +7,21 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
+import com.d2z.d2zservice.entity.Consignments;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
@@ -27,10 +29,10 @@ import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
+import com.d2z.d2zservice.model.BaggingResponse;
+import com.d2z.d2zservice.model.Bags;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
-import com.d2z.d2zservice.model.ETowerResponse;
-import com.d2z.d2zservice.model.ETowerTrackingDetails;
 import com.d2z.d2zservice.model.Ebay_Shipment;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
@@ -44,7 +46,6 @@ import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.TrackingEvents;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
-import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.proxy.EbayProxy;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
@@ -638,7 +639,8 @@ public class D2ZServiceImpl implements ID2ZService{
 		UserMessage userMsg = new UserMessage();
 		int successCount=0;
 		for(Ebay_Shipment shipment : shipmentDetails.getShipment()) {
-		CompleteSaleResponseType response = proxy.makeCalltoEbay_CompleteSale(shipment,shipmentDetails.getClientEbayToken());	
+		CompleteSaleResponseType response = proxy.makeCalltoEbay_CompleteSale(shipment,shipmentDetails.getClientEbayToken());
+		d2zDao.logEbayResponse(response);
 		if(response!=null && "SUCCESS".equalsIgnoreCase(response.getAck().toString())) {
 			successCount++;
 		}
@@ -654,4 +656,5 @@ public class D2ZServiceImpl implements ID2ZService{
 		}
 		return userMsg;
 	}
+
 }
