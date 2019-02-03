@@ -26,8 +26,8 @@ public class D2zBrokerController {
     private  IBrokerD2ZService brokerD2zService;
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/company-details")
-    public List<DropDownModel> companyDetails() {
-		return brokerD2zService.companyDetails();
+    public List<DropDownModel> companyDetails(@RequestParam("brokerId") String brokerId) {
+		return brokerD2zService.companyDetails(brokerId);
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/user-details")

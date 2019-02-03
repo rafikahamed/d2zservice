@@ -1,27 +1,19 @@
 package com.d2z.d2zservice.daoImpl;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
-import com.d2z.d2zservice.model.ETowerResponse;
-import com.d2z.d2zservice.model.ETowerTrackingDetails;
+import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
@@ -281,6 +273,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		userObj.setUser_IsDeleted(false);
 		userObj.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 		userObj.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+		userObj.setClientBrokerId(userData.getClientBroker());
+		userObj.setEBayToken(userData.geteBayToken());
 		User savedUser = userRepository.save(userObj);
 		return savedUser;
 	}
@@ -432,5 +426,16 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public List<String> findRefNbrByShipmentNbr(String[] referenceNumbers) {
 		return senderDataRepository.findRefNbrByShipmentNbr(referenceNumbers);
+	}
+
+	@Override
+	public ClientDashbaord clientDahbaord(Integer userId) {
+		ClientDashbaord clientDashbaord = new ClientDashbaord();
+		clientDashbaord.setConsignmentsCreated(senderDataRepository.fecthConsignmentsCreated(userId));
+		clientDashbaord.setConsignmentsManifested(senderDataRepository.fetchConsignmentsManifested(userId));
+		clientDashbaord.setConsignmentsManifests(senderDataRepository.fetchConsignmentsManifests(userId));
+		clientDashbaord.setConsignmentsDeleted(senderDataRepository.fetchConsignmentsDeleted(userId));
+		clientDashbaord.setConsignmentDelivered(senderDataRepository.fetchConsignmentDelivered(userId));
+		return clientDashbaord;
 	}
 }

@@ -22,8 +22,8 @@ public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
 	SenderDataRepository senderDataRepository;
 	
 	@Override
-	public List<String> companyDetails() {
-		List<String> companyDetails = userRepository.fetchCompanyName();
+	public List<String> companyDetails(String brokerId) {
+		List<String> companyDetails = userRepository.fetchCompanyName(brokerId);
 		return companyDetails;
 	}
 

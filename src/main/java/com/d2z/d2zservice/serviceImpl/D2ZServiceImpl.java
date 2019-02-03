@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,11 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
@@ -29,10 +25,9 @@ import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
+import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
-import com.d2z.d2zservice.model.ETowerResponse;
-import com.d2z.d2zservice.model.ETowerTrackingDetails;
 import com.d2z.d2zservice.model.Ebay_Shipment;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
@@ -46,13 +41,11 @@ import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.TrackingEvents;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
-import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.proxy.EbayProxy;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -244,14 +237,13 @@ public class D2ZServiceImpl implements ID2ZService{
 		trackingLabel.setWeight(trackingArray[7]);
 		trackingLabel.setShipperName(trackingArray[8]);
 		trackingLabel.setShipperAddr1(trackingArray[9]);
-		trackingLabel.setShipperAddr2(trackingArray[10]);
-		trackingLabel.setShipperCity(trackingArray[11]);
-		trackingLabel.setShipperState(trackingArray[12]);
-		trackingLabel.setShipperCountry(trackingArray[13]);
-		trackingLabel.setShipperPostcode(trackingArray[14]);
-		trackingLabel.setBarcodeLabelNumber(trackingArray[15]);
-		trackingLabel.setDatamatrix(trackingArray[16]);
-		trackingLabel.setInjectionState(trackingArray[17]);
+		trackingLabel.setShipperCity(trackingArray[10]);
+		trackingLabel.setShipperState(trackingArray[11]);
+		trackingLabel.setShipperCountry(trackingArray[12]);
+		trackingLabel.setShipperPostcode(trackingArray[13]);
+		trackingLabel.setBarcodeLabelNumber(trackingArray[14]);
+		trackingLabel.setDatamatrix(trackingArray[15]);
+		trackingLabel.setInjectionState(trackingArray[16]);
 		trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix()));
 		trackingLabelList.add(trackingLabel);
 		JRBeanCollectionDataSource beanColDataSource =
@@ -514,11 +506,11 @@ public class D2ZServiceImpl implements ID2ZService{
 				existingUser.setCountry(userDetails.getCountry());
 				existingUser.setEmailAddress(userDetails.getEmailAddress());
 				existingUser.setUser_Password(userDetails.getPassword());
+				existingUser.setEBayToken(userDetails.geteBayToken());
 				existingUser.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 				User updatedUser = d2zDao.updateUser(existingUser);
 				d2zDao.updateUserService(updatedUser,userDetails);
 				userMsg.setMessage("Updated Successfully");
-				
 		}
 		return userMsg;
 	}
@@ -541,6 +533,7 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Override
 	public UserDetails login(String userName, String passWord) {
 		User userData = d2zDao.login(userName, passWord);
+		List<String> serviceType = null;
 		UserDetails userDetails = new UserDetails();
 		userDetails.setAddress(userData.getAddress());
 		userDetails.setCompanyName(userData.getCompanyName());
@@ -556,8 +549,10 @@ public class D2ZServiceImpl implements ID2ZService{
 		userDetails.setRole_Id(userData.getRole_Id());
 		userDetails.setUser_id(userData.getUser_Id());
 		Set<UserService> userServiceList = userData.getUserService();
-		List<String> serviceType = userServiceList.stream().map(obj ->{
-			return obj.getServiceType();}).collect(Collectors.toList());
+		if(userServiceList.size() > 0) {
+			serviceType = userServiceList.stream().map(obj ->{
+				return obj.getServiceType();}).collect(Collectors.toList());
+		}
 		userDetails.setServiceType(serviceType);
 		return userDetails;
 	}
@@ -658,5 +653,11 @@ public class D2ZServiceImpl implements ID2ZService{
 		}
 		}
 		return userMsg;
+	}
+
+	@Override
+	public ClientDashbaord clientDahbaord(Integer userId) {
+		ClientDashbaord clientDashbaord = d2zDao.clientDahbaord(userId);
+		return clientDashbaord;
 	}
 }
