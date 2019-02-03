@@ -3,22 +3,20 @@ package com.d2z.d2zservice.daoImpl;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
-import com.d2z.d2zservice.entity.Consignments;
 import com.d2z.d2zservice.entity.EbayResponse;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
+import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
@@ -283,6 +281,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		userObj.setUser_IsDeleted(false);
 		userObj.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 		userObj.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+		userObj.setClientBrokerId(userData.getClientBroker());
+		userObj.setEBayToken(userData.geteBayToken());
 		User savedUser = userRepository.save(userObj);
 		return savedUser;
 	}
@@ -448,5 +448,16 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 	
 	
+
+
+	public ClientDashbaord clientDahbaord(Integer userId) {
+		ClientDashbaord clientDashbaord = new ClientDashbaord();
+		clientDashbaord.setConsignmentsCreated(senderDataRepository.fecthConsignmentsCreated(userId));
+		clientDashbaord.setConsignmentsManifested(senderDataRepository.fetchConsignmentsManifested(userId));
+		clientDashbaord.setConsignmentsManifests(senderDataRepository.fetchConsignmentsManifests(userId));
+		clientDashbaord.setConsignmentsDeleted(senderDataRepository.fetchConsignmentsDeleted(userId));
+		clientDashbaord.setConsignmentDelivered(senderDataRepository.fetchConsignmentDelivered(userId));
+		return clientDashbaord;
+	}
 
 }

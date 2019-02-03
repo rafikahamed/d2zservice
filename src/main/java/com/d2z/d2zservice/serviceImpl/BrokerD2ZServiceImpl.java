@@ -20,11 +20,9 @@ import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.model.BaggingRequest;
 import com.d2z.d2zservice.model.BaggingResponse;
 import com.d2z.d2zservice.model.Bags;
-import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.DirectInjectionDetails;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.UserDetails;
-import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.service.IBrokerD2ZService;
 
 @Service
@@ -34,8 +32,8 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
     private ID2ZBrokerDao d2zDao;
 	
 	@Override
-	public List<DropDownModel> companyDetails() {
-		List<String> listOfCompany = d2zDao.companyDetails();
+	public List<DropDownModel> companyDetails(String brokerId) {
+		List<String> listOfCompany = d2zDao.companyDetails(brokerId);
 		List<DropDownModel> dropDownList= new ArrayList<DropDownModel>();
 		for(String companyName:listOfCompany) {
 			DropDownModel dropDownVaL = new DropDownModel();
@@ -62,8 +60,10 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 			userDetails.setState(user.getState());
 			userDetails.setSuburb(user.getSuburb());
 			userDetails.setUserName(user.getUser_Name());
+			userDetails.seteBayToken(user.getEBayToken());
 			Set<UserService> userServiceList = user.getUserService();
-			List<String> serviceType = userServiceList.stream().map(obj ->{
+			List<String> serviceType = userServiceList.stream().map(obj -> { 
+				 System.out.println("filter: " + obj);
 				return obj.getServiceType();}).collect(Collectors.toList());
 			userDetails.setServiceType(serviceType);
 		}

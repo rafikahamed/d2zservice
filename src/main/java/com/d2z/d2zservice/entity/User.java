@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -67,6 +68,10 @@ public class User implements Serializable {
 	@Column(name="User_IsDeleted")
 	private boolean user_IsDeleted;
 	
+	@Column(name="client_broker_id")
+	private String clientBrokerId;
+	
+	private String eBayToken;
 	
 	@Column(name="User_Name")
 	private String user_Name;
@@ -214,4 +219,21 @@ public class User implements Serializable {
 	public void setModifiedTimestamp(Timestamp modifiedTimestamp) {
 		this.modifiedTimestamp = modifiedTimestamp;
 	}
+	
+	public String getEBayToken() {
+		return this.eBayToken;
+	}
+
+	public void setEBayToken(String eBayToken) {
+		this.eBayToken = eBayToken;
+	}
+	
+	public String getClientBrokerId() {
+		return this.clientBrokerId;
+	}
+
+	public void setClientBrokerId(String clientBrokerId) {
+		this.clientBrokerId = clientBrokerId;
+	}
+
 }

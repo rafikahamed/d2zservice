@@ -11,5 +11,7 @@
 		<class>com.d2z.d2zservice.entity.UserRole</class>
 		<class>com.d2z.d2zservice.entity.UserService</class>
 		<class>com.d2z.d2zservice.entity.PostCodeId</class>
+		<class>com.d2z.d2zservice.entity.BrokerRates</class>
+		<class>com.d2z.d2zservice.entity.D2ZRates</class>
 	</persistence-unit>
 </persistence>

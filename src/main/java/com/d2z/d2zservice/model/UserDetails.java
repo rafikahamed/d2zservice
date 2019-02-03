@@ -14,6 +14,8 @@ public class UserDetails {
 	private String suburb;
 	private String state;
 	private String postCode;
+	private String clientBroker;
+	private String eBayToken;
 	@NotEmpty(message = "Country is mandatory")
 	private String country;
 	@NotEmpty(message = "Email Address is mandatory")
@@ -120,5 +122,17 @@ public class UserDetails {
 	public void setServiceType(List<String> serviceType) {
 		this.serviceType = serviceType;
 	}
-
+	public String getClientBroker() {
+		return clientBroker;
+	}
+	public void setClientBroker(String clientBroker) {
+		this.clientBroker = clientBroker;
+	}
+	public String geteBayToken() {
+		return eBayToken;
+	}
+	public void seteBayToken(String eBayToken) {
+		this.eBayToken = eBayToken;
+	}
+	
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
+import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.SenderData;
@@ -110,8 +111,6 @@ public class D2zController {
 	@RequestMapping( method = RequestMethod.POST, path = "/tracking-label")
     public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum) {
 		byte[] bytes = d2zService.trackingLabel(refBarNum);
-		System.out.println("Byte Response ----->");
-		System.out.println(bytes.toString());
 	    return ResponseEntity
 	      .ok()
 	      // Specify content type as PDF
@@ -166,9 +165,16 @@ public class D2zController {
 		List<ShipmentDetails> senderData = d2zService.downloadShipmentData(shipmentNumber);
     	return senderData;
     }
+	
 	@RequestMapping(method = RequestMethod.POST, path = "/ebay/completeSale")
 	 public UserMessage uploadShipmentToEbay( @RequestBody Ebay_ShipmentDetails shipmentDetails) {
 		UserMessage userMsg = d2zService.uploadShipmentDetailsToEbay(shipmentDetails);
 		return userMsg;
+	}	
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/client/dashbaord")
+	 public ClientDashbaord clientDahbaord(@RequestParam("userId") Integer userId) {
+		ClientDashbaord clientDahbaord = d2zService.clientDahbaord(userId);
+		return clientDahbaord;
 	}	
 }   

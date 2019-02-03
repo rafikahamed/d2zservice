@@ -8,7 +8,9 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
+import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
+import com.d2z.d2zservice.model.GenerateLabel;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UserDetails;
@@ -74,5 +76,6 @@ public interface ID2ZDao {
 
 	public void logEbayResponse(CompleteSaleResponseType response);
 
+	public ClientDashbaord clientDahbaord(Integer userId);
 
 }

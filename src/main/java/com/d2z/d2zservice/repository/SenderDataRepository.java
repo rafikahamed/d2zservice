@@ -1,13 +1,14 @@
 package com.d2z.d2zservice.repository;
 
 import java.util.List;
-
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+
 import com.d2z.d2zservice.entity.Consignments;
+
 import com.d2z.d2zservice.entity.SenderdataMaster;
 
 //This will be AUTO IMPLEMENTED by Spring into a Bean called FileDetailsRepository
@@ -46,12 +47,12 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	List<String> fetchBySenderFileId(@Param("senderFileID") String senderFileID);
 	 
 	@Query(nativeQuery = true, value="SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
-	 		" weight, shipper_Name, shipper_Addr1, shipper_Addr2, shipper_City, shipper_State, shipper_Country,\n" + 
+	 		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
 	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState FROM senderdata_master\n" + 
 	 		" WHERE reference_number=:refBarNum and isDeleted != 'Y'" + 
 	 		" UNION\n" + 
 	 		" SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
-	 		" weight, shipper_Name, shipper_Addr1, shipper_Addr2, shipper_City, shipper_State, shipper_Country,\n" + 
+	 		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
 	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState FROM senderdata_master\n" + 
 	 		" WHERE BarcodelabelNumber like '%'+:refBarNum+'%' and isDeleted != 'Y'") 
 	String fetchTrackingLabel(@Param("refBarNum") String refBarNum);
@@ -92,14 +93,31 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 List<String> fetchDirectInjectionData(@Param("companyName") String companyName);
 
 	 @Query("SELECT t FROM SenderdataMaster t where t.isDeleted = 'Y' and t.timestamp between :fromTimestamp and :toTimestamp") 
-	List<SenderdataMaster> fetchDeletedConsignments(@Param("fromTimestamp") String fromTimestamp , @Param("toTimestamp") String toTimestamp);
+	 List<SenderdataMaster> fetchDeletedConsignments(@Param("fromTimestamp") String fromTimestamp , @Param("toTimestamp") String toTimestamp);
 
 	 @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.trackEventDateOccured between :fromTime and :toTime") 
-	List<SenderdataMaster> exportConsignments(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
+	 List<SenderdataMaster> exportConsignments(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
 
 	 @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'SHIPMENT ALLOCATED' and t.isDeleted != 'Y' and t.trackEventDateOccured between :fromTime and :toTime") 
 	List<SenderdataMaster> exportShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
 
 	 @Query("SELECT new com.d2z.d2zservice.entity.Consignments(t.reference_number,t.injectionState, t.weight) FROM SenderdataMaster t where t.reference_number in :referenceNumbers")
 	List<Consignments> fetchConsignmentsForBagging(List<String> referenceNumbers);
+
+
+	 @Query("SELECT count(*) FROM SenderdataMaster t where t.user_ID = :userId and t.isDeleted = 'N'") 
+	 String fecthConsignmentsCreated(@Param("userId") Integer userId);
+	 
+	 @Query("SELECT count(*) FROM SenderdataMaster t where t.user_ID = :userId and t.manifest_number is not null") 
+	 String fetchConsignmentsManifested(@Param("userId") Integer userId);
+
+	 @Query("SELECT distinct count(t.manifest_number) FROM SenderdataMaster t where t.user_ID = :userId and t.manifest_number is not null") 
+	 String fetchConsignmentsManifests(@Param("userId") Integer userId);
+	 
+	 @Query("SELECT count(*) FROM SenderdataMaster t where t.user_ID = :userId and t.isDeleted = 'Y'") 
+	 String fetchConsignmentsDeleted(@Param("userId") Integer userId);
+
+	 @Query("SELECT count(*) FROM SenderdataMaster t where t.user_ID = :userId and t.isDeleted = 'N' and t.status = 'Delivered'") 
+	 String fetchConsignmentDelivered(@Param("userId") Integer userId);
+
 } 
