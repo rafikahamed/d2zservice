@@ -271,6 +271,8 @@ public class D2ZServiceImpl implements ID2ZService{
 				trackingLabel.setLabelSenderName(trackingArray[18].toString());
 			if(trackingArray[19] != null)
 				trackingLabel.setDeliveryInstructions(trackingArray[19].toString());
+			if(trackingArray[20] != null)
+				trackingLabel.setConsigneeCompany(trackingArray[20].toString());
 		 }
 		trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix()));
 		trackingLabelList.add(trackingLabel);
