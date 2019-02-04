@@ -72,7 +72,6 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setDeliverytype(senderDataValue.getDeliverytype());
 			senderDataObj.setShipper_Name(senderDataValue.getShipperName());
 			senderDataObj.setShipper_Addr1(senderDataValue.getShipperAddr1());
-			//senderDataObj.setShipper_Addr2(senderDataValue.getShipperAddr2());
 			senderDataObj.setShipper_City(senderDataValue.getShipperCity());
 			senderDataObj.setShipper_State(senderDataValue.getShipperState());
 			senderDataObj.setShipper_Postcode(senderDataValue.getShipperPostcode());
@@ -82,6 +81,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setInjectionType(senderDataValue.getInjectionType());
 			senderDataObj.setBagId(senderDataValue.getBagId());
 			senderDataObj.setUser_ID(senderDataValue.getUserID());
+			senderDataObj.setSku(senderDataValue.getSku());
+			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
+			senderDataObj.setDeliveryInstructions(senderDataValue.getDeliveryInstructions());
 			senderDataList.add(senderDataObj);
 		}
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);

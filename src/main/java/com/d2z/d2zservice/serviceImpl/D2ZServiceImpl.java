@@ -244,6 +244,9 @@ public class D2ZServiceImpl implements ID2ZService{
 		trackingLabel.setBarcodeLabelNumber(trackingArray[14]);
 		trackingLabel.setDatamatrix(trackingArray[15]);
 		trackingLabel.setInjectionState(trackingArray[16]);
+		trackingLabel.setSku(trackingArray[17]);
+		trackingLabel.setLabelSenderName(trackingArray[18]);
+		trackingLabel.setDeliveryInstructions(trackingArray[19]);
 		trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix()));
 		trackingLabelList.add(trackingLabel);
 		JRBeanCollectionDataSource beanColDataSource =

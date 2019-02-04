@@ -40,9 +40,6 @@
 	<field name="shipperAddr1" class="java.lang.String">
 		<fieldDescription><![CDATA[shipperAddr1]]></fieldDescription>
 	</field>
-	<field name="shipperAddr2" class="java.lang.String">
-		<fieldDescription><![CDATA[shipperAddr2]]></fieldDescription>
-	</field>
 	<field name="shipperCity" class="java.lang.String">
 		<fieldDescription><![CDATA[shipperCity]]></fieldDescription>
 	</field>
