@@ -192,7 +192,6 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setShipper_Country(senderDataValue.getShipperCountry());
 			senderDataObj.setFilename("D2ZAPI"+D2ZCommonUtil.getCurrentTimestamp());
 			//senderDataObj.setFilename(senderDataValue.getFileName());
-			//new fields
 			senderDataObj.setSku(senderDataValue.getSku());
 			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
 			senderDataObj.setDeliveryInstructions(senderDataValue.getDeliveryInstructions());
