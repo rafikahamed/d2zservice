@@ -111,7 +111,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 @Query("SELECT count(*) FROM SenderdataMaster t where t.user_ID = :userId and t.manifest_number is not null") 
 	 String fetchConsignmentsManifested(@Param("userId") Integer userId);
 
-	 @Query("SELECT distinct count(t.manifest_number) FROM SenderdataMaster t where t.user_ID = :userId and t.manifest_number is not null") 
+	 @Query("SELECT count (distinct t.manifest_number) FROM SenderdataMaster t where t.user_ID = :userId and t.manifest_number is not null") 
 	 String fetchConsignmentsManifests(@Param("userId") Integer userId);
 	 
 	 @Query("SELECT count(*) FROM SenderdataMaster t where t.user_ID = :userId and t.isDeleted = 'Y'") 
