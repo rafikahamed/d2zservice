@@ -8,6 +8,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
 
 public class SenderData {	
 	
@@ -31,6 +32,7 @@ public class SenderData {
 	@NotEmpty(message = "Product Description is mandatory")
 	private String productDescription;
 	@NotNull(message = "Value is mandatory")
+	@Positive
 	@Digits( fraction =2, message = "Invalid Value", integer = 10)
 	private double value;
 	@NotEmpty(message = "Currency is mandatory")
