@@ -55,7 +55,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
 	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions FROM senderdata_master\n" + 
 	 		" WHERE BarcodelabelNumber like '%'+:refBarNum+'%' and isDeleted != 'Y'") 
-	String fetchTrackingLabel(@Param("refBarNum") String refBarNum);
+	List<String> fetchTrackingLabel(@Param("refBarNum") String refBarNum);
 	 
 	@Procedure(name = "manifest_creation")
 	void manifestCreation(@Param("ManifestNumber") String ManifestNumber, @Param("Reference_number") String Reference_number);

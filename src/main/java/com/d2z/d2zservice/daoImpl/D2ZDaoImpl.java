@@ -137,8 +137,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	}
 
 	@Override
-	public String trackingLabel(String refBarNum) {
-		String trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNum);
+	public List<String> trackingLabel(String refBarNum) {
+		//String trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNum);
+		List<String> trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNum);
 		return trackingDetails;
 	}
 

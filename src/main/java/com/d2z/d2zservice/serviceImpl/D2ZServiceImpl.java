@@ -227,28 +227,51 @@ public class D2ZServiceImpl implements ID2ZService{
 	public  byte[] trackingLabel(String refBarNum) {
 		SenderData trackingLabel = new SenderData();
 		List<SenderData> trackingLabelList = new ArrayList<SenderData>();
-		String trackingLabelData = d2zDao.trackingLabel(refBarNum);
-		String[] trackingArray = trackingLabelData.split(",");
-		trackingLabel.setReferenceNumber(trackingArray[0]);
-		trackingLabel.setConsigneeName(trackingArray[1]);
-		trackingLabel.setConsigneeAddr1(trackingArray[2]);
-		trackingLabel.setConsigneeSuburb(trackingArray[3]);
-		trackingLabel.setConsigneeState(trackingArray[4]);
-		trackingLabel.setConsigneePostcode(trackingArray[5]);
-		trackingLabel.setConsigneePhone(trackingArray[6]);
-		trackingLabel.setWeight(trackingArray[7]);
-		trackingLabel.setShipperName(trackingArray[8]);
-		trackingLabel.setShipperAddr1(trackingArray[9]);
-		trackingLabel.setShipperCity(trackingArray[10]);
-		trackingLabel.setShipperState(trackingArray[11]);
-		trackingLabel.setShipperCountry(trackingArray[12]);
-		trackingLabel.setShipperPostcode(trackingArray[13]);
-		trackingLabel.setBarcodeLabelNumber(trackingArray[14]);
-		trackingLabel.setDatamatrix(trackingArray[15]);
-		trackingLabel.setInjectionState(trackingArray[16]);
-		trackingLabel.setSku(trackingArray[17]);
-		trackingLabel.setLabelSenderName(trackingArray[18]);
-		trackingLabel.setDeliveryInstructions(trackingArray[19]);
+		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNum);
+		Iterator itr = trackingLabelData.iterator();
+		while(itr.hasNext()) {   
+			Object[] trackingArray = (Object[]) itr.next();
+			if(trackingArray[0] != null)
+				trackingLabel.setReferenceNumber(trackingArray[0].toString());
+			if(trackingArray[1] != null)
+				trackingLabel.setConsigneeName(trackingArray[1].toString());
+			if(trackingArray[2] != null)
+				trackingLabel.setConsigneeAddr1(trackingArray[2].toString());
+			if(trackingArray[3] != null)
+				trackingLabel.setConsigneeSuburb(trackingArray[3].toString());
+			if(trackingArray[4] != null)
+				trackingLabel.setConsigneeState(trackingArray[4].toString());
+			if(trackingArray[5] != null)
+				trackingLabel.setConsigneePostcode(trackingArray[5].toString());
+			if(trackingArray[6] != null)
+				trackingLabel.setConsigneePhone(trackingArray[6].toString());
+			if(trackingArray[7] != null)
+				trackingLabel.setWeight(trackingArray[7].toString());
+			if(trackingArray[8] != null)
+				trackingLabel.setShipperName(trackingArray[8].toString());
+			if(trackingArray[9] != null)
+				trackingLabel.setShipperAddr1(trackingArray[9].toString());
+			if(trackingArray[10] != null)
+				trackingLabel.setShipperCity(trackingArray[10].toString());
+			if(trackingArray[11] != null)
+				trackingLabel.setShipperState(trackingArray[11].toString());
+			if(trackingArray[12] != null)
+				trackingLabel.setShipperCountry(trackingArray[12].toString());
+			if(trackingArray[13] != null)
+				trackingLabel.setShipperPostcode(trackingArray[13].toString());
+			if(trackingArray[14] != null)
+				trackingLabel.setBarcodeLabelNumber(trackingArray[14].toString());
+			if(trackingArray[15] != null)
+				trackingLabel.setDatamatrix(trackingArray[15].toString());
+			if(trackingArray[16] != null)
+				trackingLabel.setInjectionState(trackingArray[16].toString());
+			if(trackingArray[17] != null)
+				trackingLabel.setSku(trackingArray[17].toString());
+			if(trackingArray[18] != null)
+				trackingLabel.setLabelSenderName(trackingArray[18].toString());
+			if(trackingArray[19] != null)
+				trackingLabel.setDeliveryInstructions(trackingArray[19].toString());
+		 }
 		trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix()));
 		trackingLabelList.add(trackingLabel);
 		JRBeanCollectionDataSource beanColDataSource =

@@ -30,7 +30,7 @@ public interface ID2ZDao {
 
 	public List<String> trackingDetails(String fileName);
 
-	public String trackingLabel(String refBarNum);
+	public List<String> trackingLabel(String refBarNum);
 
 	public String manifestCreation(String manifestNumber, String refrenceNumber);
 
