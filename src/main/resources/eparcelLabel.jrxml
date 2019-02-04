@@ -92,7 +92,7 @@
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{consigneeName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{consigneeName}.equals(null) ? "":$F{consigneeName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="1" y="98" width="279" height="15" uuid="92138a07-6798-4dab-9ca1-66628b76bb71"/>
@@ -120,7 +120,7 @@
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{consigneePhone}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{consigneePhone}.equals(null) ? "" : $F{consigneePhone}]]></textFieldExpression>
 			</textField>
 			<image hAlign="Center" vAlign="Middle">
 				<reportElement x="1" y="0" width="357" height="50" uuid="63d0b5f7-568e-4dc4-9fd5-5db50af1ce6f"/>
@@ -145,7 +145,7 @@
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{consigneeCompany}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{consigneeCompany}.equals(null) ? "" : $F{consigneeCompany}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -176,7 +176,7 @@
 				<textElement>
 					<font fontName="MyArial"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{deliveryInstructions}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{deliveryInstructions}.equals(null) ? "" : $F{deliveryInstructions}]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnHeader>
@@ -290,7 +290,7 @@
 				<textElement>
 					<font fontName="MyArial"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{labelSenderName}.isEmpty()?"SW4":$F{labelSenderName}.substring( 3 )]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{labelSenderName}.isEmpty()?"SW4":$F{labelSenderName}.substring( 0, 3 )]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="1" y="-54" width="139" height="15" uuid="74384646-f320-4f97-b252-5446ab2b0273"/>
