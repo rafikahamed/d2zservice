@@ -15,8 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
@@ -26,6 +28,7 @@ import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
+//github.com/rafikahamed/d2zservice
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_Shipment;
@@ -46,6 +49,7 @@ import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
+
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -641,7 +645,8 @@ public class D2ZServiceImpl implements ID2ZService{
 		UserMessage userMsg = new UserMessage();
 		int successCount=0;
 		for(Ebay_Shipment shipment : shipmentDetails.getShipment()) {
-		CompleteSaleResponseType response = proxy.makeCalltoEbay_CompleteSale(shipment,shipmentDetails.getClientEbayToken());	
+		CompleteSaleResponseType response = proxy.makeCalltoEbay_CompleteSale(shipment,shipmentDetails.getClientEbayToken());
+		d2zDao.logEbayResponse(response);
 		if(response!=null && "SUCCESS".equalsIgnoreCase(response.getAck().toString())) {
 			successCount++;
 		}
@@ -657,6 +662,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		}
 		return userMsg;
 	}
+
 
 	@Override
 	public ClientDashbaord clientDahbaord(Integer userId) {

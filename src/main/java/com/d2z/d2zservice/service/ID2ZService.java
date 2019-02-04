@@ -68,5 +68,4 @@ public interface ID2ZService {
 	public UserMessage uploadShipmentDetailsToEbay(Ebay_ShipmentDetails shipmentDetails);
 
 	public ClientDashbaord clientDahbaord(Integer userId);
-
 }

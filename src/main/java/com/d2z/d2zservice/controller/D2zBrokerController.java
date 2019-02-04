@@ -5,12 +5,16 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.model.BaggingRequest;
+import com.d2z.d2zservice.model.BaggingResponse;
 import com.d2z.d2zservice.model.DirectInjectionDetails;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.UserDetails;
@@ -66,4 +70,9 @@ public class D2zBrokerController {
 		return brokerD2zService.downloadShipmentData(shipmentNumber);
     }
 	
+	@RequestMapping( method = RequestMethod.POST, path = "/bag")
+    public BaggingResponse getbagDetails(@RequestBody BaggingRequest request) {
+		BaggingResponse response = brokerD2zService.getbagDetails(request);
+		return response;
+    }
 }
