@@ -1,17 +1,14 @@
 package com.d2z.d2zservice.controller;
 
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.model.BaggingRequest;
 import com.d2z.d2zservice.model.BaggingResponse;
@@ -40,13 +37,13 @@ public class D2zBrokerController {
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/manifestList")
-    public List<DropDownModel> getManifestList() {
-		return brokerD2zService.getManifestList();
+    public List<DropDownModel> getManifestList(@RequestParam("userId") Integer userId) {
+		return brokerD2zService.getManifestList(userId);
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/shipmentList")
-    public List<DropDownModel> fetchShipmentList() {
-		return brokerD2zService.fetchShipmentList();
+    public List<DropDownModel> fetchShipmentList(@RequestParam("userId") Integer userId) {
+		return brokerD2zService.fetchShipmentList(userId);
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/api-shipmentList")
@@ -55,8 +52,8 @@ public class D2zBrokerController {
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/consignment-details")
-    public List<SenderdataMaster> consignmentDetails(@RequestParam("manifestNumber") String manifestNumber) {
-		return brokerD2zService.consignmentDetails(manifestNumber);
+    public List<SenderdataMaster> consignmentDetails(@RequestParam("manifestNumber") String manifestNumber, @RequestParam("userId") Integer userId) {
+		return brokerD2zService.consignmentDetails(manifestNumber, userId);
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/direct-injection")
@@ -66,8 +63,8 @@ public class D2zBrokerController {
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/consignments/shipment")
-    public List<SenderdataMaster> downloadShipmentData(@RequestParam("shipmentNumber") String shipmentNumber) {
-		return brokerD2zService.downloadShipmentData(shipmentNumber);
+    public List<SenderdataMaster> downloadShipmentData(@RequestParam("shipmentNumber") String shipmentNumber, @RequestParam("userId") Integer userId) {
+		return brokerD2zService.downloadShipmentData(shipmentNumber,userId);
     }
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/bag")

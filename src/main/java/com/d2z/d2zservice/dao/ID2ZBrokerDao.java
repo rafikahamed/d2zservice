@@ -13,19 +13,21 @@ public interface ID2ZBrokerDao {
 
 	public User fetchUserDetails(String companyName, String roleId);
 
-	public List<String> getManifestList();
+	public List<String> getManifestList(List<Integer> userId);
 
-	public List<SenderdataMaster> consignmentDetails(String manifestNumber);
+	public List<SenderdataMaster> consignmentDetails(String manifestNumber, List<Integer> userId);
 
-	public List<String> fetchShipmentList();
+	public List<String> fetchShipmentList(List<Integer> userId);
 
 	public List<String> directInjection(String companyName);
 
 	public List<String> fetchApiShipmentList();
 
-	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber);
+	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber, List<Integer> userId);
 
 	List<List<Consignments>> fetchConsignmentsByState(List<String> referenceNumbers);
+
+	public List<Integer> getClientId(Integer userId);
 
 
 }

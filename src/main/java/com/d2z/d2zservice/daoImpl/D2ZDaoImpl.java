@@ -406,8 +406,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber) {
-		List<SenderdataMaster> senderData = senderDataRepository.fetchShipmentData(shipmentNumber);
+	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber, List<Integer> clientIds) {
+		List<SenderdataMaster> senderData = senderDataRepository.fetchShipmentData(shipmentNumber, clientIds);
 		return senderData;
 	}
 
@@ -464,6 +464,12 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		clientDashbaord.setConsignmentsDeleted(senderDataRepository.fetchConsignmentsDeleted(userId));
 		clientDashbaord.setConsignmentDelivered(senderDataRepository.fetchConsignmentDelivered(userId));
 		return clientDashbaord;
+	}
+
+	@Override
+	public List<String> fetchServiceType(Integer user_id) {
+		List<String> userServiceType = userServiceRepository.fetchUserServiceById(user_id);
+		return userServiceType;
 	}
 
 }

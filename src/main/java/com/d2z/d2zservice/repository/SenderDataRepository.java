@@ -1,6 +1,8 @@
 package com.d2z.d2zservice.repository;
 
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
@@ -69,20 +71,20 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y' and t.manifest_number is null") 
 	List<SenderdataMaster> fetchManifestData(@Param("fileName") String fileName);
 
-	@Query("SELECT t FROM SenderdataMaster t where t.airwayBill = :shipmentNumber and t.isDeleted != 'Y'") 
-	List<SenderdataMaster> fetchShipmentData(@Param("shipmentNumber") String shipmentNumber);
+	@Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.airwayBill = :shipmentNumber and t.isDeleted != 'Y'") 
+	List<SenderdataMaster> fetchShipmentData(@Param("shipmentNumber") String shipmentNumber,@Param("userId") List<Integer> userId);
 
-	@Query("SELECT DISTINCT t.manifest_number FROM SenderdataMaster t where t.airwayBill is null") 
-	List<String> fetchManifestNumber();
+	@Query(nativeQuery = true, value="SELECT DISTINCT t.manifest_number FROM senderdata_master t where t.user_ID IN (:userId) and t.AirwayBill is null and t.isDeleted = 'N'") 
+	List<String> fetchManifestNumber(@Param("userId") List<Integer> userId);
 	
-	 @Query("SELECT t FROM SenderdataMaster t where t.manifest_number = :manifestNumber and t.airwayBill is null") 
-	 List<SenderdataMaster> fetchConsignmentByManifest(@Param("manifestNumber") String manifestNumber);
+	 @Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.manifest_number = :manifestNumber and t.airwayBill is null") 
+	 List<SenderdataMaster> fetchConsignmentByManifest(@Param("manifestNumber") String manifestNumber, @Param("userId") List<Integer> userId);
 
 	 @Query("SELECT reference_number FROM SenderdataMaster t where t.reference_number in :referenceNumbers and t.airwayBill is not null") 
 	 List<String> findRefNbrByShipmentNbr(@Param("referenceNumbers") String[] referenceNumbers);
 	 
-	 @Query("SELECT DISTINCT t.airwayBill FROM SenderdataMaster t where t.sender_Files_ID like '%D2ZUI%' ") 
-	 List<String> fetchShipmentList();
+	 @Query("SELECT DISTINCT t.airwayBill FROM SenderdataMaster t where t.user_ID IN (:userId) and t.sender_Files_ID like '%D2ZUI%' ") 
+	 List<String> fetchShipmentList(@Param("userId") List<Integer> userId);
 	 
 	 @Query("SELECT DISTINCT t.airwayBill FROM SenderdataMaster t where t.sender_Files_ID like '%D2ZAPI%' ") 
 	 List<String> fetchApiShipmentList();

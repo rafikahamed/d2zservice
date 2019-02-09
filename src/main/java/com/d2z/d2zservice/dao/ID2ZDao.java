@@ -64,7 +64,7 @@ public interface ID2ZDao {
 
 	public User login(String userName, String passWord);
 
-	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber);
+	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber, List<Integer> clientIds);
 
 	public List<String> fetchServiceTypeByUserName(String userName);
 
@@ -77,5 +77,7 @@ public interface ID2ZDao {
 	public void logEbayResponse(CompleteSaleResponseType response);
 
 	public ClientDashbaord clientDahbaord(Integer userId);
+
+	public List<String> fetchServiceType(Integer user_id);
 
 }

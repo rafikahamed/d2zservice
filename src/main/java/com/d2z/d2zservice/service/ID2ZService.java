@@ -59,7 +59,7 @@ public interface ID2ZService {
 
 	public UserDetails login(String userName, String passWord);
 
-	public List<ShipmentDetails> downloadShipmentData(String shipmentNumber);
+	public List<ShipmentDetails> downloadShipmentData(String shipmentNumber, Integer userId);
 
 	public List<ParcelStatus> getStatusByRefNbr(List<String> referenceNumbers);
 

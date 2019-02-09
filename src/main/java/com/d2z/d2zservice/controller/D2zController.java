@@ -161,8 +161,8 @@ public class D2zController {
 //    }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/consignments/shipment")
-    public List<ShipmentDetails> downloadShipmentData(@RequestParam("shipmentNumber") String shipmentNumber) {
-		List<ShipmentDetails> senderData = d2zService.downloadShipmentData(shipmentNumber);
+    public List<ShipmentDetails> downloadShipmentData(@RequestParam("shipmentNumber") String shipmentNumber, @RequestParam("userId") Integer userId) {
+		List<ShipmentDetails> senderData = d2zService.downloadShipmentData(shipmentNumber, userId);
     	return senderData;
     }
 	

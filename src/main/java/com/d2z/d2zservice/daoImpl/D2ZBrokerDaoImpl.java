@@ -38,20 +38,20 @@ public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
 	}
 
 	@Override
-	public List<String> getManifestList() {
-		List<String> companyDetails = senderDataRepository.fetchManifestNumber();
+	public List<String> getManifestList(List<Integer> userId) {
+		List<String> companyDetails = senderDataRepository.fetchManifestNumber(userId);
 		return companyDetails;
 	}
 
 	@Override
-	public List<SenderdataMaster> consignmentDetails(String manifestNumber) {
-		List<SenderdataMaster> consignmentData = senderDataRepository.fetchConsignmentByManifest(manifestNumber);
+	public List<SenderdataMaster> consignmentDetails(String manifestNumber, List<Integer> userId) {
+		List<SenderdataMaster> consignmentData = senderDataRepository.fetchConsignmentByManifest(manifestNumber, userId);
 		return consignmentData;
 	}
 
 	@Override
-	public List<String> fetchShipmentList() {
-		List<String> shipmentDetails = senderDataRepository.fetchShipmentList();
+	public List<String> fetchShipmentList(List<Integer> userId) {
+		List<String> shipmentDetails = senderDataRepository.fetchShipmentList(userId);
 		return shipmentDetails;
 	}
 
@@ -68,8 +68,8 @@ public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
 	}
 
 	@Override
-	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber) {
-		return senderDataRepository.fetchShipmentData(shipmentNumber);
+	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber, List<Integer> userId) {
+		return senderDataRepository.fetchShipmentData(shipmentNumber, userId);
 	}
 	@Override
 	public List<List<Consignments>> fetchConsignmentsByState(List<String> referenceNumbers){
@@ -78,6 +78,12 @@ public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
 		grouped = consignments.stream().collect(Collectors.groupingBy(Consignments::getStateCode));
 		List<List<Consignments>> consignmentsByState = grouped.values().stream().collect(Collectors.toList());
 		return consignmentsByState;
+	}
+
+	@Override
+	public List<Integer> getClientId(Integer userId) {
+		List<Integer> listOfClientId = userRepository.getClientId(userId.toString());
+		return listOfClientId;
 	}
 
 

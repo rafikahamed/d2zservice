@@ -15,17 +15,17 @@ public interface IBrokerD2ZService {
 
 	public UserDetails fetchUserDetails(String companyName, String roleId);
 
-	public List<DropDownModel> getManifestList();
+	public List<DropDownModel> getManifestList(Integer userId);
 
-	public List<SenderdataMaster> consignmentDetails(String manifestNumber);
+	public List<SenderdataMaster> consignmentDetails(String manifestNumber, Integer userId);
 
-	public List<DropDownModel> fetchShipmentList();
+	public List<DropDownModel> fetchShipmentList(Integer userId);
 
 	public List<DirectInjectionDetails> directInjection(String companyName);
 
 	public List<DropDownModel> fetchApiShipmentList();
 
-	public List<SenderdataMaster> downloadShipmentData(String shipmentNumber);
+	public List<SenderdataMaster> downloadShipmentData(String shipmentNumber, Integer userId);
 
 	public BaggingResponse getbagDetails(BaggingRequest request);
 
