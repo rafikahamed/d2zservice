@@ -13,7 +13,7 @@ public interface UserRepository extends CrudRepository<User, Long>{
 	@Query("SELECT t FROM User t where t.user_Name = :userName and user_Password = :passWord")  
 	User fetchUserDetails(@Param("userName") String userName, @Param("passWord") String passWord);
 	
-	 @Query("SELECT u.companyName FROM User u where u.role_Id=3 and u.clientBrokerId=:brokerId") 
+	 @Query("SELECT u.companyName FROM User u where u.role_Id=3 and u.clientBrokerId=:brokerId order by timestamp desc") 
 	 List<String> fetchCompanyName(@Param("brokerId") String brokerId);
 	
 	 @Query("Select t.user_Name from User t where t.user_IsDeleted = false") 

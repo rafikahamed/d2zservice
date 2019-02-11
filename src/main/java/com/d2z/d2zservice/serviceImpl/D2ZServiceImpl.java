@@ -13,11 +13,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
@@ -28,7 +25,6 @@ import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
-//github.com/rafikahamed/d2zservice
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_Shipment;
@@ -116,33 +112,37 @@ public class D2ZServiceImpl implements ID2ZService{
 		return userMsg;
 	}
 
-	@Override
+	@SuppressWarnings("rawtypes")
 	public List<DropDownModel> fileList(Integer userId) {
 		List<String> listOfFileNames= d2zDao.fileList(userId);
 		List<DropDownModel> dropDownList= new ArrayList<DropDownModel>();
-		for(String fileName:listOfFileNames) {
-			DropDownModel dropDownVaL = new DropDownModel();
-			dropDownVaL.setName(fileName);
-			dropDownVaL.setValue(fileName);
-			dropDownList.add(dropDownVaL);
+		Iterator itr = listOfFileNames.iterator();
+		while(itr.hasNext()) {   
+			Object[] obj = (Object[]) itr.next();
+			DropDownModel dropDownVal = new DropDownModel();
+			dropDownVal.setName(obj[0].toString());
+			dropDownVal.setValue(obj[0].toString());
+			dropDownList.add(dropDownVal);
 		}
 		return dropDownList;
 	}
 	
-	@Override
+	@SuppressWarnings("rawtypes")
 	public List<DropDownModel> labelFileList(Integer userId) {
 		List<String> listOfFileNames= d2zDao.labelFileList(userId);
 		List<DropDownModel> dropDownList= new ArrayList<DropDownModel>();
-		for(String fileName:listOfFileNames) {
-			DropDownModel dropDownVaL = new DropDownModel();
-			dropDownVaL.setName(fileName);
-			dropDownVaL.setValue(fileName);
-			dropDownList.add(dropDownVaL);
+		Iterator itr = listOfFileNames.iterator();
+		while(itr.hasNext()) {   
+			Object[] obj = (Object[]) itr.next();
+			DropDownModel dropDownVal = new DropDownModel();
+			dropDownVal.setName(obj[0].toString());
+			dropDownVal.setValue(obj[0].toString());
+			dropDownList.add(dropDownVal);
 		}
 		return dropDownList;
 	}
 	
-	@Override
+	@SuppressWarnings("rawtypes")
 	public List<TrackingDetails> trackingDetails(String fileName) {
 		List<TrackingDetails> trackingDetailsList = new ArrayList<TrackingDetails>();
 		TrackingDetails trackingDetails = null;

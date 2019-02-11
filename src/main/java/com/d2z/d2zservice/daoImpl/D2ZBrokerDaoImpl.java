@@ -4,15 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.entity.Consignments;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.User;
-import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 
@@ -71,6 +68,7 @@ public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
 	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber, List<Integer> userId) {
 		return senderDataRepository.fetchShipmentData(shipmentNumber, userId);
 	}
+	
 	@Override
 	public List<List<Consignments>> fetchConsignmentsByState(List<String> referenceNumbers){
 		List<Consignments> consignments =  senderDataRepository.fetchConsignmentsForBagging(referenceNumbers);
@@ -85,6 +83,5 @@ public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
 		List<Integer> listOfClientId = userRepository.getClientId(userId.toString());
 		return listOfClientId;
 	}
-
 
 }
