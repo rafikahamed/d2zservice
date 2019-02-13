@@ -2,10 +2,14 @@ package com.d2z.d2zservice.service;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
+import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
+import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
@@ -68,4 +72,8 @@ public interface ID2ZService {
 	public UserMessage uploadShipmentDetailsToEbay(Ebay_ShipmentDetails shipmentDetails);
 
 	public ClientDashbaord clientDahbaord(Integer userId);
+
+	public UserMessage deleteConsignments(@Valid DeleteConsignmentRequest request) throws ReferenceNumberNotUniqueException;
+
+	public String getRates(@Valid APIRatesRequest request);
 }

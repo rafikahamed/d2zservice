@@ -21,6 +21,7 @@ import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UserDetails;
+import com.d2z.d2zservice.repository.APIRatesRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
@@ -51,6 +52,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	EbayResponseRepository ebayResponseRepository;
+	
+	@Autowired
+	APIRatesRepository apiRatesRepository;
 	
 	@Override
 	public String exportParcel(List<SenderData> orderDetailList) {
@@ -426,6 +430,12 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		}
 		return trackandTrace;
 	}
+	
+	@Override
+	public List<String> fetchReferenceNumberByUserId(Integer userId) {
+		List<String> referenceNumbers_DB = senderDataRepository.fetchReferenceNumberByUserId(userId);
+		return referenceNumbers_DB;
+	}
 
 	@Override
 	public Trackandtrace getLatestStatusByArticleID(String articleID) {
@@ -467,9 +477,20 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
+	public void deleteConsignment(String referenceNumbers) {
+		senderDataRepository.deleteConsignments(referenceNumbers);
+		
+	}
+
+	@Override
+	public String getRates(String postcode, Double minWeight, Double maxWeight, Integer userId) {
+		
+		return apiRatesRepository.getRates(postcode, maxWeight, userId);
+	}
 	public List<String> fetchServiceType(Integer user_id) {
 		List<String> userServiceType = userServiceRepository.fetchUserServiceById(user_id);
 		return userServiceType;
+
 	}
 
 }

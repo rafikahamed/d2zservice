@@ -1,16 +1,15 @@
 package com.d2z.d2zservice.model;
 
-import java.util.List;
-
 import javax.validation.constraints.NotEmpty;
 
-public class BaggingRequest {
+public class APIRatesRequest {
 
 	@NotEmpty(message = "UserName cannot be empty")
 	private String userName;
 	@NotEmpty(message = "Password cannot be empty")
 	private String password;
-	private List<String> referenceNumbers;
+	private double weight;
+	private String postcode;
 	public String getUserName() {
 		return userName;
 	}
@@ -23,11 +22,18 @@ public class BaggingRequest {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public List<String> getReferenceNumbers() {
-		return referenceNumbers;
+	public double getWeight() {
+		return weight;
 	}
-	public void setReferenceNumbers(List<String> referenceNumbers) {
-		this.referenceNumbers = referenceNumbers;
+	public void setWeight(double weight) {
+		this.weight = weight;
 	}
+	public String getPostcode() {
+		return postcode;
+	}
+	public void setPostcode(String postcode) {
+		this.postcode = postcode;
+	}
+	
 	
 }

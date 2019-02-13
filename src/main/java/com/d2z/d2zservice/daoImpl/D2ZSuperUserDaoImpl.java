@@ -220,11 +220,12 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 				trackAndTraceList.add(trackandTrace);
 			}
 			
-			trackAndTraceRepository.saveAll(trackAndTraceList);
-			trackAndTraceRepository.updateTracking();
-			trackAndTraceRepository.deleteDuplicates();
-			responseMsg.setResponseMessage("Data uploaded successfully from ETower");
+		
 		}
+		trackAndTraceRepository.saveAll(trackAndTraceList);
+		trackAndTraceRepository.updateTracking();
+		trackAndTraceRepository.deleteDuplicates();
+		responseMsg.setResponseMessage("Data uploaded successfully from ETower");
 		}
 		return responseMsg;
 	}

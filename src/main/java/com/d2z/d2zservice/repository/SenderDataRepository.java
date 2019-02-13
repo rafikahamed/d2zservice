@@ -121,5 +121,11 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 
 	 @Query("SELECT count(*) FROM SenderdataMaster t where t.user_ID = :userId and t.isDeleted = 'N' and t.status = 'Delivered'") 
 	 String fetchConsignmentDelivered(@Param("userId") Integer userId);
+	 
+	 @Query("SELECT t.reference_number FROM SenderdataMaster t where  t.user_ID = :userId")
+	 List<String> fetchReferenceNumberByUserId(@Param("userId") Integer userId);
+	 
+	 @Procedure(name = "deleteConsignment")
+		void deleteConsignments(@Param("Reference_number") String Reference_number);
 
 } 

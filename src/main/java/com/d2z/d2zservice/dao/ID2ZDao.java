@@ -78,6 +78,14 @@ public interface ID2ZDao {
 
 	public ClientDashbaord clientDahbaord(Integer userId);
 
+
+	List<String> fetchReferenceNumberByUserId(Integer userId);
+
+	public void deleteConsignment(String referenceNumbers);
+
+	public String getRates(String postcode, Double minWeight, Double maxWeight, Integer userId);
+
 	public List<String> fetchServiceType(Integer user_id);
+
 
 }

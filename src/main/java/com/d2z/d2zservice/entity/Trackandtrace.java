@@ -10,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="TrackAndtrace")
-@IdClass(TrackEventId.class)
+//@IdClass(TrackEventId.class)
 @NamedQuery(name="Trackandtrace.findAll", query="SELECT t FROM Trackandtrace t")
 @NamedStoredProcedureQueries({
 @NamedStoredProcedureQuery(name = "update-tracking", 
@@ -23,6 +23,12 @@ public class Trackandtrace implements Serializable {
 
 
 	private static final long serialVersionUID = 1L;
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_GEN")
+	@SequenceGenerator(name = "SEQ_GEN", sequenceName = "eTowerSeqNum", allocationSize = 20) 
+	@Column(name = "RowId")
+	private int rowId;
 	
 	@Column(name="AirwayBill")
 	private String airwayBill;
@@ -55,11 +61,11 @@ public class Trackandtrace implements Serializable {
 	@Column(name="TrackEventCode")
 	private String trackEventCode;
 
-	@Id
+	//@Id
 	@Column(name="TrackEventDateOccured")
 	private String trackEventDateOccured;
 
-	@Id
+	//@Id
 	@Column(name="TrackEventDetails")
 	private String trackEventDetails;
 	
@@ -79,7 +85,7 @@ public class Trackandtrace implements Serializable {
 	@Column(name="ConnoteNo")
 	private String connoteNo;
 	
-	@Id
+	//@Id
 	@Column(name="ArticleID")
 	private String articleID;
 
@@ -105,6 +111,14 @@ public class Trackandtrace implements Serializable {
 
 	
 	
+	public int getRowId() {
+		return rowId;
+	}
+
+	public void setRowId(int rowId) {
+		this.rowId = rowId;
+	}
+
 	public String getLocation() {
 		return location;
 	}

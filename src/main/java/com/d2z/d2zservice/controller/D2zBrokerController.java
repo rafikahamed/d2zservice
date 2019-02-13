@@ -1,6 +1,10 @@
 package com.d2z.d2zservice.controller;
 
 import java.util.List;
+
+
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +72,7 @@ public class D2zBrokerController {
     }
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/bag")
-    public BaggingResponse getbagDetails(@RequestBody BaggingRequest request) {
+    public BaggingResponse getbagDetails(@RequestBody @Valid BaggingRequest request) {
 		BaggingResponse response = brokerD2zService.getbagDetails(request);
 		return response;
     }

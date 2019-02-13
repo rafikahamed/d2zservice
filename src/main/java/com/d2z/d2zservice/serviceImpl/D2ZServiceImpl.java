@@ -13,9 +13,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
+
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
@@ -24,8 +31,11 @@ import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
+import com.d2z.d2zservice.model.APIRatesRequest;
+import com.d2z.d2zservice.model.BaggingResponse;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
+import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_Shipment;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
@@ -699,5 +709,71 @@ public class D2ZServiceImpl implements ID2ZService{
 	public ClientDashbaord clientDahbaord(Integer userId) {
 		ClientDashbaord clientDashbaord = d2zDao.clientDahbaord(userId);
 		return clientDashbaord;
+	}
+
+	@Override
+	public UserMessage deleteConsignments(@Valid DeleteConsignmentRequest request) throws ReferenceNumberNotUniqueException {
+		UserMessage userMsg = new UserMessage();
+		User user = d2zDao.login(request.getUserName(), request.getPassword());
+		if(null==user) {
+			userMsg.setMessage("Invalid UserName or Password");
+			return userMsg;
+		}
+		List<String> referenceNumbers_DB = d2zDao.fetchReferenceNumberByUserId(user.getUser_Id());
+		List<String> incomingRefNbr = request.getReferenceNumbers();
+		
+		List<String> invalidRefNbr = incomingRefNbr.stream()
+	               .filter(a -> !referenceNumbers_DB.contains(a))
+	               .collect(Collectors.toList());
+		
+		if(!invalidRefNbr.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Invalid Reference Number",invalidRefNbr);
+		}
+		
+		String referenceNumbers = String.join(",", incomingRefNbr);
+		
+		d2zDao.deleteConsignment(referenceNumbers);
+		userMsg.setMessage("Deleted Successfully");
+		return userMsg;
+	}
+
+	@Override
+	public String getRates(@Valid APIRatesRequest request) {
+		 User user = d2zDao.login(request.getUserName(), request.getPassword());
+		if(null==user) {
+			throw new InvalidUserException("Invalid Username or Password", null);
+		}
+		double weight = request.getWeight();
+		double maxWeight = 0;
+		double minWeight = 0;
+		if(weight >= 0 && weight <= 0.5) {
+			maxWeight = 0.50;
+		}else if(weight > 0.5 && weight <= 1) {
+			maxWeight = 1;
+		}else if(weight > 1 && weight <= 2) {
+			maxWeight = 2;
+		}else if(weight > 2 && weight <= 3) {
+			maxWeight = 3;
+		}else if(weight > 3 && weight <= 4) {
+			
+			maxWeight = 4;
+		}else if(weight > 4 && weight <= 5) {
+			
+			maxWeight = 5;
+		}else if(weight > 5 && weight <= 7) {
+			
+			maxWeight = 7;
+		}else if(weight > 7 && weight <= 10) {
+			
+			maxWeight = 10;
+		}else if(weight > 10 && weight <= 15) {
+			
+			maxWeight = 15;
+		}else if(weight > 15 && weight <= 22) {
+			
+			maxWeight = 22;
+		}
+		String rate = d2zDao.getRates(request.getPostcode(),minWeight,maxWeight,user.getUser_Id()); 
+		return rate;
 	}
 }
