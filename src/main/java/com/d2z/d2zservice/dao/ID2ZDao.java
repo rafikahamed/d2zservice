@@ -30,7 +30,7 @@ public interface ID2ZDao {
 
 	public List<String> trackingDetails(String fileName);
 
-	public String trackingLabel(String refBarNum);
+	public List<String> trackingLabel(String refBarNum);
 
 	public String manifestCreation(String manifestNumber, String refrenceNumber);
 
@@ -77,5 +77,11 @@ public interface ID2ZDao {
 	public void logEbayResponse(CompleteSaleResponseType response);
 
 	public ClientDashbaord clientDahbaord(Integer userId);
+
+	List<String> fetchReferenceNumberByUserId(Integer userId);
+
+	public void deleteConsignment(String referenceNumbers);
+
+	public String getRates(String postcode, Double minWeight, Double maxWeight, Integer userId);
 
 }

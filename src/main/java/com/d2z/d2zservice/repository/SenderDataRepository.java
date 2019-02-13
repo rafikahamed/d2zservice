@@ -48,14 +48,14 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 
 	@Query(nativeQuery = true, value="SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
 	 		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
-	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState FROM senderdata_master\n" + 
+	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions, consigneeCompany FROM senderdata_master\n" + 
 	 		" WHERE reference_number=:refBarNum and isDeleted != 'Y'" + 
 	 		" UNION\n" + 
 	 		" SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
 	 		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
-	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState FROM senderdata_master\n" + 
+	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions,consigneeCompany FROM senderdata_master\n" + 
 	 		" WHERE BarcodelabelNumber like '%'+:refBarNum+'%' and isDeleted != 'Y'") 
-	String fetchTrackingLabel(@Param("refBarNum") String refBarNum);
+	List<String> fetchTrackingLabel(@Param("refBarNum") String refBarNum);
 	 
 	@Procedure(name = "manifest_creation")
 	void manifestCreation(@Param("ManifestNumber") String ManifestNumber, @Param("Reference_number") String Reference_number);
@@ -119,5 +119,11 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 
 	 @Query("SELECT count(*) FROM SenderdataMaster t where t.user_ID = :userId and t.isDeleted = 'N' and t.status = 'Delivered'") 
 	 String fetchConsignmentDelivered(@Param("userId") Integer userId);
+	 
+	 @Query("SELECT t.reference_number FROM SenderdataMaster t where  t.user_ID = :userId")
+	 List<String> fetchReferenceNumberByUserId(@Param("userId") Integer userId);
+	 
+	 @Procedure(name = "deleteConsignment")
+		void deleteConsignments(@Param("Reference_number") String Reference_number);
 
 } 

@@ -48,6 +48,11 @@ import javax.persistence.Table;
 	  parameters = {
 	      @StoredProcedureParameter(mode = ParameterMode.IN, name = "Airwaybill", type = String.class),
 	      @StoredProcedureParameter(mode = ParameterMode.IN, name = "Reference_number", type = String.class)
+	  }),
+   @NamedStoredProcedureQuery(name = "deleteConsignment", 
+	  procedureName = "deleteConsignment",
+	  parameters = {
+	      @StoredProcedureParameter(mode = ParameterMode.IN, name = "Reference_number", type = String.class)
 	  })
 })
 public class SenderdataMaster implements Serializable {
@@ -181,6 +186,15 @@ public class SenderdataMaster implements Serializable {
 
 	@Column(name="Weight")
 	private double weight;
+	
+	@Column(name="SKU")
+	private String sku;
+	
+	@Column(name="LabelSenderName")
+	private String labelSenderName;
+	
+	@Column(name="DeliveryInstructions")
+	private String deliveryInstructions;
 	
 	@OneToMany(mappedBy="senderData")
     List<Trackandtrace> trackAndTrace = null;
@@ -524,4 +538,28 @@ public class SenderdataMaster implements Serializable {
 		this.weight = weight;
 	}
 
+	public String getSku() {
+		return sku;
+	}
+
+	public void setSku(String sku) {
+		this.sku = sku;
+	}
+
+	public String getLabelSenderName() {
+		return labelSenderName;
+	}
+
+	public void setLabelSenderName(String labelSenderName) {
+		this.labelSenderName = labelSenderName;
+	}
+
+	public String getDeliveryInstructions() {
+		return deliveryInstructions;
+	}
+
+	public void setDeliveryInstructions(String deliveryInstructions) {
+		this.deliveryInstructions = deliveryInstructions;
+	}
+	
 }

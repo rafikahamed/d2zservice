@@ -25,7 +25,9 @@ public interface ID2ZBrokerDao {
 
 	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber);
 
-	List<List<Consignments>> fetchConsignmentsByState(List<String> referenceNumbers);
+	List<Consignments> fetchConsignmentsByState(List<String> referenceNumbers);
+
+	User login(String userName, String passWord);
 
 
 }

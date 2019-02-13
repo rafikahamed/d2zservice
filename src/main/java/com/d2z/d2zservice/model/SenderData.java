@@ -8,6 +8,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
 
 public class SenderData {	
 	
@@ -16,7 +17,7 @@ public class SenderData {
 	@NotEmpty(message = "Reference Number is mandatory")
 	private String referenceNumber;
 	@NotEmpty(message = "Consignee Name is mandatory")
-	@Pattern(regexp="^[a-zA-Z ]+$", message = "Consignee Name must contain only alphabets")
+//	@Pattern(regexp="^[a-zA-Z ]+$", message = "Consignee Name must contain only alphabets")
 	private String consigneeName;
 	private String consigneeCompany;
 	@NotEmpty(message = "Consignee Address is mandatory")
@@ -31,6 +32,7 @@ public class SenderData {
 	@NotEmpty(message = "Product Description is mandatory")
 	private String productDescription;
 	@NotNull(message = "Value is mandatory")
+	@Positive
 	@Digits( fraction =2, message = "Invalid Value", integer = 10)
 	private double value;
 	@NotEmpty(message = "Currency is mandatory")
@@ -55,7 +57,6 @@ public class SenderData {
 	private String shipperName;
 	@NotEmpty(message = "Shipped Address is mandatory")
 	private String shipperAddr1;
-	private String shipperAddr2;
 	@NotEmpty(message = "Shipped City is mandatory")
 	private String shipperCity;
 	@NotEmpty(message = "Shipped State is mandatory")
@@ -80,6 +81,9 @@ public class SenderData {
 	private String InjectionType;
 	private String bagId;
 	private String userName;
+	private String sku;
+	private String labelSenderName;
+	private String deliveryInstructions;
 
 	public String getUserName() {
 		return userName;
@@ -378,14 +382,6 @@ public class SenderData {
 		this.shipperAddr1 = shipperAddr1;
 	}
 
-	public String getShipperAddr2() {
-		return shipperAddr2;
-	}
-
-	public void setShipperAddr2(String shipperAddr2) {
-		this.shipperAddr2 = shipperAddr2;
-	}
-
 	public String getShipperCity() {
 		return shipperCity;
 	}
@@ -434,16 +430,28 @@ public class SenderData {
 		this.datamatrix = datamatrix;
 	}
 
-	@Override
-	public String toString() {
-		return "SenderData [referenceNumber=" + referenceNumber + ", consigneeName="
-				+ consigneeName + ", consigneeAddr1=" + consigneeAddr1 + ", consigneeSuburb=" + consigneeSuburb
-				+ ", consigneeState=" + consigneeState + ", consigneePostcode=" + consigneePostcode
-				+ ", consigneePhone=" + consigneePhone + ", weight=" + weight + ", shipperName=" + shipperName
-				+ ", shipperAddr1=" + shipperAddr1 + ", shipperAddr2=" + shipperAddr2 + ", shipperCity=" + shipperCity
-				+ ", shipperState=" + shipperState + ", shipperCountry=" + shipperCountry + ", shipperPostcode="
-				+ shipperPostcode + ", barcodeLabelNumber=" + barcodeLabelNumber + ", datamatrix=" + datamatrix
-				+ ", injectionState=" + injectionState + "]";
+	public String getSku() {
+		return sku;
 	}
-	
+
+	public void setSku(String sku) {
+		this.sku = sku;
+	}
+
+	public String getLabelSenderName() {
+		return labelSenderName;
+	}
+
+	public void setLabelSenderName(String labelSenderName) {
+		this.labelSenderName = labelSenderName;
+	}
+
+	public String getDeliveryInstructions() {
+		return deliveryInstructions;
+	}
+
+	public void setDeliveryInstructions(String deliveryInstructions) {
+		this.deliveryInstructions = deliveryInstructions;
+	}
+
 }

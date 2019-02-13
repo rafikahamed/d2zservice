@@ -21,6 +21,7 @@ import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UserDetails;
+import com.d2z.d2zservice.repository.APIRatesRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
@@ -52,6 +53,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	@Autowired
 	EbayResponseRepository ebayResponseRepository;
 	
+	@Autowired
+	APIRatesRepository apiRatesRepository;
+	
 	@Override
 	public String exportParcel(List<SenderData> orderDetailList) {
 		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
@@ -80,7 +84,6 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setDeliverytype(senderDataValue.getDeliverytype());
 			senderDataObj.setShipper_Name(senderDataValue.getShipperName());
 			senderDataObj.setShipper_Addr1(senderDataValue.getShipperAddr1());
-			//senderDataObj.setShipper_Addr2(senderDataValue.getShipperAddr2());
 			senderDataObj.setShipper_City(senderDataValue.getShipperCity());
 			senderDataObj.setShipper_State(senderDataValue.getShipperState());
 			senderDataObj.setShipper_Postcode(senderDataValue.getShipperPostcode());
@@ -90,6 +93,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setInjectionType(senderDataValue.getInjectionType());
 			senderDataObj.setBagId(senderDataValue.getBagId());
 			senderDataObj.setUser_ID(senderDataValue.getUserID());
+			senderDataObj.setSku(senderDataValue.getSku());
+			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
+			senderDataObj.setDeliveryInstructions(senderDataValue.getDeliveryInstructions());
 			senderDataList.add(senderDataObj);
 		}
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
@@ -135,8 +141,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	}
 
 	@Override
-	public String trackingLabel(String refBarNum) {
-		String trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNum);
+	public List<String> trackingLabel(String refBarNum) {
+		//String trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNum);
+		List<String> trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNum);
 		return trackingDetails;
 	}
 
@@ -189,6 +196,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setShipper_Country(senderDataValue.getShipperCountry());
 			senderDataObj.setFilename("D2ZAPI"+D2ZCommonUtil.getCurrentTimestamp());
 			//senderDataObj.setFilename(senderDataValue.getFileName());
+			senderDataObj.setSku(senderDataValue.getSku());
+			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
+			senderDataObj.setDeliveryInstructions(senderDataValue.getDeliveryInstructions());
 			senderDataList.add(senderDataObj);
 		}
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
@@ -420,6 +430,12 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		}
 		return trackandTrace;
 	}
+	
+	@Override
+	public List<String> fetchReferenceNumberByUserId(Integer userId) {
+		List<String> referenceNumbers_DB = senderDataRepository.fetchReferenceNumberByUserId(userId);
+		return referenceNumbers_DB;
+	}
 
 	@Override
 	public Trackandtrace getLatestStatusByArticleID(String articleID) {
@@ -458,6 +474,18 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		clientDashbaord.setConsignmentsDeleted(senderDataRepository.fetchConsignmentsDeleted(userId));
 		clientDashbaord.setConsignmentDelivered(senderDataRepository.fetchConsignmentDelivered(userId));
 		return clientDashbaord;
+	}
+
+	@Override
+	public void deleteConsignment(String referenceNumbers) {
+		senderDataRepository.deleteConsignments(referenceNumbers);
+		
+	}
+
+	@Override
+	public String getRates(String postcode, Double minWeight, Double maxWeight, Integer userId) {
+		
+		return apiRatesRepository.getRates(postcode, maxWeight, userId);
 	}
 
 }

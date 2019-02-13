@@ -3,8 +3,11 @@ package com.d2z.d2zservice.serviceImpl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -151,8 +154,16 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 	@Override
 	public BaggingResponse getbagDetails(BaggingRequest request) {
 		BaggingResponse baggingResponse = new BaggingResponse();
+		User user = d2zDao.login(request.getUserName(), request.getPassword());
+		if(null==user) {
+			baggingResponse.setResponseMessage("Invalid UserName or Password");
+			return baggingResponse;
+		}
 		List<Bags> bags = new ArrayList<>();
-		List<List<Consignments>> consignmentsByState = d2zDao.fetchConsignmentsByState(request.getReferenceNumbers());
+		List<Consignments> consignmentsDB = d2zDao.fetchConsignmentsByState(request.getReferenceNumbers());
+		Map<String, List<Consignments>> grouped = new HashMap<String, List<Consignments>>();
+		grouped = consignmentsDB.stream().collect(Collectors.groupingBy(Consignments::getStateCode));
+		List<List<Consignments>> consignmentsByState = grouped.values().stream().collect(Collectors.toList());
 		System.out.println("NumberofGroups: " +consignmentsByState.size());
 		for(List<Consignments> consignments : consignmentsByState) {
 			System.out.println("Consignments - "+consignments.get(0).getStateCode()+" : "+consignments);
@@ -164,16 +175,16 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 			System.out.println("Sorted Consignment - "+consignments.get(0).getStateCode()+" : "+consignments);
 			
 				Bags bag = null;
-				putIntoBag(bags,consignments,bag,false);
+				putIntoBag(user.getUser_Id(),bags,consignments,bag,false);
 			
 			
 			baggingResponse.setBags(bags);
+			baggingResponse.setResponseMessage("Success");
 		}
 		return baggingResponse;
 	}
 
-	private void putIntoBag(List<Bags> bags,List<Consignments> consignments,Bags bag,boolean isBagFull) {
-		
+	private void putIntoBag(int userid,List<Bags> bags,List<Consignments> consignments,Bags bag,boolean isBagFull) {
 		int length = consignments.size();
 		if(length<=0) {
 			bags.add(bag);
@@ -183,7 +194,9 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 			System.out.println("New Bag");
 			bag = new Bags(22);
 			isBagFull=false;
-			bag.setBagId(consignments.get(0).getStateCode()+"_"+UUID.randomUUID().toString().replaceAll("-", ""));
+			Random rnd = new Random();
+			int uniqueNumber = 100000 + rnd.nextInt(900000);
+			bag.setBagId(userid+"_"+consignments.get(0).getStateCode()+"_"+uniqueNumber);
 		}
 		System.out.println("Consignments - "+consignments);
 		System.out.println("Consignments in Bag - "+bag.getConsignments());
@@ -247,7 +260,7 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 		}
 
 		}
-		putIntoBag(bags, consignments,bag,isBagFull);
+		putIntoBag(userid,bags, consignments,bag,isBagFull);
 
 	}
 		

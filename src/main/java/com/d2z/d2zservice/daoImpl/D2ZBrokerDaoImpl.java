@@ -72,13 +72,13 @@ public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
 		return senderDataRepository.fetchShipmentData(shipmentNumber);
 	}
 	@Override
-	public List<List<Consignments>> fetchConsignmentsByState(List<String> referenceNumbers){
+	public List<Consignments> fetchConsignmentsByState(List<String> referenceNumbers){
 		List<Consignments> consignments =  senderDataRepository.fetchConsignmentsForBagging(referenceNumbers);
-		Map<String, List<Consignments>> grouped = new HashMap<String, List<Consignments>>();
-		grouped = consignments.stream().collect(Collectors.groupingBy(Consignments::getStateCode));
-		List<List<Consignments>> consignmentsByState = grouped.values().stream().collect(Collectors.toList());
-		return consignmentsByState;
+		return consignments;
 	}
-
-
+	@Override
+	public User login(String userName, String passWord) {
+		User userDaetils = userRepository.fetchUserDetails(userName, passWord);
+		return userDaetils;
+	}
 }

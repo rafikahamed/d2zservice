@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotEmpty;
 
-public class BaggingRequest {
+public class DeleteConsignmentRequest {
 
 	@NotEmpty(message = "UserName cannot be empty")
 	private String userName;
@@ -29,5 +29,4 @@ public class BaggingRequest {
 	public void setReferenceNumbers(List<String> referenceNumbers) {
 		this.referenceNumbers = referenceNumbers;
 	}
-	
 }

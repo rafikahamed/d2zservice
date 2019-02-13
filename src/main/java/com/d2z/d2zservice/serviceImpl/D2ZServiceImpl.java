@@ -16,9 +16,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
@@ -27,9 +28,12 @@ import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
+import com.d2z.d2zservice.model.APIRatesRequest;
+import com.d2z.d2zservice.model.BaggingResponse;
 import com.d2z.d2zservice.model.ClientDashbaord;
 //github.com/rafikahamed/d2zservice
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
+import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_Shipment;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
@@ -229,25 +233,53 @@ public class D2ZServiceImpl implements ID2ZService{
 	public  byte[] trackingLabel(String refBarNum) {
 		SenderData trackingLabel = new SenderData();
 		List<SenderData> trackingLabelList = new ArrayList<SenderData>();
-		String trackingLabelData = d2zDao.trackingLabel(refBarNum);
-		String[] trackingArray = trackingLabelData.split(",");
-		trackingLabel.setReferenceNumber(trackingArray[0]);
-		trackingLabel.setConsigneeName(trackingArray[1]);
-		trackingLabel.setConsigneeAddr1(trackingArray[2]);
-		trackingLabel.setConsigneeSuburb(trackingArray[3]);
-		trackingLabel.setConsigneeState(trackingArray[4]);
-		trackingLabel.setConsigneePostcode(trackingArray[5]);
-		trackingLabel.setConsigneePhone(trackingArray[6]);
-		trackingLabel.setWeight(trackingArray[7]);
-		trackingLabel.setShipperName(trackingArray[8]);
-		trackingLabel.setShipperAddr1(trackingArray[9]);
-		trackingLabel.setShipperCity(trackingArray[10]);
-		trackingLabel.setShipperState(trackingArray[11]);
-		trackingLabel.setShipperCountry(trackingArray[12]);
-		trackingLabel.setShipperPostcode(trackingArray[13]);
-		trackingLabel.setBarcodeLabelNumber(trackingArray[14]);
-		trackingLabel.setDatamatrix(trackingArray[15]);
-		trackingLabel.setInjectionState(trackingArray[16]);
+		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNum);
+		Iterator itr = trackingLabelData.iterator();
+		while(itr.hasNext()) {   
+			Object[] trackingArray = (Object[]) itr.next();
+			if(trackingArray[0] != null)
+				trackingLabel.setReferenceNumber(trackingArray[0].toString());
+			if(trackingArray[1] != null)
+				trackingLabel.setConsigneeName(trackingArray[1].toString());
+			if(trackingArray[2] != null)
+				trackingLabel.setConsigneeAddr1(trackingArray[2].toString());
+			if(trackingArray[3] != null)
+				trackingLabel.setConsigneeSuburb(trackingArray[3].toString());
+			if(trackingArray[4] != null)
+				trackingLabel.setConsigneeState(trackingArray[4].toString());
+			if(trackingArray[5] != null)
+				trackingLabel.setConsigneePostcode(trackingArray[5].toString());
+			if(trackingArray[6] != null)
+				trackingLabel.setConsigneePhone(trackingArray[6].toString());
+			if(trackingArray[7] != null)
+				trackingLabel.setWeight(trackingArray[7].toString());
+			if(trackingArray[8] != null)
+				trackingLabel.setShipperName(trackingArray[8].toString());
+			if(trackingArray[9] != null)
+				trackingLabel.setShipperAddr1(trackingArray[9].toString());
+			if(trackingArray[10] != null)
+				trackingLabel.setShipperCity(trackingArray[10].toString());
+			if(trackingArray[11] != null)
+				trackingLabel.setShipperState(trackingArray[11].toString());
+			if(trackingArray[12] != null)
+				trackingLabel.setShipperCountry(trackingArray[12].toString());
+			if(trackingArray[13] != null)
+				trackingLabel.setShipperPostcode(trackingArray[13].toString());
+			if(trackingArray[14] != null)
+				trackingLabel.setBarcodeLabelNumber(trackingArray[14].toString());
+			if(trackingArray[15] != null)
+				trackingLabel.setDatamatrix(trackingArray[15].toString());
+			if(trackingArray[16] != null)
+				trackingLabel.setInjectionState(trackingArray[16].toString());
+			if(trackingArray[17] != null)
+				trackingLabel.setSku(trackingArray[17].toString());
+			if(trackingArray[18] != null)
+				trackingLabel.setLabelSenderName(trackingArray[18].toString());
+			if(trackingArray[19] != null)
+				trackingLabel.setDeliveryInstructions(trackingArray[19].toString());
+			if(trackingArray[20] != null)
+				trackingLabel.setConsigneeCompany(trackingArray[20].toString());
+		 }
 		trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix()));
 		trackingLabelList.add(trackingLabel);
 		JRBeanCollectionDataSource beanColDataSource =
@@ -665,5 +697,71 @@ public class D2ZServiceImpl implements ID2ZService{
 	public ClientDashbaord clientDahbaord(Integer userId) {
 		ClientDashbaord clientDashbaord = d2zDao.clientDahbaord(userId);
 		return clientDashbaord;
+	}
+
+	@Override
+	public UserMessage deleteConsignments(@Valid DeleteConsignmentRequest request) throws ReferenceNumberNotUniqueException {
+		UserMessage userMsg = new UserMessage();
+		User user = d2zDao.login(request.getUserName(), request.getPassword());
+		if(null==user) {
+			userMsg.setMessage("Invalid UserName or Password");
+			return userMsg;
+		}
+		List<String> referenceNumbers_DB = d2zDao.fetchReferenceNumberByUserId(user.getUser_Id());
+		List<String> incomingRefNbr = request.getReferenceNumbers();
+		
+		List<String> invalidRefNbr = incomingRefNbr.stream()
+	               .filter(a -> !referenceNumbers_DB.contains(a))
+	               .collect(Collectors.toList());
+		
+		if(!invalidRefNbr.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Invalid Reference Number",invalidRefNbr);
+		}
+		
+		String referenceNumbers = String.join(",", incomingRefNbr);
+		
+		d2zDao.deleteConsignment(referenceNumbers);
+		userMsg.setMessage("Deleted Successfully");
+		return userMsg;
+	}
+
+	@Override
+	public String getRates(@Valid APIRatesRequest request) {
+		 User user = d2zDao.login(request.getUserName(), request.getPassword());
+		if(null==user) {
+			throw new InvalidUserException("Invalid Username or Password", null);
+		}
+		double weight = request.getWeight();
+		double maxWeight = 0;
+		double minWeight = 0;
+		if(weight >= 0 && weight <= 0.5) {
+			maxWeight = 0.50;
+		}else if(weight > 0.5 && weight <= 1) {
+			maxWeight = 1;
+		}else if(weight > 1 && weight <= 2) {
+			maxWeight = 2;
+		}else if(weight > 2 && weight <= 3) {
+			maxWeight = 3;
+		}else if(weight > 3 && weight <= 4) {
+			
+			maxWeight = 4;
+		}else if(weight > 4 && weight <= 5) {
+			
+			maxWeight = 5;
+		}else if(weight > 5 && weight <= 7) {
+			
+			maxWeight = 7;
+		}else if(weight > 7 && weight <= 10) {
+			
+			maxWeight = 10;
+		}else if(weight > 10 && weight <= 15) {
+			
+			maxWeight = 15;
+		}else if(weight > 15 && weight <= 22) {
+			
+			maxWeight = 22;
+		}
+		String rate = d2zDao.getRates(request.getPostcode(),minWeight,maxWeight,user.getUser_Id()); 
+		return rate;
 	}
 }
