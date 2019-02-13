@@ -18,8 +18,11 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.d2z.d2zservice.dao.ID2ZBrokerDao;
+
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
@@ -31,7 +34,6 @@ import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.BaggingResponse;
 import com.d2z.d2zservice.model.ClientDashbaord;
-//github.com/rafikahamed/d2zservice
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
@@ -50,6 +52,7 @@ import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.proxy.EbayProxy;
 import com.d2z.d2zservice.repository.UserRepository;
+import com.d2z.d2zservice.service.IBrokerD2ZService;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
@@ -83,6 +86,9 @@ public class D2ZServiceImpl implements ID2ZService{
 	
 	@Autowired
 	ShipmentDetailsWriter shipmentWriter;
+	
+	@Autowired
+    private ID2ZBrokerDao d2zBrokerDao;
 
 	@Autowired
 	private EbayProxy proxy;
@@ -116,33 +122,37 @@ public class D2ZServiceImpl implements ID2ZService{
 		return userMsg;
 	}
 
-	@Override
+	@SuppressWarnings("rawtypes")
 	public List<DropDownModel> fileList(Integer userId) {
 		List<String> listOfFileNames= d2zDao.fileList(userId);
 		List<DropDownModel> dropDownList= new ArrayList<DropDownModel>();
-		for(String fileName:listOfFileNames) {
-			DropDownModel dropDownVaL = new DropDownModel();
-			dropDownVaL.setName(fileName);
-			dropDownVaL.setValue(fileName);
-			dropDownList.add(dropDownVaL);
+		Iterator itr = listOfFileNames.iterator();
+		while(itr.hasNext()) {   
+			Object[] obj = (Object[]) itr.next();
+			DropDownModel dropDownVal = new DropDownModel();
+			dropDownVal.setName(obj[0].toString());
+			dropDownVal.setValue(obj[0].toString());
+			dropDownList.add(dropDownVal);
 		}
 		return dropDownList;
 	}
 	
-	@Override
+	@SuppressWarnings("rawtypes")
 	public List<DropDownModel> labelFileList(Integer userId) {
 		List<String> listOfFileNames= d2zDao.labelFileList(userId);
 		List<DropDownModel> dropDownList= new ArrayList<DropDownModel>();
-		for(String fileName:listOfFileNames) {
-			DropDownModel dropDownVaL = new DropDownModel();
-			dropDownVaL.setName(fileName);
-			dropDownVaL.setValue(fileName);
-			dropDownList.add(dropDownVaL);
+		Iterator itr = listOfFileNames.iterator();
+		while(itr.hasNext()) {   
+			Object[] obj = (Object[]) itr.next();
+			DropDownModel dropDownVal = new DropDownModel();
+			dropDownVal.setName(obj[0].toString());
+			dropDownVal.setValue(obj[0].toString());
+			dropDownList.add(dropDownVal);
 		}
 		return dropDownList;
 	}
 	
-	@Override
+	@SuppressWarnings("rawtypes")
 	public List<TrackingDetails> trackingDetails(String fileName) {
 		List<TrackingDetails> trackingDetailsList = new ArrayList<TrackingDetails>();
 		TrackingDetails trackingDetails = null;
@@ -584,19 +594,21 @@ public class D2ZServiceImpl implements ID2ZService{
 		userDetails.setUserName(userData.getUser_Name());
 		userDetails.setRole_Id(userData.getRole_Id());
 		userDetails.setUser_id(userData.getUser_Id());
-		Set<UserService> userServiceList = userData.getUserService();
-		if(userServiceList.size() > 0) {
-			serviceType = userServiceList.stream().map(obj ->{
-				return obj.getServiceType();}).collect(Collectors.toList());
-		}
-		userDetails.setServiceType(serviceType);
+		List<String> serviceTypeList = d2zDao.fetchServiceType(userDetails.getUser_id());
+//		Set<UserService> userServiceList = userData.getUserService();
+//		if(userServiceList.size() > 0) {
+//			serviceType = userServiceList.stream().map(obj ->{
+//				return obj.getServiceType();}).collect(Collectors.toList());
+//		}
+		userDetails.setServiceType(serviceTypeList);
 		return userDetails;
 	}
 
 	@Override
 	//public byte[] downloadShipmentData(String shipmentNumber) {
-	public List<ShipmentDetails>  downloadShipmentData(String shipmentNumber) {
-		List<SenderdataMaster> senderDataList  = d2zDao.fetchShipmentData(shipmentNumber);
+	public List<ShipmentDetails>  downloadShipmentData(String shipmentNumber, Integer userId) {
+		List<Integer> listOfClientId = d2zBrokerDao.getClientId(userId);
+		List<SenderdataMaster> senderDataList  = d2zDao.fetchShipmentData(shipmentNumber,listOfClientId);
 		System.out.println(senderDataList.size()+" records");
 		List<ShipmentDetails> shipmentDetails = new ArrayList<ShipmentDetails>();
 		for(SenderdataMaster senderData : senderDataList) {

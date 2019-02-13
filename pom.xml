@@ -5,7 +5,11 @@
 
 	<groupId>com.d2z</groupId>
 	<artifactId>d2z-prodservice</artifactId>
+<<<<<<< HEAD
 	<version>0.0.21-SNAPSHOT</version>
+=======
+	<version>0.0.26-SNAPSHOT</version>
+>>>>>>> branch 'master' of https://github.com/rafikahamed/d2zservice
 
 	<name>d2z-service</name>
 	<description>Demo project for Spring Boot</description>

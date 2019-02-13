@@ -169,7 +169,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 			responseMsg.setResponseMessage("No Data from ETower");
 		}
 		else {
+			int coun =0 ;
 		for(List<ETowerTrackingDetails> etowerResponse : response) {
+			System.out.println(coun++);
 			for(ETowerTrackingDetails trackingDetails : etowerResponse) {
 				Trackandtrace trackandTrace = new Trackandtrace();
 				trackandTrace.setArticleID(trackingDetails.getTrackingNo());

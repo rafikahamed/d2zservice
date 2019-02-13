@@ -410,8 +410,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber) {
-		List<SenderdataMaster> senderData = senderDataRepository.fetchShipmentData(shipmentNumber);
+	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber, List<Integer> clientIds) {
+		List<SenderdataMaster> senderData = senderDataRepository.fetchShipmentData(shipmentNumber, clientIds);
 		return senderData;
 	}
 
@@ -486,6 +486,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public String getRates(String postcode, Double minWeight, Double maxWeight, Integer userId) {
 		
 		return apiRatesRepository.getRates(postcode, maxWeight, userId);
+	}
+	public List<String> fetchServiceType(Integer user_id) {
+		List<String> userServiceType = userServiceRepository.fetchUserServiceById(user_id);
+		return userServiceType;
+
 	}
 
 }

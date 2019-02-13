@@ -74,11 +74,12 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 	}
 
 	@Override
-	public List<DropDownModel> getManifestList() {
-		List<String> listOfManifestId = d2zDao.getManifestList();
+	public List<DropDownModel> getManifestList(Integer userId) {
+		List<Integer> listOfClientId = d2zDao.getClientId(userId);
+		List<String> listOfManifestId = d2zDao.getManifestList(listOfClientId);
 		List<DropDownModel> manifestDropDownList= new ArrayList<DropDownModel>();
 		for(String manifestId:listOfManifestId) {
-			if(manifestId != null) {
+			if( null != manifestId &&  !"undefined".equalsIgnoreCase(manifestId)) {
 				DropDownModel dropDownVaL = new DropDownModel();
 				dropDownVaL.setName(manifestId);
 				dropDownVaL.setValue(manifestId);
@@ -89,14 +90,16 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 	}
 
 	@Override
-	public List<SenderdataMaster> consignmentDetails(String manifestNumber) {
-		List<SenderdataMaster> consignmentDetails = d2zDao.consignmentDetails(manifestNumber);
+	public List<SenderdataMaster> consignmentDetails(String manifestNumber, Integer userId) {
+		List<Integer> listOfClientId = d2zDao.getClientId(userId);
+		List<SenderdataMaster> consignmentDetails = d2zDao.consignmentDetails(manifestNumber,listOfClientId);
 		return consignmentDetails;
 	}
 
 	@Override
-	public List<DropDownModel> fetchShipmentList() {
-		List<String> listOfShipment = d2zDao.fetchShipmentList();
+	public List<DropDownModel> fetchShipmentList(Integer userId) {
+		List<Integer> listOfClientId = d2zDao.getClientId(userId);
+		List<String> listOfShipment = d2zDao.fetchShipmentList(listOfClientId);
 		List<DropDownModel> shipmentDropDownList= new ArrayList<DropDownModel>();
 		for(String manifestId:listOfShipment) {
 			if(manifestId != null) {
@@ -145,9 +148,10 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 	}
 
 	@Override
-	public List<SenderdataMaster> downloadShipmentData(String shipmentNumber) {
+	public List<SenderdataMaster> downloadShipmentData(String shipmentNumber, Integer userId) {
 		// TODO Auto-generated method stub
-		return d2zDao.fetchShipmentData(shipmentNumber);
+		List<Integer> listOfClientId = d2zDao.getClientId(userId);
+		return d2zDao.fetchShipmentData(shipmentNumber,listOfClientId);
 	}
 
 

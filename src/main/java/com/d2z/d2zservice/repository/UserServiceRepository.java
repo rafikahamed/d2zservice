@@ -19,4 +19,7 @@ public interface UserServiceRepository extends CrudRepository<UserService, Long>
 	@Query("Select t from UserService t where t.companyName = :companyName") 
 	List<UserService> fetchbyCompanyName(String companyName);
 	
+	@Query("Select t.serviceType from UserService t where t.userId = :user_Id and t.service_isDeleted = 0") 
+	List<String> fetchUserServiceById(@Param("user_Id") Integer user_Id);
+	
 }

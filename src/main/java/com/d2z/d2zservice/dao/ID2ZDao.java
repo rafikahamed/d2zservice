@@ -64,7 +64,7 @@ public interface ID2ZDao {
 
 	public User login(String userName, String passWord);
 
-	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber);
+	public List<SenderdataMaster> fetchShipmentData(String shipmentNumber, List<Integer> clientIds);
 
 	public List<String> fetchServiceTypeByUserName(String userName);
 
@@ -78,10 +78,14 @@ public interface ID2ZDao {
 
 	public ClientDashbaord clientDahbaord(Integer userId);
 
+
 	List<String> fetchReferenceNumberByUserId(Integer userId);
 
 	public void deleteConsignment(String referenceNumbers);
 
 	public String getRates(String postcode, Double minWeight, Double maxWeight, Integer userId);
+
+	public List<String> fetchServiceType(Integer user_id);
+
 
 }
