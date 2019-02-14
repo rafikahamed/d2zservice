@@ -41,6 +41,7 @@ import com.d2z.d2zservice.model.Ebay_Shipment;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ParcelStatus;
+import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
@@ -55,6 +56,7 @@ import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.IBrokerD2ZService;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.validation.D2ZValidator;
+import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
 import net.sf.jasperreports.engine.JRException;
@@ -738,12 +740,16 @@ public class D2ZServiceImpl implements ID2ZService{
 	}
 
 	@Override
-	public String getRates(@Valid APIRatesRequest request) {
+	public List<PostCodeWeight> getRates(@Valid APIRatesRequest request) {
 		 User user = d2zDao.login(request.getUserName(), request.getPassword());
+
 		if(null==user) {
 			throw new InvalidUserException("Invalid Username or Password", null);
 		}
-		double weight = request.getWeight();
+		
+		Map<String, Double> postcodeWeightMap = D2ZSingleton.getInstance().getPostCodeWeightMap();
+		request.getConsignmentDetails().forEach(obj -> {
+		double weight = obj.getWeight();
 		double maxWeight = 0;
 		double minWeight = 0;
 		if(weight >= 0 && weight <= 0.5) {
@@ -773,7 +779,9 @@ public class D2ZServiceImpl implements ID2ZService{
 			
 			maxWeight = 22;
 		}
-		String rate = d2zDao.getRates(request.getPostcode(),minWeight,maxWeight,user.getUser_Id()); 
-		return rate;
+		double rate = postcodeWeightMap.get(obj.getPostcode()+maxWeight+user.getUser_Id());
+		obj.setRate(rate);
+		});
+		return request.getConsignmentDetails();
 	}
 }

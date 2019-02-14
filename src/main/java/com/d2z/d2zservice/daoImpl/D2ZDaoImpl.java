@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
+import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.EbayResponse;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
@@ -483,14 +484,18 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public String getRates(String postcode, Double minWeight, Double maxWeight, Integer userId) {
-		
-		return apiRatesRepository.getRates(postcode, maxWeight, userId);
-	}
 	public List<String> fetchServiceType(Integer user_id) {
 		List<String> userServiceType = userServiceRepository.fetchUserServiceById(user_id);
 		return userServiceType;
 
+	}
+
+	@Override
+	public List<APIRates> fetchAllAPIRates() {
+		List<APIRates> apiRates= (List<APIRates>) apiRatesRepository.findAll();
+    	System.out.println(apiRates.size());
+    	return apiRates;
+    
 	}
 
 }

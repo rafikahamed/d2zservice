@@ -2,6 +2,7 @@ package com.d2z.d2zservice.dao;
 
 import java.util.List;
 
+import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.Consignments;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
@@ -83,9 +84,10 @@ public interface ID2ZDao {
 
 	public void deleteConsignment(String referenceNumbers);
 
-	public String getRates(String postcode, Double minWeight, Double maxWeight, Integer userId);
-
 	public List<String> fetchServiceType(Integer user_id);
+
+	public List<APIRates> fetchAllAPIRates();
+
 
 
 }

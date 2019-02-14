@@ -26,6 +26,7 @@ import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
+import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
@@ -190,7 +191,7 @@ public class D2zController {
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/rates",  produces = "application/json")
 	@ResponseBody
-    public String getRates(@Valid @RequestBody APIRatesRequest request) throws ReferenceNumberNotUniqueException {
+    public List<PostCodeWeight> getRates(@Valid @RequestBody APIRatesRequest request) throws ReferenceNumberNotUniqueException {
 		return d2zService.getRates(request);
     }
 	

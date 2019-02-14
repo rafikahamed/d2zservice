@@ -140,21 +140,12 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{injectionState}]]></textFieldExpression>
 			</textField>
-
 			<textField isBlankWhenNull="true">
 				<reportElement x="1" y="68" width="279" height="15" uuid="b6fe4701-add5-4b2c-9152-307c2c349bc0"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeCompany}]]></textFieldExpression>
-
-			<textField>
-				<reportElement x="1" y="68" width="279" height="15" uuid="b6fe4701-add5-4b2c-9152-307c2c349bc0"/>
-				<textElement>
-					<font fontName="MyArial" size="12"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{consigneeCompany}.equals(null) ? "" : $F{consigneeCompany}]]></textFieldExpression>
-
 			</textField>
 		</band>
 	</pageHeader>
@@ -180,21 +171,12 @@
 			<line>
 				<reportElement x="-1" y="49" width="361" height="1" uuid="ac84d537-6cb7-4b35-99e8-1b9c3b520982"/>
 			</line>
-
 			<textField isBlankWhenNull="true">
 				<reportElement x="1" y="23" width="269" height="20" uuid="4d45a4c4-8d84-4738-bc59-6549e8367841"/>
 				<textElement>
 					<font fontName="MyArial"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{deliveryInstructions}]]></textFieldExpression>
-
-			<textField>
-				<reportElement x="1" y="23" width="269" height="20" uuid="4d45a4c4-8d84-4738-bc59-6549e8367841"/>
-				<textElement>
-					<font fontName="MyArial"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{deliveryInstructions}.equals(null) ? "" : $F{deliveryInstructions}]]></textFieldExpression>
-
 			</textField>
 		</band>
 	</columnHeader>
@@ -308,11 +290,7 @@
 				<textElement>
 					<font fontName="MyArial"/>
 				</textElement>
-
 				<textFieldExpression><![CDATA[$F{labelSenderName}.isEmpty()?"SW10":$F{labelSenderName}.length()>3?$F{labelSenderName}.substring( 0, 3 ):$F{labelSenderName}]]></textFieldExpression>
-
-				
-
 			</textField>
 			<textField>
 				<reportElement x="1" y="-54" width="139" height="15" uuid="74384646-f320-4f97-b252-5446ab2b0273"/>
@@ -352,11 +330,7 @@
 				</textElement>
 				<text><![CDATA[SKU]]></text>
 			</staticText>
-
 			<textField isBlankWhenNull="true">
-
-			<textField>
-
 				<reportElement x="31" y="8" width="100" height="15" uuid="7c9c8dd3-77f7-46c6-980b-ff0c3f3125e2"/>
 				<textElement>
 					<font fontName="MyArial"/>

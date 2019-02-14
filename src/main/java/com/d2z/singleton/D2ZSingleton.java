@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
+import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.util.BeanUtil;
 
@@ -14,16 +15,29 @@ public class D2ZSingleton {
 	private static D2ZSingleton instance;
 	private static List<String> postCodeZoneList;
 	private static Map<String,String> postCodeStateMap;
+	private static Map<String,Double> postCodeWeightMap = new HashMap<String,Double>(); ;
+
 	
     public static List<String> getPostCodeZoneList() {
 		return postCodeZoneList;
 	}
+    
+    
 	private ID2ZDao d2zDao = BeanUtil.getBean(ID2ZDao.class);
 	
 	private D2ZSingleton() {
 		getPostCodeZone();
+		getRates_PostCodeWeight();
 	}
 	
+	private void getRates_PostCodeWeight() {
+	List<APIRates> apiRates = d2zDao.fetchAllAPIRates();
+		apiRates.forEach(obj -> {
+			String key = obj.getPostCode()+obj.getMaxWeight()+obj.getUserId();
+			postCodeWeightMap.put(key, obj.getRate());
+		});
+	}
+
 	public static D2ZSingleton getInstance() {
 		if(instance == null){
 	        synchronized (D2ZSingleton.class) {
@@ -49,8 +63,11 @@ public class D2ZSingleton {
 			
 	}
 
-	public static Map<String, String> getPostCodeStateMap() {
+	public static Map<String, String> getPostCodeStateMap(){
 		return postCodeStateMap;
+	}
+	public static Map<String, Double> getPostCodeWeightMap() {
+		return postCodeWeightMap;
 	}
 
 }
