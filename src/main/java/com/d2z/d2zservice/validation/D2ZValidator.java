@@ -42,12 +42,11 @@ public class D2ZValidator {
 		List<String> incorrectPostcode_Suburb = new ArrayList<String>();
 		senderData.forEach(obj -> {
 			if(!postCodeZoneList.contains(obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim()))) {
-				incorrectPostcode_Suburb.add(obj.getReferenceNumber());
+				incorrectPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim()));
 			}
 		});
 		if(!incorrectPostcode_Suburb.isEmpty()) {
 			throw new InvalidSuburbPostcodeException("Invalid Consignee Postcode or Consignee Suburb",incorrectPostcode_Suburb);
-
 		}
 		
 	}
@@ -78,7 +77,7 @@ public class D2ZValidator {
 		List<SenderData> orderDetailList = orderDetail.getConsignmentData();
 		for(SenderData senderData : orderDetailList) {
 			if(!serviceType_DB.contains(senderData.getServiceType().trim())) {
-				incorrectRefNbr.add(senderData.getReferenceNumber());
+				incorrectRefNbr.add(senderData.getReferenceNumber()+"-"+senderData.getServiceType());
 			}
 		} 
 		if(!incorrectRefNbr.isEmpty()) {
@@ -91,7 +90,7 @@ public class D2ZValidator {
 		List<String> serviceType_DB = d2zDao.fetchServiceTypeByUserName(orderDetail.get(0).getUserName());
 		for(SenderData senderData : orderDetail) {
 			if(!serviceType_DB.contains(senderData.getServiceType())) {
-				incorrectRefNbr.add(senderData.getReferenceNumber());
+				incorrectRefNbr.add(senderData.getReferenceNumber()+"-"+senderData.getServiceType());
 			}
 		} 
 		if(!incorrectRefNbr.isEmpty()) {
