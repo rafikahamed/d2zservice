@@ -2,6 +2,7 @@ package com.d2z.d2zservice.model;
 
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 
 public class APIRatesRequest {
@@ -10,7 +11,7 @@ public class APIRatesRequest {
 	private String userName;
 	@NotEmpty(message = "Password cannot be empty")
 	private String password;
-	
+	@Valid
 	private List<PostCodeWeight> consignmentDetails;
 	
 	public String getUserName() {
