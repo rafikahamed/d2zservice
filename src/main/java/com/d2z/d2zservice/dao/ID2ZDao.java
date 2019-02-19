@@ -1,9 +1,7 @@
 package com.d2z.d2zservice.dao;
 
 import java.util.List;
-
 import com.d2z.d2zservice.entity.APIRates;
-import com.d2z.d2zservice.entity.Consignments;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
@@ -11,9 +9,9 @@ import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
-import com.d2z.d2zservice.model.GenerateLabel;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
+import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.UserDetails;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
@@ -31,13 +29,13 @@ public interface ID2ZDao {
 
 	public List<String> trackingDetails(String fileName);
 
-	public List<String> trackingLabel(String refBarNum);
+	public List<String> trackingLabel(List<String> refBarNum);
 
 	public String manifestCreation(String manifestNumber, String refrenceNumber);
 
 	List<Trackandtrace> trackParcel(String refNbr);
 
-	public String createConsignments(List<SenderData> orderDetailList,int userId);
+	public String createConsignments(List<SenderDataApi> orderDetailList,int userId);
 	
 	public List<PostcodeZone> fetchAllPostCodeZone();
 	

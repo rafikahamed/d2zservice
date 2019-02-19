@@ -13,5 +13,7 @@
 		<class>com.d2z.d2zservice.entity.PostCodeId</class>
 		<class>com.d2z.d2zservice.entity.BrokerRates</class>
 		<class>com.d2z.d2zservice.entity.D2ZRates</class>
+		<class>com.d2z.d2zservice.entity.APIRates</class>
+		<class>com.d2z.d2zservice.entity.EbayResponse</class>
 	</persistence-unit>
 </persistence>

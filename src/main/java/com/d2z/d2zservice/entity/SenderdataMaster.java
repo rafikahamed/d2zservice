@@ -196,6 +196,9 @@ public class SenderdataMaster implements Serializable {
 	@Column(name="DeliveryInstructions")
 	private String deliveryInstructions;
 	
+	@Column(name="ArticleId")
+	private String articleId;
+	
 	@OneToMany(mappedBy="senderData")
     List<Trackandtrace> trackAndTrace = null;
 	
@@ -560,6 +563,14 @@ public class SenderdataMaster implements Serializable {
 
 	public void setDeliveryInstructions(String deliveryInstructions) {
 		this.deliveryInstructions = deliveryInstructions;
+	}
+
+	public String getArticleId() {
+		return articleId;
+	}
+
+	public void setArticleId(String articleId) {
+		this.articleId = articleId;
 	}
 	
 }

@@ -10,17 +10,17 @@ public class CreateConsignmentRequest {
 	@NotEmpty(message = "UserName is mandatory")
 	private String userName;
 	@Valid
-	private List<SenderData> consignmentData;
+	private List<SenderDataApi> consignmentData;
 	public String getUserName() {
 		return userName;
 	}
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	public List<SenderData> getConsignmentData() {
+	public List<SenderDataApi> getConsignmentData() {
 		return consignmentData;
 	}
-	public void setConsignmentData(List<SenderData> consignmentData) {
+	public void setConsignmentData(List<SenderDataApi> consignmentData) {
 		this.consignmentData = consignmentData;
 	}
 	

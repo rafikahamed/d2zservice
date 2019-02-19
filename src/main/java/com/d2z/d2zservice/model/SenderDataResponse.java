@@ -21,6 +21,4 @@ public class SenderDataResponse {
 			this.barcodeLabelNumber = barcodeLabelNumber;
 		}
 
-
-
 }

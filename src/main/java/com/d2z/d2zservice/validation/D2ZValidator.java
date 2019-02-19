@@ -14,6 +14,7 @@ import com.d2z.d2zservice.exception.InvalidSuburbPostcodeException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.SenderData;
+import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.singleton.D2ZSingleton;
 
 @Service
@@ -22,9 +23,9 @@ public class D2ZValidator {
 	@Autowired
     private ID2ZDao d2zDao;
 
-	public void isPostCodeValid(List<SenderData> senderData) {
+	public void isPostCodeValid(List<SenderDataApi> senderData) {
 		List<String> postCodeZoneList = D2ZSingleton.getInstance().getPostCodeZoneList();
-		System.out.println(postCodeZoneList.toString());
+		//System.out.println(postCodeZoneList.toString());
 		//postCodeZoneList.forEach(System.out::println);
 		
 		//System.out.println("Incoming suburb & postcode");
@@ -41,18 +42,49 @@ public class D2ZValidator {
 		
 		List<String> incorrectPostcode_Suburb = new ArrayList<String>();
 		senderData.forEach(obj -> {
-			if(!postCodeZoneList.contains(obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim()))) {
-				incorrectPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim()));
+			if(!postCodeZoneList.contains(obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim()).concat(obj.getConsigneeState().trim()))) {
+				incorrectPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim()+"-"+obj.getConsigneeState().trim());
 			}
 		});
 		if(!incorrectPostcode_Suburb.isEmpty()) {
-			throw new InvalidSuburbPostcodeException("Invalid Consignee Postcode or Consignee Suburb",incorrectPostcode_Suburb);
+			throw new InvalidSuburbPostcodeException("Invalid Consignee Postcode or Consignee Suburb or Consiggnee State",incorrectPostcode_Suburb);
 		}
 		
 	}
 	
-	public void isReferenceNumberUnique(List<SenderData> senderData) throws ReferenceNumberNotUniqueException{
+	public void isPostCodeValidUI(List<SenderData> senderData) {
+		List<String> postCodeZoneList = D2ZSingleton.getInstance().getPostCodeZoneList();
+		List<String> incorrectPostcode_Suburb = new ArrayList<String>();
+		senderData.forEach(obj -> {
+			if(!postCodeZoneList.contains(obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim()).concat(obj.getConsigneeState().trim()))) {
+				incorrectPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim()+"-"+obj.getConsigneeState().trim());
+			}
+		});
+		if(!incorrectPostcode_Suburb.isEmpty()) {
+			throw new InvalidSuburbPostcodeException("Invalid Consignee Postcode or Consignee Suburb or Consiggnee State	",incorrectPostcode_Suburb);
+		}
+	}
+	
+	public void isReferenceNumberUnique(List<SenderDataApi> senderData) throws ReferenceNumberNotUniqueException{
+		List<String> referenceNumber_DB = d2zDao.fetchAllReferenceNumbers();
+		List<String> incomingRefNbr = senderData.stream().map(obj -> {
+			return obj.getReferenceNumber(); })
+				.collect(Collectors.toList());
+		referenceNumber_DB.addAll(incomingRefNbr);
+
+		List<String> duplicateRefNbr = referenceNumber_DB.stream().collect(Collectors.groupingBy(Function.identity(),     
+	              Collectors.counting()))                                             
+	          .entrySet().stream()
+	          .filter(e -> e.getValue() > 1)                                      
+	          .map(e -> e.getKey())                                                  
+	          .collect(Collectors.toList());
 		
+		if(!duplicateRefNbr.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Reference Number must be unique",duplicateRefNbr);
+		}
+	}
+	
+	public void isReferenceNumberUniqueUI(List<SenderData> senderData) throws ReferenceNumberNotUniqueException{
 		List<String> referenceNumber_DB = d2zDao.fetchAllReferenceNumbers();
 		List<String> incomingRefNbr = senderData.stream().map(obj -> {
 			return obj.getReferenceNumber(); })
@@ -74,8 +106,9 @@ public class D2ZValidator {
 	public void isServiceValid(CreateConsignmentRequest orderDetail) {
 		List<String> incorrectRefNbr = new ArrayList<String>();
 		List<String> serviceType_DB = d2zDao.fetchServiceTypeByUserName(orderDetail.getUserName().trim());
-		List<SenderData> orderDetailList = orderDetail.getConsignmentData();
-		for(SenderData senderData : orderDetailList) {
+		
+		List<SenderDataApi> orderDetailList = orderDetail.getConsignmentData();
+		for(SenderDataApi senderData : orderDetailList) {
 			if(!serviceType_DB.contains(senderData.getServiceType().trim())) {
 				incorrectRefNbr.add(senderData.getReferenceNumber()+"-"+senderData.getServiceType());
 			}

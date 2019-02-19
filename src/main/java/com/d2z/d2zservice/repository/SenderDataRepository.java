@@ -1,16 +1,11 @@
 package com.d2z.d2zservice.repository;
 
 import java.util.List;
-import java.util.Set;
-
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-
-
 import com.d2z.d2zservice.entity.Consignments;
-
 import com.d2z.d2zservice.entity.SenderdataMaster;
 
 //This will be AUTO IMPLEMENTED by Spring into a Bean called FileDetailsRepository
@@ -27,10 +22,10 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Procedure(name = "in_only_test")
 	void inOnlyTest(@Param("Sender_file_id") String Sender_file_id);
 	 
-	@Query(value="SELECT DISTINCT(t.filename), t.timestamp FROM SenderdataMaster t where t.user_ID = :userId and t.isDeleted != 'Y' and t.manifest_number is null order by t.timestamp desc") 
+	@Query(value="SELECT DISTINCT(t.filename), t.timestamp FROM SenderdataMaster t where t.user_ID = :userId and t.isDeleted != 'Y' and t.manifest_number is null and t.sender_Files_ID like '%D2ZUI%' order by t.timestamp desc") 
 	List<String> fetchFileName(@Param("userId") Integer userId);
 	
-	@Query(value="SELECT DISTINCT(t.filename), t.timestamp FROM SenderdataMaster t where t.user_ID = :userId and t.isDeleted != 'Y' and t.manifest_number is null order by t.timestamp desc") 
+	@Query(value="SELECT DISTINCT(t.filename), t.timestamp FROM SenderdataMaster t where t.user_ID = :userId and t.isDeleted != 'Y' and t.manifest_number is null and t.sender_Files_ID like '%D2ZUI%' order by t.timestamp desc") 
 	List<String> fetchLabelFileName(@Param("userId") Integer userId);
 
 	@Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y'") 
@@ -51,13 +46,13 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query(nativeQuery = true, value="SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
 	 		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
 	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions, consigneeCompany FROM senderdata_master\n" + 
-	 		" WHERE reference_number=:refBarNum and isDeleted != 'Y'" + 
+	 		" WHERE reference_number IN (:refBarNum) and isDeleted != 'Y'" + 
 	 		" UNION\n" + 
 	 		" SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
 	 		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
 	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions,consigneeCompany FROM senderdata_master\n" + 
-	 		" WHERE BarcodelabelNumber like '%'+:refBarNum+'%' and isDeleted != 'Y'") 
-	List<String> fetchTrackingLabel(@Param("refBarNum") String refBarNum);
+	 		" WHERE articleId IN (:refBarNum) and isDeleted != 'Y'") 
+	List<String> fetchTrackingLabel(@Param("refBarNum") List<String> refBarNum);
 	 
 	@Procedure(name = "manifest_creation")
 	void manifestCreation(@Param("ManifestNumber") String ManifestNumber, @Param("Reference_number") String Reference_number);
@@ -91,7 +86,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 
 	 @Query(nativeQuery = true, value="select reference_number, substring(barcodelabelnumber,19,23), consignee_name, consignee_Postcode, weight, Shipper_Name from senderdata_master \n" + 
 	 		"where user_id in (select user_id from users where CompanyName=:companyName)\n" + 
-	 		"and sender_files_id like '%API%' and airwaybill is null")
+	 		"and sender_files_id like '%API%' and airwaybill is null and isDeleted != 'Y'")
 	 List<String> fetchDirectInjectionData(@Param("companyName") String companyName);
 
 	 @Query("SELECT t FROM SenderdataMaster t where t.isDeleted = 'Y' and t.timestamp between :fromTimestamp and :toTimestamp") 

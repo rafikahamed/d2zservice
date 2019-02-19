@@ -27,7 +27,8 @@ public class CustomizedExceptionHandler extends ResponseEntityExceptionHandler {
 	      HttpHeaders headers, HttpStatus status, WebRequest request) {
 		    List<String> errors = new ArrayList<String>();
 		    for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
-	            errors.add(error.getField() + ": " + error.getDefaultMessage());
+	           // errors.add(error.getField() + ": " + error.getDefaultMessage());
+		    	 errors.add(error.getDefaultMessage());
 	        }
 		    ErrorResponse errorDetails = new ErrorResponse(HttpStatus.BAD_REQUEST, "Validation Failed",
 	        errors);
@@ -52,6 +53,14 @@ public class CustomizedExceptionHandler extends ResponseEntityExceptionHandler {
 	  public final ResponseEntity<Object> handleInvalidSuburbException(InvalidSuburbPostcodeException ex, WebRequest request) {
 		 ErrorResponse errorResponse = 
 			      new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), ex.getReferenceNumbers());
+			    return new ResponseEntity<Object>(
+			    		errorResponse, new HttpHeaders(), errorResponse.getStatus());
+	  }
+	 @ExceptionHandler(MaxSizeCountException.class)
+	  public final ResponseEntity<Object> handleMaxSizeCountException(MaxSizeCountException ex, WebRequest request) {
+		 List<String> error = new ArrayList<String>();
+		 ErrorResponse errorResponse = 
+			      new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), error);
 			    return new ResponseEntity<Object>(
 			    		errorResponse, new HttpHeaders(), errorResponse.getStatus());
 	  }

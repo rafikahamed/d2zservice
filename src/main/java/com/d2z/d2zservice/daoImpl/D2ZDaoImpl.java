@@ -21,6 +21,7 @@ import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
+import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.repository.APIRatesRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
@@ -142,7 +143,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	}
 
 	@Override
-	public List<String> trackingLabel(String refBarNum) {
+	public List<String> trackingLabel(List<String> refBarNum) {
 		//String trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNum);
 		List<String> trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNum);
 		return trackingDetails;
@@ -162,11 +163,11 @@ public class D2ZDaoImpl implements ID2ZDao{
 
 
 	@Override
-	public String createConsignments(List<SenderData> orderDetailList, int userId) {
+	public String createConsignments(List<SenderDataApi> orderDetailList, int userId) {
 		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		String fileSeqId = "D2ZAPI"+senderDataRepository.fetchNextSeq();
-		for(SenderData senderDataValue: orderDetailList) {
+		for(SenderDataApi senderDataValue: orderDetailList) {
 			SenderdataMaster senderDataObj = new SenderdataMaster();
 			senderDataObj.setUser_ID(userId);
 			senderDataObj.setSender_Files_ID(fileSeqId);
@@ -182,7 +183,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setValue(senderDataValue.getValue());
 			senderDataObj.setCurrency(senderDataValue.getCurrency());
 			senderDataObj.setShippedQuantity(senderDataValue.getShippedQuantity());
-			senderDataObj.setWeight(Double.parseDouble(senderDataValue.getWeight()));
+			//senderDataObj.setWeight(senderDataValue.getWeight());
 			senderDataObj.setDimensions_Length(senderDataValue.getDimensionsLength());
 			senderDataObj.setDimensions_Width(senderDataValue.getDimensionsWidth());
 			senderDataObj.setDimensions_Height(senderDataValue.getDimensionsHeight());

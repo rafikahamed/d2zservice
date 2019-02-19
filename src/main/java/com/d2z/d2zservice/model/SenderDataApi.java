@@ -3,20 +3,24 @@ package com.d2z.d2zservice.model;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 
-public class SenderData {	
+public class SenderDataApi {
 	
 	private int userID;
 	private String senderFilesID;
 	@NotEmpty(message = "Reference Number is mandatory")
 	private String referenceNumber;
 	@NotEmpty(message = "Consignee Name is mandatory")
-//	@Pattern(regexp="^[a-zA-Z ]+$", message = "Consignee Name must contain only alphabets")
+	@Pattern(regexp="^[a-zA-Z ]+$", message = "Consignee Name must contain only alphabets")
 	private String consigneeName;
 	private String consigneeCompany;
 	@NotEmpty(message = "Consignee Address is mandatory")
@@ -36,10 +40,15 @@ public class SenderData {
 	private double value;
 	@NotEmpty(message = "Currency is mandatory")
 	private String currency;
-	@NotNull(message = "Shipped Quantity is mandatory")
+	@Min(value = 1, message = "Shipped Quantity is mandatory")
 	private int shippedQuantity;
+	
 	@Digits( fraction =2, message = "Invalid Weight", integer = 10)
+	@NotEmpty(message = "Weight is mandatory")
+	@Min(value = 0, message = "Weight is mandatory")
+	@Max(value = 22, message = "Weight should not be greater than 22")
 	private String weight;
+	
 	private BigDecimal cubicWeight;
 	@Digits( fraction =2, message = "Invalid Dimensions Length", integer = 10)
 	private BigDecimal dimensionsLength;
@@ -452,5 +461,7 @@ public class SenderData {
 	public void setDeliveryInstructions(String deliveryInstructions) {
 		this.deliveryInstructions = deliveryInstructions;
 	}
+
+
 
 }

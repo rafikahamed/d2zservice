@@ -14,12 +14,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
@@ -28,6 +25,7 @@ import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.exception.InvalidUserException;
+import com.d2z.d2zservice.exception.MaxSizeCountException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.ClientDashbaord;
@@ -93,9 +91,9 @@ public class D2ZServiceImpl implements ID2ZService{
 	
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException{
-		d2zValidator.isReferenceNumberUnique(orderDetailList);
+		d2zValidator.isReferenceNumberUniqueUI(orderDetailList);
 		d2zValidator.isServiceValidUI(orderDetailList);
-		d2zValidator.isPostCodeValid(orderDetailList);
+		d2zValidator.isPostCodeValidUI(orderDetailList);
 		String senderFileID = d2zDao.exportParcel(orderDetailList);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
@@ -107,8 +105,7 @@ public class D2ZServiceImpl implements ID2ZService{
 			 senderDataResponse.setReferenceNumber(obj[0].toString());
 			 senderDataResponse.setBarcodeLabelNumber("]d2".concat(obj[1].toString().replaceAll("\\[|\\]", "")));
 			 senderDataResponseList.add(senderDataResponse);
-       }
-		
+        }
 		return senderDataResponseList;
 	}
 	
@@ -238,7 +235,7 @@ public class D2ZServiceImpl implements ID2ZService{
     }
 
 	@Override
-	public  byte[] trackingLabel(String refBarNum) {
+	public  byte[] trackingLabel(List<String> refBarNum) {
 		SenderData trackingLabel = new SenderData();
 		List<SenderData> trackingLabelList = new ArrayList<SenderData>();
 		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNum);
@@ -287,9 +284,10 @@ public class D2ZServiceImpl implements ID2ZService{
 				trackingLabel.setDeliveryInstructions(trackingArray[19].toString());
 			if(trackingArray[20] != null)
 				trackingLabel.setConsigneeCompany(trackingArray[20].toString());
+			trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix()));
+			trackingLabelList.add(trackingLabel);
 		 }
-		trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix()));
-		trackingLabelList.add(trackingLabel);
+		
 		JRBeanCollectionDataSource beanColDataSource =
 		         new JRBeanCollectionDataSource(trackingLabelList);
 		 Map<String,Object> parameters = new HashMap<>();
@@ -448,6 +446,9 @@ public class D2ZServiceImpl implements ID2ZService{
 		Integer userId = userRepository.fetchUserIdbyUserName(orderDetail.getUserName());
 		if(userId == null) {
 			throw new InvalidUserException("User does not exist",orderDetail.getUserName());
+		}
+		if(orderDetail.getConsignmentData().size() > 300) {
+			throw new MaxSizeCountException("We are allowing max 300 records, Your Request contains - "+orderDetail.getConsignmentData().size()+" Records");
 		}
 		System.out.println(userId);
 		d2zValidator.isReferenceNumberUnique(orderDetail.getConsignmentData());

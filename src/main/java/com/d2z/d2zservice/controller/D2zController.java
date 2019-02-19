@@ -1,6 +1,8 @@
 package com.d2z.d2zservice.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.Valid;
 
@@ -116,7 +118,10 @@ public class D2zController {
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/tracking-label")
     public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum) {
-		byte[] bytes = d2zService.trackingLabel(refBarNum);
+    	List<String> refBarNumArray =
+    			  Stream.of(refBarNum.split(","))
+    			  .collect(Collectors.toList());
+		byte[] bytes = d2zService.trackingLabel(refBarNumArray);
 	    return ResponseEntity
 	      .ok()
 	      // Specify content type as PDF
