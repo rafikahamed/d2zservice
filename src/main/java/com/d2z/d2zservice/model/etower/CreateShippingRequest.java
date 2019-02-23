@@ -1,0 +1,158 @@
+package com.d2z.d2zservice.model.etower;
+
+import java.util.List;
+
+public class CreateShippingRequest {
+	private String trackingNo;
+	private String referenceNo;
+	private String addressLine1;
+	private String recipientName;
+	private String recipientCompany;
+	private String city ;
+	private String state;
+	private String postcode;
+	private String country = "AU";
+	private String serviceCode = "UBI.AU2AU.AUPOST";
+	private String facility;
+	private Double weight;
+	private Double invoiceValue;
+	private String invoiceCurrency = "AUD";
+	private String description = "bags";
+	private String shipperName = "test shipper";
+	private String shipperAddressLine1 = "1 fake st";
+	private String shipperCity = "test city";
+	private String shipperState = "test state";
+	private String shipperCountry = "hhh";
+	private List<OrderItems> orderItems;
+	public String getTrackingNo() {
+		return trackingNo;
+	}
+	public void setTrackingNo(String trackingNo) {
+		this.trackingNo = trackingNo;
+	}
+	public String getReferenceNo() {
+		return referenceNo;
+	}
+	public void setReferenceNo(String referenceNo) {
+		this.referenceNo = referenceNo;
+	}
+	public String getAddressLine1() {
+		return addressLine1;
+	}
+	public void setAddressLine1(String addressLine1) {
+		this.addressLine1 = addressLine1;
+	}
+	public String getRecipientName() {
+		return recipientName;
+	}
+	public void setRecipientName(String recipientName) {
+		this.recipientName = recipientName;
+	}
+	public String getRecipientCompany() {
+		return recipientCompany;
+	}
+	public void setRecipientCompany(String recipientCompany) {
+		this.recipientCompany = recipientCompany;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+	public String getPostcode() {
+		return postcode;
+	}
+	public void setPostcode(String postcode) {
+		this.postcode = postcode;
+	}
+	public String getCountry() {
+		return country;
+	}
+	public void setCountry(String country) {
+		this.country = country;
+	}
+	public String getServiceCode() {
+		return serviceCode;
+	}
+	public void setServiceCode(String serviceCode) {
+		this.serviceCode = serviceCode;
+	}
+	public String getFacility() {
+		return facility;
+	}
+	public void setFacility(String facility) {
+		this.facility = facility;
+	}
+	public Double getWeight() {
+		return weight;
+	}
+	public void setWeight(Double weight) {
+		this.weight = weight;
+	}
+	public Double getInvoiceValue() {
+		return invoiceValue;
+	}
+	public void setInvoiceValue(Double invoiceValue) {
+		this.invoiceValue = invoiceValue;
+	}
+	public String getInvoiceCurrency() {
+		return invoiceCurrency;
+	}
+	public void setInvoiceCurrency(String invoiceCurrency) {
+		this.invoiceCurrency = invoiceCurrency;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public String getShipperName() {
+		return shipperName;
+	}
+	public void setShipperName(String shipperName) {
+		this.shipperName = shipperName;
+	}
+	public String getShipperAddressLine1() {
+		return shipperAddressLine1;
+	}
+	public void setShipperAddressLine1(String shipperAddressLine1) {
+		this.shipperAddressLine1 = shipperAddressLine1;
+	}
+	public String getShipperCity() {
+		return shipperCity;
+	}
+	public void setShipperCity(String shipperCity) {
+		this.shipperCity = shipperCity;
+	}
+	public String getShipperState() {
+		return shipperState;
+	}
+	public void setShipperState(String shipperState) {
+		this.shipperState = shipperState;
+	}
+	public String getShipperCountry() {
+		return shipperCountry;
+	}
+	public void setShipperCountry(String shipperCountry) {
+		this.shipperCountry = shipperCountry;
+	}
+	public List<OrderItems> getOrderItems() {
+		return orderItems;
+	}
+	public void setOrderItems(List<OrderItems> orderItems) {
+		this.orderItems = orderItems;
+	}
+	
+	
+	
+	
+	
+}

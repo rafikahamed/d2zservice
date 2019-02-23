@@ -5,7 +5,9 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
@@ -54,13 +57,17 @@ import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRSaver;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import uk.org.okapibarcode.backend.DataMatrix;
 import uk.org.okapibarcode.backend.DataMatrix.ForceMode;
 import uk.org.okapibarcode.backend.OkapiException;
@@ -170,7 +177,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		return fileData;
 	}
 
-	@Override
+	/*@Override
 	public byte[] generateLabel(List<SenderData> senderData) {
 		
 		for(SenderData data : senderData){
@@ -188,6 +195,56 @@ public class D2ZServiceImpl implements ID2ZService{
 		        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, beanColDataSource);
 		      // return the PDF in bytes
 		      bytes = JasperExportManager.exportReportToPdf(jasperPrint);
+			// blob = new javax.sql.rowset.serial.SerialBlob(bytes);
+		    }
+		    catch (JRException | IOException  e) {
+		      e.printStackTrace();
+		    }
+		    return bytes;
+	}
+*/
+	
+	@Override
+	public byte[] generateLabel(List<SenderData> senderData) {
+		
+		for(SenderData data : senderData){
+			data.setDatamatrixImage(generateDataMatrix(data.getDatamatrix()));
+		}
+		List<SenderData> eParcelData = senderData.stream().filter(obj -> "eParcel".equalsIgnoreCase(obj.getCarrier())).collect(Collectors.toList());
+		List<SenderData> expressData = senderData.stream().filter(obj -> "Express".equalsIgnoreCase(obj.getCarrier())).collect(Collectors.toList());
+		
+		 Map<String,Object> parameters = new HashMap<>();
+		 byte[] bytes = null;
+		 //Blob blob = null;
+		 JRBeanCollectionDataSource eParcelDataSource;
+		 JRBeanCollectionDataSource expressDataSource;
+		    JasperReport eParcelLabel= null;
+		    JasperReport expressLabel = null;  
+		    try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
+		    	List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
+		    	if(null!=eParcelData) {
+		    		eParcelDataSource = new JRBeanCollectionDataSource(eParcelData);
+		    		eParcelLabel  = JasperCompileManager.compileReport(getClass().getResource("/eparcelLabel.jrxml").openStream());
+		    		JRSaver.saveObject(eParcelLabel, "label.jasper");
+		    		jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, eParcelDataSource));
+
+		    	}
+		    	if(null!=expressData) {
+		    		expressDataSource = new JRBeanCollectionDataSource(expressData);
+		    		expressLabel  = JasperCompileManager.compileReport(getClass().getResource("/expressLabel.jrxml").openStream());
+			        JRSaver.saveObject(expressLabel, "express.jasper");
+		    		jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, expressDataSource));
+			    	}
+		    	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream(); 
+		    	SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(
+		    		      outputStream);
+		    	JRPdfExporter exporter = new JRPdfExporter();
+		    	exporter.setExporterInput(SimpleExporterInput.getInstance(jasperPrintList)); 
+		    	exporter.setExporterOutput(exporterOutput);
+		    	exporter.exportReport();
+		    		      // return the PDF in bytes
+		    	bytes = outputStream.toByteArray();
+		      //bytes = JasperExportManager.exportReportToPdf(jasperPrint);
 			// blob = new javax.sql.rowset.serial.SerialBlob(bytes);
 		    }
 		    catch (JRException | IOException  e) {
@@ -284,11 +341,13 @@ public class D2ZServiceImpl implements ID2ZService{
 				trackingLabel.setDeliveryInstructions(trackingArray[19].toString());
 			if(trackingArray[20] != null)
 				trackingLabel.setConsigneeCompany(trackingArray[20].toString());
+			if(trackingArray[21] != null)
+				trackingLabel.setCarrier(trackingArray[21].toString());
 			trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix()));
 			trackingLabelList.add(trackingLabel);
 		 }
 		
-		JRBeanCollectionDataSource beanColDataSource =
+		/*JRBeanCollectionDataSource beanColDataSource =
 		         new JRBeanCollectionDataSource(trackingLabelList);
 		 Map<String,Object> parameters = new HashMap<>();
 		 byte[] bytes = null;
@@ -305,7 +364,52 @@ public class D2ZServiceImpl implements ID2ZService{
 		    catch (JRException | IOException  e) {
 		      e.printStackTrace();
 		    }
+		    return bytes;*/
+		List<SenderData> eParcelData = trackingLabelList.stream().filter(obj -> "eParcel".equalsIgnoreCase(obj.getCarrier())).collect(Collectors.toList());
+		List<SenderData> expressData = trackingLabelList.stream().filter(obj -> "Express".equalsIgnoreCase(obj.getCarrier())).collect(Collectors.toList());
+		
+		 Map<String,Object> parameters = new HashMap<>();
+		 byte[] bytes = null;
+		 //Blob blob = null;
+		 JRBeanCollectionDataSource eParcelDataSource;
+		 JRBeanCollectionDataSource expressDataSource;
+		    JasperReport eParcelLabel= null;
+		    JasperReport expressLabel = null;  
+		    try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
+		    	List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
+		    	if(null!=eParcelData) {
+		    		eParcelDataSource = new JRBeanCollectionDataSource(eParcelData);
+		    		eParcelLabel  = JasperCompileManager.compileReport(getClass().getResource("/eparcelLabel.jrxml").openStream());
+		    		JRSaver.saveObject(eParcelLabel, "label.jasper");
+		    		jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, eParcelDataSource));
+
+		    	}
+		    	if(null!=expressData) {
+		    		expressDataSource = new JRBeanCollectionDataSource(expressData);
+		    		expressLabel  = JasperCompileManager.compileReport(getClass().getResource("/expressLabel.jrxml").openStream());
+			        JRSaver.saveObject(expressLabel, "express.jasper");
+		    		jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, expressDataSource));
+			    	}
+		    	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream(); 
+		    	SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(
+		    		      outputStream);
+		    	JRPdfExporter exporter = new JRPdfExporter();
+		    	exporter.setExporterInput(SimpleExporterInput.getInstance(jasperPrintList)); 
+		    	exporter.setExporterOutput(exporterOutput);
+		    	exporter.exportReport();
+		    		      // return the PDF in bytes
+		    	bytes = outputStream.toByteArray();
+		    	try(OutputStream out = new FileOutputStream("Label.pdf")){
+		    		out.write(bytes);
+		    	}
+		      //bytes = JasperExportManager.exportReportToPdf(jasperPrint);
+			// blob = new javax.sql.rowset.serial.SerialBlob(bytes);
+		    }
+		    catch (JRException | IOException  e) {
+		      e.printStackTrace();
+		    }
 		    return bytes;
+		
 	}
 
 	@Override

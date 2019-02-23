@@ -199,6 +199,18 @@ public class SenderdataMaster implements Serializable {
 	@Column(name="ArticleId")
 	private String articleId;
 	
+	@Column(name="Carrier")
+	private String carrier;
+	
+	
+	public String getCarrier() {
+		return carrier;
+	}
+
+	public void setCarrier(String carrier) {
+		this.carrier = carrier;
+	}
+
 	@OneToMany(mappedBy="senderData")
     List<Trackandtrace> trackAndTrace = null;
 	

@@ -83,7 +83,16 @@ public class SenderData {
 	private String sku;
 	private String labelSenderName;
 	private String deliveryInstructions;
+	private String carrier;
+	
+	
+	public String getCarrier() {
+		return carrier;
+	}
 
+	public void setCarrier(String carrier) {
+		this.carrier = carrier;
+	}
 	public String getUserName() {
 		return userName;
 	}
