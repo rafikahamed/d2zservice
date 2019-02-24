@@ -388,7 +388,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		    		expressDataSource = new JRBeanCollectionDataSource(expressData);
 		    		expressLabel  = JasperCompileManager.compileReport(getClass().getResource("/expressLabel.jrxml").openStream());
 			        JRSaver.saveObject(expressLabel, "express.jasper");
-		    		jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, expressDataSource));
+		    		jasperPrintList.add(JasperFillManager.fillReport(expressLabel, parameters, expressDataSource));
 			    	}
 		    	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream(); 
 		    	SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(
