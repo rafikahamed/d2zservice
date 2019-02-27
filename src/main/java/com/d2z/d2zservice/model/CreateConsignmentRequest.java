@@ -1,7 +1,6 @@
 package com.d2z.d2zservice.model;
 
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 
@@ -23,6 +22,5 @@ public class CreateConsignmentRequest {
 	public void setConsignmentData(List<SenderDataApi> consignmentData) {
 		this.consignmentData = consignmentData;
 	}
-	
 	
 }

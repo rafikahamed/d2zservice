@@ -2,6 +2,7 @@ package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,6 +14,9 @@ import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 
 /**
  * The persistent class for the Users database table.
@@ -34,7 +38,7 @@ public class User implements Serializable {
 	private String country;
 
 	@Column(name="EmailAddress")
-	private String emailAddress;
+	private String email;
 
 	@Column(name="Name")
 	private String name;
@@ -68,16 +72,18 @@ public class User implements Serializable {
 	@Column(name="User_IsDeleted")
 	private boolean user_IsDeleted;
 	
-	@Column(name="client_broker_id")
+	@Column(name="Client_Broker_id")
 	private String clientBrokerId;
 	
 	private String eBayToken;
 	
 	@Column(name="User_Name")
-	private String user_Name;
+	private String username;
 
 	@Column(name="User_Password")
-	private String user_Password;
+	private String password;
+	
+	private Timestamp lastPasswordResetDate;
 
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private Set<UserService> userService;
@@ -117,12 +123,12 @@ public class User implements Serializable {
 		this.country = country;
 	}
 
-	public String getEmailAddress() {
-		return this.emailAddress;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getName() {
@@ -196,22 +202,23 @@ public class User implements Serializable {
 	public void setUser_IsDeleted(boolean user_IsDeleted) {
 		this.user_IsDeleted = user_IsDeleted;
 	}
-
-	public String getUser_Name() {
-		return this.user_Name;
+	
+	public String getUsername() {
+		return username;
 	}
 
-	public void setUser_Name(String user_Name) {
-		this.user_Name = user_Name;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
-	public String getUser_Password() {
-		return this.user_Password;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setUser_Password(String user_Password) {
-		this.user_Password = user_Password;
+	public void setPassword(String password) {
+		this.password = password;
 	}
+
 	public Timestamp getModifiedTimestamp() {
 		return modifiedTimestamp;
 	}
@@ -234,6 +241,14 @@ public class User implements Serializable {
 
 	public void setClientBrokerId(String clientBrokerId) {
 		this.clientBrokerId = clientBrokerId;
+	}
+
+	public Timestamp getLastPasswordResetDate() {
+		return this.lastPasswordResetDate;
+	}
+
+	public void setLastPasswordResetDate(Timestamp lastPasswordResetDate) {
+		this.lastPasswordResetDate = lastPasswordResetDate;
 	}
 
 }
