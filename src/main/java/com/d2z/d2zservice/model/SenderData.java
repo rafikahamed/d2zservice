@@ -87,7 +87,6 @@ public class SenderData {
 	private String carrier;
 	
 	
-	
 	public String getConsigneeAddr2() {
 		return consigneeAddr2;
 	}

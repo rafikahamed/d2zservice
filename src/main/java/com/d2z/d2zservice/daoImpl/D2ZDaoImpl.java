@@ -5,10 +5,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
-
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.ETowerResponse;
@@ -304,7 +303,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		userObj.setCountry(userData.getCountry());
 		userObj.setEmail(userData.getEmailAddress());
 		userObj.setUsername(userData.getUserName());
-		userObj.setPassword(userData.getPassword());
+		userObj.setPassword(D2ZCommonUtil.hashPassword(userData.getPassword()));
 		userObj.setRole_Id(userData.getRole_Id());
 		userObj.setName(userData.getContactName());
 		userObj.setPhoneNumber(userData.getContactPhoneNumber());
@@ -313,6 +312,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		userObj.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 		userObj.setClientBrokerId(userData.getClientBroker());
 		userObj.setEBayToken(userData.geteBayToken());
+		userObj.setPassword_value(userData.getPassword());
 		User savedUser = userRepository.save(userObj);
 		return savedUser;
 	}
@@ -483,9 +483,6 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 				ebayResponseRepository.save(resp);
 	}
 	
-	
-
-
 	public ClientDashbaord clientDahbaord(Integer userId) {
 		ClientDashbaord clientDashbaord = new ClientDashbaord();
 		clientDashbaord.setConsignmentsCreated(senderDataRepository.fecthConsignmentsCreated(userId));
@@ -499,14 +496,12 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public void deleteConsignment(String referenceNumbers) {
 		senderDataRepository.deleteConsignments(referenceNumbers);
-		
 	}
 
 	@Override
 	public List<String> fetchServiceType(Integer user_id) {
 		List<String> userServiceType = userServiceRepository.fetchUserServiceById(user_id);
 		return userServiceType;
-
 	}
 
 	@Override
@@ -514,7 +509,6 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		List<APIRates> apiRates= (List<APIRates>) apiRatesRepository.findAll();
     	System.out.println(apiRates.size());
     	return apiRates;
-    
 	}
 
 	@Override

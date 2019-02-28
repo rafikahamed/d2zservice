@@ -53,6 +53,7 @@ import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.proxy.EbayProxy;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
+import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.wrapper.ETowerWrapper;
 import com.d2z.singleton.D2ZSingleton;
@@ -659,7 +660,6 @@ public class D2ZServiceImpl implements ID2ZService{
 			userMsg.setMessage("Company Name already exist");
 			userMsg.setCompanyName(userData.getCompanyName());
 		}
-		
 		return userMsg;
 	}
 
@@ -688,7 +688,8 @@ public class D2ZServiceImpl implements ID2ZService{
 				existingUser.setPostcode(userDetails.getPostCode());
 				existingUser.setCountry(userDetails.getCountry());
 				existingUser.setEmail(userDetails.getEmailAddress());
-				existingUser.setPassword(userDetails.getPassword());
+				existingUser.setPassword(D2ZCommonUtil.hashPassword(userDetails.getPassword()));
+				existingUser.setPassword_value(userDetails.getPassword());
 				existingUser.setEBayToken(userDetails.geteBayToken());
 				existingUser.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 				User updatedUser = d2zDao.updateUser(existingUser);
@@ -716,7 +717,6 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Override
 	public UserDetails login(String userName, String passWord) {
 		User userData = d2zDao.login(userName, passWord);
-		List<String> serviceType = null;
 		UserDetails userDetails = new UserDetails();
 		userDetails.setAddress(userData.getAddress());
 		userDetails.setCompanyName(userData.getCompanyName());
@@ -724,7 +724,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		userDetails.setContactPhoneNumber(userData.getPhoneNumber());
 		userDetails.setCountry(userData.getCountry());
 		userDetails.setEmailAddress(userData.getEmail());
-		userDetails.setPassword(userData.getPassword());
+		userDetails.setPassword(userData.getPassword_value());
 		userDetails.setPostCode(userData.getPostcode());
 		userDetails.setState(userData.getState());
 		userDetails.setSuburb(userData.getSuburb());
@@ -732,11 +732,6 @@ public class D2ZServiceImpl implements ID2ZService{
 		userDetails.setRole_Id(userData.getRole_Id());
 		userDetails.setUser_id(userData.getUser_Id());
 		List<String> serviceTypeList = d2zDao.fetchServiceType(userDetails.getUser_id());
-//		Set<UserService> userServiceList = userData.getUserService();
-//		if(userServiceList.size() > 0) {
-//			serviceType = userServiceList.stream().map(obj ->{
-//				return obj.getServiceType();}).collect(Collectors.toList());
-//		}
 		userDetails.setServiceType(serviceTypeList);
 		return userDetails;
 	}

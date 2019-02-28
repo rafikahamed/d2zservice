@@ -8,8 +8,8 @@ import com.d2z.d2zservice.entity.User;
 
 public interface UserRepository extends CrudRepository<User, Long>{
 	
-	@Query("SELECT t FROM User t where t.username = :userName and password = :passWord")  
-	User fetchUserDetails(@Param("userName") String userName, @Param("passWord") String passWord);
+	 @Query("SELECT t FROM User t where t.username = :userName and password_value = :passWord")  
+	 User fetchUserDetails(@Param("userName") String userName, @Param("passWord") String passWord);
 	
 	 @Query("SELECT u.companyName FROM User u where u.role_Id=3 and u.clientBrokerId=:brokerId order by timestamp desc") 
 	 List<String> fetchCompanyName(@Param("brokerId") String brokerId);
