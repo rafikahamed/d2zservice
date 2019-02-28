@@ -105,6 +105,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
 			senderDataObj.setDeliveryInstructions(senderDataValue.getDeliveryInstructions());
 			senderDataObj.setCarrier(senderDataValue.getCarrier());
+			senderDataObj.setConsignee_addr2(senderDataValue.getConsigneeAddr2());
+			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
 
 			if(null != eTowerResponseMap) {
 				if(eTowerResponseMap.containsKey(senderDataValue.getReferenceNumber())){

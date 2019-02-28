@@ -22,6 +22,7 @@ public class SenderData {
 	@NotEmpty(message = "Consignee Address is mandatory")
 	private String consigneeAddr1;
 	private String consigneeAddr2;
+	private String consigneeEmail;
 	@NotEmpty(message = "Consignee Suburb is mandatory")
 	private String consigneeSuburb;
 	@NotEmpty(message = "Consignee State is mandatory")
@@ -85,7 +86,6 @@ public class SenderData {
 	private String labelSenderName;
 	private String deliveryInstructions;
 	private String carrier;
-	
 	
 	public String getConsigneeAddr2() {
 		return consigneeAddr2;
@@ -469,6 +469,14 @@ public class SenderData {
 
 	public void setDeliveryInstructions(String deliveryInstructions) {
 		this.deliveryInstructions = deliveryInstructions;
+	}
+
+	public String getConsigneeEmail() {
+		return consigneeEmail;
+	}
+
+	public void setConsigneeEmail(String consigneeEmail) {
+		this.consigneeEmail = consigneeEmail;
 	}
 
 }

@@ -72,9 +72,6 @@ public class SenderdataMaster implements Serializable {
 	@Column(name="Consignee_addr1")
 	private String consignee_addr1;
 
-	@Column(name="Consignee_addr2")
-	private String consignee_addr2;
-
 	@Column(name="Consignee_name")
 	private String consignee_name;
 
@@ -209,15 +206,6 @@ public class SenderdataMaster implements Serializable {
 	@Column(name="Carrier")
 	private String carrier;
 	
-	
-	public String getConsignee_addr2() {
-		return consignee_addr2;
-	}
-
-	public void setConsignee_addr2(String consignee_addr2) {
-		this.consignee_addr2 = consignee_addr2;
-	}
-
 	public String getCarrier() {
 		return carrier;
 	}
