@@ -21,6 +21,7 @@ public class SenderData {
 	private String consigneeCompany;
 	@NotEmpty(message = "Consignee Address is mandatory")
 	private String consigneeAddr1;
+	private String consigneeAddr2;
 	@NotEmpty(message = "Consignee Suburb is mandatory")
 	private String consigneeSuburb;
 	@NotEmpty(message = "Consignee State is mandatory")
@@ -86,6 +87,15 @@ public class SenderData {
 	private String carrier;
 	
 	
+	
+	public String getConsigneeAddr2() {
+		return consigneeAddr2;
+	}
+
+	public void setConsigneeAddr2(String consigneeAddr2) {
+		this.consigneeAddr2 = consigneeAddr2;
+	}
+
 	public String getCarrier() {
 		return carrier;
 	}

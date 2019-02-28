@@ -1,7 +1,5 @@
 package com.d2z.d2zservice.proxy;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,9 +13,10 @@ import org.springframework.web.client.RestTemplate;
 
 import com.d2z.d2zservice.interceptor.ETowerHeaderRequestInterceptor;
 import com.d2z.d2zservice.model.ETowerTrackingDetails;
-import com.fasterxml.jackson.core.JsonParseException;
+import com.d2z.d2zservice.model.etower.CreateShippingRequest;
+import com.d2z.d2zservice.model.etower.CreateShippingResponse;
+import com.d2z.d2zservice.model.etower.GainLabelsResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -61,5 +60,46 @@ public class ETowerProxy {
 			e.printStackTrace();
 		}
 		return jsonToList;
+	}
+	public CreateShippingResponse makeCallForCreateShippingOrder(List<CreateShippingRequest> request) {
+
+
+		//String url = "http://qa-cn.etowertech.com/services/shipper/orders/";
+		//Prod URL
+		String url = "http://au.etowertech.com/services/shipper/orders/";
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		requestFactory.setOutputStreaming(false);
+        RestTemplate restTemplate = new RestTemplate(requestFactory);
+        restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor()));
+       /* List<String> trackingNo = new ArrayList<>();
+       // trackingNo = trackingNumber;
+        trackingNo.add("2MB653554501000931509");
+        trackingNo.add("BRG406312001000935100");
+*/		HttpEntity<List<CreateShippingRequest>> httpEntity = new HttpEntity<List<CreateShippingRequest>>(request);
+
+        System.out.println("Making call to etower");
+        ResponseEntity<CreateShippingResponse> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,CreateShippingResponse.class);
+        CreateShippingResponse createShippingResponse = response.getBody();
+        return createShippingResponse;
+	}
+	
+	public GainLabelsResponse makeCallToGainLabels(List<String> referenceNumbers) {
+
+
+		//String url = "http://qa-cn.etowertech.com/services/shipper/labelSpecs/";
+		//Prod URL
+		//SSL cert issue fix
+		String url = "http://au.etowertech.com/services/shipper/labelSpecs/";
+			//"https://au.etowertech.com/services/integration/shipper/trackingEvents/";
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		requestFactory.setOutputStreaming(false);
+        RestTemplate restTemplate = new RestTemplate(requestFactory);
+        restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor()));
+        HttpEntity<List<String>> httpEntity = new HttpEntity<List<String>>(referenceNumbers);
+
+        System.out.println("Making call to etower");
+        ResponseEntity<GainLabelsResponse> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,GainLabelsResponse.class);
+        GainLabelsResponse gainLabelsresponse = response.getBody();
+        return gainLabelsresponse;
 	}
 }

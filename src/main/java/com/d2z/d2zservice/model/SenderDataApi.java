@@ -25,6 +25,7 @@ public class SenderDataApi {
 	private String consigneeCompany;
 	@NotEmpty(message = "Consignee Address is mandatory")
 	private String consigneeAddr1;
+	private String consigneeAddr2;
 	@NotEmpty(message = "Consignee Suburb is mandatory")
 	private String consigneeSuburb;
 	@NotEmpty(message = "Consignee State is mandatory")
@@ -92,6 +93,23 @@ public class SenderDataApi {
 	private String sku;
 	private String labelSenderName;
 	private String deliveryInstructions;
+	private String carrier;
+	
+	public String getConsigneeAddr2() {
+		return consigneeAddr2;
+	}
+
+	public void setConsigneeAddr2(String consigneeAddr2) {
+		this.consigneeAddr2 = consigneeAddr2;
+	}
+
+	public String getCarrier() {
+		return carrier;
+	}
+
+	public void setCarrier(String carrier) {
+		this.carrier = carrier;
+	}
 
 	public String getUserName() {
 		return userName;
