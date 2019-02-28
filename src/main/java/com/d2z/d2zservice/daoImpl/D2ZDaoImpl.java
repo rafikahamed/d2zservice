@@ -284,9 +284,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		userObj.setState(userData.getState());
 		userObj.setPostcode(userData.getPostCode());
 		userObj.setCountry(userData.getCountry());
-		userObj.setEmailAddress(userData.getEmailAddress());
-		userObj.setUser_Name(userData.getUserName());
-		userObj.setUser_Password(userData.getPassword());
+		userObj.setEmail(userData.getEmailAddress());
+		userObj.setUsername(userData.getUserName());
+		userObj.setPassword(userData.getPassword());
 		userObj.setRole_Id(userData.getRole_Id());
 		userObj.setName(userData.getContactName());
 		userObj.setPhoneNumber(userData.getContactPhoneNumber());
@@ -306,7 +306,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		UserService userService = new UserService();
 		userService.setUserId(user.getUser_Id());
 		userService.setCompanyName(user.getCompanyName());
-		userService.setUser_Name(user.getUser_Name());
+		userService.setUser_Name(user.getUsername());
 		userService.setServiceType(serviceType);
 		if(serviceType.equalsIgnoreCase("UnTracked")) {
 			userService.setInjectionType("Origin Injection");
@@ -338,7 +338,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					UserService newUserService = new UserService();
 					newUserService.setUserId(existingUser.getUser_Id());
 					newUserService.setCompanyName(existingUser.getCompanyName());
-					newUserService.setUser_Name(existingUser.getUser_Name());
+					newUserService.setUser_Name(existingUser.getUsername());
 					newUserService.setServiceType(serviceType);
 					newUserService.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 					newUserService.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));

@@ -189,16 +189,4 @@ public class D2zController {
 		return clientDahbaord;
 	}	
 	
-	@RequestMapping( method = RequestMethod.DELETE, path = "/consignments")
-    public UserMessage deleteConsignments(@Valid @RequestBody DeleteConsignmentRequest request) throws ReferenceNumberNotUniqueException {
-		return d2zService.deleteConsignments(request);
-    }
-	
-	@RequestMapping( method = RequestMethod.POST, path = "/rates",  produces = "application/json")
-	@ResponseBody
-    public List<PostCodeWeight> getRates(@Valid @RequestBody APIRatesRequest request) throws ReferenceNumberNotUniqueException {
-		return d2zService.getRates(request);
-    }
-	
-	
 }   

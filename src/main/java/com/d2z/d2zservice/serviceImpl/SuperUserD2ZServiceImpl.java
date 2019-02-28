@@ -84,12 +84,12 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 		userDetails.setContactName(user.getName());
 		userDetails.setContactPhoneNumber(user.getPhoneNumber());
 		userDetails.setCountry(user.getCountry());
-		userDetails.setEmailAddress(user.getEmailAddress());
-		userDetails.setPassword(user.getUser_Password());
+		userDetails.setEmailAddress(user.getEmail());
+		userDetails.setPassword(user.getPassword());
 		userDetails.setPostCode(user.getPostcode());
 		userDetails.setState(user.getState());
 		userDetails.setSuburb(user.getSuburb());
-		userDetails.setUserName(user.getUser_Name());
+		userDetails.setUserName(user.getUsername());
 		Set<UserService> userServiceList = user.getUserService();
 		List<String> serviceType = userServiceList.stream().map(obj ->{
 			return obj.getServiceType();}).collect(Collectors.toList());

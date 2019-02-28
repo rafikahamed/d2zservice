@@ -548,13 +548,13 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Override
 	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail) throws ReferenceNumberNotUniqueException {
 		Integer userId = userRepository.fetchUserIdbyUserName(orderDetail.getUserName());
-		if(userId == null) {
-			throw new InvalidUserException("User does not exist",orderDetail.getUserName());
-		}
+//		if(userId == null) {
+//			throw new InvalidUserException("User does not exist",orderDetail.getUserName());
+//		}
 		if(orderDetail.getConsignmentData().size() > 300) {
 			throw new MaxSizeCountException("We are allowing max 300 records, Your Request contains - "+orderDetail.getConsignmentData().size()+" Records");
 		}
-		System.out.println(userId);
+		//System.out.println(userId);
 		d2zValidator.isReferenceNumberUnique(orderDetail.getConsignmentData());
 		d2zValidator.isServiceValid(orderDetail);
 		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
@@ -639,22 +639,22 @@ public class D2ZServiceImpl implements ID2ZService{
 			return userMsg;
 		}
 		else {
-			 if(!existingUser.getUser_Name().equals(userDetails.getUserName())) {
+			 if(!existingUser.getUsername().equals(userDetails.getUserName())) {
 				List<String> existingUserNames = userRepository.fetchAllUserName();
 				if(existingUserNames.contains(userDetails.getUserName())) {
 					userMsg.setMessage("UserName already exist");
 					userMsg.setUserName(userDetails.getUserName());
 					return userMsg;
 				}
-				existingUser.setUser_Name(userDetails.getUserName());
+				existingUser.setUsername(userDetails.getUserName());
 			 }
 				existingUser.setAddress(userDetails.getAddress());
 				existingUser.setState(userDetails.getState());
 				existingUser.setSuburb(userDetails.getSuburb());
 				existingUser.setPostcode(userDetails.getPostCode());
 				existingUser.setCountry(userDetails.getCountry());
-				existingUser.setEmailAddress(userDetails.getEmailAddress());
-				existingUser.setUser_Password(userDetails.getPassword());
+				existingUser.setEmail(userDetails.getEmailAddress());
+				existingUser.setPassword(userDetails.getPassword());
 				existingUser.setEBayToken(userDetails.geteBayToken());
 				existingUser.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 				User updatedUser = d2zDao.updateUser(existingUser);
@@ -689,12 +689,12 @@ public class D2ZServiceImpl implements ID2ZService{
 		userDetails.setContactName(userData.getName());
 		userDetails.setContactPhoneNumber(userData.getPhoneNumber());
 		userDetails.setCountry(userData.getCountry());
-		userDetails.setEmailAddress(userData.getEmailAddress());
-		userDetails.setPassword(userData.getUser_Password());
+		userDetails.setEmailAddress(userData.getEmail());
+		userDetails.setPassword(userData.getPassword());
 		userDetails.setPostCode(userData.getPostcode());
 		userDetails.setState(userData.getState());
 		userDetails.setSuburb(userData.getSuburb());
-		userDetails.setUserName(userData.getUser_Name());
+		userDetails.setUserName(userData.getUsername());
 		userDetails.setRole_Id(userData.getRole_Id());
 		userDetails.setUser_id(userData.getUser_Id());
 		List<String> serviceTypeList = d2zDao.fetchServiceType(userDetails.getUser_id());
