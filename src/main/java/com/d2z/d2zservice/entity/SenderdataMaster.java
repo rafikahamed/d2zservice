@@ -89,6 +89,12 @@ public class SenderdataMaster implements Serializable {
 
 	@Column(name="ConsigneeCompany")
 	private String consigneeCompany;
+	
+	@Column(name="Consignee_addr2")
+	private String consignee_addr2;
+
+	@Column(name="Consignee_Email")
+	private String consignee_Email;
 
 	@Column(name="Cubic_Weight")
 	private BigDecimal cubic_Weight;
@@ -581,6 +587,22 @@ public class SenderdataMaster implements Serializable {
 
 	public void setArticleId(String articleId) {
 		this.articleId = articleId;
+	}
+
+	public String getConsignee_addr2() {
+		return consignee_addr2;
+	}
+
+	public void setConsignee_addr2(String consignee_addr2) {
+		this.consignee_addr2 = consignee_addr2;
+	}
+
+	public String getConsignee_Email() {
+		return consignee_Email;
+	}
+
+	public void setConsignee_Email(String consignee_Email) {
+		this.consignee_Email = consignee_Email;
 	}
 	
 }
