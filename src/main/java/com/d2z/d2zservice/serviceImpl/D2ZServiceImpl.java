@@ -208,11 +208,20 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Override
 	public byte[] generateLabel(List<SenderData> senderData) {
 		
+		List<SenderData> eParcelData = new ArrayList<SenderData>();
+		
+		List<SenderData> expressData =  new ArrayList<SenderData>();
+		
+		
 		for(SenderData data : senderData){
+			if(data.getCarrier().equalsIgnoreCase("eParcel")) {
+				eParcelData.add(data);
+			}
+			else if(data.getCarrier().equalsIgnoreCase("Express")) {
+				expressData.add(data);
+			}
 			data.setDatamatrixImage(generateDataMatrix(data.getDatamatrix()));
 		}
-		List<SenderData> eParcelData = senderData.stream().filter(obj -> "eParcel".equalsIgnoreCase(obj.getCarrier())).collect(Collectors.toList());
-		List<SenderData> expressData = senderData.stream().filter(obj -> "Express".equalsIgnoreCase(obj.getCarrier())).collect(Collectors.toList());
 		
 		 Map<String,Object> parameters = new HashMap<>();
 		 byte[] bytes = null;
@@ -223,18 +232,20 @@ public class D2ZServiceImpl implements ID2ZService{
 		    JasperReport expressLabel = null;  
 		    try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 		    	List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
-		    	if(null!=eParcelData) {
+		    	if(!eParcelData.isEmpty()) {
+		    		System.out.println("Generating eParcel..."+eParcelData.size());
 		    		eParcelDataSource = new JRBeanCollectionDataSource(eParcelData);
 		    		eParcelLabel  = JasperCompileManager.compileReport(getClass().getResource("/eparcelLabel.jrxml").openStream());
 		    		JRSaver.saveObject(eParcelLabel, "label.jasper");
 		    		jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, eParcelDataSource));
 
 		    	}
-		    	if(null!=expressData) {
+		    	if(!expressData.isEmpty()) {
+		    		System.out.println("Generating Express..."+expressData.size());
 		    		expressDataSource = new JRBeanCollectionDataSource(expressData);
 		    		expressLabel  = JasperCompileManager.compileReport(getClass().getResource("/expressLabel.jrxml").openStream());
 			        JRSaver.saveObject(expressLabel, "express.jasper");
-		    		jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, expressDataSource));
+		    		jasperPrintList.add(JasperFillManager.fillReport(expressLabel, parameters, expressDataSource));
 			    	}
 		    	final ByteArrayOutputStream outputStream = new ByteArrayOutputStream(); 
 		    	SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(
@@ -252,7 +263,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		      e.printStackTrace();
 		    }
 		    return bytes;
-	}
+		    }
 
 	private BufferedImage generateDataMatrix(String datamatrixInput) {
 		BufferedImage datamatrixImage = null;
@@ -294,11 +305,11 @@ public class D2ZServiceImpl implements ID2ZService{
 
 	@Override
 	public  byte[] trackingLabel(List<String> refBarNum) {
-		SenderData trackingLabel = new SenderData();
 		List<SenderData> trackingLabelList = new ArrayList<SenderData>();
 		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNum);
 		Iterator itr = trackingLabelData.iterator();
 		while(itr.hasNext()) {   
+			SenderData trackingLabel = new SenderData();
 			Object[] trackingArray = (Object[]) itr.next();
 			if(trackingArray[0] != null)
 				trackingLabel.setReferenceNumber(trackingArray[0].toString());
@@ -366,9 +377,19 @@ public class D2ZServiceImpl implements ID2ZService{
 		      e.printStackTrace();
 		    }
 		    return bytes;*/
-		List<SenderData> eParcelData = trackingLabelList.stream().filter(obj -> "eParcel".equalsIgnoreCase(obj.getCarrier())).collect(Collectors.toList());
-		List<SenderData> expressData = trackingLabelList.stream().filter(obj -> "Express".equalsIgnoreCase(obj.getCarrier())).collect(Collectors.toList());
+		List<SenderData> eParcelData = new ArrayList<SenderData>();
 		
+		List<SenderData> expressData =  new ArrayList<SenderData>();
+		
+		for(SenderData data : trackingLabelList) {
+			if(data.getCarrier().equalsIgnoreCase("eParcel")) {
+				eParcelData.add(data);
+			}
+			else if(data.getCarrier().equalsIgnoreCase("Express")) {
+				expressData.add(data);
+			}
+		}
+	
 		 Map<String,Object> parameters = new HashMap<>();
 		 byte[] bytes = null;
 		 //Blob blob = null;
@@ -378,14 +399,16 @@ public class D2ZServiceImpl implements ID2ZService{
 		    JasperReport expressLabel = null;  
 		    try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 		    	List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
-		    	if(null!=eParcelData) {
+		    	if(!eParcelData.isEmpty()) {
+		    		System.out.println("Generating eParcel..."+eParcelData.size());
 		    		eParcelDataSource = new JRBeanCollectionDataSource(eParcelData);
 		    		eParcelLabel  = JasperCompileManager.compileReport(getClass().getResource("/eparcelLabel.jrxml").openStream());
 		    		JRSaver.saveObject(eParcelLabel, "label.jasper");
 		    		jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, eParcelDataSource));
 
 		    	}
-		    	if(null!=expressData) {
+		    	if(!expressData.isEmpty()) {
+		    		System.out.println("Generating Express..."+expressData.size());
 		    		expressDataSource = new JRBeanCollectionDataSource(expressData);
 		    		expressLabel  = JasperCompileManager.compileReport(getClass().getResource("/expressLabel.jrxml").openStream());
 			        JRSaver.saveObject(expressLabel, "express.jasper");
@@ -400,9 +423,9 @@ public class D2ZServiceImpl implements ID2ZService{
 		    	exporter.exportReport();
 		    		      // return the PDF in bytes
 		    	bytes = outputStream.toByteArray();
-		    	try(OutputStream out = new FileOutputStream("Label.pdf")){
+		    	/*try(OutputStream out = new FileOutputStream("Label.pdf")){
 		    		out.write(bytes);
-		    	}
+		    	}*/
 		      //bytes = JasperExportManager.exportReportToPdf(jasperPrint);
 			// blob = new javax.sql.rowset.serial.SerialBlob(bytes);
 		    }
@@ -410,7 +433,6 @@ public class D2ZServiceImpl implements ID2ZService{
 		      e.printStackTrace();
 		    }
 		    return bytes;
-		
 	}
 
 	@Override

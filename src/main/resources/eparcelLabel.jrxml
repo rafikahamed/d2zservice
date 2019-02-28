@@ -19,6 +19,9 @@
 	<field name="consigneeAddr1" class="java.lang.String">
 		<fieldDescription><![CDATA[consigneeAddr1]]></fieldDescription>
 	</field>
+	<field name="consigneeAddr2" class="java.lang.String">
+		<fieldDescription><![CDATA[consigneeAddr2]]></fieldDescription>
+	</field>
 	<field name="consigneeSuburb" class="java.lang.String">
 		<fieldDescription><![CDATA[consigneeSuburb]]></fieldDescription>
 	</field>
@@ -100,7 +103,7 @@
 				<textFieldExpression><![CDATA[$F{consigneeAddr1}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="1" y="113" width="279" height="19" uuid="4001379f-9f34-4cb8-85b8-dff1c158b25a"/>
+				<reportElement x="1" y="128" width="279" height="19" uuid="4001379f-9f34-4cb8-85b8-dff1c158b25a"/>
 				<textElement>
 					<font fontName="MyArial" size="14"/>
 				</textElement>
@@ -144,6 +147,13 @@
 					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeCompany}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="113" width="279" height="15" uuid="c77e6fec-6afa-4310-90fa-9564ce4b2f76"/>
+				<textElement>
+					<font fontName="MyArial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{consigneeAddr2}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -312,15 +322,9 @@
 				<text><![CDATA[Ref:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="31" y="33" width="100" height="15" uuid="8a4b12e3-a01e-40fe-b4f5-2e626ce1e552"/>
+				<reportElement x="31" y="33" width="320" height="15" uuid="8a4b12e3-a01e-40fe-b4f5-2e626ce1e552"/>
 				<textFieldExpression><![CDATA[$F{referenceNumber}]]></textFieldExpression>
 			</textField>
-			<componentElement>
-				<reportElement x="147" y="8" width="200" height="50" uuid="77a1f313-57be-462d-a9c2-7d3e23daed52"/>
-				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="false" checksumRequired="false" barHeight="50" rotation="None">
-					<jr:codeExpression><![CDATA[$F{referenceNumber}]]></jr:codeExpression>
-				</jr:barbecue>
-			</componentElement>
 			<staticText>
 				<reportElement x="1" y="8" width="30" height="15" uuid="bed2a0d1-e188-4cf8-930c-9722cdb00f1b"/>
 				<textElement>
@@ -329,7 +333,7 @@
 				<text><![CDATA[SKU]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="31" y="8" width="100" height="15" uuid="7c9c8dd3-77f7-46c6-980b-ff0c3f3125e2"/>
+				<reportElement x="31" y="8" width="320" height="15" uuid="7c9c8dd3-77f7-46c6-980b-ff0c3f3125e2"/>
 				<textElement>
 					<font fontName="MyArial"/>
 				</textElement>

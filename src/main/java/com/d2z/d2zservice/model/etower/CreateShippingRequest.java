@@ -1,11 +1,13 @@
 package com.d2z.d2zservice.model.etower;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CreateShippingRequest {
 	private String trackingNo;
 	private String referenceNo;
 	private String addressLine1;
+	private String addressLine2;
 	private String recipientName;
 	private String recipientCompany;
 	private String city ;
@@ -13,6 +15,7 @@ public class CreateShippingRequest {
 	private String postcode;
 	private String country = "AU";
 	private String serviceCode = "UBI.AU2AU.AUPOST";
+	private String serviceOption;
 	private String facility;
 	private Double weight;
 	private Double invoiceValue;
@@ -24,6 +27,20 @@ public class CreateShippingRequest {
 	private String shipperState = "test state";
 	private String shipperCountry = "hhh";
 	private List<OrderItems> orderItems;
+	
+	
+	public String getServiceOption() {
+		return serviceOption;
+	}
+	public void setServiceOption(String serviceOption) {
+		this.serviceOption = serviceOption;
+	}
+	public String getAddressLine2() {
+		return addressLine2;
+	}
+	public void setAddressLine2(String addressLine2) {
+		this.addressLine2 = addressLine2;
+	}
 	public String getTrackingNo() {
 		return trackingNo;
 	}
@@ -145,6 +162,10 @@ public class CreateShippingRequest {
 		this.shipperCountry = shipperCountry;
 	}
 	public List<OrderItems> getOrderItems() {
+		if(null == orderItems) {
+			this.orderItems = new ArrayList<OrderItems>();
+			this.orderItems.add(new OrderItems());
+		}
 		return orderItems;
 	}
 	public void setOrderItems(List<OrderItems> orderItems) {
