@@ -2,11 +2,11 @@ package com.d2z.d2zservice.model.etower;
 
 public class OrderItems {
 
-	private String itemNo;
-	private String sku;
-	private String originCountry;
-	private String unitValue;
-	private String itemCount;
+	private String itemNo = "1";
+	private String sku = "1";
+	private String originCountry = "MY";
+	private int unitValue = 99;
+	private String itemCount = "1";
 	public String getItemNo() {
 		return itemNo;
 	}
@@ -25,10 +25,11 @@ public class OrderItems {
 	public void setOriginCountry(String originCountry) {
 		this.originCountry = originCountry;
 	}
-	public String getUnitValue() {
+	
+	public int getUnitValue() {
 		return unitValue;
 	}
-	public void setUnitValue(String unitValue) {
+	public void setUnitValue(int unitValue) {
 		this.unitValue = unitValue;
 	}
 	public String getItemCount() {

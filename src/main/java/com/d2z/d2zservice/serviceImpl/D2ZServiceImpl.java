@@ -49,11 +49,13 @@ import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.TrackingEvents;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.proxy.EbayProxy;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
+import com.d2z.d2zservice.wrapper.ETowerWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
@@ -97,12 +99,20 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Autowired
 	private EbayProxy proxy;
 	
+	@Autowired
+	private ETowerWrapper etowerWrapper;
+	
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException{
 		d2zValidator.isReferenceNumberUniqueUI(orderDetailList);
 		d2zValidator.isServiceValidUI(orderDetailList);
 		d2zValidator.isPostCodeValidUI(orderDetailList);
-		String senderFileID = d2zDao.exportParcel(orderDetailList);
+		Map<String, LabelData> eTowerResponseMap = null;
+		String carrier = orderDetailList.get(0).getCarrier();
+		if("Express".equalsIgnoreCase(carrier)) {
+			 eTowerResponseMap = etowerWrapper.makeCallToCreateShippingOrder(orderDetailList);
+		}
+		String senderFileID  = d2zDao.exportParcel(orderDetailList,eTowerResponseMap);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
@@ -355,6 +365,8 @@ public class D2ZServiceImpl implements ID2ZService{
 				trackingLabel.setConsigneeCompany(trackingArray[20].toString());
 			if(trackingArray[21] != null)
 				trackingLabel.setCarrier(trackingArray[21].toString());
+			if(trackingArray[22] != null)
+				trackingLabel.setConsigneeAddr2(trackingArray[22].toString());
 			trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix()));
 			trackingLabelList.add(trackingLabel);
 		 }

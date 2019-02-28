@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.APIRates;
+import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.EbayResponse;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
@@ -22,7 +23,9 @@ import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.UserDetails;
+import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.repository.APIRatesRepository;
+import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
@@ -55,10 +58,13 @@ public class D2ZDaoImpl implements ID2ZDao{
 	EbayResponseRepository ebayResponseRepository;
 	
 	@Autowired
+	ETowerResponseRepository eTowerResponseRepository;
+	
+	@Autowired
 	APIRatesRepository apiRatesRepository;
 	
 	@Override
-	public String exportParcel(List<SenderData> orderDetailList) {
+	public String exportParcel(List<SenderData> orderDetailList,Map<String, LabelData> eTowerResponseMap) {
 		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		String fileSeqId = "D2ZUI"+senderDataRepository.fetchNextSeq().toString();
@@ -69,6 +75,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setConsigneeCompany(senderDataValue.getConsigneeCompany());
 			senderDataObj.setConsignee_name(senderDataValue.getConsigneeName());
 			senderDataObj.setConsignee_addr1(senderDataValue.getConsigneeAddr1());
+			senderDataObj.setConsignee_addr2(senderDataValue.getConsigneeAddr2());
 			senderDataObj.setConsignee_Suburb(senderDataValue.getConsigneeSuburb());
 			senderDataObj.setConsignee_State(postCodeStateMap.get(senderDataValue.getConsigneePostcode()));
 			senderDataObj.setConsignee_Postcode(senderDataValue.getConsigneePostcode());
@@ -97,6 +104,15 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setSku(senderDataValue.getSku());
 			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
 			senderDataObj.setDeliveryInstructions(senderDataValue.getDeliveryInstructions());
+			senderDataObj.setCarrier(senderDataValue.getCarrier());
+
+			if(null != eTowerResponseMap) {
+				if(eTowerResponseMap.containsKey(senderDataValue.getReferenceNumber())){
+					LabelData data = eTowerResponseMap.get(senderDataValue.getReferenceNumber());
+					senderDataObj.setArticleId(data.getArticleId());
+					senderDataObj.setBarcodelabelNumber(data.getBarCode());
+				}
+			}
 			senderDataList.add(senderDataObj);
 		}
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
@@ -174,6 +190,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setConsigneeCompany(senderDataValue.getConsigneeCompany());
 			senderDataObj.setConsignee_name(senderDataValue.getConsigneeName());
 			senderDataObj.setConsignee_addr1(senderDataValue.getConsigneeAddr1());
+			senderDataObj.setConsignee_addr2(senderDataValue.getConsigneeAddr2());
 			senderDataObj.setConsignee_Suburb(senderDataValue.getConsigneeSuburb());
 			senderDataObj.setConsignee_State(postCodeStateMap.get(senderDataValue.getConsigneePostcode()));
 			senderDataObj.setConsignee_Postcode(senderDataValue.getConsigneePostcode());
@@ -182,7 +199,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setValue(senderDataValue.getValue());
 			senderDataObj.setCurrency(senderDataValue.getCurrency());
 			senderDataObj.setShippedQuantity(senderDataValue.getShippedQuantity());
-			//senderDataObj.setWeight(senderDataValue.getWeight());
+			senderDataObj.setWeight(Double.valueOf(senderDataValue.getWeight()));
 			senderDataObj.setDimensions_Length(senderDataValue.getDimensionsLength());
 			senderDataObj.setDimensions_Width(senderDataValue.getDimensionsWidth());
 			senderDataObj.setDimensions_Height(senderDataValue.getDimensionsHeight());
@@ -200,6 +217,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setSku(senderDataValue.getSku());
 			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
 			senderDataObj.setDeliveryInstructions(senderDataValue.getDeliveryInstructions());
+			senderDataObj.setCarrier("eParcel");
 			senderDataList.add(senderDataObj);
 		}
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
@@ -491,6 +509,12 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		List<APIRates> apiRates= (List<APIRates>) apiRatesRepository.findAll();
     	System.out.println(apiRates.size());
     	return apiRates;
+	}
+
+	@Override
+	public void logEtowerResponse(List<ETowerResponse> responseEntity) {
+		eTowerResponseRepository.saveAll(responseEntity);
+		
 	}
 
 }
