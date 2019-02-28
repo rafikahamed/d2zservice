@@ -2,21 +2,16 @@ package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
 
 /**
  * The persistent class for the Users database table.
@@ -84,6 +79,9 @@ public class User implements Serializable {
 	private String password;
 	
 	private Timestamp lastPasswordResetDate;
+	
+	@Column(name="password")
+	private String password_value;
 
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private Set<UserService> userService;
@@ -251,4 +249,12 @@ public class User implements Serializable {
 		this.lastPasswordResetDate = lastPasswordResetDate;
 	}
 
+	public String getPassword_value() {
+		return password_value;
+	}
+
+	public void setPassword_value(String password_value) {
+		this.password_value = password_value;
+	}
+	
 }

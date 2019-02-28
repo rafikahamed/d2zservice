@@ -85,7 +85,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 		userDetails.setContactPhoneNumber(user.getPhoneNumber());
 		userDetails.setCountry(user.getCountry());
 		userDetails.setEmailAddress(user.getEmail());
-		userDetails.setPassword(user.getPassword());
+		userDetails.setPassword(user.getPassword_value());
 		userDetails.setPostCode(user.getPostcode());
 		userDetails.setState(user.getState());
 		userDetails.setSuburb(user.getSuburb());
@@ -95,7 +95,6 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 			return obj.getServiceType();}).collect(Collectors.toList());
 		userDetails.setServiceType(serviceType);
 		return userDetails;
-	
 	}
 
 	@Override

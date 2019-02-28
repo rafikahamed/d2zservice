@@ -55,7 +55,7 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 			userDetails.setContactPhoneNumber(user.getPhoneNumber());
 			userDetails.setCountry(user.getCountry());
 			userDetails.setEmailAddress(user.getEmail());
-			userDetails.setPassword(user.getPassword());
+			userDetails.setPassword(user.getPassword_value());
 			userDetails.setPostCode(user.getPostcode());
 			userDetails.setState(user.getState());
 			userDetails.setSuburb(user.getSuburb());

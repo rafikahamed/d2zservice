@@ -85,7 +85,6 @@ public class SenderData {
 	private String deliveryInstructions;
 	private String carrier;
 	
-	
 	public String getCarrier() {
 		return carrier;
 	}
