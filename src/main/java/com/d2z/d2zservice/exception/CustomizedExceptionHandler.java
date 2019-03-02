@@ -40,7 +40,8 @@ public class CustomizedExceptionHandler extends ResponseEntityExceptionHandler {
 		 
 			    List<String> errors = new ArrayList<String>();
 			    for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
-			        errors.add(violation.getPropertyPath() + ": " + violation.getMessage());
+			        //errors.add(violation.getPropertyPath() + ": " + violation.getMessage());
+			    	errors.add(violation.getInvalidValue()+ "-" +violation.getMessage());
 			    }
 			 
 			    ErrorResponse errorResponse = 

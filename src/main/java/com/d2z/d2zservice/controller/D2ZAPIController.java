@@ -1,10 +1,13 @@
 package com.d2z.d2zservice.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -71,5 +74,20 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
     public List<PostCodeWeight> getRates(@Valid @RequestBody APIRatesRequest request) throws ReferenceNumberNotUniqueException {
 		return d2zService.getRates(request);
     }
+	
+	@RequestMapping( method = RequestMethod.POST, path = "/tracking-label")
+    public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum) {
+    	List<String> refBarNumArray =
+    			  Stream.of(refBarNum.split(","))
+    			  .collect(Collectors.toList());
+		byte[] bytes = d2zService.trackingLabel(refBarNumArray);
+	    return ResponseEntity
+	      .ok()
+	      // Specify content type as PDF
+	      .header("Content-Type", "application/pdf; charset=UTF-8")
+	      // Tell browser to display PDF if it can
+	      .header("Content-Disposition", "inline; filename=\"Label.pdf\"")
+	      .body(bytes);
+	}
 
 }

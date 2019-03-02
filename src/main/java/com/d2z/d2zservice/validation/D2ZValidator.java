@@ -61,7 +61,7 @@ public class D2ZValidator {
 			}
 		});
 		if(!incorrectPostcode_Suburb.isEmpty()) {
-			throw new InvalidSuburbPostcodeException("Invalid Consignee Postcode or Consignee Suburb or Consiggnee State	",incorrectPostcode_Suburb);
+			throw new InvalidSuburbPostcodeException("Invalid Consignee Postcode or Consignee Suburb or Consiggnee State",incorrectPostcode_Suburb);
 		}
 	}
 	

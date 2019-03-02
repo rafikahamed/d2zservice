@@ -3,8 +3,6 @@ package com.d2z.d2zservice.model;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -18,9 +16,10 @@ public class SenderDataApi {
 	private int userID;
 	private String senderFilesID;
 	@NotEmpty(message = "Reference Number is mandatory")
+	@Pattern(regexp="^[a-zA-Z0-9]+$", message = "Invalid reference number")
 	private String referenceNumber;
 	@NotEmpty(message = "Consignee Name is mandatory")
-	@Pattern(regexp="^[a-zA-Z ]+$", message = "Consignee Name must contain only alphabets")
+	@Pattern(regexp="^[a-zA-Z0-9]+$", message = "Consignee Name must contain only alphabets")
 	private String consigneeName;
 	private String consigneeCompany;
 	@NotEmpty(message = "Consignee Address is mandatory")
