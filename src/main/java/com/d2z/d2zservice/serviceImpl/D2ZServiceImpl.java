@@ -236,7 +236,6 @@ public class D2ZServiceImpl implements ID2ZService{
 		
 		 Map<String,Object> parameters = new HashMap<>();
 		 byte[] bytes = null;
-		 //Blob blob = null;
 		 JRBeanCollectionDataSource eParcelDataSource;
 		 JRBeanCollectionDataSource expressDataSource;
 		    JasperReport eParcelLabel= null;
