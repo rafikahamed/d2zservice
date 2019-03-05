@@ -34,4 +34,7 @@ public interface UserRepository extends CrudRepository<User, Long>{
 	 
 	 User findByUsername(String username);
 
+	 @Query("SELECT t FROM User t where t.role_Id = 2")  
+	 List<User> fetchBrokerList();
+
 }

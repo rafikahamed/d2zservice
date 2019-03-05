@@ -37,35 +37,35 @@ public class SenderData {
 	@Positive
 	@Digits( fraction =2, message = "Invalid Value", integer = 10)
 	private double value;
-	@NotEmpty(message = "Currency is mandatory")
+	//@NotEmpty(message = "Currency is mandatory")
 	private String currency;
-	@NotNull(message = "Shipped Quantity is mandatory")
+	//@NotNull(message = "Shipped Quantity is mandatory")
 	private int shippedQuantity;
 	@Digits( fraction =2, message = "Invalid Weight", integer = 10)
 	private String weight;
 	private BigDecimal cubicWeight;
-	@Digits( fraction =2, message = "Invalid Dimensions Length", integer = 10)
+	//@Digits( fraction =2, message = "Invalid Dimensions Length", integer = 10)
 	private BigDecimal dimensionsLength;
-	@Digits( fraction =2, message = "Invalid Dimensions Height", integer = 10)
+	//@Digits( fraction =2, message = "Invalid Dimensions Height", integer = 10)
 	private BigDecimal dimensionsHeight;
-	@Digits( fraction =2, message = "Invalid Dimensions Width", integer = 10)
+	//@Digits( fraction =2, message = "Invalid Dimensions Width", integer = 10)
 	private BigDecimal dimensionsWidth;
 	@NotEmpty(message = "Service Type is mandatory")
 	//@Pattern(regexp="^[1-5][pP][a-zA-Z]*$", message = "Invalid Service Type")
 	private String serviceType;
 	private String deliverytype;
-	@NotEmpty(message = "Shipped Name is mandatory")
-	@Pattern(regexp="^[a-zA-Z ]+$", message = "Shipper Name must contain only alphabets")
+	//@NotEmpty(message = "Shipped Name is mandatory")
+	//@Pattern(regexp="^[a-zA-Z ]+$", message = "Shipper Name must contain only alphabets")
 	private String shipperName;
-	@NotEmpty(message = "Shipped Address is mandatory")
+	//@NotEmpty(message = "Shipped Address is mandatory")
 	private String shipperAddr1;
-	@NotEmpty(message = "Shipped City is mandatory")
+	//@NotEmpty(message = "Shipped City is mandatory")
 	private String shipperCity;
-	@NotEmpty(message = "Shipped State is mandatory")
+	//@NotEmpty(message = "Shipped State is mandatory")
 	private String shipperState;
-	@NotEmpty(message = "Shipped Country is mandatory")
+	//@NotEmpty(message = "Shipped Country is mandatory")
 	private String shipperCountry;
-	@NotEmpty(message = "Shipped Postcode is mandatory")
+	//@NotEmpty(message = "Shipped Postcode is mandatory")
 	private String shipperPostcode;
 	private String barcodeLabelNumber;
 	private String datamatrix;		
