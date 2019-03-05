@@ -93,16 +93,16 @@
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{consigneeName}.equals(null) ? "":$F{consigneeName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{consigneeName}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="1" y="98" width="279" height="15" uuid="92138a07-6798-4dab-9ca1-66628b76bb71"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeAddr1}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="1" y="128" width="279" height="19" uuid="4001379f-9f34-4cb8-85b8-dff1c158b25a"/>
 				<textElement>
 					<font fontName="MyArial" size="14"/>
@@ -131,7 +131,7 @@
 				<reportElement x="289" y="50" width="52" height="52" uuid="6bea52eb-2308-425d-b45b-e8f87db99b37"/>
 				<imageExpression><![CDATA[$F{datamatrixImage}]]></imageExpression>
 			</image>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="289" y="112" width="52" height="20" uuid="7c8b49d6-3136-474e-a9ae-20a5e2b2d776"/>
 				<box>
 					<pen lineWidth="1.5"/>
@@ -148,7 +148,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeCompany}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="113" width="279" height="15" uuid="c77e6fec-6afa-4310-90fa-9564ce4b2f76"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
@@ -169,7 +169,7 @@
 				</textElement>
 				<text><![CDATA[DELIVERY INSTRUCTIONS]]></text>
 			</staticText>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="292" y="6" width="48" height="30" uuid="5dfcc6c1-29cd-4049-abcd-ce114710fba5"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="MyArial" size="14" isBold="true"/>
@@ -200,7 +200,7 @@
 			<line>
 				<reportElement x="198" y="1" width="1" height="47" isRemoveLineWhenBlank="true" uuid="8fe2610b-f642-4278-8395-e71161ac3da3"/>
 			</line>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="260" y="6" width="88" height="20" uuid="d5335efc-ab5f-4d65-b774-aa8d4a4132c4"/>
 				<textElement textAlignment="Center">
 					<font fontName="MyArial"/>

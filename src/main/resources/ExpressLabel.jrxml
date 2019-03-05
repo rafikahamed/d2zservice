@@ -3,6 +3,8 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="eparcelLabel" pageWidth="378" pageHeight="563" columnWidth="358" leftMargin="10" rightMargin="10" topMargin="10" bottomMargin="10" uuid="497a1b87-dc25-40fb-8871-81fa7737ae82">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="441"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="545"/>
 	<style name="labelStyle" isBlankWhenNull="true" fontName="MyArial"/>
 	<queryString>
 		<![CDATA[]]>
@@ -70,6 +72,9 @@
 	<field name="productDescription" class="java.lang.String">
 		<fieldDescription><![CDATA[productDescription]]></fieldDescription>
 	</field>
+	<field name="consigneeSuburb" class="java.lang.String">
+		<fieldDescription><![CDATA[consigneeSuburb]]></fieldDescription>
+	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -88,23 +93,23 @@
 				</textElement>
 				<text><![CDATA[DELIVER TO]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="1" y="83" width="279" height="15" uuid="a601a683-c7db-4d24-9aec-0d2005557fd2"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{consigneeName}.equals(null) ? "":$F{consigneeName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{consigneeName}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="1" y="98" width="279" height="15" uuid="92138a07-6798-4dab-9ca1-66628b76bb71"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeAddr1}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="1" y="129" width="279" height="19" uuid="4001379f-9f34-4cb8-85b8-dff1c158b25a"/>
-				<textElement>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1" y="129" width="219" height="19" uuid="4001379f-9f34-4cb8-85b8-dff1c158b25a"/>
+				<textElement textAlignment="Left">
 					<font fontName="MyArial" size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeSuburb}.concat(" ").concat($F{consigneeState}).concat(" ").concat( $F{consigneePostcode}).toUpperCase()]]></textFieldExpression>
@@ -131,7 +136,7 @@
 				<reportElement x="289" y="50" width="52" height="52" uuid="6bea52eb-2308-425d-b45b-e8f87db99b37"/>
 				<imageExpression><![CDATA[$F{datamatrixImage}]]></imageExpression>
 			</image>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="289" y="112" width="52" height="20" uuid="7c8b49d6-3136-474e-a9ae-20a5e2b2d776"/>
 				<box>
 					<pen lineWidth="1.5"/>
@@ -148,8 +153,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeCompany}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="1" y="114" width="279" height="15" uuid="270fdbd0-b24e-43eb-b545-61d1389d94af"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1" y="114" width="279" height="15" isRemoveLineWhenBlank="true" uuid="270fdbd0-b24e-43eb-b545-61d1389d94af"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
@@ -169,7 +174,7 @@
 				</textElement>
 				<text><![CDATA[DELIVERY INSTRUCTIONS]]></text>
 			</staticText>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="292" y="6" width="48" height="30" uuid="5dfcc6c1-29cd-4049-abcd-ce114710fba5"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="MyArial" size="14" isBold="true"/>
@@ -193,7 +198,7 @@
 				</textElement>
 				<text><![CDATA[DESCRIPTION]]></text>
 			</staticText>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="81" y="2" width="189" height="15" uuid="ff6e7188-85d4-42b7-ab37-3bec802e6721"/>
 				<textFieldExpression><![CDATA[$F{productDescription}]]></textFieldExpression>
 			</textField>
@@ -211,7 +216,7 @@
 			<line>
 				<reportElement x="198" y="1" width="1" height="47" isRemoveLineWhenBlank="true" uuid="8fe2610b-f642-4278-8395-e71161ac3da3"/>
 			</line>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="260" y="6" width="88" height="20" uuid="d5335efc-ab5f-4d65-b774-aa8d4a4132c4"/>
 				<textElement textAlignment="Center">
 					<font fontName="MyArial"/>
@@ -315,7 +320,7 @@
 			<staticText>
 				<reportElement x="0" y="-95" width="140" height="15" uuid="10f9c6c8-ddb8-4d0a-a178-d84d51e31c0a"/>
 				<textElement>
-					<font fontName="MyArial" size="9" isBold="true"/>
+					<font fontName="MyArial" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Return Address(If undeliverable)]]></text>
 			</staticText>

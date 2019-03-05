@@ -64,9 +64,9 @@ public class ETowerProxy {
 	public CreateShippingResponse makeCallForCreateShippingOrder(List<CreateShippingRequest> request) {
 
 
-		//String url = "http://qa-cn.etowertech.com/services/shipper/orders/";
+		String url = "http://qa-cn.etowertech.com/services/shipper/orders/";
 		//Prod URL
-		String url = "http://au.etowertech.com/services/shipper/orders/";
+	//String url = "http://au.etowertech.com/services/shipper/orders/";
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		requestFactory.setOutputStreaming(false);
         RestTemplate restTemplate = new RestTemplate(requestFactory);
@@ -86,10 +86,10 @@ public class ETowerProxy {
 	public GainLabelsResponse makeCallToGainLabels(List<String> referenceNumbers) {
 
 
-		//String url = "http://qa-cn.etowertech.com/services/shipper/labelSpecs/";
+		String url = "http://qa-cn.etowertech.com/services/shipper/labelSpecs/";
 		//Prod URL
 		//SSL cert issue fix
-		String url = "http://au.etowertech.com/services/shipper/labelSpecs/";
+		//String url = "http://au.etowertech.com/services/shipper/labelSpecs/";
 			//"https://au.etowertech.com/services/integration/shipper/trackingEvents/";
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		requestFactory.setOutputStreaming(false);
