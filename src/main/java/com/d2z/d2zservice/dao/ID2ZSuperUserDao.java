@@ -1,11 +1,9 @@
 package com.d2z.d2zservice.dao;
 
 import java.util.List;
-
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
-import com.d2z.d2zservice.exception.InvalidDateException;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.D2ZRatesData;
@@ -36,5 +34,7 @@ public interface ID2ZSuperUserDao {
 	public String uploadBrokerRates(List<BrokerRatesData> brokerRatesData);
 
 	String uploadD2ZRates(List<D2ZRatesData> d2zRatesData);
+
+	List<User> brokerList();
 
 }

@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
+import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
@@ -82,4 +84,11 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 		UserMessage successMsg = superUserD2zService.uploadD2ZRates(d2zRatesData);
 		return successMsg;
     }
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/brokerList",  produces = "application/json")
+    public List<BrokerList> brokerList() {
+		List<BrokerList> brokerList = superUserD2zService.brokerList();
+		return brokerList;
+    }
+	
 }

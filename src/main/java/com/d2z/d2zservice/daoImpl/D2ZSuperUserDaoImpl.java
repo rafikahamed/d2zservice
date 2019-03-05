@@ -16,6 +16,7 @@ import com.d2z.d2zservice.entity.D2ZRates;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
+import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.D2ZRatesData;
@@ -29,6 +30,7 @@ import com.d2z.d2zservice.repository.D2ZRatesRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
+import com.d2z.d2zservice.repository.UserServiceRepository;
 
 @Repository
 public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
@@ -47,6 +49,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 
 	@Autowired
 	D2ZRatesRepository d2zRatesRepository;
+	
+	@Autowired
+	UserServiceRepository userServiceRepository;
 	
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -321,4 +326,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		return message;
 	}
 
+	public List<User> brokerList() {
+		List<User> brokerList = userRepository.fetchBrokerList();
+		return brokerList;
+	}
+	
 }

@@ -1,8 +1,10 @@
 package com.d2z.d2zservice.serviceImpl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,6 +16,7 @@ import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
+import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
@@ -146,6 +149,41 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 		UserMessage userMsg = new UserMessage();
 		userMsg.setMessage(uploadedD2ZRates);
 		return userMsg;
+	}
+
+	@Override
+	public List<BrokerList> brokerList() {
+		List<User> brokerList = d2zDao.brokerList();
+		List<BrokerList> brokerListDetails = new ArrayList<BrokerList>();
+		brokerList.forEach(users -> {
+			BrokerList broker = new BrokerList();
+			DropDownModel dropDownBroker  = new DropDownModel();
+			dropDownBroker.setName(users.getUsername());
+			dropDownBroker.setValue(users.getUsername());
+			broker.setBrokerUserName(dropDownBroker);
+			broker.setUserId(users.getUser_Id());
+			Set<DropDownModel> dropDownServiceList  = new HashSet<DropDownModel>();
+			Set<DropDownModel> dropDownTypeList  = new HashSet<DropDownModel>();
+			users.getUserService().forEach(service -> {
+				if(service.getServiceType() != null) {
+					DropDownModel dropDownService  = new DropDownModel();
+					dropDownService.setName(service.getServiceType());
+					dropDownService.setValue(service.getServiceType());
+					dropDownServiceList.add(dropDownService);
+					broker.setServiceType(dropDownServiceList);
+				}
+				if(service.getInjectionType() != null) {
+					DropDownModel dropDownType  = new DropDownModel();
+					dropDownType.setName(service.getInjectionType());
+					dropDownType.setValue(service.getInjectionType());
+					dropDownTypeList.add(dropDownType);
+					broker.setInjectionType(dropDownTypeList);
+				}
+			});
+			brokerListDetails.add(broker);
+		});
+
+		return brokerListDetails;
 	}
 	
 
