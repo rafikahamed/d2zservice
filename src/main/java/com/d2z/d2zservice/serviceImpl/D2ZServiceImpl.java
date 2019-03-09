@@ -99,20 +99,14 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Autowired
 	private EbayProxy proxy;
 	
-	@Autowired
-	private ETowerWrapper etowerWrapper;
+	
 	
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException{
 		d2zValidator.isReferenceNumberUniqueUI(orderDetailList);
 		d2zValidator.isServiceValidUI(orderDetailList);
 		d2zValidator.isPostCodeValidUI(orderDetailList);
-		Map<String, LabelData> eTowerResponseMap = null;
-		String carrier = orderDetailList.get(0).getCarrier();
-		if("Express".equalsIgnoreCase(carrier)) {
-			 eTowerResponseMap = etowerWrapper.makeCallToCreateShippingOrder(orderDetailList);
-		}
-		String senderFileID  = d2zDao.exportParcel(orderDetailList,eTowerResponseMap);
+		String senderFileID  = d2zDao.exportParcel(orderDetailList);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;

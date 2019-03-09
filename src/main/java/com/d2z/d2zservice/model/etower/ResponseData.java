@@ -2,9 +2,12 @@ package com.d2z.d2zservice.model.etower;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class ResponseData {
 	private String status;
 	private String orderId;
+	@JsonIgnore
 	private String referenceNo;
 	private String trackingNo;
 	private List<EtowerErrorResponse> errors;

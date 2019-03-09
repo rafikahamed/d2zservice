@@ -5,9 +5,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
+
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.ETowerResponse;
@@ -23,7 +24,9 @@ import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.UserDetails;
-import com.d2z.d2zservice.model.etower.LabelData;
+import com.d2z.d2zservice.model.etower.ETowerTrackingDetails;
+import com.d2z.d2zservice.model.etower.TrackEventResponseData;
+import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.repository.APIRatesRepository;
 import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
@@ -33,6 +36,7 @@ import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
+import com.d2z.d2zservice.wrapper.ETowerWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
@@ -63,12 +67,17 @@ public class D2ZDaoImpl implements ID2ZDao{
 	@Autowired
 	APIRatesRepository apiRatesRepository;
 	
+	@Autowired
+	private ETowerWrapper etowerWrapper;
+	
 	@Override
-	public String exportParcel(List<SenderData> orderDetailList,Map<String, LabelData> eTowerResponseMap) {
+	public String exportParcel(List<SenderData> orderDetailList) {
 		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
+		List<String> incomingRefNbr = new ArrayList<String>();
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		String fileSeqId = "D2ZUI"+senderDataRepository.fetchNextSeq().toString();
 		for(SenderData senderDataValue: orderDetailList) {
+			incomingRefNbr.add(senderDataValue.getReferenceNumber());
 			SenderdataMaster senderDataObj = new SenderdataMaster();
 			senderDataObj.setSender_Files_ID(fileSeqId);
 			senderDataObj.setReference_number(senderDataValue.getReferenceNumber());
@@ -107,21 +116,26 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setCarrier(senderDataValue.getCarrier());
 			senderDataObj.setConsignee_addr2(senderDataValue.getConsigneeAddr2());
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
-
-			if(null != eTowerResponseMap) {
-				if(eTowerResponseMap.containsKey(senderDataValue.getReferenceNumber())){
-					LabelData data = eTowerResponseMap.get(senderDataValue.getReferenceNumber());
-					senderDataObj.setArticleId(data.getArticleId());
-					senderDataObj.setBarcodelabelNumber(data.getBarCode());
-				}
-			}
 			senderDataList.add(senderDataObj);
 		}
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
 		senderDataRepository.inOnlyTest(fileSeqId);
+		Runnable r = new Runnable( ) {			
+	         public void run() {
+	        	 makeCalltoEtower(incomingRefNbr,  insertedOrder);
+	         }
+	     };
+	    new Thread(r).start();
 		return fileSeqId;
 	}
 
+	public void makeCalltoEtower(List<String> incomingRefNbr,List<SenderdataMaster>  insertedOrder) {
+		System.out.println("Background Thread created.....");
+		List<SenderdataMaster> eTowerOrders = senderDataRepository.fetchDataForEtowerCall(incomingRefNbr);
+		if(!eTowerOrders.isEmpty()) {
+			 etowerWrapper.makeCallToCreateShippingOrder(insertedOrder);
+		}
+	}
 	@Override
 	public List<String> fileList(Integer userId) {
 		List<String> listOfFileNames= senderDataRepository.fetchFileName(userId);
@@ -163,6 +177,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	public List<String> trackingLabel(List<String> refBarNum) {
 		//String trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNum);
 		List<String> trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNum);
+		System.out.println(trackingDetails.size());
 		return trackingDetails;
 	}
 
@@ -220,6 +235,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
 			senderDataObj.setDeliveryInstructions(senderDataValue.getDeliveryInstructions());
 			senderDataObj.setCarrier("eParcel");
+			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
 			senderDataList.add(senderDataObj);
 		}
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
@@ -291,6 +307,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public String allocateShipment(String referenceNumbers, String shipmentNumber) {
 		senderDataRepository.allocateShipment(referenceNumbers, shipmentNumber);
+		List<String> trackingNbrs = senderDataRepository.fetchDataForEtowerForeCastCall(referenceNumbers);
+		etowerWrapper.foreCast(trackingNbrs);
 		return "Shipment allocation Successful";
 	}
 
@@ -517,6 +535,51 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public void logEtowerResponse(List<ETowerResponse> responseEntity) {
 		eTowerResponseRepository.saveAll(responseEntity);
 		
+	}
+	@Override
+	public ResponseMessage insertTrackingDetails(TrackingEventResponse trackEventresponse) {
+		List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
+		List<TrackEventResponseData> responseData = trackEventresponse.getData();
+		ResponseMessage responseMsg =  new ResponseMessage();
+
+		if(responseData.isEmpty()) {
+			responseMsg.setResponseMessage("No Data from ETower");
+		}
+		else {
+		
+		for(TrackEventResponseData data : responseData ) {
+		
+			
+			for(ETowerTrackingDetails trackingDetails : data.getEvents()) {
+				Trackandtrace trackandTrace = new Trackandtrace();
+				trackandTrace.setArticleID(trackingDetails.getTrackingNo());
+				trackandTrace.setFileName("eTowerAPI");
+		
+                trackandTrace.setTrackEventDateOccured(trackingDetails.getEventTime());
+				trackandTrace.setTrackEventCode(trackingDetails.getEventCode());
+			
+				trackandTrace.setTrackEventDetails(trackingDetails.getActivity());
+				trackandTrace.setCourierEvents(trackingDetails.getActivity());
+				trackandTrace.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+				trackandTrace.setLocation(trackingDetails.getLocation());
+				trackandTrace.setIsDeleted("N");
+				if("ARRIVED AT DESTINATION AIRPORT".equalsIgnoreCase(trackandTrace.getTrackEventDetails()) ||
+						("COLLECTED FROM AIRPORT TERMINAL".equalsIgnoreCase(trackandTrace.getTrackEventDetails())) ||
+							("PREPARING TO DISPATCH".equalsIgnoreCase(trackandTrace.getTrackEventDetails())))
+					{
+					trackandTrace.setIsDeleted("Y");
+					}
+				trackAndTraceList.add(trackandTrace);
+			}
+			
+		
+		}
+		trackAndTraceRepository.saveAll(trackAndTraceList);
+		trackAndTraceRepository.updateTracking();
+		trackAndTraceRepository.deleteDuplicates();
+		responseMsg.setResponseMessage("Data uploaded successfully from ETower");
+		}
+		return responseMsg;
 	}
 
 }

@@ -5,9 +5,12 @@ import java.math.BigDecimal;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
@@ -206,6 +209,18 @@ public class SenderdataMaster implements Serializable {
 	@Column(name="Carrier")
 	private String carrier;
 	
+	@Column(name = "MLID")
+	private String mlid;
+	
+	
+	public String getMlid() {
+		return mlid;
+	}
+
+	public void setMlid(String mlid) {
+		this.mlid = mlid;
+	}
+
 	public String getCarrier() {
 		return carrier;
 	}
@@ -217,6 +232,19 @@ public class SenderdataMaster implements Serializable {
 	@OneToMany(mappedBy="senderData")
     List<Trackandtrace> trackAndTrace = null;
 	
+	@ManyToOne//(fetch = FetchType.LAZY)
+	@JoinColumn(name = "MLID",referencedColumnName = "MLID", insertable=false, updatable=false)
+	ConsignmentCount consignmentCount;
+	
+	
+	public ConsignmentCount getConsignmentCount() {
+		return consignmentCount;
+	}
+
+	public void setConsignmentCount(ConsignmentCount consignmentCount) {
+		this.consignmentCount = consignmentCount;
+	}
+
 	public String getConsigneeCompany() {
 		return consigneeCompany;
 	}

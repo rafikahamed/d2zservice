@@ -32,6 +32,8 @@ public class SenderDataApi {
 	@NotEmpty(message = "Consignee Postcode is mandatory")
 	private String consigneePostcode;
 	private String consigneePhone;
+	private String consigneeEmail;
+
 	@NotEmpty(message = "Product Description is mandatory")
 	private String productDescription;
 	@NotNull(message = "Value is mandatory")
@@ -477,6 +479,14 @@ public class SenderDataApi {
 
 	public void setDeliveryInstructions(String deliveryInstructions) {
 		this.deliveryInstructions = deliveryInstructions;
+	}
+
+	public String getConsigneeEmail() {
+		return consigneeEmail;
+	}
+
+	public void setConsigneeEmail(String consigneeEmail) {
+		this.consigneeEmail = consigneeEmail;
 	}
 
 

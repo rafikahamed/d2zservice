@@ -109,6 +109,7 @@ public class D2zController {
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/tracking-label")
     public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum) {
+    	System.out.println("Incoming refBarNum :: "+ refBarNum);
     	List<String> refBarNumArray =
     			  Stream.of(refBarNum.split(","))
     			  .collect(Collectors.toList());

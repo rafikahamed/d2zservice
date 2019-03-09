@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
@@ -20,11 +21,11 @@ import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
-import com.d2z.d2zservice.model.ETowerTrackingDetails;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 
@@ -118,7 +119,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	@Override
 	public ResponseMessage trackingEvent(List<String> trackingNumbers) {
 		System.out.println(trackingNumbers);
-		List<List<ETowerTrackingDetails>> response = proxy.makeCallForTrackingEvents(trackingNumbers);
+		TrackingEventResponse response = proxy.makeCallForTrackingEvents(trackingNumbers);
 		//List<List<ETowerTrackingDetails>> response = proxy.stubETower();
 		return d2zDao.insertTrackingDetails(response);
 	}

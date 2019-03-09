@@ -26,6 +26,14 @@ public class CreateShippingRequest {
 	private String shipperCity = "test city";
 	private String shipperState = "test state";
 	private String shipperCountry = "hhh";
+	private String email;
+	
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
 	private List<OrderItems> orderItems;
 	
 	

@@ -1,11 +1,15 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 
@@ -31,6 +35,30 @@ public class ConsignmentCount implements Serializable {
 	@Id
 	@Column(name="MLID")
 	private String mlid;
+	
+	@Column(name="Supplier")
+	private String supplier;
+
+	@OneToMany(mappedBy = "consignmentCount")
+    private List<SenderdataMaster> senderData;
+	
+	
+	
+	public String getSupplier() {
+		return supplier;
+	}
+
+	public void setSupplier(String supplier) {
+		this.supplier = supplier;
+	}
+
+	public List<SenderdataMaster> getSenderData() {
+		return senderData;
+	}
+
+	public void setSenderData(List<SenderdataMaster> senderData) {
+		this.senderData = senderData;
+	}
 
 	public ConsignmentCount() {
 	}

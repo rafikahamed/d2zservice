@@ -1,7 +1,6 @@
 package com.d2z.d2zservice.dao;
 
 import java.util.List;
-import java.util.Map;
 
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.ETowerResponse;
@@ -16,12 +15,12 @@ import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.UserDetails;
-import com.d2z.d2zservice.model.etower.LabelData;
+import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
 public interface ID2ZDao {
 	
-	public String exportParcel(List<SenderData> orderDetailList, Map<String, LabelData> eTowerResponseMap);
+	public String exportParcel(List<SenderData> orderDetailList);
 
 	public List<String> fileList(Integer userId);
 	
@@ -91,6 +90,8 @@ public interface ID2ZDao {
 	public List<APIRates> fetchAllAPIRates();
 
 	public void logEtowerResponse(List<ETowerResponse> responseEntity);
+
+	ResponseMessage insertTrackingDetails(TrackingEventResponse response);
 
 
 }

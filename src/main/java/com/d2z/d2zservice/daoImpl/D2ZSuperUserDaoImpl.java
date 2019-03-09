@@ -1,30 +1,29 @@
 package com.d2z.d2zservice.daoImpl;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.BrokerRates;
 import com.d2z.d2zservice.entity.D2ZRates;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
-import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.D2ZRatesData;
-import com.d2z.d2zservice.model.ETowerTrackingDetails;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.ZoneDetails;
 import com.d2z.d2zservice.model.ZoneRates;
+import com.d2z.d2zservice.model.etower.ETowerTrackingDetails;
+import com.d2z.d2zservice.model.etower.TrackEventResponseData;
+import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.repository.BrokerRatesRepository;
 import com.d2z.d2zservice.repository.D2ZRatesRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
@@ -167,17 +166,20 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	}
 
 	@Override
-	public ResponseMessage insertTrackingDetails(List<List<ETowerTrackingDetails>> response) {
+	public ResponseMessage insertTrackingDetails(TrackingEventResponse trackEventresponse) {
 		List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
+		List<TrackEventResponseData> responseData = trackEventresponse.getData();
 		ResponseMessage responseMsg =  new ResponseMessage();
-		if(response.isEmpty()) {
+
+		if(responseData.isEmpty()) {
 			responseMsg.setResponseMessage("No Data from ETower");
 		}
 		else {
-			int coun =0 ;
-		for(List<ETowerTrackingDetails> etowerResponse : response) {
-			System.out.println(coun++);
-			for(ETowerTrackingDetails trackingDetails : etowerResponse) {
+		
+		for(TrackEventResponseData data : responseData ) {
+		
+			
+			for(ETowerTrackingDetails trackingDetails : data.getEvents()) {
 				Trackandtrace trackandTrace = new Trackandtrace();
 				trackandTrace.setArticleID(trackingDetails.getTrackingNo());
 				trackandTrace.setFileName("eTowerAPI");
@@ -188,7 +190,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
               //  String trackEventOccurred = dateFormat.format(date);
                 //System.out.println("DAte: "+date);
                 //System.out.println("String: "+trackEventOccurred);
-                trackandTrace.setTrackEventDateOccured(trackingDetails.getTimestamp());
+                trackandTrace.setTrackEventDateOccured(trackingDetails.getEventTime());
 				trackandTrace.setTrackEventCode(trackingDetails.getEventCode());
 			/*	if(trackingDetails.getActivity()!=null) {
 					if(trackingDetails.getActivity().contains("Attempted Delivery") || trackingDetails.getActivity().contains("Unable to complete delivery") ) {

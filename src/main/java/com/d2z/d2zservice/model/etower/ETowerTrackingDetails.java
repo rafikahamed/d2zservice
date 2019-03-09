@@ -1,26 +1,25 @@
-package com.d2z.d2zservice.model;
+package com.d2z.d2zservice.model.etower;
 
 public class ETowerTrackingDetails {
 
 	private String trackingNo;
-	private long eventTime;
+	private String eventTime;
 	private String eventCode;
 	private String activity;
 	private String location;
 	private String referenceTrackingNo;
 	private String destCountry;
 	private String timeZone;
-	private String timestamp;
 	public String getTrackingNo() {
 		return trackingNo;
 	}
 	public void setTrackingNo(String trackingNo) {
 		this.trackingNo = trackingNo;
 	}
-	public long getEventTime() {
+	public String getEventTime() {
 		return eventTime;
 	}
-	public void setEventTime(long eventTime) {
+	public void setEventTime(String eventTime) {
 		this.eventTime = eventTime;
 	}
 	public String getEventCode() {
@@ -59,12 +58,7 @@ public class ETowerTrackingDetails {
 	public void setTimeZone(String timeZone) {
 		this.timeZone = timeZone;
 	}
-	public String getTimestamp() {
-		return timestamp;
-	}
-	public void setTimestamp(String timestamp) {
-		this.timestamp = timestamp;
-	}
+
 	
 	
 	
