@@ -25,7 +25,10 @@ import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.etower.CreateShippingRequest;
+import com.d2z.d2zservice.model.etower.CreateShippingResponse;
 import com.d2z.d2zservice.model.etower.ETowerTrackingDetails;
+import com.d2z.d2zservice.model.etower.EtowerErrorResponse;
+import com.d2z.d2zservice.model.etower.ResponseData;
 import com.d2z.d2zservice.model.etower.TrackEventResponseData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.proxy.ETowerProxy;
@@ -122,25 +125,26 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
 			senderDataList.add(senderDataObj);
 		}
-		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
+		 senderDataRepository.saveAll(senderDataList);
 		senderDataRepository.inOnlyTest(fileSeqId);
 		Runnable r = new Runnable( ) {			
 	        public void run() {
-	        	 makeCalltoEtower(incomingRefNbr,  insertedOrder);
+	        	 makeCalltoEtower(incomingRefNbr);
 	        }
 	     };
 	    new Thread(r).start();
 		return fileSeqId;
 	}
 
-	public void makeCalltoEtower(List<String> incomingRefNbr,List<SenderdataMaster>  insertedOrder) {
+	public void makeCalltoEtower(List<String> incomingRefNbr) {
 		System.out.println("Background Thread created.....");
 		List<SenderdataMaster> eTowerOrders = senderDataRepository.fetchDataForEtowerCall(incomingRefNbr);
 		if(!eTowerOrders.isEmpty()) {
 			List<CreateShippingRequest> eTowerRequest = new ArrayList<CreateShippingRequest>();
 
-			for(SenderdataMaster orderDetail : insertedOrder) {
+			for(SenderdataMaster orderDetail : eTowerOrders) {
 				CreateShippingRequest request = new CreateShippingRequest();
+				System.out.println(orderDetail.getArticleId());
 				request.setTrackingNo(orderDetail.getArticleId());
 				request.setReferenceNo("SW10"+orderDetail.getReference_number());
 				request.setRecipientCompany(orderDetail.getConsigneeCompany());
@@ -164,7 +168,33 @@ public class D2ZDaoImpl implements ID2ZDao{
 				request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
 				eTowerRequest.add(request);
 			}
-			eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest);
+			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest);
+			 List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
+	     		if(response!=null) {
+	     			List<ResponseData> responseData = response.getData();
+	     			if(null!=responseData) {
+	     			for(ResponseData data : responseData) {
+	     			 	ETowerResponse errorResponse  = new ETowerResponse();
+	     			 	errorResponse.setAPIName("Create Shipping Order");
+	     			 	errorResponse.setStatus(data.getStatus());
+	     			 	errorResponse.setOrderId(data.getOrderId());
+	     		 		errorResponse.setReferenceNumber(data.getReferenceNo());
+	     		 		errorResponse.setTrackingNo(data.getTrackingNo());
+	     		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+	     				List<EtowerErrorResponse> errors = data.getErrors();
+	     				if(null !=errors) {
+	     				 for(EtowerErrorResponse error : errors) {
+	     				 		errorResponse.setErrorCode(error.getCode());
+	     				 		errorResponse.setErrorMessage(error.getMessage());
+	     				}
+	     				}
+ 				 		responseEntity.add(errorResponse);
+
+	     			}
+	     			}
+	     			
+	     				logEtowerResponse(responseEntity);
+	        }
 		}
 	}
 	@Override
@@ -341,7 +371,33 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		Runnable r = new Runnable( ) {			
 	        public void run() {
 	        	 List<String> trackingNbrs = senderDataRepository.fetchDataForEtowerForeCastCall(referenceNumbers);
-	     		eTowerProxy.makeCallForForeCast(trackingNbrs);
+	        	 CreateShippingResponse response = eTowerProxy.makeCallForForeCast(trackingNbrs);
+	     		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
+
+	     		if(response!=null) {
+	     			List<ResponseData> responseData = response.getData();
+	     			if(null!=responseData) {
+	     			for(ResponseData data : responseData) {
+	     			 	ETowerResponse errorResponse  = new ETowerResponse();
+	     			 	errorResponse.setAPIName("Forecast");
+	     			 	errorResponse.setStatus(data.getStatus());
+	     			 	errorResponse.setOrderId(data.getOrderId());
+	     		 		errorResponse.setReferenceNumber(data.getReferenceNo());
+	     		 		errorResponse.setTrackingNo(data.getTrackingNo());
+	     		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+	     				List<EtowerErrorResponse> errors = data.getErrors();
+	     				if(null != errors) {
+	     				 for(EtowerErrorResponse error : errors) {
+	     				 		errorResponse.setErrorCode(error.getCode());
+	     				 		errorResponse.setErrorMessage(error.getMessage());
+	     				}
+	     				}
+ 				 		responseEntity.add(errorResponse);
+	     			}
+	     			}
+	     			
+	     				logEtowerResponse(responseEntity);
+	     	}
 	     		eTowerProxy.makeCallForTrackingEvents(trackingNbrs);
 	       }
 	    };
