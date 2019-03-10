@@ -38,4 +38,6 @@ public interface ID2ZSuperUserDao {
 
 	List<User> brokerList();
 
+	List<String> fetchMlidList();
+
 }

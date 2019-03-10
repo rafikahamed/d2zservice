@@ -25,6 +25,7 @@ import com.d2z.d2zservice.model.etower.ETowerTrackingDetails;
 import com.d2z.d2zservice.model.etower.TrackEventResponseData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.repository.BrokerRatesRepository;
+import com.d2z.d2zservice.repository.ConsigneeCountRepository;
 import com.d2z.d2zservice.repository.D2ZRatesRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
@@ -51,6 +52,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	
 	@Autowired
 	UserServiceRepository userServiceRepository;
+	
+	@Autowired
+	ConsigneeCountRepository consigneeCountRepository;
 	
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -331,6 +335,12 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	public List<User> brokerList() {
 		List<User> brokerList = userRepository.fetchBrokerList();
 		return brokerList;
+	}
+
+	@Override
+	public List<String> fetchMlidList() {
+		List<String> mlidList = consigneeCountRepository.getMlidList();
+		return mlidList;
 	}
 	
 }

@@ -31,5 +31,4 @@ public interface ID2ZBrokerDao {
 
 	public List<Integer> getClientId(Integer userId);
 
-
 }
