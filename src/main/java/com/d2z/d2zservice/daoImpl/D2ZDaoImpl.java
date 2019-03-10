@@ -24,9 +24,14 @@ import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.UserDetails;
+import com.d2z.d2zservice.model.etower.CreateShippingRequest;
+import com.d2z.d2zservice.model.etower.CreateShippingResponse;
 import com.d2z.d2zservice.model.etower.ETowerTrackingDetails;
+import com.d2z.d2zservice.model.etower.EtowerErrorResponse;
+import com.d2z.d2zservice.model.etower.ResponseData;
 import com.d2z.d2zservice.model.etower.TrackEventResponseData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
+import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.repository.APIRatesRepository;
 import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
@@ -70,6 +75,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 	@Autowired
 	private ETowerWrapper etowerWrapper;
 	
+	@Autowired
+	private ETowerProxy eTowerProxy;
 	@Override
 	public String exportParcel(List<SenderData> orderDetailList) {
 		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
@@ -118,22 +125,76 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
 			senderDataList.add(senderDataObj);
 		}
-		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
+		 senderDataRepository.saveAll(senderDataList);
 		senderDataRepository.inOnlyTest(fileSeqId);
 		Runnable r = new Runnable( ) {			
-	         public void run() {
-	        	 makeCalltoEtower(incomingRefNbr,  insertedOrder);
-	         }
+	        public void run() {
+	        	 makeCalltoEtower(incomingRefNbr);
+	        }
 	     };
 	    new Thread(r).start();
 		return fileSeqId;
 	}
 
-	public void makeCalltoEtower(List<String> incomingRefNbr,List<SenderdataMaster>  insertedOrder) {
+	public void makeCalltoEtower(List<String> incomingRefNbr) {
 		System.out.println("Background Thread created.....");
 		List<SenderdataMaster> eTowerOrders = senderDataRepository.fetchDataForEtowerCall(incomingRefNbr);
 		if(!eTowerOrders.isEmpty()) {
-			 etowerWrapper.makeCallToCreateShippingOrder(insertedOrder);
+			List<CreateShippingRequest> eTowerRequest = new ArrayList<CreateShippingRequest>();
+
+			for(SenderdataMaster orderDetail : eTowerOrders) {
+				CreateShippingRequest request = new CreateShippingRequest();
+				System.out.println(orderDetail.getArticleId());
+				request.setTrackingNo(orderDetail.getArticleId());
+				request.setReferenceNo("SW10"+orderDetail.getReference_number());
+				request.setRecipientCompany(orderDetail.getConsigneeCompany());
+				request.setRecipientName(orderDetail.getConsignee_name());
+				request.setAddressLine1(orderDetail.getConsignee_addr1());
+				request.setAddressLine2(orderDetail.getConsignee_addr2());
+				request.setEmail(orderDetail.getConsignee_Email());
+				request.setCity(orderDetail.getConsignee_Suburb());
+				request.setState(orderDetail.getConsignee_State());
+				request.setPostcode(orderDetail.getConsignee_Postcode());
+				if(orderDetail.getCarrier().equalsIgnoreCase("Express")){
+				request.setServiceOption("Express-Post");
+				}
+				else {
+					request.setServiceOption("E-Parcel");
+
+				}
+				request.setFacility(orderDetail.getInjectionState());
+				request.setWeight(Double.valueOf(orderDetail.getWeight()));
+				request.setInvoiceValue(orderDetail.getValue());
+				request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
+				eTowerRequest.add(request);
+			}
+			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest);
+			 List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
+	     		if(response!=null) {
+	     			List<ResponseData> responseData = response.getData();
+	     			if(null!=responseData) {
+	     			for(ResponseData data : responseData) {
+	     			 	ETowerResponse errorResponse  = new ETowerResponse();
+	     			 	errorResponse.setAPIName("Create Shipping Order");
+	     			 	errorResponse.setStatus(data.getStatus());
+	     			 	errorResponse.setOrderId(data.getOrderId());
+	     		 		errorResponse.setReferenceNumber(data.getReferenceNo());
+	     		 		errorResponse.setTrackingNo(data.getTrackingNo());
+	     		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+	     				List<EtowerErrorResponse> errors = data.getErrors();
+	     				if(null !=errors) {
+	     				 for(EtowerErrorResponse error : errors) {
+	     				 		errorResponse.setErrorCode(error.getCode());
+	     				 		errorResponse.setErrorMessage(error.getMessage());
+	     				}
+	     				}
+ 				 		responseEntity.add(errorResponse);
+
+	     			}
+	     			}
+	     			
+	     				logEtowerResponse(responseEntity);
+	        }
 		}
 	}
 	@Override
@@ -307,8 +368,41 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public String allocateShipment(String referenceNumbers, String shipmentNumber) {
 		senderDataRepository.allocateShipment(referenceNumbers, shipmentNumber);
-		List<String> trackingNbrs = senderDataRepository.fetchDataForEtowerForeCastCall(referenceNumbers);
-		etowerWrapper.foreCast(trackingNbrs);
+		Runnable r = new Runnable( ) {			
+	        public void run() {
+	        	 List<String> trackingNbrs = senderDataRepository.fetchDataForEtowerForeCastCall(referenceNumbers);
+	        	 CreateShippingResponse response = eTowerProxy.makeCallForForeCast(trackingNbrs);
+	     		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
+
+	     		if(response!=null) {
+	     			List<ResponseData> responseData = response.getData();
+	     			if(null!=responseData) {
+	     			for(ResponseData data : responseData) {
+	     			 	ETowerResponse errorResponse  = new ETowerResponse();
+	     			 	errorResponse.setAPIName("Forecast");
+	     			 	errorResponse.setStatus(data.getStatus());
+	     			 	errorResponse.setOrderId(data.getOrderId());
+	     		 		errorResponse.setReferenceNumber(data.getReferenceNo());
+	     		 		errorResponse.setTrackingNo(data.getTrackingNo());
+	     		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+	     				List<EtowerErrorResponse> errors = data.getErrors();
+	     				if(null != errors) {
+	     				 for(EtowerErrorResponse error : errors) {
+	     				 		errorResponse.setErrorCode(error.getCode());
+	     				 		errorResponse.setErrorMessage(error.getMessage());
+	     				}
+	     				}
+ 				 		responseEntity.add(errorResponse);
+	     			}
+	     			}
+	     			
+	     				logEtowerResponse(responseEntity);
+	     	}
+	     		eTowerProxy.makeCallForTrackingEvents(trackingNbrs);
+	       }
+	    };
+	    new Thread(r).start();
+		
 		return "Shipment allocation Successful";
 	}
 

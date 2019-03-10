@@ -5,7 +5,7 @@ public class OrderItems {
 	private String itemNo = "1";
 	private String sku = "1";
 	private String originCountry = "MY";
-	private int unitValue = 99;
+	private Double unitValue;
 	private String itemCount = "1";
 	public String getItemNo() {
 		return itemNo;
@@ -26,10 +26,10 @@ public class OrderItems {
 		this.originCountry = originCountry;
 	}
 	
-	public int getUnitValue() {
+	public Double getUnitValue() {
 		return unitValue;
 	}
-	public void setUnitValue(int unitValue) {
+	public void setUnitValue(Double unitValue) {
 		this.unitValue = unitValue;
 	}
 	public String getItemCount() {

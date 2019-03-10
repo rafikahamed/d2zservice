@@ -350,7 +350,7 @@
 			</line>
 			<image>
 				<reportElement x="0" y="0" width="357" height="50" uuid="b620c237-500c-45f8-a4b9-4418409fa457"/>
-				<imageExpression><![CDATA["express.bmp"]]></imageExpression>
+				<imageExpression><![CDATA[this.getClass().getResourceAsStream("/express.bmp")]]></imageExpression>
 			</image>
 		</band>
 	</pageFooter>
