@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -16,7 +18,7 @@ public class SenderData {
 	@NotEmpty(message = "Reference Number is mandatory")
 	@Pattern(regexp="^[a-zA-Z0-9]+$", message = "Invalid reference number")
 	private String referenceNumber;
-	@NotEmpty(message = "Consignee Name is mandatory")
+	//@NotEmpty(message = "Consignee Name is mandatory")
 //	@Pattern(regexp="^[a-zA-Z ]+$", message = "Consignee Name must contain only alphabets")
 	private String consigneeName;
 	private String consigneeCompany;
@@ -34,7 +36,7 @@ public class SenderData {
 	@NotEmpty(message = "Product Description is mandatory")
 	private String productDescription;
 	@NotNull(message = "Value is mandatory")
-	@Positive
+	@Min(value = 1, message = "Value should be grater than 1")
 	@Digits( fraction =2, message = "Invalid Value", integer = 10)
 	private double value;
 	//@NotEmpty(message = "Currency is mandatory")
@@ -42,6 +44,9 @@ public class SenderData {
 	//@NotNull(message = "Shipped Quantity is mandatory")
 	private int shippedQuantity;
 	@Digits( fraction =2, message = "Invalid Weight", integer = 10)
+	@NotEmpty(message = "Weight is mandatory")
+	@Min(value = 0, message = "Weight is mandatory")
+	@Max(value = 22, message = "Weight should not be greater than 22")
 	private String weight;
 	private BigDecimal cubicWeight;
 	//@Digits( fraction =2, message = "Invalid Dimensions Length", integer = 10)

@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,8 +19,10 @@ import com.d2z.d2zservice.model.BaggingRequest;
 import com.d2z.d2zservice.model.BaggingResponse;
 import com.d2z.d2zservice.model.DirectInjectionDetails;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.service.IBrokerD2ZService;
+import com.d2z.d2zservice.service.ID2ZService;
 
 @RestController
 @RequestMapping(value = "/v1/d2z/broker-level")
@@ -29,6 +32,9 @@ public class D2zBrokerController {
 	
 	@Autowired
     private  IBrokerD2ZService brokerD2zService;
+	
+	@Autowired
+    private  ID2ZService d2zService;
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/company-details")
     public List<DropDownModel> companyDetails(@RequestParam("brokerId") String brokerId) {
@@ -76,4 +82,9 @@ public class D2zBrokerController {
 		BaggingResponse response = brokerD2zService.getbagDetails(request);
 		return response;
     }
+	
+	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/{referenceNumbers}/shipment/{shipmentNumber}")
+	 public ResponseMessage allocateShipment(@PathVariable String referenceNumbers,@PathVariable String shipmentNumber) {
+		return  d2zService.allocateShipment(referenceNumbers,shipmentNumber);
+	}	
 }
