@@ -123,7 +123,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 @Procedure(name = "deleteConsignment")
 		void deleteConsignments(@Param("Reference_number") String Reference_number);
 	 
-	 @Query("SELECT s FROM SenderdataMaster s JOIN s.consignmentCount c where s.reference_number in (:referenceNumbers) and s.mlid = c.mlid and c.supplier = 'eTower'")
+	@Query("SELECT s FROM SenderdataMaster s JOIN s.consignmentCount c where s.reference_number in (:referenceNumbers) and s.mlid = c.mlid and c.supplier = 'eTower'")
 	 List<SenderdataMaster> fetchDataForEtowerCall(@Param("referenceNumbers") List<String> referenceNumbers);
 
 	 @Query("SELECT s.articleId FROM SenderdataMaster s JOIN s.consignmentCount c where s.reference_number in (:referenceNumbers) and s.mlid = c.mlid and c.supplier = 'eTower'")

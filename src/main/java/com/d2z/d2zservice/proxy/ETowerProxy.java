@@ -1,9 +1,15 @@
 package com.d2z.d2zservice.proxy;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -15,16 +21,17 @@ import com.d2z.d2zservice.model.etower.CreateShippingRequest;
 import com.d2z.d2zservice.model.etower.CreateShippingResponse;
 import com.d2z.d2zservice.model.etower.GainLabelsResponse;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
+import com.d2z.d2zservice.security.HMACGenerator;
 
 @Service
 public class ETowerProxy {
 	
-
-
+	
+	String baseURL = "http://qa-cn.etowertech.com/";
 	public TrackingEventResponse makeCallForTrackingEvents(List<String> trackingNumber) {
 
 
-		String url = "http://qa-cn.etowertech.com/services/shipper/trackingEvents/";
+		String url = baseURL+"/services/shipper/trackingEvents/";
 		//Prod URL
 		//SSL cert issue fix
 		//String url = "http://au.etowertech.com/services/integration/shipper/trackingEvents/";
@@ -33,17 +40,15 @@ public class ETowerProxy {
 		requestFactory.setOutputStreaming(false);
         RestTemplate restTemplate = new RestTemplate(requestFactory);
         restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor()));
-       /* List<String> trackingNo = new ArrayList<>();
-       // trackingNo = trackingNumber;
-        trackingNo.add("2MB653554501000931509");
-        trackingNo.add("BRG406312001000935100");
-*/		HttpEntity<List<String>> httpEntity = new HttpEntity<List<String>>(trackingNumber);
+	
+		HttpEntity<List<String>> httpEntity = new HttpEntity<List<String>>(trackingNumber);
 
         System.out.println("Making call to etower");
         //ResponseEntity<List<List<ETowerTrackingDetails>>> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,new ParameterizedTypeReference<List<List<ETowerTrackingDetails>>>() {});
-        ResponseEntity<TrackingEventResponse> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,TrackingEventResponse.class);
-        TrackingEventResponse responseList = response.getBody();
-        return responseList;
+        TrackingEventResponse response = restTemplate.postForObject(url, httpEntity, TrackingEventResponse.class); 
+       // ResponseEntity<TrackingEventResponse> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,TrackingEventResponse.class);
+        //TrackingEventResponse responseList = response.getBody();
+        return response;
 	}
 	
 /*	public List<List<ETowerTrackingDetails>> stubETower() {
@@ -62,18 +67,15 @@ public class ETowerProxy {
 	public CreateShippingResponse makeCallForCreateShippingOrder(List<CreateShippingRequest> request) {
 
 
-		String url = "http://qa-cn.etowertech.com/services/shipper/orders/";
+		String url = baseURL+"services/shipper/orders/";
 		//Prod URL
 	//String url = "http://au.etowertech.com/services/shipper/orders/";
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		requestFactory.setOutputStreaming(false);
         RestTemplate restTemplate = new RestTemplate(requestFactory);
         restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor()));
-       /* List<String> trackingNo = new ArrayList<>();
-       // trackingNo = trackingNumber;
-        trackingNo.add("2MB653554501000931509");
-        trackingNo.add("BRG406312001000935100");
-*/		HttpEntity<List<CreateShippingRequest>> httpEntity = new HttpEntity<List<CreateShippingRequest>>(request);
+    
+		HttpEntity<List<CreateShippingRequest>> httpEntity = new HttpEntity<List<CreateShippingRequest>>(request);
 
         System.out.println("Making call to etower");
         ResponseEntity<CreateShippingResponse> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,CreateShippingResponse.class);
@@ -81,7 +83,7 @@ public class ETowerProxy {
         return createShippingResponse;
 	}
 	
-	public GainLabelsResponse makeCallToGainLabels(List<String> referenceNumbers) {
+	/*public GainLabelsResponse makeCallToGainLabels(List<String> referenceNumbers) {
 
 
 		String url = "http://qa-cn.etowertech.com/services/shipper/labelSpecs/";
@@ -99,11 +101,11 @@ public class ETowerProxy {
         ResponseEntity<GainLabelsResponse> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,GainLabelsResponse.class);
         GainLabelsResponse gainLabelsresponse = response.getBody();
         return gainLabelsresponse;
-	}
+	}*/
 	public CreateShippingResponse makeCallForForeCast(List<String> trackingNumber) {
 
 
-		String url = "http://qa-cn.etowertech.com/services/integration/shipper/trackingEvents/";
+		String url = baseURL+"services/shipper/manifests/";
 		//Prod URL
 		//SSL cert issue fix
 		//String url = "http://au.etowertech.com/services/shipper/manifests/";
@@ -112,11 +114,8 @@ public class ETowerProxy {
 		requestFactory.setOutputStreaming(false);
         RestTemplate restTemplate = new RestTemplate(requestFactory);
         restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor()));
-       /* List<String> trackingNo = new ArrayList<>();
-       // trackingNo = trackingNumber;
-        trackingNo.add("2MB653554501000931509");
-        trackingNo.add("BRG406312001000935100");
-*/		HttpEntity<List<String>> httpEntity = new HttpEntity<List<String>>(trackingNumber);
+     
+		HttpEntity<List<String>> httpEntity = new HttpEntity<List<String>>(trackingNumber);
 
         System.out.println("Making call to etower");
         ResponseEntity<CreateShippingResponse> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,CreateShippingResponse.class);
