@@ -175,7 +175,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	     			if(responseData== null && null!=response.getErrors()) {
 	     				 for(EtowerErrorResponse error : response.getErrors()) {
 	 	     				ETowerResponse errorResponse  = new ETowerResponse();
-	     				 	errorResponse.setAPIName("Forecast");
+	     				 	errorResponse.setAPIName("Create Shipping Order");
 		     			 	errorResponse.setStatus(response.getStatus());
 	     				 	errorResponse.setErrorCode(error.getCode());
 	     				 	errorResponse.setErrorMessage(error.getMessage());
@@ -187,7 +187,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	     				List<EtowerErrorResponse> errors = data.getErrors();
 	     				if(null == errors) {
 	     				ETowerResponse errorResponse  = new ETowerResponse();
-  				 	errorResponse.setAPIName("Forecast");
+  				 	errorResponse.setAPIName("Create Shipping Order");
 	     			 	errorResponse.setStatus(data.getStatus());
 	     			 	errorResponse.setOrderId(data.getOrderId());
 	     		 		errorResponse.setReferenceNumber(data.getReferenceNo());
@@ -198,7 +198,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	     				else {
 	     				 for(EtowerErrorResponse error : errors) {
 	     					ETowerResponse errorResponse  = new ETowerResponse();
-		     			 	errorResponse.setAPIName("Forecast");
+		     			 	errorResponse.setAPIName("Create Shipping Order");
 		     			 	errorResponse.setStatus(response.getStatus());
 		     			 	errorResponse.setStatus(data.getStatus());
 		     			 	errorResponse.setOrderId(data.getOrderId());
@@ -391,9 +391,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		Runnable r = new Runnable( ) {			
 	        public void run() {
 	        	 List<String> trackingNbrs = senderDataRepository.fetchDataForEtowerForeCastCall(referenceNumbers);
-	        	 System.out.println(trackingNbrs.size());
-	        	 CreateShippingResponse response = eTowerProxy.makeCallForForeCast(trackingNbrs);
-	     		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
+	        	 if(!trackingNbrs.isEmpty()) {
+	        		 CreateShippingResponse response = eTowerProxy.makeCallForForeCast(trackingNbrs);
+	        	 	List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 
 	     		if(response!=null) {
 	     			List<ResponseData> responseData = response.getData();
@@ -440,6 +440,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	     				logEtowerResponse(responseEntity);
 	     	
 	     		eTowerProxy.makeCallForTrackingEvents(trackingNbrs);
+	        	 }
 	       }
 	    };
 	    new Thread(r).start();
