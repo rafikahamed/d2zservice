@@ -149,7 +149,7 @@
 				<textFieldExpression><![CDATA[$F{consigneeCompany}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="113" width="279" height="15" uuid="c77e6fec-6afa-4310-90fa-9564ce4b2f76"/>
+				<reportElement x="1" y="113" width="279" height="15" uuid="c77e6fec-6afa-4310-90fa-9564ce4b2f76"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
