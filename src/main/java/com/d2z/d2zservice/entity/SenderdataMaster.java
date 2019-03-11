@@ -3,6 +3,8 @@ package com.d2z.d2zservice.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -232,18 +234,10 @@ public class SenderdataMaster implements Serializable {
 	@OneToMany(mappedBy="senderData")
     List<Trackandtrace> trackAndTrace = null;
 	
-	@ManyToOne//(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "MLID",referencedColumnName = "MLID", insertable=false, updatable=false)
 	ConsignmentCount consignmentCount;
 	
-	
-	public ConsignmentCount getConsignmentCount() {
-		return consignmentCount;
-	}
-
-	public void setConsignmentCount(ConsignmentCount consignmentCount) {
-		this.consignmentCount = consignmentCount;
-	}
 
 	public String getConsigneeCompany() {
 		return consigneeCompany;

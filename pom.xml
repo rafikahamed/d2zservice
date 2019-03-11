@@ -5,7 +5,7 @@
 
 	<groupId>com.d2z</groupId>
 	<artifactId>d2z-testservice</artifactId>
-	<version>0.0.45-SNAPSHOT</version>
+	<version>0.0.46-SNAPSHOT</version>
 	<name>d2z-service</name>
 	<description>Demo project for Spring Boot</description>
 

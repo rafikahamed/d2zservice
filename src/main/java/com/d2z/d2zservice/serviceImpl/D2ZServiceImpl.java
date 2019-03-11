@@ -247,7 +247,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		    	if(!expressData.isEmpty()) {
 		    		System.out.println("Generating Express..."+expressData.size());
 		    		expressDataSource = new JRBeanCollectionDataSource(expressData);
-		    		expressLabel  = JasperCompileManager.compileReport(getClass().getResource("/expressLabel.jrxml").openStream());
+		    		expressLabel  = JasperCompileManager.compileReport(getClass().getResource("/ExpressLabel.jrxml").openStream());
 			        JRSaver.saveObject(expressLabel, "express.jasper");
 		    		jasperPrintList.add(JasperFillManager.fillReport(expressLabel, parameters, expressDataSource));
 			    	}

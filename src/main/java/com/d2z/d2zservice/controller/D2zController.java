@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.validation.Valid;
+import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,10 +65,10 @@ public class D2zController {
 		return fileList;
     }
 	
-	@RequestMapping( method = RequestMethod.GET, path = "/consignment-fileData")
-    public List<SenderdataMaster> consignmentFileData(@RequestParam("fileName") String fileName) {
-		List<SenderdataMaster> fileListData = d2zService.consignmentFileData(fileName);
-		return fileListData;
+	@RequestMapping( method = RequestMethod.POST, path = "/consignment-fileData")
+    public List<SenderdataMaster> consignmentFileData(@RequestBody String fileName) {
+		List<SenderdataMaster> fileListDataLabel = d2zService.consignmentFileData(fileName);
+		return fileListDataLabel;
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/manifest-data")
