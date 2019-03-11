@@ -170,31 +170,51 @@ public class D2ZDaoImpl implements ID2ZDao{
 			}
 			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest);
 			 List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
-	     		if(response!=null) {
+			 if(response!=null) {
 	     			List<ResponseData> responseData = response.getData();
-	     			if(null!=responseData) {
+	     			if(responseData== null && null!=response.getErrors()) {
+	     				 for(EtowerErrorResponse error : response.getErrors()) {
+	 	     				ETowerResponse errorResponse  = new ETowerResponse();
+	     				 	errorResponse.setAPIName("Forecast");
+		     			 	errorResponse.setStatus(response.getStatus());
+	     				 	errorResponse.setErrorCode(error.getCode());
+	     				 	errorResponse.setErrorMessage(error.getMessage());
+	     				 	responseEntity.add(errorResponse);
+	     				}
+	     			}
+	     			
 	     			for(ResponseData data : responseData) {
-	     			 	ETowerResponse errorResponse  = new ETowerResponse();
-	     			 	errorResponse.setAPIName("Create Shipping Order");
+	     				List<EtowerErrorResponse> errors = data.getErrors();
+	     				if(null == errors) {
+	     				ETowerResponse errorResponse  = new ETowerResponse();
+  				 	errorResponse.setAPIName("Forecast");
 	     			 	errorResponse.setStatus(data.getStatus());
 	     			 	errorResponse.setOrderId(data.getOrderId());
 	     		 		errorResponse.setReferenceNumber(data.getReferenceNo());
 	     		 		errorResponse.setTrackingNo(data.getTrackingNo());
 	     		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-	     				List<EtowerErrorResponse> errors = data.getErrors();
-	     				if(null !=errors) {
+	     		 		responseEntity.add(errorResponse);
+	     				}
+	     				else {
 	     				 for(EtowerErrorResponse error : errors) {
-	     				 		errorResponse.setErrorCode(error.getCode());
-	     				 		errorResponse.setErrorMessage(error.getMessage());
+	     					ETowerResponse errorResponse  = new ETowerResponse();
+		     			 	errorResponse.setAPIName("Forecast");
+		     			 	errorResponse.setStatus(response.getStatus());
+		     			 	errorResponse.setStatus(data.getStatus());
+		     			 	errorResponse.setOrderId(data.getOrderId());
+		     		 		errorResponse.setReferenceNumber(data.getReferenceNo());
+		     		 		errorResponse.setTrackingNo(data.getTrackingNo());
+		     		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+	     				    errorResponse.setErrorCode(error.getCode());
+	     				 	errorResponse.setErrorMessage(error.getMessage());
+	    				 	responseEntity.add(errorResponse);
 	     				}
 	     				}
- 				 		responseEntity.add(errorResponse);
-
 	     			}
 	     			}
 	     			
 	     				logEtowerResponse(responseEntity);
-	        }
+	        
 		}
 	}
 	@Override
@@ -371,33 +391,54 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		Runnable r = new Runnable( ) {			
 	        public void run() {
 	        	 List<String> trackingNbrs = senderDataRepository.fetchDataForEtowerForeCastCall(referenceNumbers);
+	        	 System.out.println(trackingNbrs.size());
 	        	 CreateShippingResponse response = eTowerProxy.makeCallForForeCast(trackingNbrs);
 	     		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 
 	     		if(response!=null) {
 	     			List<ResponseData> responseData = response.getData();
-	     			if(null!=responseData) {
+	     			if(responseData== null && null!=response.getErrors()) {
+	     				 for(EtowerErrorResponse error : response.getErrors()) {
+	 	     				ETowerResponse errorResponse  = new ETowerResponse();
+	     				 	errorResponse.setAPIName("Forecast");
+		     			 	errorResponse.setStatus(response.getStatus());
+	     				 	errorResponse.setErrorCode(error.getCode());
+	     				 	errorResponse.setErrorMessage(error.getMessage());
+	     				 	responseEntity.add(errorResponse);
+	     				}
+	     			}
+	     			
 	     			for(ResponseData data : responseData) {
-	     			 	ETowerResponse errorResponse  = new ETowerResponse();
-	     			 	errorResponse.setAPIName("Forecast");
+	     				List<EtowerErrorResponse> errors = data.getErrors();
+	     				if(null == errors) {
+	     				ETowerResponse errorResponse  = new ETowerResponse();
+     				 	errorResponse.setAPIName("Forecast");
 	     			 	errorResponse.setStatus(data.getStatus());
 	     			 	errorResponse.setOrderId(data.getOrderId());
 	     		 		errorResponse.setReferenceNumber(data.getReferenceNo());
 	     		 		errorResponse.setTrackingNo(data.getTrackingNo());
 	     		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-	     				List<EtowerErrorResponse> errors = data.getErrors();
-	     				if(null != errors) {
+	     		 		responseEntity.add(errorResponse);
+	     				}
+	     				else {
 	     				 for(EtowerErrorResponse error : errors) {
-	     				 		errorResponse.setErrorCode(error.getCode());
-	     				 		errorResponse.setErrorMessage(error.getMessage());
+	     					ETowerResponse errorResponse  = new ETowerResponse();
+		     			 	errorResponse.setAPIName("Forecast");
+		     			 	errorResponse.setStatus(response.getStatus());
+		     			 	errorResponse.setStatus(data.getStatus());
+		     			 	errorResponse.setOrderId(data.getOrderId());
+		     		 		errorResponse.setReferenceNumber(data.getReferenceNo());
+		     		 		errorResponse.setTrackingNo(data.getTrackingNo());
+		     		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+	     				    errorResponse.setErrorCode(error.getCode());
+	     				 	errorResponse.setErrorMessage(error.getMessage());
+	    				 	responseEntity.add(errorResponse);
 	     				}
 	     				}
- 				 		responseEntity.add(errorResponse);
 	     			}
 	     			}
-	     			
 	     				logEtowerResponse(responseEntity);
-	     	}
+	     	
 	     		eTowerProxy.makeCallForTrackingEvents(trackingNbrs);
 	       }
 	    };

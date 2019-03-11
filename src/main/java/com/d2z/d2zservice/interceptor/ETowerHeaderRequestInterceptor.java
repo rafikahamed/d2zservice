@@ -46,7 +46,7 @@ public class ETowerHeaderRequestInterceptor implements ClientHttpRequestIntercep
     	System.out.println("Request Body: "+ new String(body, "UTF-8"));
         logRequest(request, body);
         ClientHttpResponse response =  execution.execute(request, body);
-        //System.out.println("Response Body: "+StreamUtils.copyToString(response.getBody(), Charset.defaultCharset()));
+       // System.out.println("Response Body: "+StreamUtils.copyToString(response.getBody(), Charset.defaultCharset()));
         logResponse(response);
         return response;
         
