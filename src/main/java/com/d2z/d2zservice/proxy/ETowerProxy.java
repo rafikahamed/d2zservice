@@ -22,6 +22,9 @@ import com.d2z.d2zservice.model.etower.CreateShippingResponse;
 import com.d2z.d2zservice.model.etower.GainLabelsResponse;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.security.HMACGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 @Service
 public class ETowerProxy {
@@ -45,10 +48,19 @@ public class ETowerProxy {
 
         System.out.println("Making call to etower");
         //ResponseEntity<List<List<ETowerTrackingDetails>>> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,new ParameterizedTypeReference<List<List<ETowerTrackingDetails>>>() {});
-        TrackingEventResponse response = restTemplate.postForObject(url, httpEntity, TrackingEventResponse.class); 
-       // ResponseEntity<TrackingEventResponse> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,TrackingEventResponse.class);
-        //TrackingEventResponse responseList = response.getBody();
-        return response;
+        //TrackingEventResponse response = restTemplate.postForObject(url, httpEntity, TrackingEventResponse.class); 
+        ResponseEntity<TrackingEventResponse> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,TrackingEventResponse.class);
+        TrackingEventResponse responseList = response.getBody();
+        ObjectWriter ow = new ObjectMapper().writer();
+        String jsonResponse = null;
+		try {
+			jsonResponse = ow.writeValueAsString(responseList);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        System.out.println("Response :: " + jsonResponse);
+        return responseList;
 	}
 	
 /*	public List<List<ETowerTrackingDetails>> stubETower() {
@@ -80,6 +92,15 @@ public class ETowerProxy {
         System.out.println("Making call to etower");
         ResponseEntity<CreateShippingResponse> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,CreateShippingResponse.class);
         CreateShippingResponse createShippingResponse = response.getBody();
+        ObjectWriter ow = new ObjectMapper().writer();
+        String jsonResponse = null;
+		try {
+			jsonResponse = ow.writeValueAsString(createShippingResponse);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        System.out.println("Response :: " + jsonResponse);
         return createShippingResponse;
 	}
 	
@@ -120,6 +141,15 @@ public class ETowerProxy {
         System.out.println("Making call to etower");
         ResponseEntity<CreateShippingResponse> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,CreateShippingResponse.class);
         CreateShippingResponse responseList = response.getBody();
+        ObjectWriter ow = new ObjectMapper().writer();
+        String jsonResponse = null;
+		try {
+			jsonResponse = ow.writeValueAsString(responseList);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        System.out.println("Response :: " + jsonResponse);
         return responseList;
 	}
 }
