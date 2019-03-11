@@ -29,5 +29,4 @@ public interface IBrokerD2ZService {
 
 	public BaggingResponse getbagDetails(BaggingRequest request);
 
-
 }

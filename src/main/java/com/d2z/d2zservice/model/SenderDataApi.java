@@ -9,7 +9,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Positive;
 
 public class SenderDataApi {
 	
@@ -18,12 +17,14 @@ public class SenderDataApi {
 	@NotEmpty(message = "Reference Number is mandatory")
 	@Pattern(regexp="^[a-zA-Z0-9]+$", message = "Invalid reference number")
 	private String referenceNumber;
-	@NotEmpty(message = "Consignee Name is mandatory")
+	//@NotEmpty(message = "Consignee Name is mandatory")
 	//@Pattern(regexp="^[a-zA-Z0-9]+$", message = "Consignee Name must contain only alphabets")
 	private String consigneeName;
 	private String consigneeCompany;
 	@NotEmpty(message = "Consignee Address is mandatory")
+//	@Max(value = 50, message = "Consignee Address 1 should not be greater than 50")
 	private String consigneeAddr1;
+//	@Max(value = 50, message = "Consignee Address 2 should not be greater than 50")
 	private String consigneeAddr2;
 	@NotEmpty(message = "Consignee Suburb is mandatory")
 	private String consigneeSuburb;
@@ -37,7 +38,7 @@ public class SenderDataApi {
 	@NotEmpty(message = "Product Description is mandatory")
 	private String productDescription;
 	@NotNull(message = "Value is mandatory")
-	@Positive
+	@Min(value = 1, message = "Value should be grater than 1")
 	@Digits( fraction =2, message = "Invalid Value", integer = 10)
 	private double value;
 	//@NotEmpty(message = "Currency is mandatory")
@@ -45,10 +46,10 @@ public class SenderDataApi {
 	//@Min(value = 1, message = "Shipped Quantity is mandatory")
 	private int shippedQuantity;
 	
-//	@Digits( fraction =2, message = "Invalid Weight", integer = 10)
-//	@NotEmpty(message = "Weight is mandatory")
-//	@Min(value = 0, message = "Weight is mandatory")
-//	@Max(value = 22, message = "Weight should not be greater than 22")
+	@Digits( fraction =2, message = "Invalid Weight", integer = 10)
+	@NotEmpty(message = "Weight is mandatory")
+	@Min(value = 0, message = "Weight is mandatory")
+	@Max(value = 22, message = "Weight should not be greater than 22")
 	private String weight;
 	
 	private BigDecimal cubicWeight;

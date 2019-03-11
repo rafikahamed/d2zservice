@@ -39,4 +39,6 @@ public interface ISuperUserD2ZService{
 
 	public List<BrokerList> brokerList();
 
+	public List<DropDownModel> fetchMlidList();
+
 }

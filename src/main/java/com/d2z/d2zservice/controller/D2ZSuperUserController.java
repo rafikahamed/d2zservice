@@ -91,4 +91,9 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 		return brokerList;
     }
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/mlidList")
+    public List<DropDownModel> fetchMlidList() {
+		return superUserD2zService.fetchMlidList();
+    }
+	
 }

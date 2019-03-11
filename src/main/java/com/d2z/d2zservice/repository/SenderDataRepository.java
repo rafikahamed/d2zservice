@@ -99,8 +99,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	List<SenderdataMaster> exportShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
 
 	 @Query("SELECT new com.d2z.d2zservice.entity.Consignments(t.reference_number,t.injectionState, t.weight) FROM SenderdataMaster t where t.reference_number in :referenceNumbers")
-	List<Consignments> fetchConsignmentsForBagging(List<String> referenceNumbers);
-
+	 List<Consignments> fetchConsignmentsForBagging(List<String> referenceNumbers);
 
 	 @Query("SELECT count(*) FROM SenderdataMaster t where t.user_ID = :userId and t.isDeleted = 'N'") 
 	 String fecthConsignmentsCreated(@Param("userId") Integer userId);
