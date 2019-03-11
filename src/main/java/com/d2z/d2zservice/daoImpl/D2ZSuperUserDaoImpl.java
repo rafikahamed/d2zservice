@@ -342,5 +342,11 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		List<String> mlidList = consigneeCountRepository.getMlidList();
 		return mlidList;
 	}
+
+	@Override
+	public List<String> brokerShipmentList(int userId) {
+		List<String> brokerShipmentList = senderDataRepository.getBrokerShipmentList(userId);
+		return brokerShipmentList;
+	}
 	
 }

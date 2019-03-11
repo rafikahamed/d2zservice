@@ -1,13 +1,11 @@
 package com.d2z.d2zservice.service;
 
 import java.util.List;
-
 import com.d2z.d2zservice.entity.SenderdataMaster;
-import com.d2z.d2zservice.entity.User;
-import com.d2z.d2zservice.exception.InvalidDateException;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
+import com.d2z.d2zservice.model.BrokerShipmentList;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -40,5 +38,7 @@ public interface ISuperUserD2ZService{
 	public List<BrokerList> brokerList();
 
 	public List<DropDownModel> fetchMlidList();
+
+	public List<BrokerShipmentList> brokerShipmentList();
 
 }

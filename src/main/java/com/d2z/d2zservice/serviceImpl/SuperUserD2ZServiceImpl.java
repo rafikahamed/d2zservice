@@ -19,6 +19,7 @@ import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
+import com.d2z.d2zservice.model.BrokerShipmentList;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -199,6 +200,32 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 		}
 		return mlidList;
 	}
-	
+
+	@Override
+	public List<BrokerShipmentList> brokerShipmentList() {
+		List<User> brokerList = d2zDao.brokerList();
+		List<BrokerShipmentList> brokerShipmentData = new ArrayList<BrokerShipmentList>();
+		brokerList.forEach(broker -> {
+			BrokerShipmentList brokerShipment = new BrokerShipmentList();
+			DropDownModel dropDownBroker  = new DropDownModel();
+			dropDownBroker.setName(broker.getUsername());
+			dropDownBroker.setValue(broker.getUsername());
+			List<String> brokerShipmentList = d2zDao.brokerShipmentList(broker.getUser_Id());
+			Set<DropDownModel> shipmentList= new HashSet<DropDownModel>();
+			brokerShipmentList.forEach(shipment -> {
+				if(null != shipment) {
+					DropDownModel dropDownVaL = new DropDownModel();
+					dropDownVaL.setName(shipment);
+					dropDownVaL.setValue(shipment);
+					shipmentList.add(dropDownVaL);
+				}
+			});
+			brokerShipment.setBrokerUserName(dropDownBroker);
+			brokerShipment.setUserId(broker.getUser_Id());
+			brokerShipment.setShipmentNumber(shipmentList);
+			brokerShipmentData.add(brokerShipment);
+		});
+		return brokerShipmentData;
+	}
 
 }
