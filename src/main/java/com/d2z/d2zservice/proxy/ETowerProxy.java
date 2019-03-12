@@ -31,6 +31,7 @@ public class ETowerProxy {
 	
 	
 	//String baseURL = "http://qa-cn.etowertech.com/";
+	//Prod URL
 	String baseURL = "http://au.etowertech.com/";
 	public TrackingEventResponse makeCallForTrackingEvents(List<String> trackingNumber) {
 
