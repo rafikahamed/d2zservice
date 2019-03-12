@@ -16,6 +16,7 @@ import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
+import com.d2z.d2zservice.model.BrokerShipmentList;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -88,6 +89,12 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 	@RequestMapping( method = RequestMethod.GET, path = "/brokerList",  produces = "application/json")
     public List<BrokerList> brokerList() {
 		List<BrokerList> brokerList = superUserD2zService.brokerList();
+		return brokerList;
+    }
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/broker-shipmentList")
+    public List<BrokerShipmentList> brokerShipmentList() {
+		List<BrokerShipmentList> brokerList = superUserD2zService.brokerShipmentList();
 		return brokerList;
     }
 	

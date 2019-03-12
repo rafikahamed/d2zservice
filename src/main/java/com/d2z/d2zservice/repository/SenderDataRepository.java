@@ -120,7 +120,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 List<String> fetchReferenceNumberByUserId(@Param("userId") Integer userId);
 	 
 	 @Procedure(name = "deleteConsignment")
-		void deleteConsignments(@Param("Reference_number") String Reference_number);
+	 void deleteConsignments(@Param("Reference_number") String Reference_number);
 	 
 	 @Query("SELECT s FROM SenderdataMaster s  where s.reference_number in (:referenceNumbers) ")
 	 List<SenderdataMaster> fetchConsignmentsByRefNbr(@Param("referenceNumbers") List<String> referenceNumbers);
@@ -130,5 +130,8 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 
 	 @Query("SELECT s.articleId FROM SenderdataMaster s JOIN s.consignmentCount c where s.reference_number in (:referenceNumbers) and s.mlid = c.mlid and c.supplier = 'eTower'")
 	 List<String> fetchDataForEtowerForeCastCall(@Param("referenceNumbers") String referenceNumbers);
+	 
+	 @Query("SELECT distinct(s.airwayBill) FROM SenderdataMaster s where s.user_ID = :userId")
+	 List<String> getBrokerShipmentList(@Param("userId") Integer userId);
 
 } 

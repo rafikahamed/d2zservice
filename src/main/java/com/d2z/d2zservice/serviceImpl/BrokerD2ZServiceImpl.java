@@ -118,12 +118,18 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 		 while(itr.hasNext()) {   
 			 Object[] obj = (Object[]) itr.next();
 			 directInjection = new DirectInjectionDetails();
-			 directInjection.setReferenceNumber(obj[0].toString());
-			 directInjection.setArticleId(obj[1].toString());
-			 directInjection.setConsigneeName(obj[2].toString());
-			 directInjection.setPostCode(obj[3].toString());
-			 directInjection.setWeight(obj[4].toString());
-			 directInjection.setShipperName(obj[5].toString());
+			 if(null != obj[0] )
+				 directInjection.setReferenceNumber(obj[0].toString());
+			 if(null != obj[1])
+				 directInjection.setArticleId(obj[1].toString());
+			 if(null != obj[2])
+				 directInjection.setConsigneeName(obj[2].toString());
+			 if(null != obj[3])
+				 directInjection.setPostCode(obj[3].toString());
+			 if(null != obj[4])
+				 directInjection.setWeight(obj[4].toString());
+			 if(null != obj[5])
+				 directInjection.setShipperName(obj[5].toString());
 			 directInjectionDetails.add(directInjection);
         }
 		return directInjectionDetails;

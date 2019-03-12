@@ -40,4 +40,6 @@ public interface ID2ZSuperUserDao {
 
 	List<String> fetchMlidList();
 
+	List<String> brokerShipmentList(int user_Id);
+
 }
