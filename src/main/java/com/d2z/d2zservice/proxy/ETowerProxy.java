@@ -1,15 +1,9 @@
 package com.d2z.d2zservice.proxy;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -19,9 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import com.d2z.d2zservice.interceptor.ETowerHeaderRequestInterceptor;
 import com.d2z.d2zservice.model.etower.CreateShippingRequest;
 import com.d2z.d2zservice.model.etower.CreateShippingResponse;
-import com.d2z.d2zservice.model.etower.GainLabelsResponse;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
-import com.d2z.d2zservice.security.HMACGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
