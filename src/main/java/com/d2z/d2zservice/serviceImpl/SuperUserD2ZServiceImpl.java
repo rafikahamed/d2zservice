@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -118,15 +119,21 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	}
 
 	@Override
-	public ResponseMessage trackingEvent(List<String> trackingNumbers) {
-		System.out.println(trackingNumbers);
+	public ResponseMessage trackingEvent(List<String> trackingNbrs) {
+		ResponseMessage respMsg = null;
+		List<List<String>> trackingNbrList = ListUtils.partition(trackingNbrs, 300);
+		int count = 1;
+		for(List<String> trackingNumbers : trackingNbrList) {
+			System.out.println(count + ":::" + trackingNumbers.size());
 		TrackingEventResponse response = proxy.makeCallForTrackingEvents(trackingNumbers);
+		respMsg = d2zDao.insertTrackingDetails(response);
+     	}
 		//List<List<ETowerTrackingDetails>> response = proxy.stubETower();
-		return d2zDao.insertTrackingDetails(response);
+		return respMsg;
 	}
 
 	@Scheduled(cron = "0 0 0/2 * * ?")
-	//@Scheduled(cron = "0 0/10 * * * ?")
+//	@Scheduled(cron = "0 0/10 * * * ?")
 	public void scheduledTrackingEvent() {
 		List<String> trackingNumbers = d2zDao.fetchTrackingNumbersForETowerCall();
 		if(trackingNumbers.isEmpty()) {
