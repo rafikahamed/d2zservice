@@ -129,9 +129,10 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 List<SenderdataMaster> fetchDataForEtowerCall(@Param("referenceNumbers") List<String> referenceNumbers);
 
 	 @Query("SELECT s.articleId FROM SenderdataMaster s JOIN s.consignmentCount c where s.reference_number in (:referenceNumbers) and s.mlid = c.mlid and c.supplier = 'eTower'")
-	 List<String> fetchDataForEtowerForeCastCall(@Param("referenceNumbers") String referenceNumbers);
+	 List<String> fetchDataForEtowerForeCastCall(@Param("referenceNumbers") String[] referenceNumbers);
 	 
 	 @Query("SELECT distinct(s.airwayBill) FROM SenderdataMaster s where s.user_ID = :userId")
 	 List<String> getBrokerShipmentList(@Param("userId") Integer userId);
 
+	
 } 

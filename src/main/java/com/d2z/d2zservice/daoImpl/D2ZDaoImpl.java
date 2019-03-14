@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -139,6 +140,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	public void makeCalltoEtower(List<String> incomingRefNbr) {
 		System.out.println("Background Thread created.....");
 		List<SenderdataMaster> eTowerOrders = senderDataRepository.fetchDataForEtowerCall(incomingRefNbr);
+		System.out.println(eTowerOrders.size());
 		if(!eTowerOrders.isEmpty()) {
 			List<CreateShippingRequest> eTowerRequest = new ArrayList<CreateShippingRequest>();
 
@@ -169,6 +171,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 				eTowerRequest.add(request);
 			}
 			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest);
+			//CreateShippingResponse response = eTowerProxy.makeStubForCreateShippingOrder();
 			 List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 			 if(response!=null) {
 	     			List<ResponseData> responseData = response.getData();
@@ -212,7 +215,6 @@ public class D2ZDaoImpl implements ID2ZDao{
 	     				}
 	     			}
 	     			}
-	     			
 	     				logEtowerResponse(responseEntity);
 	        
 		}
@@ -390,9 +392,12 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		senderDataRepository.allocateShipment(referenceNumbers, shipmentNumber);
 		Runnable r = new Runnable( ) {			
 	        public void run() {
-	        	 List<String> trackingNbrs = senderDataRepository.fetchDataForEtowerForeCastCall(referenceNumbers);
-	        	 if(!trackingNbrs.isEmpty()) {
-	        		 CreateShippingResponse response = eTowerProxy.makeCallForForeCast(trackingNbrs);
+	        	String[] refNbrArray = referenceNumbers.split(",");
+	        	List<String> articleIDS = senderDataRepository.fetchDataForEtowerForeCastCall(refNbrArray);
+	        	 if(!articleIDS.isEmpty()) {
+	 	        	List<List<String>> trackingNbrList = ListUtils.partition(articleIDS, 300);
+	 	        	for(List<String> trackingNumbers : trackingNbrList) {
+	        		 CreateShippingResponse response = eTowerProxy.makeCallForForeCast(trackingNumbers);
 	        	 	List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 
 	     		if(response!=null) {
@@ -439,7 +444,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	     			}
 	     				logEtowerResponse(responseEntity);
 	     	
-	     		eTowerProxy.makeCallForTrackingEvents(trackingNbrs);
+	     		TrackingEventResponse trackEventresponse = eTowerProxy.makeCallForTrackingEvents(trackingNumbers);	
+	     		insertTrackingDetails(trackEventresponse);
+	        	 }
 	        	 }
 	       }
 	    };
