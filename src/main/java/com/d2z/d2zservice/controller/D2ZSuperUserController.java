@@ -98,6 +98,12 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 		return brokerList;
     }
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/broker-shipment")
+    public List<SenderdataMaster> brokerShipment() {
+		List<SenderdataMaster> brokerList = superUserD2zService.brokerShipment();
+		return brokerList;
+    }
+	
 	@RequestMapping( method = RequestMethod.GET, path = "/mlidList")
     public List<DropDownModel> fetchMlidList() {
 		return superUserD2zService.fetchMlidList();

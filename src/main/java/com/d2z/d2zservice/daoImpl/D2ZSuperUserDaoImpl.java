@@ -348,5 +348,17 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		List<String> brokerShipmentList = senderDataRepository.getBrokerShipmentList(userId);
 		return brokerShipmentList;
 	}
+
+	@Override
+	public List<SenderdataMaster> brokerShipment() {
+		//List<SenderdataMaster> brokerShipment = senderDataRepository.getBrokerShipmentList(userId);
+		return null;
+	}
+
+	@Override
+	public List<Integer> fetchBrokerClientIds() {
+		List<Integer> brokerClientIds = userRepository.fetchBrokerClientIds();
+		return brokerClientIds;
+	}
 	
 }

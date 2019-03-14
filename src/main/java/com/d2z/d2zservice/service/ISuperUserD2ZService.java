@@ -41,4 +41,6 @@ public interface ISuperUserD2ZService{
 
 	public List<BrokerShipmentList> brokerShipmentList();
 
+	public List<SenderdataMaster> brokerShipment();
+
 }

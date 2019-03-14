@@ -98,12 +98,14 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 		List<Integer> listOfClientId = d2zDao.getClientId(userId);
 		List<String> listOfShipment = d2zDao.fetchShipmentList(listOfClientId);
 		List<DropDownModel> shipmentDropDownList= new ArrayList<DropDownModel>();
-		for(String manifestId:listOfShipment) {
-			if(manifestId != null) {
-				DropDownModel dropDownVaL = new DropDownModel();
-				dropDownVaL.setName(manifestId);
-				dropDownVaL.setValue(manifestId);
-				shipmentDropDownList.add(dropDownVaL);
+		Iterator itr = listOfShipment.iterator();
+		while(itr.hasNext()) {   
+			Object[] obj = (Object[]) itr.next();
+			if(obj[0] != null) {
+				DropDownModel dropDownVal = new DropDownModel();
+				dropDownVal.setName(obj[0].toString());
+				dropDownVal.setValue(obj[0].toString());
+				shipmentDropDownList.add(dropDownVal);
 			}
 		}
 		return shipmentDropDownList;

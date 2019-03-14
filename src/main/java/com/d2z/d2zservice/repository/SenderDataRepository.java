@@ -78,7 +78,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 @Query("SELECT reference_number FROM SenderdataMaster t where t.reference_number in :referenceNumbers and t.airwayBill is not null") 
 	 List<String> findRefNbrByShipmentNbr(@Param("referenceNumbers") String[] referenceNumbers);
 	 
-	 @Query("SELECT DISTINCT t.airwayBill FROM SenderdataMaster t where t.user_ID IN (:userId) and t.sender_Files_ID like '%D2ZUI%' ") 
+	 @Query("SELECT DISTINCT(t.airwayBill), t.timestamp FROM SenderdataMaster t where t.user_ID IN (:userId) and t.sender_Files_ID like '%D2ZUI%' order by t.timestamp desc") 
 	 List<String> fetchShipmentList(@Param("userId") List<Integer> userId);
 	 
 	 @Query("SELECT DISTINCT t.airwayBill FROM SenderdataMaster t where t.sender_Files_ID like '%D2ZAPI%' ") 

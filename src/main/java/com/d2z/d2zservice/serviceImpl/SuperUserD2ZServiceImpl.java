@@ -228,4 +228,15 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 		return brokerShipmentData;
 	}
 
+	@Override
+	public List<SenderdataMaster> brokerShipment() {
+		List<Integer> brokerList = d2zDao.fetchBrokerClientIds();
+		List<Integer> brokerId = new ArrayList<Integer>();
+		//List<SenderdataMaster> brokerList = d2zDao.brokerShipment(broker.getUser_Id());
+//		brokerList.forEach(broker -> {
+//			brokerId.add(broker.getUser_Id());
+//		});
+		return null;
+	}
+
 }

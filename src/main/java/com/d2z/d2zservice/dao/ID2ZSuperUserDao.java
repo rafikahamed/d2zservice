@@ -42,4 +42,8 @@ public interface ID2ZSuperUserDao {
 
 	List<String> brokerShipmentList(int user_Id);
 
+	List<SenderdataMaster> brokerShipment();
+
+	List<Integer> fetchBrokerClientIds();
+
 }

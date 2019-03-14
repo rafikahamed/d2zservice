@@ -36,5 +36,8 @@ public interface UserRepository extends CrudRepository<User, Long>{
 
 	 @Query("SELECT t FROM User t where t.role_Id = 2")  
 	 List<User> fetchBrokerList();
+	 
+	 @Query(nativeQuery = true, value="select user_ID from dbo.Users where client_Broker_id in (select user_ID from dbo.users where role_Id=2)")  
+	 List<Integer> fetchBrokerClientIds();
 
 }
