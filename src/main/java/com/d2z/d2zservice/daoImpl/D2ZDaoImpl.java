@@ -82,6 +82,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	public String exportParcel(List<SenderData> orderDetailList) {
 		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
 		List<String> incomingRefNbr = new ArrayList<String>();
+		User userInfo = userRepository.findByUsername(orderDetailList.get(0).getUserName());
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		String fileSeqId = "D2ZUI"+senderDataRepository.fetchNextSeq().toString();
 		for(SenderData senderDataValue: orderDetailList) {
@@ -107,12 +108,18 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setDimensions_Height(senderDataValue.getDimensionsHeight());
 			senderDataObj.setServicetype(senderDataValue.getServiceType());
 			senderDataObj.setDeliverytype(senderDataValue.getDeliverytype());
-			senderDataObj.setShipper_Name(senderDataValue.getShipperName());
-			senderDataObj.setShipper_Addr1(senderDataValue.getShipperAddr1());
-			senderDataObj.setShipper_City(senderDataValue.getShipperCity());
-			senderDataObj.setShipper_State(senderDataValue.getShipperState());
-			senderDataObj.setShipper_Postcode(senderDataValue.getShipperPostcode());
-			senderDataObj.setShipper_Country(senderDataValue.getShipperCountry());
+			String shipperName = (senderDataValue.getShipperName() != null && !senderDataValue.getShipperName().isEmpty()) ? senderDataValue.getShipperName() : userInfo.getCompanyName();
+			senderDataObj.setShipper_Name(shipperName);
+			String shipperAddress = (senderDataValue.getShipperAddr1() != null && !senderDataValue.getShipperAddr1().isEmpty()) ? senderDataValue.getShipperAddr1() : userInfo.getAddress();
+			senderDataObj.setShipper_Addr1(shipperAddress);
+			String shipperCity = (senderDataValue.getShipperCity() != null && !senderDataValue.getShipperCity().isEmpty()) ? senderDataValue.getShipperCity() : userInfo.getSuburb();
+			senderDataObj.setShipper_City(shipperCity);
+			String shipperState = (senderDataValue.getShipperState() != null && !senderDataValue.getShipperState().isEmpty()) ? senderDataValue.getShipperState() : userInfo.getState();
+			senderDataObj.setShipper_State(shipperState);
+			String shipperPostcode = (senderDataValue.getShipperPostcode() != null && !senderDataValue.getShipperPostcode().isEmpty()) ? senderDataValue.getShipperPostcode() : userInfo.getPostcode();
+			senderDataObj.setShipper_Postcode(shipperPostcode);
+			String shipperCountry = (senderDataValue.getShipperCountry() != null && !senderDataValue.getShipperCountry().isEmpty()) ? senderDataValue.getShipperCountry() : userInfo.getCountry();
+			senderDataObj.setShipper_Country(shipperCountry);
 			senderDataObj.setFilename(senderDataValue.getFileName());
 			senderDataObj.setInnerItem(1);
 			senderDataObj.setInjectionType(senderDataValue.getInjectionType());
@@ -126,7 +133,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
 			senderDataList.add(senderDataObj);
 		}
-		 senderDataRepository.saveAll(senderDataList);
+		senderDataRepository.saveAll(senderDataList);
 		senderDataRepository.inOnlyTest(fileSeqId);
 		Runnable r = new Runnable( ) {			
 	        public void run() {
@@ -278,9 +285,10 @@ public class D2ZDaoImpl implements ID2ZDao{
 
 
 	@Override
-	public String createConsignments(List<SenderDataApi> orderDetailList, int userId) {
+	public String createConsignments(List<SenderDataApi> orderDetailList, int userId, String userName) {
 		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
+		User userInfo = userRepository.findByUsername(userName);
 		String fileSeqId = "D2ZAPI"+senderDataRepository.fetchNextSeq();
 		for(SenderDataApi senderDataValue: orderDetailList) {
 			SenderdataMaster senderDataObj = new SenderdataMaster();
@@ -305,13 +313,18 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setDimensions_Height(senderDataValue.getDimensionsHeight());
 			senderDataObj.setServicetype(senderDataValue.getServiceType());
 			senderDataObj.setDeliverytype(senderDataValue.getDeliverytype());
-			senderDataObj.setShipper_Name(senderDataValue.getShipperName());
-			senderDataObj.setShipper_Addr1(senderDataValue.getShipperAddr1());
-			//senderDataObj.setShipper_Addr2(senderDataValue.getShipperAddr2());
-			senderDataObj.setShipper_City(senderDataValue.getShipperCity());
-			senderDataObj.setShipper_State(senderDataValue.getShipperState());
-			senderDataObj.setShipper_Postcode(senderDataValue.getShipperPostcode());
-			senderDataObj.setShipper_Country(senderDataValue.getShipperCountry());
+			String shipperName = (senderDataValue.getShipperName() != null && !senderDataValue.getShipperName().isEmpty()) ? senderDataValue.getShipperName() : userInfo.getCompanyName();
+			senderDataObj.setShipper_Name(shipperName);
+			String shipperAddress = (senderDataValue.getShipperAddr1() != null && !senderDataValue.getShipperAddr1().isEmpty()) ? senderDataValue.getShipperAddr1() : userInfo.getAddress();
+			senderDataObj.setShipper_Addr1(shipperAddress);
+			String shipperCity = (senderDataValue.getShipperCity() != null && !senderDataValue.getShipperCity().isEmpty()) ? senderDataValue.getShipperCity() : userInfo.getSuburb();
+			senderDataObj.setShipper_City(shipperCity);
+			String shipperState = (senderDataValue.getShipperState() != null && !senderDataValue.getShipperState().isEmpty()) ? senderDataValue.getShipperState() : userInfo.getState();
+			senderDataObj.setShipper_State(shipperState);
+			String shipperPostcode = (senderDataValue.getShipperPostcode() != null && !senderDataValue.getShipperPostcode().isEmpty()) ? senderDataValue.getShipperPostcode() : userInfo.getPostcode();
+			senderDataObj.setShipper_Postcode(shipperPostcode);
+			String shipperCountry = (senderDataValue.getShipperCountry() != null && !senderDataValue.getShipperCountry().isEmpty()) ? senderDataValue.getShipperCountry() : userInfo.getCountry();
+			senderDataObj.setShipper_Country(shipperCountry);
 			senderDataObj.setFilename("D2ZAPI"+D2ZCommonUtil.getCurrentTimestamp());
 			//senderDataObj.setFilename(senderDataValue.getFileName());
 			senderDataObj.setSku(senderDataValue.getSku());

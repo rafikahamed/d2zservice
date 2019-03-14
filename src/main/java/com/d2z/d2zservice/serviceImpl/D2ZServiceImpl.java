@@ -577,17 +577,16 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Override
 	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail) throws ReferenceNumberNotUniqueException {
 		Integer userId = userRepository.fetchUserIdbyUserName(orderDetail.getUserName());
-//		if(userId == null) {
-//			throw new InvalidUserException("User does not exist",orderDetail.getUserName());
-//		}
+		if(userId == null) {
+			throw new InvalidUserException("User does not exist",orderDetail.getUserName());
+		}
 		if(orderDetail.getConsignmentData().size() > 300) {
 			throw new MaxSizeCountException("We are allowing max 300 records, Your Request contains - "+orderDetail.getConsignmentData().size()+" Records");
 		}
-		//System.out.println(userId);
 		d2zValidator.isReferenceNumberUnique(orderDetail.getConsignmentData());
 		d2zValidator.isServiceValid(orderDetail);
 		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
-		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(),userId);
+		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(),userId,orderDetail.getUserName());
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;

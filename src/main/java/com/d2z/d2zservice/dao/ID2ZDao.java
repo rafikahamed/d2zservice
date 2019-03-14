@@ -38,7 +38,7 @@ public interface ID2ZDao {
 
 	List<Trackandtrace> trackParcel(String refNbr);
 
-	public String createConsignments(List<SenderDataApi> orderDetailList,int userId);
+	public String createConsignments(List<SenderDataApi> orderDetailList,int userId, String userName);
 	
 	public List<PostcodeZone> fetchAllPostCodeZone();
 	
