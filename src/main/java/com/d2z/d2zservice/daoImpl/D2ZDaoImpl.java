@@ -444,7 +444,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	     			}
 	     				logEtowerResponse(responseEntity);
 	     	
-	     		eTowerProxy.makeCallForTrackingEvents(trackingNumbers);
+	     		TrackingEventResponse trackEventresponse = eTowerProxy.makeCallForTrackingEvents(trackingNumbers);	
+	     		insertTrackingDetails(trackEventresponse);
 	        	 }
 	        	 }
 	       }
