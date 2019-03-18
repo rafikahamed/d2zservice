@@ -60,7 +60,7 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 	}	
 	
 	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/{referenceNumbers}/shipment/{shipmentNumber}")
-	 public ResponseMessage allocateShipment(@PathVariable String referenceNumbers,@PathVariable String shipmentNumber) {
+	 public ResponseMessage allocateShipment(@PathVariable String referenceNumbers,@PathVariable String shipmentNumber) throws ReferenceNumberNotUniqueException {
 		return  d2zService.allocateShipment(referenceNumbers,shipmentNumber);
 	}	
 	
