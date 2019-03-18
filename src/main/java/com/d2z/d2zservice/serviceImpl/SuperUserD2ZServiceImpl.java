@@ -1,17 +1,19 @@
 package com.d2z.d2zservice.serviceImpl;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
+import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
@@ -23,6 +25,8 @@ import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.BrokerShipmentList;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.InvoiceShipment;
+import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
@@ -236,14 +240,91 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	}
 
 	@Override
-	public List<SenderdataMaster> brokerShipment() {
-		List<Integer> brokerList = d2zDao.fetchBrokerClientIds();
-		List<Integer> brokerId = new ArrayList<Integer>();
-		//List<SenderdataMaster> brokerList = d2zDao.brokerShipment(broker.getUser_Id());
-//		brokerList.forEach(broker -> {
-//			brokerId.add(broker.getUser_Id());
-//		});
-		return null;
+	public List<InvoiceShipment> brokerShipment() {
+		List<String> brokerShipmentList = d2zDao.brokerShipment();
+		List<InvoiceShipment> invoiceShipmentList = new ArrayList<InvoiceShipment>();
+		Iterator itr = brokerShipmentList.iterator();
+		 while(itr.hasNext()) {
+			 Object[] obj = (Object[]) itr.next();
+			 InvoiceShipment invoiceShipment = new InvoiceShipment();
+			 if(obj[0] != null)
+				 invoiceShipment.setBrokerName(obj[0].toString());
+			 if(obj[1] != null)
+				 invoiceShipment.setShipmentNumber(obj[1].toString());
+			 invoiceShipmentList.add(invoiceShipment);
+       }
+		return invoiceShipmentList;
+	}
+
+	@Override
+	public List<InvoiceShipment> brokerInvoiced() {
+		List<String> brokerShipmentList = d2zDao.brokerInvoiced();
+		List<InvoiceShipment> invoiceShipmentList = new ArrayList<InvoiceShipment>();
+		Iterator itr = brokerShipmentList.iterator();
+		 while(itr.hasNext()) {
+			 Object[] obj = (Object[]) itr.next();
+			 InvoiceShipment invoiceShipment = new InvoiceShipment();
+			 if(obj[0] != null)
+				 invoiceShipment.setBrokerName(obj[0].toString());
+			 if(obj[1] != null)
+				 invoiceShipment.setShipmentNumber(obj[1].toString());
+			 invoiceShipmentList.add(invoiceShipment);
+       }
+		return invoiceShipmentList;
+	}
+
+	@Override
+	public List<Reconcile> fetchReconcile(List<ReconcileData> reconcileData) {
+		List<Reconcile> reconcileCalculatedList = new ArrayList<Reconcile>();
+		List<String> reconcileReferenceNum = new ArrayList<String>();
+		reconcileData.forEach(reconcile -> {
+			List<String> reconcileList = d2zDao.reconcileData(reconcile.getArticleNo(), reconcile.getRefrenceNumber());
+			Reconcile reconcileObj = new Reconcile();
+			Iterator reconcileItr = reconcileList.iterator();
+			 while(reconcileItr.hasNext()) {
+				 Object[] obj = (Object[]) reconcileItr.next();
+				 MathContext mc = new MathContext(2);
+				 if(obj[0] != null)
+					 reconcileObj.setBrokerUserName(obj[0].toString());
+				 if(obj[1] != null)
+					 reconcileObj.setAirwaybill(obj[1].toString());
+				 if(obj[2] != null)
+					 reconcileObj.setArticleId(obj[2].toString());
+				 if(obj[3] != null)
+					 reconcileObj.setReference_number(obj[3].toString());
+				 if(obj[4] != null)
+					 reconcileObj.setD2ZCost(new BigDecimal(obj[4].toString()));
+				 if(obj[5] != null)
+					 reconcileObj.setD2ZWeight(Double.parseDouble(obj[5].toString()));
+				 if(obj[6] != null)
+					 reconcileObj.setInvoicedAmount(new BigDecimal(obj[6].toString()));
+				 if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("supplierOne")) {
+					 reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getNormalRateParcel()));
+					 reconcileObj.setSupplierWeight(reconcile.getArticleActualWeight());
+					 reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
+				 }else if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("supplierTwo")) {
+					 reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getCost()));
+					 reconcileObj.setSupplierWeight(reconcile.getChargedWeight());
+					 reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
+				 }
+				 if(reconcileObj.getSupplierCharge() != null && reconcileObj.getD2ZCost() != null)
+					 reconcileObj.setCostDifference(reconcileObj.getSupplierCharge().subtract(reconcileObj.getD2ZCost(), mc));
+			 }
+			reconcileReferenceNum.add(reconcileObj.getReference_number());
+			reconcileCalculatedList.add(reconcileObj);
+		});
+		d2zDao.reconcileUpdate(reconcileCalculatedList);
+		//Calling Delete Store Procedure
+		d2zDao.reconcilerates(reconcileReferenceNum);
+		List<Reconcile> reconcileFinal = d2zDao.fetchReconcileData(reconcileReferenceNum);
+		return reconcileFinal;
+	}
+
+	@Override
+	public UserMessage approvedInvoice(com.d2z.d2zservice.model.ApprovedInvoice approvedInvoice) {
+		//Calling Delete Store Procedure
+		UserMessage approvedInvoiceMsg= d2zDao.approvedInvoice(approvedInvoice);
+		return approvedInvoiceMsg;
 	}
 
 }

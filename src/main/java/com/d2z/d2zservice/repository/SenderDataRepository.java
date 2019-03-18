@@ -134,5 +134,33 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 @Query("SELECT distinct(s.airwayBill) FROM SenderdataMaster s where s.user_ID = :userId")
 	 List<String> getBrokerShipmentList(@Param("userId") Integer userId);
 
+	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwaybill FROM (SELECT DISTINCT U.client_broker_id, S.airwaybill FROM senderdata_master S INNER JOIN users U \n" + 
+			"ON S.airwaybill IS NOT NULL AND U.role_id = '3' AND S.user_id = U.user_id AND S.Invoiced IS NULL) B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name")
+	List<String> fetchSenderShipmenntData();
 	
+	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwaybill FROM \n" + 
+			"(\n" + 
+			"SELECT DISTINCT U.client_broker_id, S.airwaybill FROM senderdata_master S INNER JOIN users U \n" + 
+			"ON S.airwaybill IS NOT NULL AND U.role_id = '3' AND S.user_id = U.user_id AND S.Invoiced = 'Y'\n" + 
+			") \n" + 
+			"B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name;")
+	List<String> brokerInvoiced();
+	
+	@Query(nativeQuery = true, value="select D.user_name, C.airwayBill, C.articleId, C.reference_number, C.d2zRate, C.weight, C.brokerRate from\n" + 
+			"(\n" + 
+			"	SELECT B.client_broker_id, A.User_ID, A.airwayBill, A.articleId, A.reference_number, A.d2zRate, A.weight, A.brokerRate  FROM\n" + 
+			"	(\n" + 
+			"		select User_ID, airwayBill, articleId, reference_number, d2zRate, weight, brokerRate \n" + 
+			"			from SENDERDATA_MASTER where articleId = :articleNo or reference_number = :refrenceNumber\n" + 
+			"	) A INNER JOIN users B ON A.user_id = B.user_id\n" + 
+			") C INNER JOIN users D on C.client_broker_id = D.user_id \n" + 
+			"")
+	List<String> reconcileData(@Param("articleNo") String articleNo, @Param("refrenceNumber") String refrenceNumber);
+
+	@Procedure(name = "InvoiceUpdate")
+	void approvedInvoice(@Param("Indicator") String Indicator, @Param("Airwaybill") String Airwaybill);
+	
+	@Procedure(name = "reconcilerates")
+	void reconcilerates(@Param("Reference_number") String Reference_number);
+
 } 
