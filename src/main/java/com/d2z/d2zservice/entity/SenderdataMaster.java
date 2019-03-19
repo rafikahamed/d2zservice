@@ -56,6 +56,17 @@ import javax.persistence.Table;
 	  procedureName = "deleteConsignment",
 	  parameters = {
 	      @StoredProcedureParameter(mode = ParameterMode.IN, name = "Reference_number", type = String.class)
+	  }),
+   @NamedStoredProcedureQuery(name = "InvoiceUpdate", 
+	  procedureName = "InvoiceUpdate",
+	  parameters = {
+	      @StoredProcedureParameter(mode = ParameterMode.IN, name = "Indicator", type = String.class),
+	      @StoredProcedureParameter(mode = ParameterMode.IN, name = "Airwaybill", type = String.class)
+	  }),
+   @NamedStoredProcedureQuery(name = "reconcilerates", 
+	  procedureName = "reconcilerates",
+	  parameters = {
+	      @StoredProcedureParameter(mode = ParameterMode.IN, name = "Reference_number", type = String.class)
 	  })
 })
 public class SenderdataMaster implements Serializable {

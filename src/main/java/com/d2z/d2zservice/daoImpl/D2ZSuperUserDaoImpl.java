@@ -4,21 +4,26 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.BrokerRates;
 import com.d2z.d2zservice.entity.D2ZRates;
+import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
+import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
+import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.ZoneDetails;
 import com.d2z.d2zservice.model.ZoneRates;
 import com.d2z.d2zservice.model.etower.ETowerTrackingDetails;
@@ -27,6 +32,7 @@ import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.repository.BrokerRatesRepository;
 import com.d2z.d2zservice.repository.ConsigneeCountRepository;
 import com.d2z.d2zservice.repository.D2ZRatesRepository;
+import com.d2z.d2zservice.repository.ReconcileRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
@@ -55,6 +61,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	
 	@Autowired
 	ConsigneeCountRepository consigneeCountRepository;
+	
+	@Autowired
+	ReconcileRepository reconcileRepository;
 	
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -350,15 +359,57 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	}
 
 	@Override
-	public List<SenderdataMaster> brokerShipment() {
-		//List<SenderdataMaster> brokerShipment = senderDataRepository.getBrokerShipmentList(userId);
-		return null;
+	public List<String> brokerShipment() {
+		List<String> shipmentData = senderDataRepository.fetchSenderShipmenntData();
+		return shipmentData;
 	}
 
 	@Override
 	public List<Integer> fetchBrokerClientIds() {
 		List<Integer> brokerClientIds = userRepository.fetchBrokerClientIds();
 		return brokerClientIds;
+	}
+
+	@Override
+	public List<String> brokerInvoiced() {
+		List<String> shipmentInvoicedData = senderDataRepository.brokerInvoiced();
+		return shipmentInvoicedData;
+	}
+
+	@Override
+	public List<String> reconcileData(String articleNo, String refrenceNumber) {
+		List<String> reconciledata = senderDataRepository.reconcileData(articleNo,refrenceNumber);
+		return reconciledata;
+	}
+
+	@Override
+	public List<Reconcile> reconcileUpdate(List<Reconcile> reconcileCalculatedList) {
+		List<Reconcile> reconcileList =  (List<Reconcile>) reconcileRepository.saveAll(reconcileCalculatedList);
+		return reconcileList;
+	}
+
+	@Override
+	public List<Reconcile> fetchReconcileData(List<String> reconcileReferenceNum) {
+		List<Reconcile> reconcileFinal =  (List<Reconcile>) reconcileRepository.fetchReconcileData(reconcileReferenceNum);
+		return reconcileFinal;
+	}
+
+	@Override
+	public UserMessage approvedInvoice(ApprovedInvoice approvedInvoice) {
+		senderDataRepository.approvedInvoice(approvedInvoice.getIndicator(), approvedInvoice.getAirwaybill());
+		UserMessage userMsg = new UserMessage();
+		if(approvedInvoice.getIndicator().equalsIgnoreCase("Invoiced")) {
+			userMsg.setMessage("Invoiced Approved Successfully");
+		}else if(approvedInvoice.getIndicator().equalsIgnoreCase("Billed")) {
+			userMsg.setMessage("Invoiced Billed Successfully");
+		}
+		return userMsg;
+	}
+
+	@Override
+	public void reconcilerates(List<String> reconcileReferenceNum) {
+		System.out.println(reconcileReferenceNum.stream().map(Object::toString).collect(Collectors.joining(",")));
+		senderDataRepository.reconcilerates(reconcileReferenceNum.stream().map(Object::toString).collect(Collectors.joining(",")));
 	}
 	
 }

@@ -1,13 +1,17 @@
 package com.d2z.d2zservice.service;
 
 import java.util.List;
+import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.BrokerShipmentList;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.InvoiceShipment;
+import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
@@ -41,6 +45,12 @@ public interface ISuperUserD2ZService{
 
 	public List<BrokerShipmentList> brokerShipmentList();
 
-	public List<SenderdataMaster> brokerShipment();
+	public List<InvoiceShipment> brokerShipment();
+
+	public List<InvoiceShipment> brokerInvoiced();
+
+	public List<Reconcile> fetchReconcile(List<ReconcileData> reconcileData);
+
+	public UserMessage approvedInvoice(ApprovedInvoice approvedInvoice);
 
 }

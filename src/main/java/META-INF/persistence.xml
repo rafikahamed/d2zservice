@@ -15,5 +15,6 @@
 		<class>com.d2z.d2zservice.entity.D2ZRates</class>
 		<class>com.d2z.d2zservice.entity.APIRates</class>
 		<class>com.d2z.d2zservice.entity.EbayResponse</class>
+		<class>com.d2z.d2zservice.entity.Reconcile</class>
 	</persistence-unit>
 </persistence>
