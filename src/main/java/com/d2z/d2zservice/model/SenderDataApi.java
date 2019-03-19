@@ -9,6 +9,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 public class SenderDataApi {
 	
@@ -22,9 +23,9 @@ public class SenderDataApi {
 	private String consigneeName;
 	private String consigneeCompany;
 	@NotEmpty(message = "Consignee Address is mandatory")
-//	@Max(value = 50, message = "Consignee Address 1 should not be greater than 50")
+	@Size(max=50,message = "Consignee Address1 must not exceed 50 characters")	
 	private String consigneeAddr1;
-//	@Max(value = 50, message = "Consignee Address 2 should not be greater than 50")
+	@Size(max=50,message = "Consignee Address2 must not exceed 50 characters")
 	private String consigneeAddr2;
 	@NotEmpty(message = "Consignee Suburb is mandatory")
 	private String consigneeSuburb;

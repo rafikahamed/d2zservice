@@ -610,17 +610,30 @@ public class D2ZServiceImpl implements ID2ZService{
 	}
 
 	@Override
-	public ResponseMessage allocateShipment(String referenceNumbers, String shipmentNumber) {
+	public ResponseMessage allocateShipment(String referenceNumbers, String shipmentNumber) throws ReferenceNumberNotUniqueException {
 		ResponseMessage userMsg = new ResponseMessage();
 
 		String[] refNbrs = referenceNumbers.split(",");
-		List<String> incorrectRefNbr = d2zDao.findRefNbrByShipmentNbr(refNbrs);
-		
-		if(!incorrectRefNbr.isEmpty()) {
-			userMsg.setResponseMessage("Shipment Number already allocated");
-			userMsg.setMessageDetail(incorrectRefNbr);
-			return userMsg;
+		List<SenderdataMaster> incorrectRefNbr = d2zDao.findRefNbrByShipmentNbr(refNbrs);
+
+		List<String> invalidData = incorrectRefNbr.stream()
+	               .map(a -> {
+	            	   StringBuffer msg = new StringBuffer(a.getReference_number());
+	            	 
+	            	  if(null != a.getAirwayBill()) {
+	            		  msg.append(" : Shippment is already allocated");
+	            	  }
+	            	  if(a.getIsDeleted().equalsIgnoreCase("Y")) {
+	            		  msg = new StringBuffer(a.getReference_number());
+	            		  msg.append(" : Consignment already deleted");
+	            	  }
+	            	  return msg.toString();
+	               })
+	               .collect(Collectors.toList());
+		if(!invalidData.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Request failed",invalidData);
 		}
+		
 		String msg = d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
 		userMsg.setResponseMessage(msg);
 		return userMsg;
@@ -850,11 +863,27 @@ public class D2ZServiceImpl implements ID2ZService{
 		List<String> invalidRefNbr = incomingRefNbr.stream()
 	               .filter(a -> !referenceNumbers_DB.contains(a))
 	               .collect(Collectors.toList());
-		
 		if(!invalidRefNbr.isEmpty()) {
 			throw new ReferenceNumberNotUniqueException("Invalid Reference Number",invalidRefNbr);
 		}
-		
+		List<SenderdataMaster> shipment_Manifest = d2zDao.fetchConsignmentsManifestShippment(incomingRefNbr);
+
+		List<String> invalidData = shipment_Manifest.stream()
+	               .map(a -> {
+	            	   StringBuffer msg = new StringBuffer(a.getReference_number());
+	            	  if(null != a.getManifest_number()) {
+	            		  msg.append(" : Manifest is already created");
+	            	  }
+	            	  if(null != a.getAirwayBill()) {
+	            		  msg = new StringBuffer(a.getReference_number());
+	            		  msg.append(" : Shippment is already allocated");
+	            	  }
+	            	  return msg.toString();
+	               })
+	               .collect(Collectors.toList());
+		if(!invalidData.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Consignment cannot be deleted",invalidData);
+		}
 		String referenceNumbers = String.join(",", incomingRefNbr);
 		
 		d2zDao.deleteConsignment(referenceNumbers);

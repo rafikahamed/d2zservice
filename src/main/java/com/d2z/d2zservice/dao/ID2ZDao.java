@@ -74,7 +74,7 @@ public interface ID2ZDao {
 
 	public Trackandtrace getLatestStatusByArticleID(String articleID);
 
-	public List<String> findRefNbrByShipmentNbr(String[] referenceNumber);
+	public List<SenderdataMaster> findRefNbrByShipmentNbr(String[] referenceNumber);
 
 	public void logEbayResponse(CompleteSaleResponseType response);
 
@@ -92,6 +92,8 @@ public interface ID2ZDao {
 	public void logEtowerResponse(List<ETowerResponse> responseEntity);
 
 	ResponseMessage insertTrackingDetails(TrackingEventResponse response);
+
+	public List<SenderdataMaster> fetchConsignmentsManifestShippment(List<String> incomingRefNbr);
 
 
 }
