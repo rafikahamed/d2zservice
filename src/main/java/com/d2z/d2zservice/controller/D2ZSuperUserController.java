@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.SenderdataMaster;
-import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
@@ -23,6 +21,7 @@ import com.d2z.d2zservice.model.BrokerShipmentList;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.InvoiceShipment;
+import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -129,6 +128,11 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 	@RequestMapping( method = RequestMethod.POST, path = "/reconcileInfo")
     public List<Reconcile> fetchReconcile(@RequestBody List<ReconcileData> reconcileData) {
 		return superUserD2zService.fetchReconcile(reconcileData);
+    }
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/not-billed")
+    public List<NotBilled> fetchNotBilled() {
+		return superUserD2zService.fetchNotBilled();
     }
 	
 }

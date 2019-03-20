@@ -5,11 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
-
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.BrokerRates;
 import com.d2z.d2zservice.entity.D2ZRates;
@@ -279,6 +276,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 					brokerRates.setInjectionType(brokerRateData.getInjectionType());
 					brokerRates.setServiceType(brokerRateData.getServiceType());
 					brokerRates.setGST(brokerRateData.getGST());
+					brokerRates.setFuelSurcharge(brokerRateData.getFuelSurcharge());
 					brokerRates.setZoneID(zoneData.getZoneID());
 					brokerRates.setRate(zoneRates.getRate());
 					brokerRates.setMaxWeight(zoneRates.getMaxWeight());
@@ -408,8 +406,13 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 
 	@Override
 	public void reconcilerates(List<String> reconcileReferenceNum) {
-		System.out.println(reconcileReferenceNum.stream().map(Object::toString).collect(Collectors.joining(",")));
 		senderDataRepository.reconcilerates(reconcileReferenceNum.stream().map(Object::toString).collect(Collectors.joining(",")));
+	}
+
+	@Override
+	public List<String> fetchNotBilled() {
+		List<String> notBilledData = senderDataRepository.fetchNotBilled();
+		return notBilledData;
 	}
 	
 }

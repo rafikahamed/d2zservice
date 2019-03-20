@@ -26,6 +26,7 @@ import com.d2z.d2zservice.model.BrokerShipmentList;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.InvoiceShipment;
+import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -325,6 +326,29 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 		//Calling Delete Store Procedure
 		UserMessage approvedInvoiceMsg= d2zDao.approvedInvoice(approvedInvoice);
 		return approvedInvoiceMsg;
+	}
+
+	@Override
+	public List<NotBilled> fetchNotBilled() {
+		List<String> notBilledData = d2zDao.fetchNotBilled();
+		List<NotBilled> notBilledList = new ArrayList<NotBilled>();
+		Iterator itr = notBilledData.iterator();
+		 while(itr.hasNext()) {
+			 Object[] obj = (Object[]) itr.next();
+			 NotBilled notBilled = new NotBilled();
+			 if(obj[0] != null)
+				 notBilled.setUserName(obj[0].toString());
+			 if(obj[1] != null)
+				 notBilled.setAirwayBill(obj[1].toString());
+			 if(obj[2] != null)
+				 notBilled.setArticleId(obj[2].toString());
+			 if(obj[3] != null)
+				 notBilled.setReferenceNumber(obj[3].toString());
+			 if(obj[4] != null)
+				 notBilled.setD2zRate(Double.parseDouble(obj[4].toString()));
+			 notBilledList.add(notBilled);
+       }
+		return notBilledList;
 	}
 
 }
