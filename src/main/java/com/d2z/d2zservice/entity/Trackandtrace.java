@@ -24,8 +24,9 @@ public class Trackandtrace implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_GEN")
-	@SequenceGenerator(name = "SEQ_GEN", sequenceName = "eTowerSeqNum", allocationSize = 20) 
+	//@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_GEN")
+	//@SequenceGenerator(name = "SEQ_GEN", sequenceName = "eTowerSeqNum", allocationSize = 20) 
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "RowId")
 	private int rowId;
 	
