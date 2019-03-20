@@ -11,6 +11,7 @@ import com.d2z.d2zservice.model.BrokerShipmentList;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.InvoiceShipment;
+import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -52,5 +53,7 @@ public interface ISuperUserD2ZService{
 	public List<Reconcile> fetchReconcile(List<ReconcileData> reconcileData);
 
 	public UserMessage approvedInvoice(ApprovedInvoice approvedInvoice);
+
+	public List<NotBilled> fetchNotBilled();
 
 }

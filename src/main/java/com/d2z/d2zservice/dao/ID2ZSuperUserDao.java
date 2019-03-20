@@ -60,4 +60,6 @@ public interface ID2ZSuperUserDao {
 
 	void reconcilerates(List<String> reconcileReferenceNum);
 
+	List<String> fetchNotBilled();
+
 }
