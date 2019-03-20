@@ -644,7 +644,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public List<String> findRefNbrByShipmentNbr(String[] referenceNumbers) {
+	public List<SenderdataMaster> findRefNbrByShipmentNbr(String[] referenceNumbers) {
 		return senderDataRepository.findRefNbrByShipmentNbr(referenceNumbers);
 	}
 
@@ -736,6 +736,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		responseMsg.setResponseMessage("Data uploaded successfully from ETower");
 		}
 		return responseMsg;
+	}
+	public List<SenderdataMaster> fetchConsignmentsManifestShippment(List<String> incomingRefNbr){
+		return senderDataRepository.fetchConsignmentsManifestShippment(incomingRefNbr);
 	}
 
 }

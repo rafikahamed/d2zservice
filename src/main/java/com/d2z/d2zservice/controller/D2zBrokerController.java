@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.BaggingRequest;
 import com.d2z.d2zservice.model.BaggingResponse;
 import com.d2z.d2zservice.model.DirectInjectionDetails;
@@ -84,7 +85,7 @@ public class D2zBrokerController {
     }
 	
 	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/{referenceNumbers}/shipment/{shipmentNumber}")
-	 public ResponseMessage allocateShipment(@PathVariable String referenceNumbers,@PathVariable String shipmentNumber) {
+	 public ResponseMessage allocateShipment(@PathVariable String referenceNumbers,@PathVariable String shipmentNumber) throws ReferenceNumberNotUniqueException {
 		return  d2zService.allocateShipment(referenceNumbers,shipmentNumber);
 	}	
 }
