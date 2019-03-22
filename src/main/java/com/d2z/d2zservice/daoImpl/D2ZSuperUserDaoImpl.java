@@ -177,6 +177,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 
 	@Override
 	public ResponseMessage insertTrackingDetails(TrackingEventResponse trackEventresponse) {
+		System.out.println("Inserting into Track and trace");
 		List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
 		List<TrackEventResponseData> responseData = trackEventresponse.getData();
 		ResponseMessage responseMsg =  new ResponseMessage();
@@ -188,7 +189,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		
 		for(TrackEventResponseData data : responseData ) {
 		
-			
+			if(data!=null && data.getEvents()!=null) {
 			for(ETowerTrackingDetails trackingDetails : data.getEvents()) {
 				Trackandtrace trackandTrace = new Trackandtrace();
 				trackandTrace.setArticleID(trackingDetails.getTrackingNo());
@@ -237,7 +238,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 				trackAndTraceList.add(trackandTrace);
 			}
 			
-		
+			}
 		}
 		trackAndTraceRepository.saveAll(trackAndTraceList);
 		trackAndTraceRepository.updateTracking();
