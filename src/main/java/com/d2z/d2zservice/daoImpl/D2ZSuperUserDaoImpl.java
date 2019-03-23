@@ -188,7 +188,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		
 		for(TrackEventResponseData data : responseData ) {
 		
-			
+			if(data!=null && data.getEvents()!=null) {
 			for(ETowerTrackingDetails trackingDetails : data.getEvents()) {
 				Trackandtrace trackandTrace = new Trackandtrace();
 				trackandTrace.setArticleID(trackingDetails.getTrackingNo());
@@ -237,7 +237,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 				trackAndTraceList.add(trackandTrace);
 			}
 			
-		
+			}
 		}
 		trackAndTraceRepository.saveAll(trackAndTraceList);
 		trackAndTraceRepository.updateTracking();

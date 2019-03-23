@@ -131,6 +131,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 		int count = 1;
 		for(List<String> trackingNumbers : trackingNbrList) {
 			System.out.println(count + ":::" + trackingNumbers.size());
+			count++;
 		TrackingEventResponse response = proxy.makeCallForTrackingEvents(trackingNumbers);
 		respMsg = d2zDao.insertTrackingDetails(response);
      	}
