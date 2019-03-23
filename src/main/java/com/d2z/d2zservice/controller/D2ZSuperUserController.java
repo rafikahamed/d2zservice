@@ -19,6 +19,7 @@ import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.BrokerShipmentList;
 import com.d2z.d2zservice.model.D2ZRatesData;
+import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
@@ -73,7 +74,8 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 	@RequestMapping( method = RequestMethod.GET, path = "/export/shipment")
 	 public List<SenderdataMaster> exportShipmentData(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
 		return superUserD2zService.exportShipmentData(fromDate, toDate);
-   }
+	}
+	
 	@RequestMapping( method = RequestMethod.GET, path = "/track/etower/{trackingNumbers}")
     public ResponseMessage trackingCode(@PathVariable List<String> trackingNumbers) {
 		return superUserD2zService.trackingEvent(trackingNumbers);
@@ -133,6 +135,11 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 	@RequestMapping( method = RequestMethod.GET, path = "/not-billed")
     public List<NotBilled> fetchNotBilled() {
 		return superUserD2zService.fetchNotBilled();
+    }
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/download-Invoice")
+    public List<DownloadInvice> downloadInvoice(@RequestParam("broker") List<String> broker, @RequestParam("airwayBill") List<String> airwayBill) {
+		return superUserD2zService.downloadInvoice(broker, airwayBill);
     }
 	
 }

@@ -24,6 +24,7 @@ import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.BrokerShipmentList;
 import com.d2z.d2zservice.model.D2ZRatesData;
+import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
@@ -349,6 +350,33 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 			 notBilledList.add(notBilled);
        }
 		return notBilledList;
+	}
+
+	@Override
+	public List<DownloadInvice> downloadInvoice(List<String> broker, List<String> airwayBill) {
+		List<String> downloadInvoiceData = d2zDao.downloadInvoice(broker,airwayBill);
+		List<DownloadInvice> downloadInvoiceList = new ArrayList<DownloadInvice>();
+		Iterator itr = downloadInvoiceData.iterator();
+		 while(itr.hasNext()) {
+			 Object[] obj = (Object[]) itr.next();
+			 DownloadInvice downloadInvoice = new DownloadInvice();
+			 if(obj[0] != null)
+				 downloadInvoice.setTrackingNumber(obj[0].toString());
+			 if(obj[1] != null)
+				 downloadInvoice.setReferenceNuber(obj[1].toString());
+			 if(obj[2] != null)
+				 downloadInvoice.setPostage(obj[2].toString());
+			 if(obj[3] != null)
+				 downloadInvoice.setWeight(obj[3].toString());
+			 if(obj[4] != null)
+				 downloadInvoice.setPostage(obj[4].toString());
+			 if(obj[5] != null)
+				 downloadInvoice.setFuelsurcharge(obj[5].toString());
+			 if(obj[6] != null)
+				 downloadInvoice.setTotal(obj[6].toString());
+			 downloadInvoiceList.add(downloadInvoice);
+       }
+		return downloadInvoiceList;
 	}
 
 }

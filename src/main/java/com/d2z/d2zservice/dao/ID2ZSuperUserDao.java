@@ -62,4 +62,6 @@ public interface ID2ZSuperUserDao {
 
 	List<String> fetchNotBilled();
 
+	List<String> downloadInvoice(List<String> broker, List<String> airwayBill);
+
 }

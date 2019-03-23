@@ -9,6 +9,7 @@ import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.BrokerShipmentList;
 import com.d2z.d2zservice.model.D2ZRatesData;
+import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
@@ -55,5 +56,7 @@ public interface ISuperUserD2ZService{
 	public UserMessage approvedInvoice(ApprovedInvoice approvedInvoice);
 
 	public List<NotBilled> fetchNotBilled();
+
+	public List<DownloadInvice> downloadInvoice(List<String> broker, List<String> airwayBill);
 
 }

@@ -414,5 +414,11 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		List<String> notBilledData = senderDataRepository.fetchNotBilled();
 		return notBilledData;
 	}
+
+	@Override
+	public List<String> downloadInvoice(List<String> broker, List<String> airwayBill) {
+		List<String> downloadInvoice = senderDataRepository.downloadInvoice(broker,airwayBill);
+		return downloadInvoice;
+	}
 	
 }
