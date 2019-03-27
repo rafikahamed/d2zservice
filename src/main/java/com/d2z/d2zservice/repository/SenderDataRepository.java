@@ -176,5 +176,9 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 			") \n" + 
 			"B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name")
 	List<String> fetchNotBilled();
+	
+	@Query("SELECT t.user_ID FROM SenderdataMaster t where  t.reference_number = :reference_number")
+	 Integer fetchUserIdByReferenceNumber( String reference_number);
+	 
 
 } 

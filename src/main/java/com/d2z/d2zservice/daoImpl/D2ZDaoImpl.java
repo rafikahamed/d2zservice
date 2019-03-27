@@ -275,6 +275,12 @@ public class D2ZDaoImpl implements ID2ZDao{
 	public String manifestCreation(String manifestNumber, String refrenceNumber) {
 		//Calling Delete Store Procedure
 		senderDataRepository.manifestCreation(manifestNumber, refrenceNumber);
+		String [] refNbrs = refrenceNumber.split(",");
+		int userId = senderDataRepository.fetchUserIdByReferenceNumber(refNbrs[0]);
+		String autoShipment = userRepository.fetchAutoShipmentIndicator(userId);
+		if("Y".equalsIgnoreCase(autoShipment)) {
+			allocateShipment(refrenceNumber, manifestNumber.concat("AutoShip"));
+		}
 		return "Manifest Updated Successfully";
 	}
 
@@ -407,6 +413,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	        public void run() {
 	        	String[] refNbrArray = referenceNumbers.split(",");
 	        	List<String> articleIDS = senderDataRepository.fetchDataForEtowerForeCastCall(refNbrArray);
+	       	
 	        	 if(!articleIDS.isEmpty()) {
 	 	        	List<List<String>> trackingNbrList = ListUtils.partition(articleIDS, 300);
 	 	        	for(List<String> trackingNumbers : trackingNbrList) {
@@ -698,13 +705,13 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		List<TrackEventResponseData> responseData = trackEventresponse.getData();
 		ResponseMessage responseMsg =  new ResponseMessage();
 
-		if(responseData.isEmpty()) {
+		if(responseData!=null && responseData.isEmpty()) {
 			responseMsg.setResponseMessage("No Data from ETower");
 		}
 		else {
 		
 		for(TrackEventResponseData data : responseData ) {
-		
+		if(data!=null &&  data.getEvents()!=null) {
 			
 			for(ETowerTrackingDetails trackingDetails : data.getEvents()) {
 				Trackandtrace trackandTrace = new Trackandtrace();
@@ -728,7 +735,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 				trackAndTraceList.add(trackandTrace);
 			}
 			
-		
+		}
 		}
 		trackAndTraceRepository.saveAll(trackAndTraceList);
 		trackAndTraceRepository.updateTracking();
