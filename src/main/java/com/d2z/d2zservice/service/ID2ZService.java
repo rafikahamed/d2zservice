@@ -77,4 +77,6 @@ public interface ID2ZService {
 	public UserMessage deleteConsignments(@Valid DeleteConsignmentRequest request) throws ReferenceNumberNotUniqueException;
 
 	public List<PostCodeWeight> getRates(@Valid APIRatesRequest request);
+
+	public UserMessage contactUs(String email, String message, String name, String subject);
 }

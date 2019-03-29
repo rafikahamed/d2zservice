@@ -185,4 +185,9 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 			"					AND B.zoneid = P.zone")
 	List<String> downloadInvoice(@Param("broker") List<String> broker, @Param("airwayBill")  List<String> airwayBill);
 
+	@Query("SELECT t.user_ID FROM SenderdataMaster t where  t.reference_number = :reference_number")
+	 Integer fetchUserIdByReferenceNumber( String reference_number);
+	 
+
+
 } 

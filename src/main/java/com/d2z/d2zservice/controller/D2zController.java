@@ -182,5 +182,10 @@ public class D2zController {
 		ClientDashbaord clientDahbaord = d2zService.clientDahbaord(userId);
 		return clientDahbaord;
 	}	
-	
+	@RequestMapping( method = RequestMethod.GET, path = "/contactUs")
+    public UserMessage contactUs(@RequestParam("email") String email, @RequestParam("message") String message, @RequestParam("name") String name,
+    			@RequestParam("subject") String subject) {
+		UserMessage userMsg = d2zService.contactUs(email, message, name, subject);
+		return userMsg;
+    }
 }   

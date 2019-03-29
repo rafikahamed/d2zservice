@@ -40,4 +40,7 @@ public interface UserRepository extends CrudRepository<User, Long>{
 	 @Query(nativeQuery = true, value="select user_ID from dbo.Users where client_Broker_id in (select user_ID from dbo.users where role_Id=2)")  
 	 List<Integer> fetchBrokerClientIds();
 
+	 @Query ("Select u.autoShipment from User u where u.user_Id = :user_Id")
+	String fetchAutoShipmentIndicator(Integer user_Id);
+
 }
