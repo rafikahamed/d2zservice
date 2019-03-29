@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,9 @@ import uk.org.okapibarcode.backend.OkapiException;
 import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.backend.Symbol.DataType;
 import uk.org.okapibarcode.output.Java2DRenderer;
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
 
 @Service
 public class D2ZServiceImpl implements ID2ZService{
@@ -929,5 +933,37 @@ public class D2ZServiceImpl implements ID2ZService{
 		obj.setRate(rate);
 		});
 		return request.getConsignmentDetails();
+	}
+	
+	@Override
+	public UserMessage contactUs(String email, String messageData, String name, String subject) {
+		UserMessage userMsg = new UserMessage();
+		System.out.print("email:"+email+"message:"+messageData);
+		
+		final String fromEmail = "cs@d2z.com.au";
+		final String password ="PyfbE48921";
+		//final String toEmail ="customerservice@d2z.com.au";
+		
+		
+		//final String msg ="Thaks for contacting us,D2Z team will reach you soon";
+		Properties props = new Properties();
+		props.put("mail.smtp.host", "outlook.office365.com"); //SMTP Host
+		//props.put("mail.smtp.host", "smtp.gmail.com");
+		props.put("mail.smtp.port", "587"); //TLS Port
+		props.put("mail.smtp.auth", "true"); //enable authentication
+		props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
+		
+		Authenticator auth = new Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(fromEmail, password);
+			}
+		};
+		
+		Session session = Session.getInstance(props, auth);
+		emailUtil.sendEmail(session, email, fromEmail, name, messageData, subject);
+		emailUtil.senderEmail(session, email, fromEmail, name, subject);
+		userMsg.setMessage("Thaks for contacting us,D2Z team will reach you soon");
+		return userMsg;
+		
 	}
 }

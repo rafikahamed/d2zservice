@@ -157,7 +157,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 				request.setTrackingNo(orderDetail.getArticleId());
 				request.setReferenceNo("SW10"+orderDetail.getReference_number());
 				request.setRecipientCompany(orderDetail.getConsigneeCompany());
-				request.setRecipientName(orderDetail.getConsignee_name());
+				String recpName = orderDetail.getConsignee_name().length() >34 ? orderDetail.getConsignee_name().substring(0, 34) : orderDetail.getConsignee_name(); 
+				request.setRecipientName(recpName);
 				request.setAddressLine1(orderDetail.getConsignee_addr1());
 				request.setAddressLine2(orderDetail.getConsignee_addr2());
 				request.setEmail(orderDetail.getConsignee_Email());
@@ -534,7 +535,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		List<UserService> userServiceList = new ArrayList<UserService>();
 		if(!userDetails.getServiceType().isEmpty()) {
 			for(String serviceType : userDetails.getServiceType() ) {
-				UserService userService  = userServiceRepository.fetchbyCompanyNameAndServiceType(existingUser.getCompanyName(), serviceType);
+				UserService userService  = userServiceRepository.fetchbyCompanyNameAndServiceType(existingUser.getCompanyName(), serviceType,userDetails.getUserName());
 				if(userService == null) {
 					UserService newUserService = new UserService();
 					newUserService.setUserId(existingUser.getUser_Id());
@@ -556,7 +557,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		}
 		if(!userDetails.getDeletedServiceTypes().isEmpty()) {
 			for(String serviceType : userDetails.getDeletedServiceTypes() ) {
-				UserService userService  = userServiceRepository.fetchbyCompanyNameAndServiceType(existingUser.getCompanyName(), serviceType);
+				UserService userService  = userServiceRepository.fetchbyCompanyNameAndServiceType(existingUser.getCompanyName(), serviceType,userDetails.getUserName());
 				if(userService!=null) {
 					userService.setService_isDeleted(true);
 					userService.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
