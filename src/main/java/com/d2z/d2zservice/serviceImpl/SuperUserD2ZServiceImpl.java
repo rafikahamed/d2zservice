@@ -280,6 +280,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	public List<Reconcile> fetchReconcile(List<ReconcileData> reconcileData) {
 		List<Reconcile> reconcileCalculatedList = new ArrayList<Reconcile>();
 		List<String> reconcileReferenceNum = new ArrayList<String>();
+		List<Reconcile> reconcileFinal = new ArrayList<Reconcile>();
 		reconcileData.forEach(reconcile -> {
 			List<String> reconcileList = d2zDao.reconcileData(reconcile.getArticleNo(), reconcile.getRefrenceNumber());
 			Reconcile reconcileObj = new Reconcile();
@@ -313,13 +314,18 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 				 if(reconcileObj.getSupplierCharge() != null && reconcileObj.getD2ZCost() != null)
 					 reconcileObj.setCostDifference(reconcileObj.getSupplierCharge().subtract(reconcileObj.getD2ZCost(), mc));
 			 }
-			reconcileReferenceNum.add(reconcileObj.getReference_number());
-			reconcileCalculatedList.add(reconcileObj);
+			if(reconcileObj.getBrokerUserName() != null) {
+				reconcileCalculatedList.add(reconcileObj);
+				reconcileReferenceNum.add(reconcileObj.getReference_number());
+			}
 		});
-		d2zDao.reconcileUpdate(reconcileCalculatedList);
+		if(!reconcileCalculatedList.isEmpty())
+			d2zDao.reconcileUpdate(reconcileCalculatedList);
 		//Calling Delete Store Procedure
-		d2zDao.reconcilerates(reconcileReferenceNum);
-		List<Reconcile> reconcileFinal = d2zDao.fetchReconcileData(reconcileReferenceNum);
+		if(!reconcileReferenceNum.isEmpty())
+			d2zDao.reconcilerates(reconcileReferenceNum);
+		if(!reconcileReferenceNum.isEmpty())
+			reconcileFinal = d2zDao.fetchReconcileData(reconcileReferenceNum);
 		return reconcileFinal;
 	}
 
@@ -366,7 +372,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 			 if(obj[1] != null)
 				 downloadInvoice.setReferenceNuber(obj[1].toString());
 			 if(obj[2] != null)
-				 downloadInvoice.setPostage(obj[2].toString());
+				 downloadInvoice.setPostcode(obj[2].toString());
 			 if(obj[3] != null)
 				 downloadInvoice.setWeight(obj[3].toString());
 			 if(obj[4] != null)

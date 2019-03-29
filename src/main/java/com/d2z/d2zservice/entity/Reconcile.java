@@ -2,6 +2,9 @@ package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.math.BigDecimal;
 
 /**
@@ -10,10 +13,15 @@ import java.math.BigDecimal;
  */
 @Entity
 @NamedQuery(name="Reconcile.findAll", query="SELECT r FROM Reconcile r")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Reconcile implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name="RowId")
+	private int rowId;
+	
 	@Column(name="Airwaybill")
 	private String airwaybill;
 
@@ -160,4 +168,12 @@ public class Reconcile implements Serializable {
 		this.weightDifference = weightDifference;
 	}
 
+	public int getRowId() {
+		return rowId;
+	}
+
+	public void setRowId(int rowId) {
+		this.rowId = rowId;
+	}
+	
 }

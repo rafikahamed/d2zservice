@@ -8,6 +8,6 @@ import com.d2z.d2zservice.entity.D2ZRates;
 
 public interface D2ZRatesRepository  extends CrudRepository<D2ZRates, Long>{
 
-	@Query("SELECT b FROM D2ZRates b where b.MLID = :MLID and b.zoneID = :zoneID and b.minWeight = :minWeight and b.maxWeight = :maxWeight") 
-	D2ZRates findByCompositeKey(@Param("MLID") String MLID, @Param("zoneID") String zoneID, @Param("minWeight") Double minWeight, @Param("maxWeight") Double maxWeight);
+	@Query("SELECT b FROM D2ZRates b where b.serviceType = :serviceType and b.zoneID = :zoneID and b.minWeight = :minWeight and b.maxWeight = :maxWeight") 
+	D2ZRates findByCompositeKey(@Param("serviceType") String serviceType, @Param("zoneID") String zoneID, @Param("minWeight") Double minWeight, @Param("maxWeight") Double maxWeight);
 }

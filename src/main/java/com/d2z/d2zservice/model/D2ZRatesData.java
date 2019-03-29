@@ -4,14 +4,15 @@ import java.util.List;
 
 public class D2ZRatesData {
 
-	private String MLID;
+	private String serviceType;
 	private List<ZoneDetails> zone;
-	private String GST;
-	public String getMLID() {
-		return MLID;
+	private String fuelSurcharge;
+	
+	public String getServiceType() {
+		return serviceType;
 	}
-	public void setMLID(String mLID) {
-		MLID = mLID;
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
 	}
 	public List<ZoneDetails> getZone() {
 		return zone;
@@ -19,12 +20,11 @@ public class D2ZRatesData {
 	public void setZone(List<ZoneDetails> zone) {
 		this.zone = zone;
 	}
-	public String getGST() {
-		return GST;
+	public String getFuelSurcharge() {
+		return fuelSurcharge;
 	}
-	public void setGST(String gST) {
-		GST = gST;
+	public void setFuelSurcharge(String fuelSurcharge) {
+		this.fuelSurcharge = fuelSurcharge;
 	}
-	
 	
 }

@@ -29,6 +29,7 @@ import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.repository.BrokerRatesRepository;
 import com.d2z.d2zservice.repository.ConsigneeCountRepository;
 import com.d2z.d2zservice.repository.D2ZRatesRepository;
+import com.d2z.d2zservice.repository.MlidRepository;
 import com.d2z.d2zservice.repository.ReconcileRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
@@ -58,6 +59,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	
 	@Autowired
 	ConsigneeCountRepository consigneeCountRepository;
+	
+	@Autowired
+	MlidRepository mlidRepository;
 	
 	@Autowired
 	ReconcileRepository reconcileRepository;
@@ -309,14 +313,14 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 				
 				
 				for(ZoneRates zoneRates : zoneData.getRates()) {
-					D2ZRates d2zRates_DB = d2zRatesRepository.findByCompositeKey(d2zRateData.getMLID(), zoneData.getZoneID(), zoneRates.getMinWeight(), zoneRates.getMaxWeight());
+					D2ZRates d2zRates_DB = d2zRatesRepository.findByCompositeKey(d2zRateData.getServiceType(), zoneData.getZoneID(), zoneRates.getMinWeight(), zoneRates.getMaxWeight());
 					if(null != d2zRates_DB) {
 						d2zRates_DB.setBackupInd("Y");
 						d2zRatesList.add(d2zRates_DB);
 					}
 					D2ZRates d2zRates = new  D2ZRates();
-					d2zRates.setMLID(d2zRateData.getMLID());
-					d2zRates.setGST(d2zRateData.getGST());
+					d2zRates.setServiceType(d2zRateData.getServiceType());
+					d2zRates.setFuelSurcharge(d2zRateData.getFuelSurcharge());
 					d2zRates.setZoneID(zoneData.getZoneID());
 					d2zRates.setRate(zoneRates.getRate());
 					d2zRates.setMaxWeight(zoneRates.getMaxWeight());
@@ -346,7 +350,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 
 	@Override
 	public List<String> fetchMlidList() {
-		List<String> mlidList = consigneeCountRepository.getMlidList();
+		List<String> mlidList = mlidRepository.getServiceTypeList();
 		return mlidList;
 	}
 
