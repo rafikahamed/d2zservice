@@ -97,7 +97,8 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Autowired
 	private EbayProxy proxy;
 	
-	
+	@Autowired
+	EmailUtil emailUtil; 
 	
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException{
