@@ -360,7 +360,7 @@ public class SenderDataApi {
 	}
 
 	public void setConsigneeSuburb(String consigneeSuburb) {
-		this.consigneeSuburb = consigneeSuburb;
+		this.consigneeSuburb = consigneeSuburb.trim();
 	}
 
 	public String getConsigneeState() {
@@ -368,7 +368,7 @@ public class SenderDataApi {
 	}
 
 	public void setConsigneeState(String consigneeState) {
-		this.consigneeState = consigneeState;
+		this.consigneeState = consigneeState.trim();
 	}
 
 	public String getConsigneePostcode() {
@@ -376,7 +376,7 @@ public class SenderDataApi {
 	}
 
 	public void setConsigneePostcode(String consigneePostcode) {
-		this.consigneePostcode = consigneePostcode;
+		this.consigneePostcode = consigneePostcode.trim();
 	}
 
 	public String getConsigneePhone() {
