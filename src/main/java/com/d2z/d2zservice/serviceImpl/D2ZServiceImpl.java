@@ -960,8 +960,8 @@ public class D2ZServiceImpl implements ID2ZService{
 		};
 		
 		Session session = Session.getInstance(props, auth);
-		emailUtil.sendEmail(session, email, fromEmail, name, messageData, subject);
-		emailUtil.senderEmail(session, email, fromEmail, name, subject);
+		//emailUtil.sendEmail(session, email, fromEmail, name, messageData, subject);
+		//emailUtil.senderEmail(session, email, fromEmail, name, subject);
 		userMsg.setMessage("Thaks for contacting us,D2Z team will reach you soon");
 		return userMsg;
 		
