@@ -1,6 +1,8 @@
 package com.d2z.d2zservice.dao;
 
 import java.util.List;
+
+import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
@@ -63,5 +65,9 @@ public interface ID2ZSuperUserDao {
 	List<String> fetchNotBilled();
 
 	List<String> downloadInvoice(List<String> broker, List<String> airwayBill);
+
+	UserMessage fetchNonD2zClient(List<NonD2ZData> nonD2zData);
+
+	List<String> fetchAllArticleId();
 
 }

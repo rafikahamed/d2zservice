@@ -13,12 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
+import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
+import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
@@ -36,6 +38,7 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
+import com.d2z.d2zservice.validation.D2ZValidator;
 
 @Service
 public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
@@ -49,6 +52,10 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	@Autowired
 	private ETowerProxy proxy;
 	
+	@Autowired
+    private D2ZValidator d2zValidator;
+
+	private boolean reconcileFlag;
 	
 	@Override
 	public UserMessage uploadTrackingFile(List<UploadTrackingFileData> fileData){
@@ -278,11 +285,15 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 
 	@Override
 	public List<Reconcile> fetchReconcile(List<ReconcileData> reconcileData) {
+		this.reconcileFlag = false;
 		List<Reconcile> reconcileCalculatedList = new ArrayList<Reconcile>();
+		List<Reconcile> reconcileCalculatedMissedList = new ArrayList<Reconcile>();
 		List<String> reconcileReferenceNum = new ArrayList<String>();
 		List<Reconcile> reconcileFinal = new ArrayList<Reconcile>();
 		reconcileData.forEach(reconcile -> {
 			List<String> reconcileList = d2zDao.reconcileData(reconcile.getArticleNo(), reconcile.getRefrenceNumber());
+			System.out.println(reconcileList.isEmpty());
+			System.out.println(reconcileList.size()  == 0);
 			Reconcile reconcileObj = new Reconcile();
 			Iterator reconcileItr = reconcileList.iterator();
 			 while(reconcileItr.hasNext()) {
@@ -302,30 +313,50 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 					 reconcileObj.setD2ZWeight(Double.parseDouble(obj[5].toString()));
 				 if(obj[6] != null)
 					 reconcileObj.setInvoicedAmount(new BigDecimal(obj[6].toString()));
-				 if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("supplierOne")) {
+				 if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("UBI")) {
 					 reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getNormalRateParcel()));
 					 reconcileObj.setSupplierWeight(reconcile.getArticleActualWeight());
 					 reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
-				 }else if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("supplierTwo")) {
+				 }else if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("freipost")) {
 					 reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getCost()));
 					 reconcileObj.setSupplierWeight(reconcile.getChargedWeight());
 					 reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
 				 }
 				 if(reconcileObj.getSupplierCharge() != null && reconcileObj.getD2ZCost() != null)
 					 reconcileObj.setCostDifference(reconcileObj.getSupplierCharge().subtract(reconcileObj.getD2ZCost(), mc));
+				 reconcileObj.setSupplierType(reconcileData.get(0).getSupplierType());
 			 }
-			if(reconcileObj.getBrokerUserName() != null) {
+			if(reconcileObj.getBrokerUserName() != null ) {
+				this.reconcileFlag = true;
 				reconcileCalculatedList.add(reconcileObj);
 				reconcileReferenceNum.add(reconcileObj.getReference_number());
+			}else {
+				if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("UBI")) {
+					 reconcileObj.setArticleId(reconcile.getArticleNo());
+				}else if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("freipost")){
+					 reconcileObj.setReference_number(reconcile.getRefrenceNumber());
+				}
+				reconcileCalculatedMissedList.add(reconcileObj);
 			}
 		});
-		if(!reconcileCalculatedList.isEmpty())
+		if(!reconcileCalculatedList.isEmpty() && this.reconcileFlag)
 			d2zDao.reconcileUpdate(reconcileCalculatedList);
 		//Calling Delete Store Procedure
-		if(!reconcileReferenceNum.isEmpty())
+		if(!reconcileReferenceNum.isEmpty() && this.reconcileFlag)
 			d2zDao.reconcilerates(reconcileReferenceNum);
-		if(!reconcileReferenceNum.isEmpty())
+		if(!reconcileReferenceNum.isEmpty() && this.reconcileFlag)
 			reconcileFinal = d2zDao.fetchReconcileData(reconcileReferenceNum);
+		
+		if(!reconcileCalculatedMissedList.isEmpty()) {
+			List<Reconcile> reconcileMissedFinal = new ArrayList<Reconcile>();
+			reconcileCalculatedMissedList.forEach(reconcileMissed -> {  
+				Reconcile reconcileMiss  = new Reconcile();
+				reconcileMiss.setArticleId(reconcileMissed.getArticleId());
+				reconcileMiss.setReference_number(reconcileMissed.getReference_number());
+				reconcileMissedFinal.add(reconcileMiss);
+			});
+			reconcileFinal.addAll(reconcileMissedFinal);
+		}
 		return reconcileFinal;
 	}
 
@@ -384,6 +415,13 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 			 downloadInvoiceList.add(downloadInvoice);
        }
 		return downloadInvoiceList;
+	}
+
+	@Override
+	public UserMessage fetchNonD2zClient(List<NonD2ZData> nonD2zData) throws ReferenceNumberNotUniqueException {
+		d2zValidator.isArticleIdUniqueUI(nonD2zData);
+		UserMessage uploadNonD2zClient= d2zDao.fetchNonD2zClient(nonD2zData);
+		return uploadNonD2zClient;
 	}
 
 }

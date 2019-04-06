@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
@@ -142,4 +145,8 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 		return superUserD2zService.downloadInvoice(broker, airwayBill);
     }
 	
+	@RequestMapping( method = RequestMethod.POST, path = "/Non-D2Z-Client")
+    public UserMessage fetchNonD2zClient(@RequestBody List<NonD2ZData> nonD2zData) throws ReferenceNumberNotUniqueException{
+		return superUserD2zService.fetchNonD2zClient(nonD2zData);
+    }
 }

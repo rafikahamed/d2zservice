@@ -31,6 +31,8 @@ import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.service.ID2ZService;
 
+import io.swagger.annotations.Scope;
+
 @RestController
 @Validated
 @RequestMapping(value = "/v1/d2z")

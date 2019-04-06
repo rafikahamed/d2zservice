@@ -2,25 +2,17 @@ package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
 import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.math.BigDecimal;
 
+
 /**
- * The persistent class for the Reconcile database table.
+ * The persistent class for the ReconcileND database table.
  * 
  */
 @Entity
-@NamedQuery(name="Reconcile.findAll", query="SELECT r FROM Reconcile r")
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class Reconcile implements Serializable {
+@NamedQuery(name="ReconcileND.findAll", query="SELECT r FROM ReconcileND r")
+public class ReconcileND implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
-	@Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name="RowId")
-	private int rowId;
 
 	@Column(name="Airwaybill")
 	private String airwaybill;
@@ -51,6 +43,11 @@ public class Reconcile implements Serializable {
 
 	@Column(name="Reference_number")
 	private String reference_number;
+	
+	@Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name="RowId")
+	private int rowId;
 
 	@Column(name="SupplierCharge")
 	private BigDecimal supplierCharge;
@@ -64,7 +61,7 @@ public class Reconcile implements Serializable {
 	@Column(name="WeightDifference")
 	private double weightDifference;
 
-	public Reconcile() {
+	public ReconcileND() {
 	}
 
 	public String getAirwaybill() {

@@ -172,13 +172,13 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwayBill, B.ArticleId, B.reference_number, B.D2ZRate FROM\n" + 
 			"( \n" + 
 			"SELECT DISTINCT U.client_broker_id, S.airwaybill, S.ArticleId, S.reference_number, S.D2ZRate FROM senderdata_master S INNER JOIN users U  \n" + 
-			"ON s.reference_number not in ( select distinct reference_number from reconcile ) AND U.role_id = '3' AND S.user_id = U.user_id \n" + 
+			"ON s.reference_number not in ( select distinct reference_number from reconcile ) AND U.role_id = '3' AND S.user_id = U.user_id AND S.isDeleted != 'Y'\n" + 
 			") \n" + 
 			"B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name")
 	List<String> fetchNotBilled();
 	
 	@Query(nativeQuery = true, value="SELECT DISTINCT S.articleid  AS TrackingNumber, S.reference_number AS reference, S.consignee_postcode AS postcode, S.weight AS Weight,\n" + 
-			"				  B.rate AS postage, B.fuelsurcharge AS Fuelsurcharge, S.brokerrate AS total FROM SENDERDATA_MASTER S\n" + 
+			"				  B.rate AS postage, S.fuelsurcharge AS Fuelsurcharge, S.brokerrate AS total FROM SENDERDATA_MASTER S\n" + 
 			"				  INNER JOIN POSTCODEZONES P ON P.postcode = S.consignee_postcode AND P.suburb = S.consignee_suburb INNER JOIN BROKERRATES B\n" + 
 			"                ON S.airwaybill in (:airwayBill) AND B.brokerusername in (:broker) AND ( S.weight BETWEEN Cast(B.minweight AS DECIMAL(18, 4)) AND\n" + 
 			" 				  Cast( B.maxweight AS DECIMAL(18, 4)) ) AND S.servicetype = B.servicetype AND S.consignee_postcode = P.postcode\n" + 
@@ -188,6 +188,4 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT t.user_ID FROM SenderdataMaster t where  t.reference_number = :reference_number")
 	 Integer fetchUserIdByReferenceNumber( String reference_number);
 	 
-
-
 } 

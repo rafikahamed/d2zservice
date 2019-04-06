@@ -11,7 +11,7 @@ import com.d2z.d2zservice.entity.Trackandtrace;
 
 public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, Long>{
 	
-	 @Query("SELECT t FROM Trackandtrace t where t.reference_number = :refNumber and isDeleted != 'Y' order by t.trackEventDateOccured desc") 
+	 @Query(nativeQuery = true, value="SELECT * FROM Trackandtrace t where t.reference_number = :refNumber and t.isDeleted != 'Y' UNION SELECT * FROM Trackandtrace t where t.articleID = :refNumber and isDeleted != 'Y' order by t.trackEventDateOccured desc") 
 	 List<Trackandtrace> fetchTrackEventByRefNbr(@Param("refNumber") String refNumber);
 
 	// @Query(nativeQuery = true, value="SELECT reference_number,barcodelabelnumber,trackEventDateOccured,trackEventDetails FROM Trackandtrace where substring(barcodelabelnumber,19,23) = :articleID") 

@@ -6,10 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.query.Procedure;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.BrokerRates;
 import com.d2z.d2zservice.entity.D2ZRates;
+import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
@@ -30,6 +33,7 @@ import com.d2z.d2zservice.repository.BrokerRatesRepository;
 import com.d2z.d2zservice.repository.ConsigneeCountRepository;
 import com.d2z.d2zservice.repository.D2ZRatesRepository;
 import com.d2z.d2zservice.repository.MlidRepository;
+import com.d2z.d2zservice.repository.NonD2ZDataRepository;
 import com.d2z.d2zservice.repository.ReconcileRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
@@ -65,6 +69,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	
 	@Autowired
 	ReconcileRepository reconcileRepository;
+	
+	@Autowired
+	NonD2ZDataRepository nonD2ZDataRepository;
 	
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -423,6 +430,22 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	public List<String> downloadInvoice(List<String> broker, List<String> airwayBill) {
 		List<String> downloadInvoice = senderDataRepository.downloadInvoice(broker,airwayBill);
 		return downloadInvoice;
+	}
+
+	@Override
+	public UserMessage fetchNonD2zClient(List<NonD2ZData> nonD2zData) {
+		nonD2ZDataRepository.saveAll(nonD2zData);
+		List<String> articleNbr = nonD2zData.stream().map(obj -> {return obj.getArticleId(); }).collect(Collectors.toList());
+		nonD2ZDataRepository.nonD2zRates(articleNbr.stream().map(Object::toString).collect(Collectors.joining(",")));
+		UserMessage userMsg = new UserMessage();
+		userMsg.setMessage("Non-D2Z Data Uploaded Successfully into the system");
+		return userMsg;
+	}
+
+	@Override
+	public List<String> fetchAllArticleId() {
+		List<String> listOfArticleId = nonD2ZDataRepository.fetchAllArticleId();
+		return listOfArticleId;
 	}
 	
 }
