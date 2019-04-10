@@ -55,7 +55,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	@Autowired
     private D2ZValidator d2zValidator;
 
-	private boolean reconcileFlag;
+	//private boolean reconcileFlag;
 	
 	@Override
 	public UserMessage uploadTrackingFile(List<UploadTrackingFileData> fileData){
@@ -284,16 +284,14 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	}
 
 	@Override
-	public List<Reconcile> fetchReconcile(List<ReconcileData> reconcileData) {
-		this.reconcileFlag = false;
+	public UserMessage fetchReconcile(List<ReconcileData> reconcileData) {
+		//this.reconcileFlag = false;
 		List<Reconcile> reconcileCalculatedList = new ArrayList<Reconcile>();
-		List<Reconcile> reconcileCalculatedMissedList = new ArrayList<Reconcile>();
+		//List<Reconcile> reconcileCalculatedMissedList = new ArrayList<Reconcile>();
 		List<String> reconcileReferenceNum = new ArrayList<String>();
-		List<Reconcile> reconcileFinal = new ArrayList<Reconcile>();
+		//List<Reconcile> reconcileFinal = new ArrayList<Reconcile>();
 		reconcileData.forEach(reconcile -> {
 			List<String> reconcileList = d2zDao.reconcileData(reconcile.getArticleNo(), reconcile.getRefrenceNumber());
-			System.out.println(reconcileList.isEmpty());
-			System.out.println(reconcileList.size()  == 0);
 			Reconcile reconcileObj = new Reconcile();
 			Iterator reconcileItr = reconcileList.iterator();
 			 while(reconcileItr.hasNext()) {
@@ -326,38 +324,51 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 					 reconcileObj.setCostDifference(reconcileObj.getSupplierCharge().subtract(reconcileObj.getD2ZCost(), mc));
 				 reconcileObj.setSupplierType(reconcileData.get(0).getSupplierType());
 			 }
-			if(reconcileObj.getBrokerUserName() != null ) {
-				this.reconcileFlag = true;
-				reconcileCalculatedList.add(reconcileObj);
-				reconcileReferenceNum.add(reconcileObj.getReference_number());
-			}else {
-				if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("UBI")) {
+			 reconcileCalculatedList.add(reconcileObj);
+			 if(reconcileObj.getBrokerUserName() != null ) {
+				 reconcileReferenceNum.add(reconcileObj.getReference_number());
+			 }else {
+				 if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("UBI")) {
 					 reconcileObj.setArticleId(reconcile.getArticleNo());
 				}else if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("freipost")){
 					 reconcileObj.setReference_number(reconcile.getRefrenceNumber());
 				}
-				reconcileCalculatedMissedList.add(reconcileObj);
-			}
+			 }
+			 reconcileCalculatedList.add(reconcileObj);
+//			 if(reconcileObj.getBrokerUserName() != null ) {
+//				this.reconcileFlag = true;
+//				reconcileCalculatedList.add(reconcileObj);
+//				reconcileReferenceNum.add(reconcileObj.getReference_number());
+//			 }else {
+//				if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("UBI")) {
+//					 reconcileObj.setArticleId(reconcile.getArticleNo());
+//				}else if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("freipost")){
+//					 reconcileObj.setReference_number(reconcile.getRefrenceNumber());
+//				}
+//				reconcileCalculatedMissedList.add(reconcileObj);
+//			}
 		});
-		if(!reconcileCalculatedList.isEmpty() && this.reconcileFlag)
+		//if(!reconcileCalculatedList.isEmpty() && this.reconcileFlag)
 			d2zDao.reconcileUpdate(reconcileCalculatedList);
 		//Calling Delete Store Procedure
-		if(!reconcileReferenceNum.isEmpty() && this.reconcileFlag)
+		//if(!reconcileReferenceNum.isEmpty() && this.reconcileFlag) 
 			d2zDao.reconcilerates(reconcileReferenceNum);
-		if(!reconcileReferenceNum.isEmpty() && this.reconcileFlag)
-			reconcileFinal = d2zDao.fetchReconcileData(reconcileReferenceNum);
-		
-		if(!reconcileCalculatedMissedList.isEmpty()) {
-			List<Reconcile> reconcileMissedFinal = new ArrayList<Reconcile>();
-			reconcileCalculatedMissedList.forEach(reconcileMissed -> {  
-				Reconcile reconcileMiss  = new Reconcile();
-				reconcileMiss.setArticleId(reconcileMissed.getArticleId());
-				reconcileMiss.setReference_number(reconcileMissed.getReference_number());
-				reconcileMissedFinal.add(reconcileMiss);
-			});
-			reconcileFinal.addAll(reconcileMissedFinal);
-		}
-		return reconcileFinal;
+//		if(!reconcileReferenceNum.isEmpty() && this.reconcileFlag)
+//			reconcileFinal = d2zDao.fetchReconcileData(reconcileReferenceNum);
+//		if(!reconcileCalculatedMissedList.isEmpty()) {
+//			List<Reconcile> reconcileMissedFinal = new ArrayList<Reconcile>();
+//			reconcileCalculatedMissedList.forEach(reconcileMissed -> {  
+//				Reconcile reconcileMiss  = new Reconcile();
+//				reconcileMiss.setArticleId(reconcileMissed.getArticleId());
+//				reconcileMiss.setReference_number(reconcileMissed.getReference_number());
+//				reconcileMissedFinal.add(reconcileMiss);
+//			});
+//			reconcileFinal.addAll(reconcileMissedFinal);
+//		}
+			UserMessage userMsg = new UserMessage();
+			userMsg.setMessage("Reconcile data uploaded successfully, Please click download button to explore the data");
+			return userMsg;
+		//return reconcileFinal;
 	}
 
 	@Override
@@ -422,6 +433,25 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 		d2zValidator.isArticleIdUniqueUI(nonD2zData);
 		UserMessage uploadNonD2zClient= d2zDao.fetchNonD2zClient(nonD2zData);
 		return uploadNonD2zClient;
+	}
+
+	@Override
+	public List<Reconcile> downloadReconcile(List<String> reconcileNumbers) {
+		List<Reconcile> reconcileData = d2zDao.downloadReconcile(reconcileNumbers);
+		return reconcileData;
+	}
+
+	@Override
+	public List<DropDownModel> fetchNonD2zBrokerUserName() {
+		List<String> listOffBrokerName= d2zDao.fetchNonD2zBrokerUserName();
+		List<DropDownModel> dropDownList= new ArrayList<DropDownModel>();
+		for(String brokerName:listOffBrokerName) {
+			DropDownModel dropDownVaL = new DropDownModel();
+			dropDownVaL.setName(brokerName);
+			dropDownVaL.setValue(brokerName);
+			dropDownList.add(dropDownVaL);
+		}
+		return dropDownList;
 	}
 
 }

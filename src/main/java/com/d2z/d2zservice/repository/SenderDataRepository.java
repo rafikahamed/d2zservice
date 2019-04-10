@@ -134,16 +134,13 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 @Query("SELECT distinct(s.airwayBill) FROM SenderdataMaster s where s.user_ID = :userId")
 	 List<String> getBrokerShipmentList(@Param("userId") Integer userId);
 
-
 	 @Query("SELECT s FROM SenderdataMaster s where s.reference_number in (:referenceNumbers) and (s.manifest_number is not null or s.airwayBill is not null)") 
 	 List<SenderdataMaster> fetchConsignmentsManifestShippment(@Param("referenceNumbers") List<String> referenceNumbers);
-
 
 	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwaybill FROM (SELECT DISTINCT U.client_broker_id, S.airwaybill FROM senderdata_master S INNER JOIN users U \n" + 
 			"ON S.airwaybill IS NOT NULL AND U.role_id = '3' AND S.user_id = U.user_id AND S.Invoiced IS NULL) B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name")
 	List<String> fetchSenderShipmenntData();
 
-	
 	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwaybill FROM \n" + 
 			"(\n" + 
 			"SELECT DISTINCT U.client_broker_id, S.airwaybill FROM senderdata_master S INNER JOIN users U \n" + 
@@ -186,6 +183,6 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	List<String> downloadInvoice(@Param("broker") List<String> broker, @Param("airwayBill")  List<String> airwayBill);
 
 	@Query("SELECT t.user_ID FROM SenderdataMaster t where  t.reference_number = :reference_number")
-	 Integer fetchUserIdByReferenceNumber( String reference_number);
+	Integer fetchUserIdByReferenceNumber( String reference_number);
 	 
 } 

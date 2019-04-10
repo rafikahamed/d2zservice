@@ -32,6 +32,9 @@ public class NonD2ZData implements Serializable {
 	@Column(name="Billed")
 	private String billed;
 
+	@Column(name="BrokerName")
+	private String brokerName;
+
 	@Column(name="BrokerRate")
 	private String brokerRate;
 
@@ -60,6 +63,9 @@ public class NonD2ZData implements Serializable {
 
 	@Column(name="ServiceType")
 	private String serviceType;
+
+	@Column(name="ShipmentNumber")
+	private String shipmentNumber;
 
 	@Column(name="Suburb")
 	private String suburb;
@@ -92,6 +98,14 @@ public class NonD2ZData implements Serializable {
 
 	public void setBilled(String billed) {
 		this.billed = billed;
+	}
+
+	public String getBrokerName() {
+		return this.brokerName;
+	}
+
+	public void setBrokerName(String brokerName) {
+		this.brokerName = brokerName;
 	}
 
 	public String getBrokerRate() {
@@ -166,6 +180,14 @@ public class NonD2ZData implements Serializable {
 		this.serviceType = serviceType;
 	}
 
+	public String getShipmentNumber() {
+		return this.shipmentNumber;
+	}
+
+	public void setShipmentNumber(String shipmentNumber) {
+		this.shipmentNumber = shipmentNumber;
+	}
+
 	public String getSuburb() {
 		return this.suburb;
 	}
@@ -181,6 +203,5 @@ public class NonD2ZData implements Serializable {
 	public void setWeight(double weight) {
 		this.weight = weight;
 	}
-
 
 }

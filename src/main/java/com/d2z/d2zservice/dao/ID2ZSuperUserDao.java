@@ -70,4 +70,10 @@ public interface ID2ZSuperUserDao {
 
 	List<String> fetchAllArticleId();
 
+	List<Reconcile> downloadReconcile();
+
+	List<Reconcile> downloadReconcile(List<String> reconcileNumbers);
+
+	List<String> fetchNonD2zBrokerUserName();
+
 }

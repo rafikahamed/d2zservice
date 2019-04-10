@@ -447,5 +447,23 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		List<String> listOfArticleId = nonD2ZDataRepository.fetchAllArticleId();
 		return listOfArticleId;
 	}
+
+	@Override
+	public List<Reconcile> downloadReconcile() {
+		//List<Reconcile> reconcileFinal =  (List<Reconcile>) reconcileRepository.downloadReconcile();
+		return null;
+	}
+
+	@Override
+	public List<Reconcile> downloadReconcile(List<String> reconcileNumbers) {
+		List<Reconcile> reconcileFinal =  (List<Reconcile>) reconcileRepository.downloadReconcile(reconcileNumbers);
+		return reconcileFinal;
+	}
+
+	@Override
+	public List<String> fetchNonD2zBrokerUserName() {
+		List<String> listOfNonBroker = userRepository.fetchNonD2zBrokerUserName();
+		return listOfNonBroker;
+	}
 	
 }

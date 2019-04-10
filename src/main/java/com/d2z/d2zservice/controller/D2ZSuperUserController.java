@@ -131,8 +131,13 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
     }
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/reconcileInfo")
-    public List<Reconcile> fetchReconcile(@RequestBody List<ReconcileData> reconcileData) {
+    public UserMessage fetchReconcile(@RequestBody List<ReconcileData> reconcileData) {
 		return superUserD2zService.fetchReconcile(reconcileData);
+    }
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/download-reconcile")
+    public List<Reconcile> downloadReconcile(@RequestParam("reconcileNumbers") List<String> reconcileNumbers) {
+		return superUserD2zService.downloadReconcile(reconcileNumbers);
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/not-billed")
@@ -149,4 +154,10 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
     public UserMessage fetchNonD2zClient(@RequestBody List<NonD2ZData> nonD2zData) throws ReferenceNumberNotUniqueException{
 		return superUserD2zService.fetchNonD2zClient(nonD2zData);
     }
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/Non-D2z-Broker")
+    public List<DropDownModel> fetchNonD2zBrokerUserName(){
+		return superUserD2zService.fetchNonD2zBrokerUserName();
+    }
+	
 }
