@@ -540,4 +540,27 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 		return approvedShipmentList;
 	}
 
+	@Override
+	public List<NotBilled> fetchNonD2zNotBilled() {
+		List<String> notBilledData = d2zDao.fetchNonD2zNotBilled();
+		List<NotBilled> notBilledList = new ArrayList<NotBilled>();
+		Iterator itr = notBilledData.iterator();
+		 while(itr.hasNext()) {
+			 Object[] obj = (Object[]) itr.next();
+			 NotBilled notBilled = new NotBilled();
+			 if(obj[0] != null)
+				 notBilled.setUserName(obj[0].toString());
+			 if(obj[1] != null)
+				 notBilled.setAirwayBill(obj[1].toString());
+			 if(obj[2] != null)
+				 notBilled.setArticleId(obj[2].toString());
+			 if(obj[3] != null)
+				 notBilled.setReferenceNumber(obj[3].toString());
+			 if(obj[4] != null)
+				 notBilled.setD2zRate(Double.parseDouble(obj[4].toString()));
+			 notBilledList.add(notBilled);
+       }
+		return notBilledList;
+	}
+
 }

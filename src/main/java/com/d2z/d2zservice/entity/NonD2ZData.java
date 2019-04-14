@@ -1,10 +1,9 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import javax.persistence.*;
-
-
 /**
  * The persistent class for the NonD2ZData database table.
  * 
@@ -79,6 +78,15 @@ public class NonD2ZData implements Serializable {
 
 	@Column(name="Weight")
 	private double weight;
+	
+	@Column(name="Length")
+	private BigDecimal length;
+	
+	@Column(name="Width")
+	private BigDecimal width;
+	
+	@Column(name="Height")
+	private BigDecimal height;
 
 	public NonD2ZData() {
 	}
@@ -211,4 +219,28 @@ public class NonD2ZData implements Serializable {
 		this.weight = weight;
 	}
 
+	public BigDecimal getLength() {
+		return length;
+	}
+
+	public void setLength(BigDecimal length) {
+		this.length = length;
+	}
+
+	public BigDecimal getWidth() {
+		return width;
+	}
+
+	public void setWidth(BigDecimal width) {
+		this.width = width;
+	}
+
+	public BigDecimal getHeight() {
+		return height;
+	}
+
+	public void setHeight(BigDecimal height) {
+		this.height = height;
+	}
+	
 }

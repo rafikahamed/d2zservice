@@ -40,5 +40,10 @@ public interface NonD2ZDataRepository extends CrudRepository<NonD2ZData, Long>{
 	
 	@Query(value="Select distinct c.brokerName,c.shipmentNumber from NonD2ZData c where c.invoiced = 'Y' and c.billed is null")
 	List<NonD2ZData> brokerNdInvoiced();
+	
+	@Query(nativeQuery = true, value="SELECT DISTINCT N.brokername, N.shipmentnumber, N.articleid, N.reference_number, "
+			+ "N.d2zrate FROM nond2zdata N WHERE articleid NOT IN (SELECT DISTINCT articleid FROM reconcilend) "
+			+ "ORDER BY N.brokername")
+	List<String> fetchNonD2zNotBilled();
 
 }

@@ -1,6 +1,7 @@
 package com.d2z.d2zservice.dao;
 
 import java.util.List;
+
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
@@ -91,5 +92,7 @@ public interface ID2ZSuperUserDao {
 	UserMessage approveNdInvoiced(ApprovedInvoice approvedInvoice);
 
 	List<NonD2ZData> brokerNdInvoiced();
+
+	List<String> fetchNonD2zNotBilled();
 
 }

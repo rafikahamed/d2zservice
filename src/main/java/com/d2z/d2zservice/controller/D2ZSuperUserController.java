@@ -176,6 +176,11 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 		return superUserD2zService.fetchNotBilled();
     }
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/nd-Not-billed")
+    public List<NotBilled> fetchNonD2zNotBilled() {
+		return superUserD2zService.fetchNonD2zNotBilled();
+    }
+	
 	@RequestMapping( method = RequestMethod.GET, path = "/download-Invoice")
     public List<DownloadInvice> downloadInvoice(@RequestParam("broker") List<String> broker, @RequestParam("airwayBill") List<String> airwayBill) {
 		return superUserD2zService.downloadInvoice(broker, airwayBill);
