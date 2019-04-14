@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
+import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ApprovedInvoice;
@@ -67,5 +68,17 @@ public interface ISuperUserD2ZService{
 	public List<Reconcile> downloadReconcile(List<String> reconcileNumbers);
 
 	public List<DropDownModel> fetchNonD2zBrokerUserName();
+
+	public UserMessage uploadReconcileNonD2z(List<ReconcileData> reconcileData);
+
+	public List<ReconcileND> downloadNonD2zReconcile(List<String> nonD2zReconcileNumbers);
+
+	public List<InvoiceShipment> brokerNonD2zShipment();
+
+	public List<DownloadInvice> downloadNonD2zInvoice(List<String> broker,List<String> airwayBill);
+
+	public UserMessage approveNdInvoiced(ApprovedInvoice approvedInvoice);
+
+	public List<InvoiceShipment> brokerNdInvoiced();
 
 }

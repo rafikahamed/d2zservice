@@ -6,14 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.query.Procedure;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.BrokerRates;
 import com.d2z.d2zservice.entity.D2ZRates;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
+import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
@@ -34,6 +33,7 @@ import com.d2z.d2zservice.repository.ConsigneeCountRepository;
 import com.d2z.d2zservice.repository.D2ZRatesRepository;
 import com.d2z.d2zservice.repository.MlidRepository;
 import com.d2z.d2zservice.repository.NonD2ZDataRepository;
+import com.d2z.d2zservice.repository.ReconcileNDRepository;
 import com.d2z.d2zservice.repository.ReconcileRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
@@ -69,6 +69,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	
 	@Autowired
 	ReconcileRepository reconcileRepository;
+	
+	@Autowired
+	ReconcileNDRepository reconcileNDRepository;
 	
 	@Autowired
 	NonD2ZDataRepository nonD2ZDataRepository;
@@ -464,6 +467,59 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	public List<String> fetchNonD2zBrokerUserName() {
 		List<String> listOfNonBroker = userRepository.fetchNonD2zBrokerUserName();
 		return listOfNonBroker;
+	}
+
+	@Override
+	public NonD2ZData reconcileNonD2zData(String articleNo) {
+		NonD2ZData nonD2zData = nonD2ZDataRepository.reconcileNonD2zData(articleNo);
+		return nonD2zData;
+	}
+
+	@Override
+	public List<ReconcileND> reconcileNonD2zUpdate(List<ReconcileND> reconcileNoND2zList) {
+		List<ReconcileND> reconcileList =  (List<ReconcileND>) reconcileNDRepository.saveAll(reconcileNoND2zList);
+		return reconcileList;
+	}
+
+	@Override
+	public void reconcileratesND(List<String> reconcileArticleIdNum) {
+		nonD2ZDataRepository.reconcileratesND(reconcileArticleIdNum.stream().map(Object::toString).collect(Collectors.joining(",")));
+	}
+
+	@Override
+	public List<ReconcileND> downloadNonD2zReconcile(List<String> nonD2zReconcileNumbers) {
+		List<ReconcileND> reconcileNonD2zFinal =  (List<ReconcileND>) reconcileNDRepository.downloadNonD2zReconcile(nonD2zReconcileNumbers);
+		return reconcileNonD2zFinal;
+	}
+
+	@Override
+	public List<NonD2ZData> brokerNonD2zShipment() {
+		List<NonD2ZData> nonD2ZData = nonD2ZDataRepository.brokerNonD2zShipment();
+		return nonD2ZData;
+	}
+
+	@Override
+	public List<String> downloadNonD2zInvoice(List<String> broker,List<String> airwayBill) {
+		List<String> downloadInvoice = nonD2ZDataRepository.downloadNonD2zInvoice(broker,airwayBill);
+		return downloadInvoice;
+	}
+
+	@Override
+	public UserMessage approveNdInvoiced(ApprovedInvoice approvedInvoice) {
+		nonD2ZDataRepository.approveNdInvoiced(approvedInvoice.getIndicator(), approvedInvoice.getAirwaybill());
+		UserMessage userMsg = new UserMessage();
+		if(approvedInvoice.getIndicator().equalsIgnoreCase("Invoiced")) {
+			userMsg.setMessage("Invoiced Approved Successfully");
+		}else if(approvedInvoice.getIndicator().equalsIgnoreCase("Billed")) {
+			userMsg.setMessage("Invoiced Billed Successfully");
+		}
+		return userMsg;
+	}
+
+	@Override
+	public List<NonD2ZData> brokerNdInvoiced() {
+		List<NonD2ZData> nonD2ZApprovedData = nonD2ZDataRepository.brokerNdInvoiced();
+		return nonD2ZApprovedData;
 	}
 	
 }

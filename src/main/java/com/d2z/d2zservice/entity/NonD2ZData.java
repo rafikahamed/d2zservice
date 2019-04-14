@@ -1,6 +1,7 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
+
 import javax.persistence.*;
 
 
@@ -15,6 +16,12 @@ import javax.persistence.*;
 		  procedureName = "RatesND",
 		  parameters = {
 		      @StoredProcedureParameter(mode = ParameterMode.IN, name = "ArticleId", type = String.class)
+		  }),
+		  @NamedStoredProcedureQuery(name = "InvoiceUpdateND", 
+		  procedureName = "InvoiceUpdateND",
+		  parameters = {
+		      @StoredProcedureParameter(mode = ParameterMode.IN, name = "Indicator", type = String.class),
+		      @StoredProcedureParameter(mode = ParameterMode.IN, name = "Airwaybill", type = String.class)
 		  })
 	}
 )
