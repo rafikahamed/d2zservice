@@ -1028,14 +1028,14 @@ public class D2ZServiceImpl implements ID2ZService{
 		System.out.print("email:"+email+"message:"+messageData);
 		
 		final String fromEmail = "cs@d2z.com.au";
-		final String password ="PyfbE48921";
-		//final String toEmail ="customerservice@d2z.com.au";
+	
+		final String password ="rydjwqzrxhvcwhrb";
 		
-		
-		//final String msg ="Thaks for contacting us,D2Z team will reach you soon";
 		Properties props = new Properties();
-		props.put("mail.smtp.host", "outlook.office365.com"); //SMTP Host
-		//props.put("mail.smtp.host", "smtp.gmail.com");
+		
+
+		props.put("mail.smtp.host", "smtp.office365.com");
+	
 		props.put("mail.smtp.port", "587"); //TLS Port
 		props.put("mail.smtp.auth", "true"); //enable authentication
 		props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
@@ -1047,9 +1047,9 @@ public class D2ZServiceImpl implements ID2ZService{
 		};
 		
 		Session session = Session.getInstance(props, auth);
-		//emailUtil.sendEmail(session, email, fromEmail, name, messageData, subject);
-		//emailUtil.senderEmail(session, email, fromEmail, name, subject);
-		userMsg.setMessage("Thaks for contacting us,D2Z team will reach you soon");
+		emailUtil.sendEmail(session, email, fromEmail, name, messageData, subject);
+		emailUtil.senderEmail(session, email, fromEmail, name, subject);
+		userMsg.setMessage("Thanks for contacting us,D2Z team will reach you soon");
 		return userMsg;
 		
 	}
@@ -1058,4 +1058,6 @@ public class D2ZServiceImpl implements ID2ZService{
 	public void triggerFreipost() {
 		freipostWrapper.trackingEventService();
 	}
+	
+
 }
