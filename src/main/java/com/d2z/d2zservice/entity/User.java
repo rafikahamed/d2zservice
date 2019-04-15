@@ -83,8 +83,11 @@ public class User implements Serializable {
 	@Column(name="password")
 	private String password_value;
 
-	@Column(name="Autoshipment")
+	@Column(name="autoshipment")
 	private String autoShipment;
+	
+	@Column(name="TypeOfClient")
+	private String typeOfClient;
 	
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private Set<UserService> userService;
@@ -268,5 +271,14 @@ public class User implements Serializable {
 	public void setPassword_value(String password_value) {
 		this.password_value = password_value;
 	}
+	
+	public String getTypeOfClient() {
+		return this.typeOfClient;
+	}
+
+	public void setTypeOfClient(String typeOfClient) {
+		this.typeOfClient = typeOfClient;
+	}
+
 	
 }

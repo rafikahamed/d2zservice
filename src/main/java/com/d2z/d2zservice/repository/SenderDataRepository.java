@@ -37,7 +37,8 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query(nativeQuery = true, value="Select reference_number, consignee_name, substring(barcodelabelnumber,19,23) from senderdata_master where filename=:fileName and manifest_number is null and IsDeleted != 'Y'") 
 	List<String> fetchTrackingDetails(@Param("fileName") String fileName);
 
-	@Query(nativeQuery = true, value="Select reference_number from senderdata_master t and t.isDeleted = 'N'") 
+	
+	@Query(nativeQuery = true, value="Select reference_number from senderdata_master t where t.isDeleted = 'N'") 
 	List<String> fetchAllReferenceNumbers();
 	 
 	@Query(nativeQuery = true, value="Select reference_number, datamatrix from senderdata_master t where sender_Files_ID=:senderFileID") 

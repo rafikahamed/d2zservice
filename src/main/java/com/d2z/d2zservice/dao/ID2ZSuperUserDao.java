@@ -1,7 +1,10 @@
 package com.d2z.d2zservice.dao;
 
 import java.util.List;
+
+import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
+import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
@@ -61,5 +64,35 @@ public interface ID2ZSuperUserDao {
 	void reconcilerates(List<String> reconcileReferenceNum);
 
 	List<String> fetchNotBilled();
+
+	List<String> downloadInvoice(List<String> broker, List<String> airwayBill);
+
+	UserMessage fetchNonD2zClient(List<NonD2ZData> nonD2zData);
+
+	List<String> fetchAllArticleId();
+
+	List<Reconcile> downloadReconcile();
+
+	List<Reconcile> downloadReconcile(List<String> reconcileNumbers);
+
+	List<String> fetchNonD2zBrokerUserName();
+
+	NonD2ZData reconcileNonD2zData(String articleNo);
+
+	List<ReconcileND> reconcileNonD2zUpdate(List<ReconcileND> reconcileNoND2zList);
+
+	void reconcileratesND(List<String> reconcileArticleIdNum);
+
+	List<ReconcileND> downloadNonD2zReconcile(List<String> nonD2zReconcileNumbers);
+
+	List<NonD2ZData> brokerNonD2zShipment();
+
+	List<String> downloadNonD2zInvoice(List<String> broker, List<String> airwayBill);
+
+	UserMessage approveNdInvoiced(ApprovedInvoice approvedInvoice);
+
+	List<NonD2ZData> brokerNdInvoiced();
+
+	List<String> fetchNonD2zNotBilled();
 
 }

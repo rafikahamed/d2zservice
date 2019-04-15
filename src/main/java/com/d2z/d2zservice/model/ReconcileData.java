@@ -9,6 +9,7 @@ public class ReconcileData {
 	private String refrenceNumber;
 	private double chargedWeight;
 	private double cost;
+	private String postCode;
 	
 	public String getArticleNo() {
 		return articleNo;
@@ -53,6 +54,10 @@ public class ReconcileData {
 	public void setRefrenceNumber(String refrenceNumber) {
 		this.refrenceNumber = refrenceNumber;
 	}
-	
-	
+	public String getPostCode() {
+		return postCode;
+	}
+	public void setPostCode(String postCode) {
+		this.postCode = postCode;
+	}
 }

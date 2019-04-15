@@ -94,9 +94,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setConsignee_name(senderDataValue.getConsigneeName());
 			senderDataObj.setConsignee_addr1(senderDataValue.getConsigneeAddr1());
 			senderDataObj.setConsignee_addr2(senderDataValue.getConsigneeAddr2());
-			senderDataObj.setConsignee_Suburb(senderDataValue.getConsigneeSuburb());
-			senderDataObj.setConsignee_State(postCodeStateMap.get(senderDataValue.getConsigneePostcode()));
-			senderDataObj.setConsignee_Postcode(senderDataValue.getConsigneePostcode());
+			senderDataObj.setConsignee_Suburb(senderDataValue.getConsigneeSuburb().trim());
+			senderDataObj.setConsignee_State(postCodeStateMap.get(senderDataValue.getConsigneePostcode().trim()));
+			senderDataObj.setConsignee_Postcode(senderDataValue.getConsigneePostcode().trim());
 			senderDataObj.setConsignee_Phone(senderDataValue.getConsigneePhone());
 			senderDataObj.setProduct_Description(senderDataValue.getProductDescription());
 			senderDataObj.setValue(senderDataValue.getValue());

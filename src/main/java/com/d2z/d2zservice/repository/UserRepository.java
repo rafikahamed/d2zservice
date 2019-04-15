@@ -43,4 +43,7 @@ public interface UserRepository extends CrudRepository<User, Long>{
 	 @Query ("Select u.autoShipment from User u where u.user_Id = :user_Id")
 	String fetchAutoShipmentIndicator(Integer user_Id);
 
+	@Query ("Select u.username from User u where u.typeOfClient = 'NonD2Z'")
+	List<String> fetchNonD2zBrokerUserName();
+
 }

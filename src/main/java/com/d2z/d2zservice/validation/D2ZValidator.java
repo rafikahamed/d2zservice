@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
+import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
+import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.exception.InvalidServiceTypeException;
 import com.d2z.d2zservice.exception.InvalidSuburbPostcodeException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
@@ -22,6 +24,9 @@ public class D2ZValidator {
 
 	@Autowired
     private ID2ZDao d2zDao;
+	
+	@Autowired
+    private ID2ZSuperUserDao d2zSuperUserDao;
 
 	public void isPostCodeValid(List<SenderDataApi> senderData) {
 		List<String> postCodeZoneList = D2ZSingleton.getInstance().getPostCodeZoneList();
@@ -100,6 +105,26 @@ public class D2ZValidator {
 		
 		if(!duplicateRefNbr.isEmpty()) {
 			throw new ReferenceNumberNotUniqueException("Reference Number must be unique",duplicateRefNbr);
+		}
+	}
+	
+	
+	public void isArticleIdUniqueUI(List<NonD2ZData> nonD2zData) throws ReferenceNumberNotUniqueException{
+		List<String> articleNumber_DB = d2zSuperUserDao.fetchAllArticleId();
+		List<String> articleNbr = nonD2zData.stream().map(obj -> {
+			return obj.getArticleId(); })
+				.collect(Collectors.toList());
+		articleNumber_DB.addAll(articleNbr);
+
+		List<String> duplicateArticleNbr = articleNumber_DB.stream().collect(Collectors.groupingBy(Function.identity(),     
+	              Collectors.counting()))                                             
+	          .entrySet().stream()
+	          .filter(e -> e.getValue() > 1)                                      
+	          .map(e -> e.getKey())                                                  
+	          .collect(Collectors.toList());
+		
+		if(!duplicateArticleNbr.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Article Number must be unique",duplicateArticleNbr);
 		}
 	}
 

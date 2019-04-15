@@ -8,22 +8,29 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
+import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
+import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
+import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
+import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.BrokerShipmentList;
 import com.d2z.d2zservice.model.D2ZRatesData;
+import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
@@ -35,6 +42,7 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
+import com.d2z.d2zservice.validation.D2ZValidator;
 
 @Service
 public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
@@ -48,7 +56,9 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	@Autowired
 	private ETowerProxy proxy;
 	
-	
+	@Autowired
+    private D2ZValidator d2zValidator;
+
 	@Override
 	public UserMessage uploadTrackingFile(List<UploadTrackingFileData> fileData){
 		UserMessage userMsg = new UserMessage();
@@ -276,9 +286,12 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	}
 
 	@Override
-	public List<Reconcile> fetchReconcile(List<ReconcileData> reconcileData) {
+	public UserMessage fetchReconcile(List<ReconcileData> reconcileData) {
+		//this.reconcileFlag = false;
 		List<Reconcile> reconcileCalculatedList = new ArrayList<Reconcile>();
+		//List<Reconcile> reconcileCalculatedMissedList = new ArrayList<Reconcile>();
 		List<String> reconcileReferenceNum = new ArrayList<String>();
+		//List<Reconcile> reconcileFinal = new ArrayList<Reconcile>();
 		reconcileData.forEach(reconcile -> {
 			List<String> reconcileList = d2zDao.reconcileData(reconcile.getArticleNo(), reconcile.getRefrenceNumber());
 			Reconcile reconcileObj = new Reconcile();
@@ -300,26 +313,36 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 					 reconcileObj.setD2ZWeight(Double.parseDouble(obj[5].toString()));
 				 if(obj[6] != null)
 					 reconcileObj.setInvoicedAmount(new BigDecimal(obj[6].toString()));
-				 if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("supplierOne")) {
+				 if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("UBI")) {
 					 reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getNormalRateParcel()));
 					 reconcileObj.setSupplierWeight(reconcile.getArticleActualWeight());
 					 reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
-				 }else if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("supplierTwo")) {
+				 }else if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("freipost")) {
 					 reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getCost()));
 					 reconcileObj.setSupplierWeight(reconcile.getChargedWeight());
 					 reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
 				 }
 				 if(reconcileObj.getSupplierCharge() != null && reconcileObj.getD2ZCost() != null)
 					 reconcileObj.setCostDifference(reconcileObj.getSupplierCharge().subtract(reconcileObj.getD2ZCost(), mc));
+				 reconcileObj.setSupplierType(reconcileData.get(0).getSupplierType());
 			 }
-			reconcileReferenceNum.add(reconcileObj.getReference_number());
-			reconcileCalculatedList.add(reconcileObj);
+			 reconcileCalculatedList.add(reconcileObj);
+			 if(reconcileObj.getBrokerUserName() != null ) {
+				 reconcileReferenceNum.add(reconcileObj.getReference_number());
+			 }else {
+				 if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("UBI")) {
+					 reconcileObj.setArticleId(reconcile.getArticleNo());
+				}else if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("freipost")){
+					 reconcileObj.setReference_number(reconcile.getRefrenceNumber());
+				}
+			 }
+			 reconcileCalculatedList.add(reconcileObj);
 		});
-		d2zDao.reconcileUpdate(reconcileCalculatedList);
-		//Calling Delete Store Procedure
-		d2zDao.reconcilerates(reconcileReferenceNum);
-		List<Reconcile> reconcileFinal = d2zDao.fetchReconcileData(reconcileReferenceNum);
-		return reconcileFinal;
+			d2zDao.reconcileUpdate(reconcileCalculatedList);
+			d2zDao.reconcilerates(reconcileReferenceNum);
+			UserMessage userMsg = new UserMessage();
+			userMsg.setMessage("Reconcile data uploaded successfully, Please click download button to explore the data");
+			return userMsg;
 	}
 
 	@Override
@@ -332,6 +355,194 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	@Override
 	public List<NotBilled> fetchNotBilled() {
 		List<String> notBilledData = d2zDao.fetchNotBilled();
+		List<NotBilled> notBilledList = new ArrayList<NotBilled>();
+		Iterator itr = notBilledData.iterator();
+		 while(itr.hasNext()) {
+			 Object[] obj = (Object[]) itr.next();
+			 NotBilled notBilled = new NotBilled();
+			 if(obj[0] != null)
+				 notBilled.setUserName(obj[0].toString());
+			 if(obj[1] != null)
+				 notBilled.setAirwayBill(obj[1].toString());
+			 if(obj[2] != null)
+				 notBilled.setArticleId(obj[2].toString());
+			 if(obj[3] != null)
+				 notBilled.setReferenceNumber(obj[3].toString());
+			 if(obj[4] != null)
+				 notBilled.setD2zRate(Double.parseDouble(obj[4].toString()));
+			 notBilledList.add(notBilled);
+       }
+		return notBilledList;
+	}
+
+	@Override
+	public List<DownloadInvice> downloadInvoice(List<String> broker, List<String> airwayBill) {
+		List<String> downloadInvoiceData = d2zDao.downloadInvoice(broker,airwayBill);
+		List<DownloadInvice> downloadInvoiceList = new ArrayList<DownloadInvice>();
+		Iterator itr = downloadInvoiceData.iterator();
+		 while(itr.hasNext()) {
+			 Object[] obj = (Object[]) itr.next();
+			 DownloadInvice downloadInvoice = new DownloadInvice();
+			 if(obj[0] != null)
+				 downloadInvoice.setTrackingNumber(obj[0].toString());
+			 if(obj[1] != null)
+				 downloadInvoice.setReferenceNuber(obj[1].toString());
+			 if(obj[2] != null)
+				 downloadInvoice.setPostcode(obj[2].toString());
+			 if(obj[3] != null)
+				 downloadInvoice.setWeight(obj[3].toString());
+			 if(obj[4] != null)
+				 downloadInvoice.setPostage(obj[4].toString());
+			 if(obj[5] != null)
+				 downloadInvoice.setFuelsurcharge(obj[5].toString());
+			 if(obj[6] != null)
+				 downloadInvoice.setTotal(obj[6].toString());
+			 downloadInvoiceList.add(downloadInvoice);
+       }
+		return downloadInvoiceList;
+	}
+
+	@Override
+	public UserMessage fetchNonD2zClient(List<NonD2ZData> nonD2zData) throws ReferenceNumberNotUniqueException {
+		d2zValidator.isArticleIdUniqueUI(nonD2zData);
+		UserMessage uploadNonD2zClient= d2zDao.fetchNonD2zClient(nonD2zData);
+		return uploadNonD2zClient;
+	}
+
+	@Override
+	public List<Reconcile> downloadReconcile(List<String> reconcileNumbers) {
+		List<Reconcile> reconcileData = d2zDao.downloadReconcile(reconcileNumbers);
+		return reconcileData;
+	}
+
+	@Override
+	public List<DropDownModel> fetchNonD2zBrokerUserName() {
+		List<String> listOffBrokerName= d2zDao.fetchNonD2zBrokerUserName();
+		List<DropDownModel> dropDownList= new ArrayList<DropDownModel>();
+		for(String brokerName:listOffBrokerName) {
+			DropDownModel dropDownVaL = new DropDownModel();
+			dropDownVaL.setName(brokerName);
+			dropDownVaL.setValue(brokerName);
+			dropDownList.add(dropDownVaL);
+		}
+		return dropDownList;
+	}
+
+	@Override
+	public UserMessage uploadReconcileNonD2z(List<ReconcileData> reconcileNonD2zData) {
+		List<ReconcileND> reconcileNoND2zList = new ArrayList<ReconcileND>();
+		List<String> reconcileArticleIdNum = new ArrayList<String>();
+		reconcileNonD2zData.forEach(reconcileNonD2z -> {
+			NonD2ZData reconcileObj = d2zDao.reconcileNonD2zData(reconcileNonD2z.getArticleNo());
+			ReconcileND reconcileNonD2Obj = new ReconcileND();
+			MathContext mc = new MathContext(2);
+			if(reconcileObj != null){
+				reconcileNonD2Obj.setBrokerUserName(reconcileObj.getBrokerName());
+				reconcileNonD2Obj.setAirwaybill(reconcileObj.getShipmentNumber());
+				reconcileNonD2Obj.setArticleId(reconcileObj.getArticleId());
+				reconcileNonD2Obj.setReference_number(reconcileObj.getReference_number());
+					reconcileNonD2Obj.setSupplierCharge(BigDecimal.valueOf(reconcileNonD2z.getCost()));
+				if(reconcileObj.getD2Zrate() != null)
+					reconcileNonD2Obj.setD2ZCost(new BigDecimal(reconcileObj.getD2Zrate()));
+				if(reconcileNonD2Obj.getSupplierCharge() != null && reconcileNonD2Obj.getD2ZCost() != null)
+					reconcileNonD2Obj.setCostDifference(reconcileNonD2Obj.getSupplierCharge().subtract(reconcileNonD2Obj.getD2ZCost(), mc));
+				reconcileNonD2Obj.setSupplierWeight(reconcileNonD2z.getChargedWeight());
+				reconcileNonD2Obj.setD2ZWeight(reconcileObj.getWeight());
+				reconcileNonD2Obj.setWeightDifference((reconcileNonD2Obj.getSupplierWeight()) - (reconcileNonD2Obj.getD2ZWeight()));
+				if(reconcileObj.getBrokerRate() != null)
+					reconcileNonD2Obj.setInvoicedAmount(new BigDecimal(reconcileObj.getBrokerRate()));
+				reconcileNonD2Obj.setSupplierType(reconcileNonD2z.getSupplierType());
+				reconcileArticleIdNum.add(reconcileObj.getArticleId());
+			}else{
+				reconcileNonD2Obj.setArticleId(reconcileNonD2z.getArticleNo());
+			}
+			reconcileNoND2zList.add(reconcileNonD2Obj);
+		});
+			d2zDao.reconcileNonD2zUpdate(reconcileNoND2zList);
+			if(!reconcileArticleIdNum.isEmpty())
+				d2zDao.reconcileratesND(reconcileArticleIdNum);
+			UserMessage userMsg = new UserMessage();
+			userMsg.setMessage("Reconcile data uploaded successfully, Please click download button to explore the data");
+			return userMsg;
+	}
+
+	@Override
+	public List<ReconcileND> downloadNonD2zReconcile(List<String> nonD2zReconcileNumbers) {
+		List<ReconcileND> nonD2zReconcileData = d2zDao.downloadNonD2zReconcile(nonD2zReconcileNumbers);
+		return nonD2zReconcileData;
+	}
+
+	@Override
+	public List<InvoiceShipment> brokerNonD2zShipment() {
+		List<NonD2ZData> pendingNonD2zInvoice = d2zDao.brokerNonD2zShipment();
+		List<InvoiceShipment> invoiceShipmentList = new ArrayList<InvoiceShipment>();
+		Iterator itr = pendingNonD2zInvoice.iterator();
+		 while(itr.hasNext()) {
+			 Object[] obj = (Object[]) itr.next();
+			 InvoiceShipment invoiceShipment = new InvoiceShipment();
+			 if(obj[0] != null)
+				 invoiceShipment.setBrokerName(obj[0].toString());
+			 if(obj[1] != null)
+				 invoiceShipment.setShipmentNumber(obj[1].toString());
+			 invoiceShipmentList.add(invoiceShipment);
+       }
+		return invoiceShipmentList;
+	}
+
+	@Override
+	public List<DownloadInvice> downloadNonD2zInvoice(List<String> broker,List<String> airwayBill) {
+		List<String> downloadNonD2zInvoiceData = d2zDao.downloadNonD2zInvoice(broker,airwayBill);
+		List<DownloadInvice> downloadNonD2zInvoiceList = new ArrayList<DownloadInvice>();
+		Iterator itr = downloadNonD2zInvoiceData.iterator();
+		 while(itr.hasNext()) {
+			 Object[] obj = (Object[]) itr.next();
+			 DownloadInvice downloadInvoice = new DownloadInvice();
+			 if(obj[0] != null)
+				 downloadInvoice.setTrackingNumber(obj[0].toString());
+			 if(obj[1] != null)
+				 downloadInvoice.setReferenceNuber(obj[1].toString());
+			 if(obj[2] != null)
+				 downloadInvoice.setPostcode(obj[2].toString());
+			 if(obj[3] != null)
+				 downloadInvoice.setWeight(obj[3].toString());
+			 if(obj[4] != null)
+				 downloadInvoice.setPostage(obj[4].toString());
+			 if(obj[5] != null)
+				 downloadInvoice.setFuelsurcharge(obj[5].toString());
+			 if(obj[6] != null)
+				 downloadInvoice.setTotal(obj[6].toString());
+			 downloadNonD2zInvoiceList.add(downloadInvoice);
+       }
+		return downloadNonD2zInvoiceList;
+	}
+
+	@Override
+	public UserMessage approveNdInvoiced(ApprovedInvoice approvedInvoice) {
+	//Calling Delete Store Procedure
+	UserMessage approvedInvoiceMsg= d2zDao.approveNdInvoiced(approvedInvoice);
+	return approvedInvoiceMsg;
+	}
+
+	@Override
+	public List<InvoiceShipment> brokerNdInvoiced() {
+		List<NonD2ZData> approvedNonD2zInvoice = d2zDao.brokerNdInvoiced();
+		List<InvoiceShipment> approvedShipmentList = new ArrayList<InvoiceShipment>();
+		Iterator itr = approvedNonD2zInvoice.iterator();
+		 while(itr.hasNext()) {
+			 Object[] obj = (Object[]) itr.next();
+			 InvoiceShipment invoiceShipment = new InvoiceShipment();
+			 if(obj[0] != null)
+				 invoiceShipment.setBrokerName(obj[0].toString());
+			 if(obj[1] != null)
+				 invoiceShipment.setShipmentNumber(obj[1].toString());
+			 approvedShipmentList.add(invoiceShipment);
+       }
+		return approvedShipmentList;
+	}
+
+	@Override
+	public List<NotBilled> fetchNonD2zNotBilled() {
+		List<String> notBilledData = d2zDao.fetchNonD2zNotBilled();
 		List<NotBilled> notBilledList = new ArrayList<NotBilled>();
 		Iterator itr = notBilledData.iterator();
 		 while(itr.hasNext()) {

@@ -23,8 +23,8 @@ public class D2ZRates implements Serializable {
 	@Column(name="RoWID")
     private int rowId;
 	
-	@Column(name="MLID")
-	private String MLID;
+	@Column(name="ServiceType")
+	private String serviceType;
 	
 	@Column(name="ZoneID")
 	private String zoneID;
@@ -40,9 +40,6 @@ public class D2ZRates implements Serializable {
 	
 	@Column(name="FuelSurcharge")
 	private String fuelSurcharge;
-
-	@Column(name="GST")
-	private String GST;
 	
 	@Column(name="Timestamp")
 	private String timestamp;
@@ -50,15 +47,6 @@ public class D2ZRates implements Serializable {
 	@Column(name="BackupInd")
 	private String backupInd;
 	
-	 
-	
-	public String getMLID() {
-		return MLID;
-	}
-
-	public void setMLID(String mLID) {
-		MLID = mLID;
-	}
 
 	public String getTimestamp() {
 		return timestamp;
@@ -124,13 +112,12 @@ public class D2ZRates implements Serializable {
 		this.fuelSurcharge = fuelSurcharge;
 	}
 
-	public String getGST() {
-		return GST;
+	public String getServiceType() {
+		return serviceType;
 	}
 
-	public void setGST(String gST) {
-		GST = gST;
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
 	}
-	
 	
 }
