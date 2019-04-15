@@ -42,7 +42,6 @@ import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
-import com.d2z.d2zservice.wrapper.ETowerWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
@@ -73,9 +72,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	@Autowired
 	APIRatesRepository apiRatesRepository;
 	
-	@Autowired
-	private ETowerWrapper etowerWrapper;
-	
+
 	@Autowired
 	private ETowerProxy eTowerProxy;
 	@Override
