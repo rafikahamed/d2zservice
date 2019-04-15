@@ -79,4 +79,6 @@ public interface ID2ZService {
 	public List<PostCodeWeight> getRates(@Valid APIRatesRequest request);
 
 	public UserMessage contactUs(String email, String message, String name, String subject);
+
+	public void triggerFreipost();
 }

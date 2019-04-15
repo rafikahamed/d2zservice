@@ -7,17 +7,25 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
+
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
 import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
@@ -47,17 +55,24 @@ import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.TrackingEvents;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.model.auspost.CreateShippingRequest;
+import com.d2z.d2zservice.model.auspost.FromAddress;
+import com.d2z.d2zservice.model.auspost.Items;
+import com.d2z.d2zservice.model.auspost.ShipmentRequest;
+import com.d2z.d2zservice.model.auspost.ToAddress;
+import com.d2z.d2zservice.proxy.AusPostProxy;
 import com.d2z.d2zservice.proxy.EbayProxy;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
+import com.d2z.d2zservice.util.EmailUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
+import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
+
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -72,9 +87,6 @@ import uk.org.okapibarcode.backend.OkapiException;
 import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.backend.Symbol.DataType;
 import uk.org.okapibarcode.output.Java2DRenderer;
-import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
 
 @Service
 public class D2ZServiceImpl implements ID2ZService{
@@ -97,7 +109,14 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Autowired
 	private EbayProxy proxy;
 	
+	@Autowired
+	EmailUtil emailUtil; 
 	
+	@Autowired
+	FreipostWrapper freipostWrapper; 
+	
+	@Autowired
+	AusPostProxy ausPostProxy;
 	
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException{
@@ -633,10 +652,77 @@ public class D2ZServiceImpl implements ID2ZService{
 		}
 		
 		String msg = d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
+		List<SenderdataMaster> senderData =  d2zDao.fetchDataForAusPost(refNbrs);
+		if(null != senderData && !senderData.isEmpty()) {
+			Runnable r = new Runnable( ) {			
+		        public void run() {
+		        	 makeCalltoAusPost(senderData);
+		        }
+		     };
+		    new Thread(r).start();
+		}
 		userMsg.setResponseMessage(msg);
 		return userMsg;
 	}
+	private void makeCalltoAusPost(List<SenderdataMaster> senderData) {
+		CreateShippingRequest request =  new CreateShippingRequest();
+		
+		Date dNow = new Date();
+        SimpleDateFormat ft = new SimpleDateFormat("yyMMddhhmm");
+        String orderRef = ft.format(dNow);
+        
+        request.setOrder_reference(orderRef);
+        request.setPayment_method("CHARGE_TO_ACCOUNT");
+        
+        List<ShipmentRequest> shipments = new ArrayList<ShipmentRequest>();
+        for(SenderdataMaster data : senderData)
+        {
+        ShipmentRequest shipmentRequest = new ShipmentRequest();
+        shipmentRequest.setSender_references(data.getReference_number());
+        shipmentRequest.setEmail_tracking_enabled(data.getConsignee_Email()!=null);
+       
+        FromAddress from = new FromAddress();
+        
+        shipmentRequest.setFrom(from);
+        
+        ToAddress to = new ToAddress();
+        to.setName(data.getConsignee_name());
+        to.setPostcode(data.getConsignee_Postcode());
+        to.setState(data.getConsignee_State());
+        to.setSuburb(data.getConsignee_Suburb());
+        to.getLines().add(data.getConsignee_addr1());
+        to.setPhone(data.getConsignee_Phone());
+        to.setEmail(data.getConsignee_Email());
+        to.setDelivery_instructions(data.getDeliveryInstructions());
+        shipmentRequest.setTo(to);
+        
+        List<Items> items = new ArrayList<Items>();
+        Items item = new Items();
+        item.setHeight(data.getDimensions_Height() == null ? "" : data.getDimensions_Height().toString());
+        item.setLength(data.getDimensions_Length() == null ? "" : data.getDimensions_Length().toString());
+        item.setWidth(data.getDimensions_Width() == null ? "" : data.getDimensions_Width().toString());
+        item.setItem_description(data.getProduct_Description());
+        item.setWeight(String.valueOf(data.getWeight()));
+       
+        com.d2z.d2zservice.model.auspost.TrackingDetails trackingDetail = new com.d2z.d2zservice.model.auspost.TrackingDetails();
+        trackingDetail.setArticle_id(data.getArticleId());
+        StringBuffer barcode = new StringBuffer(data.getDatamatrix().replaceAll("\\[|\\]", ""));
+        barcode.insert(41, '|');
+        barcode.insert(49, '|');
+        trackingDetail.setBarcode_id(barcode.toString());
+        trackingDetail.setConsignment_id(data.getArticleId().substring(0, 20));
+        item.setTracking_details(trackingDetail);
 
+        items.add(item);
+        shipmentRequest.setItems(items);
+
+        shipments.add(shipmentRequest);
+        }
+        
+        request.setShipments(shipments);       
+        
+		ausPostProxy.createOrderIncludingShipments(request);
+	}
 	@Override
 	public UserMessage addUser(UserDetails userData) {
 		UserMessage userMsg = new UserMessage();
@@ -965,5 +1051,10 @@ public class D2ZServiceImpl implements ID2ZService{
 		userMsg.setMessage("Thaks for contacting us,D2Z team will reach you soon");
 		return userMsg;
 		
+	}
+
+	@Override
+	public void triggerFreipost() {
+		freipostWrapper.trackingEventService();
 	}
 }

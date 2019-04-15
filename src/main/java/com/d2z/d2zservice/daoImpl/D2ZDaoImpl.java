@@ -749,4 +749,10 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return senderDataRepository.fetchConsignmentsManifestShippment(incomingRefNbr);
 	}
 
+	@Override
+	public List<SenderdataMaster> fetchDataForAusPost(String[] refNbrs) {
+		// TODO Auto-generated method stub
+		return senderDataRepository.fetchDataForAusPost(refNbrs);
+	}
+
 }

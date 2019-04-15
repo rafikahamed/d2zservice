@@ -179,6 +179,9 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	
 	@Query("SELECT t.user_ID FROM SenderdataMaster t where  t.reference_number = :reference_number")
 	 Integer fetchUserIdByReferenceNumber( String reference_number);
+
+	@Query("SELECT t FROM SenderdataMaster t where t.reference_number in :refNbrs and mlid = '33PE9'")
+	List<SenderdataMaster> fetchDataForAusPost(String[] refNbrs);
 	 
 
 } 

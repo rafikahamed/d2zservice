@@ -188,4 +188,9 @@ public class D2zController {
 		UserMessage userMsg = d2zService.contactUs(email, message, name, subject);
 		return userMsg;
     }
+	@RequestMapping(method = RequestMethod.GET, path = "/freipost")
+	 public void triggerFreipost() {
+		d2zService.triggerFreipost();
+		
+	}	
 }   

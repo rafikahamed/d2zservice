@@ -95,5 +95,7 @@ public interface ID2ZDao {
 
 	public List<SenderdataMaster> fetchConsignmentsManifestShippment(List<String> incomingRefNbr);
 
+	public List<SenderdataMaster> fetchDataForAusPost(String[] refNbrs);
+
 
 }
