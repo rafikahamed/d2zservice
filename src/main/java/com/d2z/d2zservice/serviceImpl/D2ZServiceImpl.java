@@ -703,7 +703,7 @@ public class D2ZServiceImpl implements ID2ZService{
         item.setLength(data.getDimensions_Length() == null ? "" : data.getDimensions_Length().toString());
         item.setWidth(data.getDimensions_Width() == null ? "" : data.getDimensions_Width().toString());
         item.setItem_description(data.getProduct_Description());
-        item.setWeight(String.valueOf(data.getWeight()));
+        item.setWeight(data.getCubic_Weight()==null ? "": data.getCubic_Weight().toString());
        
         com.d2z.d2zservice.model.auspost.TrackingDetails trackingDetail = new com.d2z.d2zservice.model.auspost.TrackingDetails();
         trackingDetail.setArticle_id(data.getArticleId());
