@@ -14,7 +14,9 @@ import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
+import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.UserDetails;
+import com.d2z.d2zservice.model.etower.CreateShippingRequest;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
@@ -96,6 +98,11 @@ public interface ID2ZDao {
 	public List<SenderdataMaster> fetchConsignmentsManifestShippment(List<String> incomingRefNbr);
 
 	public List<SenderdataMaster> fetchDataForAusPost(String[] refNbrs);
+
+	public void createShippingOrderEtower(List<CreateShippingRequest> eTowerRequest,
+			List<SenderDataResponse> senderDataResponseList);
+
+	public int fetchUserIdByReferenceNumber(String string);
 
 
 }

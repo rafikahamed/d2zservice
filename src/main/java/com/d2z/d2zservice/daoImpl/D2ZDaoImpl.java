@@ -24,6 +24,7 @@ import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
+import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.etower.CreateShippingRequest;
 import com.d2z.d2zservice.model.etower.CreateShippingResponse;
@@ -175,55 +176,75 @@ public class D2ZDaoImpl implements ID2ZDao{
 				request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
 				eTowerRequest.add(request);
 			}
-			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest);
-			//CreateShippingResponse response = eTowerProxy.makeStubForCreateShippingOrder();
-			 List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
-			 if(response!=null) {
-	     			List<ResponseData> responseData = response.getData();
-	     			if(responseData== null && null!=response.getErrors()) {
-	     				 for(EtowerErrorResponse error : response.getErrors()) {
-	 	     				ETowerResponse errorResponse  = new ETowerResponse();
-	     				 	errorResponse.setAPIName("Create Shipping Order");
-		     			 	errorResponse.setStatus(response.getStatus());
-	     				 	errorResponse.setErrorCode(error.getCode());
-	     				 	errorResponse.setErrorMessage(error.getMessage());
-	     				 	responseEntity.add(errorResponse);
-	     				}
-	     			}
-	     			
-	     			for(ResponseData data : responseData) {
-	     				List<EtowerErrorResponse> errors = data.getErrors();
-	     				if(null == errors) {
+			createShippingOrderEtower(eTowerRequest,null);
+			
+		}
+	}
+	public void createShippingOrderEtower(List<CreateShippingRequest> eTowerRequest,List<SenderDataResponse> senderDataResponseList) {
+		CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest);
+		//CreateShippingResponse response = eTowerProxy.makeStubForCreateShippingOrder();
+		parseEtowerCreateShippingResponse(response,senderDataResponseList);
+	}
+	private void parseEtowerCreateShippingResponse(CreateShippingResponse response,List<SenderDataResponse> senderDataResponseList) {
+		List<String> gainLabelTrackingNo = new ArrayList<String>();
+		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
+		 if(response!=null) {
+    			List<ResponseData> responseData = response.getData();
+    			if(responseData== null && null!=response.getErrors()) {
+    				 for(EtowerErrorResponse error : response.getErrors()) {
 	     				ETowerResponse errorResponse  = new ETowerResponse();
-  				 	errorResponse.setAPIName("Create Shipping Order");
+    				 	errorResponse.setAPIName("Create Shipping Order");
+	     			 	errorResponse.setStatus(response.getStatus());
+    				 	errorResponse.setErrorCode(error.getCode());
+    				 	errorResponse.setErrorMessage(error.getMessage());
+    				 	responseEntity.add(errorResponse);
+    				}
+    			}
+    			
+    			for(ResponseData data : responseData) {
+    				List<EtowerErrorResponse> errors = data.getErrors();
+    				if(null == errors) {
+    				ETowerResponse errorResponse  = new ETowerResponse();
+				 	errorResponse.setAPIName("Create Shipping Order");
+    			 	errorResponse.setStatus(data.getStatus());
+    			 	errorResponse.setOrderId(data.getOrderId());
+    		 		errorResponse.setReferenceNumber(data.getReferenceNo());
+    		 		errorResponse.setTrackingNo(data.getTrackingNo());
+    		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+    		 		responseEntity.add(errorResponse);
+    		 		if(null!=senderDataResponseList) {
+    		 			gainLabelTrackingNo.add(data.getTrackingNo());
+    		 			SenderDataResponse senderDataresponse = new SenderDataResponse();
+    		 			senderDataresponse.setReferenceNumber(data.getReferenceNo());
+    		 			senderDataresponse.setBarcodeLabelNumber(data.getTrackingNo());
+    		 			senderDataResponseList.add(senderDataresponse);
+    		 		}
+    		 		
+    				}
+    				else {
+    				 for(EtowerErrorResponse error : errors) {
+    					ETowerResponse errorResponse  = new ETowerResponse();
+	     			 	errorResponse.setAPIName("Create Shipping Order");
+	     			 	errorResponse.setStatus(response.getStatus());
 	     			 	errorResponse.setStatus(data.getStatus());
 	     			 	errorResponse.setOrderId(data.getOrderId());
 	     		 		errorResponse.setReferenceNumber(data.getReferenceNo());
 	     		 		errorResponse.setTrackingNo(data.getTrackingNo());
 	     		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-	     		 		responseEntity.add(errorResponse);
-	     				}
-	     				else {
-	     				 for(EtowerErrorResponse error : errors) {
-	     					ETowerResponse errorResponse  = new ETowerResponse();
-		     			 	errorResponse.setAPIName("Create Shipping Order");
-		     			 	errorResponse.setStatus(response.getStatus());
-		     			 	errorResponse.setStatus(data.getStatus());
-		     			 	errorResponse.setOrderId(data.getOrderId());
-		     		 		errorResponse.setReferenceNumber(data.getReferenceNo());
-		     		 		errorResponse.setTrackingNo(data.getTrackingNo());
-		     		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-	     				    errorResponse.setErrorCode(error.getCode());
-	     				 	errorResponse.setErrorMessage(error.getMessage());
-	    				 	responseEntity.add(errorResponse);
-	     				}
-	     				}
-	     			}
-	     			}
-	     				logEtowerResponse(responseEntity);
-	        
-		}
+    				    errorResponse.setErrorCode(error.getCode());
+    				 	errorResponse.setErrorMessage(error.getMessage());
+   				 	responseEntity.add(errorResponse);
+    				}
+    				}
+    			}
+    			}
+    				logEtowerResponse(responseEntity);
+    				if(!gainLabelTrackingNo.isEmpty()) {
+    					eTowerProxy.makeCallToGainLabels(gainLabelTrackingNo);
+    				}
+		
 	}
+
 	@Override
 	public List<String> fileList(Integer userId) {
 		List<String> listOfFileNames= senderDataRepository.fetchFileName(userId);
@@ -273,12 +294,6 @@ public class D2ZDaoImpl implements ID2ZDao{
 	public String manifestCreation(String manifestNumber, String refrenceNumber) {
 		//Calling Delete Store Procedure
 		senderDataRepository.manifestCreation(manifestNumber, refrenceNumber);
-		String [] refNbrs = refrenceNumber.split(",");
-		int userId = senderDataRepository.fetchUserIdByReferenceNumber(refNbrs[0]);
-		String autoShipment = userRepository.fetchAutoShipmentIndicator(userId);
-		if("Y".equalsIgnoreCase(autoShipment)) {
-			allocateShipment(refrenceNumber, manifestNumber.concat("AutoShip"));
-		}
 		return "Manifest Updated Successfully";
 	}
 
@@ -750,6 +765,12 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public List<SenderdataMaster> fetchDataForAusPost(String[] refNbrs) {
 		// TODO Auto-generated method stub
 		return senderDataRepository.fetchDataForAusPost(refNbrs);
+	}
+
+	@Override
+	public int fetchUserIdByReferenceNumber(String reference_number) {
+		int userID = senderDataRepository.fetchUserIdByReferenceNumber(reference_number);
+		return userID;
 	}
 
 }

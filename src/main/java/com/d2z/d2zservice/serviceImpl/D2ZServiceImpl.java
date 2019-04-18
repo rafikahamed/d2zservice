@@ -48,6 +48,7 @@ import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
+import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
 import com.d2z.d2zservice.model.TrackParcel;
@@ -60,6 +61,7 @@ import com.d2z.d2zservice.model.auspost.FromAddress;
 import com.d2z.d2zservice.model.auspost.Items;
 import com.d2z.d2zservice.model.auspost.ShipmentRequest;
 import com.d2z.d2zservice.model.auspost.ToAddress;
+import com.d2z.d2zservice.model.etower.CreateShippingResponse;
 import com.d2z.d2zservice.proxy.AusPostProxy;
 import com.d2z.d2zservice.proxy.EbayProxy;
 import com.d2z.d2zservice.repository.UserRepository;
@@ -460,8 +462,20 @@ public class D2ZServiceImpl implements ID2ZService{
 	}
 
 	@Override
-	public UserMessage manifestCreation(String manifestNumber, String refrenceNumber) {
-		String fileUploadData= d2zDao.manifestCreation(manifestNumber, refrenceNumber);
+	public UserMessage manifestCreation(String manifestNumber, String referenceNumber) {
+		String fileUploadData= d2zDao.manifestCreation(manifestNumber, referenceNumber);
+		String [] refNbrs = referenceNumber.split(",");
+		int userId = d2zDao.fetchUserIdByReferenceNumber(refNbrs[0]);
+		String autoShipment = userRepository.fetchAutoShipmentIndicator(userId);
+
+		if("Y".equalsIgnoreCase(autoShipment)) {
+			try {
+				allocateShipment(referenceNumber, manifestNumber.concat("AutoShip"));
+			} catch (ReferenceNumberNotUniqueException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		UserMessage userMsg = new UserMessage();
 		userMsg.setMessage(fileUploadData);
 		return userMsg;
@@ -604,10 +618,18 @@ public class D2ZServiceImpl implements ID2ZService{
 		d2zValidator.isReferenceNumberUnique(orderDetail.getConsignmentData());
 		d2zValidator.isServiceValid(orderDetail);
 		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
-		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(),userId,orderDetail.getUserName());
-		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
+	
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
+	
+		if("1PS2".equalsIgnoreCase(orderDetail.getConsignmentData().get(0).getServiceType())){
+			makeCreateShippingOrderEtowerCall(orderDetail,senderDataResponseList);
+			 return senderDataResponseList;
+		}
+		
+		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(),userId,orderDetail.getUserName());
+		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
+		
 		Iterator itr = insertedOrder.iterator();
 		 while(itr.hasNext()) {   
 			 Object[] obj = (Object[]) itr.next();
@@ -620,6 +642,39 @@ public class D2ZServiceImpl implements ID2ZService{
        }
 		
 		return senderDataResponseList;
+	}
+
+	private void makeCreateShippingOrderEtowerCall(CreateConsignmentRequest data,List<SenderDataResponse> senderDataResponseList) {
+		List<com.d2z.d2zservice.model.etower.CreateShippingRequest> eTowerRequest = new ArrayList<com.d2z.d2zservice.model.etower.CreateShippingRequest>();
+
+		for(SenderDataApi orderDetail : data.getConsignmentData()) {
+			com.d2z.d2zservice.model.etower.CreateShippingRequest request = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
+			
+			request.setReferenceNo(orderDetail.getReferenceNumber());
+			request.setRecipientCompany(orderDetail.getConsigneeCompany());
+			String recpName = orderDetail.getConsigneeName().length() >34 ? orderDetail.getConsigneeName().substring(0, 34) : orderDetail.getConsigneeName(); 
+			request.setRecipientName(recpName);
+			request.setAddressLine1(orderDetail.getConsigneeAddr1());
+			request.setAddressLine2(orderDetail.getConsigneeAddr2());
+			request.setEmail(orderDetail.getConsigneeEmail());
+			request.setCity(orderDetail.getConsigneeSuburb());
+			request.setState(orderDetail.getConsigneeState());
+			request.setPostcode(orderDetail.getConsigneePostcode());
+			if(("Express").equalsIgnoreCase(orderDetail.getCarrier())){
+			request.setServiceOption("Express-Post");
+			}
+			else {
+				request.setServiceOption("E-Parcel");
+
+			}
+			request.setFacility(orderDetail.getInjectionState());
+			request.setWeight(Double.valueOf(orderDetail.getWeight()));
+			request.setInvoiceValue(orderDetail.getValue());
+			request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
+			eTowerRequest.add(request);
+		}
+		d2zDao.createShippingOrderEtower(eTowerRequest,senderDataResponseList);
+		
 	}
 
 	@Override
@@ -652,7 +707,7 @@ public class D2ZServiceImpl implements ID2ZService{
 			throw new ReferenceNumberNotUniqueException("Request failed",invalidData);
 		}
 		
-		String msg = d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
+		String msg =  d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
 		List<SenderdataMaster> senderData =  d2zDao.fetchDataForAusPost(refNbrs);
 		if(null != senderData && !senderData.isEmpty()) {
 			Runnable r = new Runnable( ) {			
@@ -680,7 +735,7 @@ public class D2ZServiceImpl implements ID2ZService{
         {
         ShipmentRequest shipmentRequest = new ShipmentRequest();
         shipmentRequest.setSender_references(data.getReference_number());
-        shipmentRequest.setEmail_tracking_enabled(data.getConsignee_Email()!=null);
+        shipmentRequest.setEmail_tracking_enabled(data.getConsignee_Email()!=null&&!data.getConsignee_Email().trim().isEmpty());
        
         FromAddress from = new FromAddress();
         
@@ -692,16 +747,21 @@ public class D2ZServiceImpl implements ID2ZService{
         to.setState(data.getConsignee_State());
         to.setSuburb(data.getConsignee_Suburb());
         to.getLines().add(data.getConsignee_addr1());
-        to.setPhone(data.getConsignee_Phone());
+        String regex = "^[0-9]{1,20}$";
+        String phone = "";
+        if(null!=data.getConsignee_Phone() && data.getConsignee_Phone().matches(regex)) {
+        	phone = data.getConsignee_Phone();
+        }
+        to.setPhone(phone);
         to.setEmail(data.getConsignee_Email());
         to.setDelivery_instructions(data.getDeliveryInstructions());
         shipmentRequest.setTo(to);
         
         List<Items> items = new ArrayList<Items>();
         Items item = new Items();
-        item.setHeight(data.getDimensions_Height() == null ? "" : data.getDimensions_Height().toString());
-        item.setLength(data.getDimensions_Length() == null ? "" : data.getDimensions_Length().toString());
-        item.setWidth(data.getDimensions_Width() == null ? "" : data.getDimensions_Width().toString());
+      //  item.setHeight(data.getDimensions_Height() == null ? "" : data.getDimensions_Height().toString());
+      //  item.setLength(data.getDimensions_Length() == null ? "" : data.getDimensions_Length().toString());
+      //  item.setWidth(data.getDimensions_Width() == null ? "" : data.getDimensions_Width().toString());
         item.setItem_description(data.getProduct_Description());
         item.setWeight(data.getCubic_Weight()==null ? "": data.getCubic_Weight().toString());
        

@@ -32,7 +32,7 @@ public class FreipostWrapper {
 	        ctx.register(FreiPostSoapConfig.class);
 	        ctx.refresh();
 	        FreiPostConnector connector = ctx.getBean(FreiPostConnector.class);
-	        GetTrackingDetailsResponse response = freipostConnector.trackingEventService("148829");
+	        GetTrackingDetailsResponse response = freipostConnector.trackingEventService("4536");
 		return response;
 	        
 		 

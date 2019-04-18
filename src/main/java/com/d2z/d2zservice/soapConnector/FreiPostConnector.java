@@ -68,7 +68,7 @@ public class FreiPostConnector  extends WebServiceGatewaySupport {
     	ObjectFactory factory = new ObjectFactory();
     	org.tempuri.ObjectFactory objFactory = new org.tempuri.ObjectFactory();
     	Credentials credentials = factory.createCredentials();
-    	credentials.setUsername(factory.createCredentialsUsername("admind2z"));
+    	credentials.setUsername(factory.createCredentialsUsername("admin@d2z"));
     	credentials.setPassword(factory.createCredentialsPassword("admin"));
     	
     	GetTrackingDetails trackingDetails = objFactory.createGetTrackingDetails();

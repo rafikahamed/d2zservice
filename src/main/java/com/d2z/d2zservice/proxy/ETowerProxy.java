@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import com.d2z.d2zservice.interceptor.ETowerHeaderRequestInterceptor;
 import com.d2z.d2zservice.model.etower.CreateShippingRequest;
 import com.d2z.d2zservice.model.etower.CreateShippingResponse;
+import com.d2z.d2zservice.model.etower.GainLabelsResponse;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -110,10 +111,10 @@ public class ETowerProxy {
         return createShippingResponse;
 	}
 	
-	/*public GainLabelsResponse makeCallToGainLabels(List<String> referenceNumbers) {
+	public GainLabelsResponse makeCallToGainLabels(List<String> referenceNumbers) {
 
 
-		String url = "http://qa-cn.etowertech.com/services/shipper/labelSpecs/";
+		String url = baseURL+"services/shipper/labelSpecs/";
 		//Prod URL
 		//SSL cert issue fix
 		//String url = "http://au.etowertech.com/services/shipper/labelSpecs/";
@@ -127,8 +128,17 @@ public class ETowerProxy {
         System.out.println("Making call to etower");
         ResponseEntity<GainLabelsResponse> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,GainLabelsResponse.class);
         GainLabelsResponse gainLabelsresponse = response.getBody();
+        ObjectWriter ow = new ObjectMapper().writer();
+        String jsonResponse = null;
+		try {
+			jsonResponse = ow.writeValueAsString(gainLabelsresponse);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        System.out.println("Response :: " + jsonResponse);
         return gainLabelsresponse;
-	}*/
+	}
 	public CreateShippingResponse makeCallForForeCast(List<String> trackingNumber) {
 
 
