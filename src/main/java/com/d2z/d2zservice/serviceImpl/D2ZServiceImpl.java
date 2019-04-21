@@ -23,6 +23,7 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.validation.Valid;
 
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -381,6 +382,11 @@ public class D2ZServiceImpl implements ID2ZService{
 				trackingLabel.setCarrier(trackingArray[21].toString());
 			if(trackingArray[22] != null)
 				trackingLabel.setConsigneeAddr2(trackingArray[22].toString());
+			if(trackingArray[23] != null)
+				trackingLabel.setReturnAddress1(trackingArray[23].toString());
+			if(trackingArray[24] != null)
+				trackingLabel.setReturnAddress2(trackingArray[24].toString());
+			
 			trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix()));
 			trackingLabelList.add(trackingLabel);
 		 }
@@ -720,7 +726,9 @@ public class D2ZServiceImpl implements ID2ZService{
 		userMsg.setResponseMessage(msg);
 		return userMsg;
 	}
-	private void makeCalltoAusPost(List<SenderdataMaster> senderData) {
+	private void makeCalltoAusPost(List<SenderdataMaster> orderDetail) {
+		List<List<SenderdataMaster>> senderDataList = ListUtils.partition(orderDetail, 2000);
+		for(List<SenderdataMaster> senderData : senderDataList) {
 		CreateShippingRequest request =  new CreateShippingRequest();
 		
 		Date dNow = new Date();
@@ -783,6 +791,7 @@ public class D2ZServiceImpl implements ID2ZService{
         request.setShipments(shipments);       
         
 		ausPostProxy.createOrderIncludingShipments(request);
+		}
 	}
 	@Override
 	public UserMessage addUser(UserDetails userData) {

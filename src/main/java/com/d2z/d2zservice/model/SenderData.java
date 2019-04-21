@@ -93,6 +93,9 @@ public class SenderData {
 	private String labelSenderName;
 	private String deliveryInstructions;
 	private String carrier;
+	private String returnAddress1;
+	private String returnAddress2;
+	
 	
 	public String getConsigneeAddr2() {
 		return consigneeAddr2;
@@ -484,6 +487,22 @@ public class SenderData {
 
 	public void setConsigneeEmail(String consigneeEmail) {
 		this.consigneeEmail = consigneeEmail;
+	}
+
+	public String getReturnAddress1() {
+		return returnAddress1;
+	}
+
+	public void setReturnAddress1(String returnAddress1) {
+		this.returnAddress1 = returnAddress1;
+	}
+
+	public String getReturnAddress2() {
+		return returnAddress2;
+	}
+
+	public void setReturnAddress2(String returnAddress2) {
+		this.returnAddress2 = returnAddress2;
 	}
 
 }

@@ -222,6 +222,11 @@ public class SenderdataMaster implements Serializable {
 	@Column(name = "MLID")
 	private String mlid;
 	
+	@Column(name="ReturnAddress1")
+	private String returnAddress1;
+	
+	@Column(name="ReturnAddress2")
+	private String returnAddress2;
 	
 	public String getMlid() {
 		return mlid;
@@ -632,6 +637,22 @@ public class SenderdataMaster implements Serializable {
 
 	public void setConsignee_Email(String consignee_Email) {
 		this.consignee_Email = consignee_Email;
+	}
+
+	public String getReturnAddress1() {
+		return returnAddress1;
+	}
+
+	public void setReturnAddress1(String returnAddress1) {
+		this.returnAddress1 = returnAddress1;
+	}
+
+	public String getReturnAddress2() {
+		return returnAddress2;
+	}
+
+	public void setReturnAddress2(String returnAddress2) {
+		this.returnAddress2 = returnAddress2;
 	}
 	
 }
