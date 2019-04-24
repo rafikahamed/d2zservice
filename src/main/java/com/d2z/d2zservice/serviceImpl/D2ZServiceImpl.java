@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
+import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.MaxSizeCountException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
@@ -63,8 +65,14 @@ import com.d2z.d2zservice.model.auspost.Items;
 import com.d2z.d2zservice.model.auspost.ShipmentRequest;
 import com.d2z.d2zservice.model.auspost.ToAddress;
 import com.d2z.d2zservice.model.etower.CreateShippingResponse;
+import com.d2z.d2zservice.model.fdm.ArrayOfConsignment;
+import com.d2z.d2zservice.model.fdm.ArrayofDetail;
+import com.d2z.d2zservice.model.fdm.Consignment;
+import com.d2z.d2zservice.model.fdm.FDMManifestRequest;
+import com.d2z.d2zservice.model.fdm.Line;
 import com.d2z.d2zservice.proxy.AusPostProxy;
 import com.d2z.d2zservice.proxy.EbayProxy;
+import com.d2z.d2zservice.proxy.FDMProxy;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
@@ -121,6 +129,9 @@ public class D2ZServiceImpl implements ID2ZService{
 	
 	@Autowired
 	AusPostProxy ausPostProxy;
+	
+	@Autowired
+	FDMProxy fdmProxy;
 
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException{
@@ -567,7 +578,7 @@ public class D2ZServiceImpl implements ID2ZService{
 			for (Trackandtrace daoObj : trackAndTraceList) {
 				System.out.println(daoObj);
 				TrackingEvents trackingEvents = new TrackingEvents();
-				trackParcel.setReferenceNumber(refNbr);
+				trackParcel.setReferenceNumber(daoObj.getReference_number());
 				trackParcel.setBarcodelabelNumber(daoObj.getArticleID());
 				trackingEvents.setEventDetails(daoObj.getTrackEventDetails());
 				trackingEvents.setTrackEventDateOccured(daoObj.getTrackEventDateOccured());
@@ -613,7 +624,7 @@ public class D2ZServiceImpl implements ID2ZService{
 	}
 
 	@Override
-	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail) throws ReferenceNumberNotUniqueException {
+	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail) throws ReferenceNumberNotUniqueException, EtowerFailureResponseException {
 		Integer userId = userRepository.fetchUserIdbyUserName(orderDetail.getUserName());
 		if(userId == null) {
 			throw new InvalidUserException("User does not exist",orderDetail.getUserName());
@@ -633,7 +644,7 @@ public class D2ZServiceImpl implements ID2ZService{
 			 return senderDataResponseList;
 		}
 		
-		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(),userId,orderDetail.getUserName());
+		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(),userId,orderDetail.getUserName(),null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		
 		Iterator itr = insertedOrder.iterator();
@@ -650,7 +661,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		return senderDataResponseList;
 	}
 
-	private void makeCreateShippingOrderEtowerCall(CreateConsignmentRequest data,List<SenderDataResponse> senderDataResponseList) {
+	private void makeCreateShippingOrderEtowerCall(CreateConsignmentRequest data,List<SenderDataResponse> senderDataResponseList) throws EtowerFailureResponseException {
 		List<com.d2z.d2zservice.model.etower.CreateShippingRequest> eTowerRequest = new ArrayList<com.d2z.d2zservice.model.etower.CreateShippingRequest>();
 
 		for(SenderDataApi orderDetail : data.getConsignmentData()) {
@@ -679,7 +690,7 @@ public class D2ZServiceImpl implements ID2ZService{
 			request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
 			eTowerRequest.add(request);
 		}
-		d2zDao.createShippingOrderEtower(eTowerRequest,senderDataResponseList);
+		d2zDao.createShippingOrderEtower(data,eTowerRequest,senderDataResponseList);
 		
 	}
 
@@ -1126,6 +1137,83 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Override
 	public void triggerFreipost() {
 		freipostWrapper.trackingEventService();
+	}
+	
+	@Override
+	public void triggerFDM() {
+		
+		String[] referenceNumbers = d2zDao.fetchArticleIDForFDMCall();
+		System.out.println("Track and trace:"+referenceNumbers.length);
+		List<SenderdataMaster> senderData = d2zDao.fetchDataForAusPost(referenceNumbers);
+		System.out.println("Sender Data:"+senderData.size());
+		List<SenderdataMaster> testData =  new ArrayList<SenderdataMaster>();
+		testData.add(senderData.get(0));
+		testData.add(senderData.get(1));
+		if(!senderData.isEmpty()) {
+		FDMManifestRequest request = new FDMManifestRequest();
+		Date dNow = new Date();
+        SimpleDateFormat ft = new SimpleDateFormat("yyMMddhhmm");
+        String orderRef = ft.format(dNow);
+        
+        request.setMessage_no(orderRef);
+        request.setCustomer_id("D2Z");
+        
+        ArrayOfConsignment consignmentsArray =  new ArrayOfConsignment();
+        List<Consignment> consignments = new ArrayList<Consignment>();
+        
+		for(SenderdataMaster data : testData) {
+			Consignment consignment = new Consignment();
+			consignment.setConnote_no(data.getArticleId().substring(0, 20));
+			consignment.setTracking_connote(data.getArticleId());
+			String date = data.getTimestamp();
+			try {
+				Date dateFormat =  new SimpleDateFormat("YYMMDDHHMMSS").parse(date);
+				consignment.setConnote_date(dateFormat.toString());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			consignment.setCustname(data.getConsignee_name());
+			consignment.setCust_street1(data.getConsignee_addr1());
+			consignment.setCust_street2(data.getConsignee_addr2());
+			consignment.setCust_suburb(data.getConsignee_Suburb());
+			consignment.setCust_pcode(data.getConsignee_Postcode());
+			consignment.setCust_state(data.getConsignee_State());
+			consignment.setCust_country("AU");
+			consignment.setCust_ph(data.getConsignee_Phone());
+			consignment.setCust_email(data.getConsignee_Email());
+			consignment.setInstruction(data.getDeliveryInstructions());
+			consignment.setCustomer_code("D2Z");
+			consignment.setCarrier("Australia Post");
+			consignment.setVendor_name(data.getShipper_Name());
+			consignment.setVendor_street1(data.getShipper_Addr1());
+			consignment.setVendor_suburb(data.getShipper_City());
+			consignment.setVendor_pcode(data.getShipper_Postcode());
+			consignment.setVendor_state(data.getShipper_State());
+			consignment.setVendor_country(data.getShipper_Country());
+			consignment.setTotal_weight(String.valueOf(data.getCubic_Weight()));
+			ArrayofDetail details = new ArrayofDetail();
+			List<Line> itemList = new ArrayList<Line>();
+			Line lineItem = new Line();
+			lineItem.setBarcode(data.getBarcodelabelNumber());
+			lineItem.setArticle_no(data.getArticleId());
+			lineItem.setDescription(data.getProduct_Description());
+			lineItem.setWeight(String.valueOf(data.getCubic_Weight()));
+			lineItem.setDim_height(data.getDimensions_Height() == null ? "" : data.getDimensions_Height().toString());
+			lineItem.setDim_length(data.getDimensions_Length() == null ? "" : data.getDimensions_Length().toString());
+		    lineItem.setDim_width(data.getDimensions_Width() == null ? "" : data.getDimensions_Width().toString());
+			itemList.add(lineItem);
+			
+			details.setLine(itemList);
+
+			consignment.setDetails(details);
+			consignments.add(consignment);
+		
+		}
+		consignmentsArray.setConsignment(consignments);
+		request.setConsignments(consignmentsArray);
+		fdmProxy.makeCallToFDMManifestMapping(request);
+		}
 	}
 	
 

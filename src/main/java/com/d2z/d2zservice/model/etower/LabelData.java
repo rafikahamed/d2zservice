@@ -9,6 +9,14 @@ public class LabelData {
 	private String trackingNo;
 	private String articleId;
 	private String barCode;
+	private String barCode2D;
+
+	public String getBarCode2D() {
+		return barCode2D;
+	}
+	public void setBarCode2D(String barCode2D) {
+		this.barCode2D = barCode2D;
+	}
 	private String status;
 	private List<EtowerErrorResponse> errors;
 	public String getOrderId() {

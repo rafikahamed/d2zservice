@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.ClientDashbaord;
@@ -46,7 +47,7 @@ public interface ID2ZService {
 
 	List<TrackParcel> trackParcelByRefNbr(List<String> referenceNumbers);
 
-	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail) throws ReferenceNumberNotUniqueException;
+	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail) throws ReferenceNumberNotUniqueException, EtowerFailureResponseException;
 
 	public List<TrackParcel> trackParcelByArticleID(List<String> articleIDs);
 
@@ -81,4 +82,6 @@ public interface ID2ZService {
 	public UserMessage contactUs(String email, String message, String name, String subject);
 
 	public void triggerFreipost();
+
+	public void triggerFDM();
 }

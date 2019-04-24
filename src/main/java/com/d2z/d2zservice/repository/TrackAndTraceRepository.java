@@ -32,5 +32,13 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 	/* @Query(nativeQuery = true,value="SELECT DISTINCT t.articleID FROM Trackandtrace t where t.fileName = 'eTowerAPI' and t.articleID NOT IN \n"+
 			 "(SELECT DISTINCT t.articleID FROM Trackandtrace t where t.trackEventDetails = 'DELIVERED' and t.fileName = 'eTowerAPI')")*/
 	  List<String> fetchTrackingNumbersForETowerCall();
+	 
+	 @Query(nativeQuery = true,value="SELECT t.reference_number FROM Trackandtrace t where substring(t.articleID, 1, 5) = '33PE9' \n" + 
+		 		"AND t.trackeventdetails = 'Shipment Allocated' \n" + 
+		 		"AND t.trackeventdateoccured BETWEEN Dateadd(day, -2, Getdate()) AND Dateadd(day, -1, Getdate())")
+		 List<String> fetchArticleIDForFDMCall();
+	 
+	 
+	 
 
 }

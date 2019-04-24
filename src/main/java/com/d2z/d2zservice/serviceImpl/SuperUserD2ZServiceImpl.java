@@ -36,13 +36,16 @@ import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 import com.d2z.d2zservice.validation.D2ZValidator;
+import com.d2z.d2zservice.model.ExportShipment;
 
 @Service
 public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
@@ -119,8 +122,26 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	}
 
 	@Override
-	public List<SenderdataMaster> exportDeteledConsignments(String fromDate, String toDate) {
-		return d2zDao.exportDeteledConsignments(fromDate,toDate);
+	public List<ExportDelete> exportDeteledConsignments(String fromDate, String toDate) {
+		/*return d2zDao.exportDeteledConsignments(fromDate,toDate);*/
+		List<ExportDelete> exportdeletelist = new ArrayList<ExportDelete>();
+		
+		List<String> ExportDeleteList = d2zDao.exportDeteledConsignments(fromDate, toDate);
+		Iterator itr = ExportDeleteList.iterator();
+		while(itr.hasNext()){
+		   Object[] obj = (Object[]) itr.next();
+		   //now you have one array of Object for each row
+		   
+		   ExportDelete exportval = new ExportDelete();
+			exportval.setBrokername(String.valueOf(obj[0]));
+			exportval.setReference_number(String.valueOf(obj[1]));
+			exportval.setBarcodelabelNumber(String.valueOf(obj[2]));
+			exportdeletelist.add(exportval);
+		
+		}
+	
+		//ExportDeleteList.forEach(System.out::println);
+		return exportdeletelist;
 		//byte[] bytes = shipmentWriter.generateDeleteConsignmentsxls(deletedConsignments);
 		//return bytes;
 	}
@@ -129,10 +150,91 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 		return d2zDao.exportConsignments(fromDate, toDate);
 	}
 	@Override
-	public List<SenderdataMaster> exportShipmentData(String fromDate, String toDate) {
-		return d2zDao.exportShipment(fromDate, toDate);
-	}
-
+	public List<ExportShipment> exportShipmentData(String fromDate, String toDate) {
+List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
+		
+		List<Object> ExportDeleteList = d2zDao.exportShipment(fromDate, toDate);
+	
+		Iterator itr = ExportDeleteList.iterator();
+		while(itr.hasNext()){
+		   Object[] obj = (Object[]) itr.next();
+		   System.out.println(obj.length);
+		   //now you have one array of Object for each row
+		   
+		  
+		   ExportShipment exportval = new ExportShipment();
+			exportval.setBroker_name(String.valueOf(obj[0]));
+			exportval.setReference_number(String.valueOf(obj[1]));
+			exportval.setValue(Double.valueOf(""+obj[2]));
+			exportval.setShippedQuantity(Integer.valueOf(""+obj[3]));
+			exportval.setConsignee_name(String.valueOf(obj[4]));
+			exportval.setConsignee_addr1(String.valueOf(obj[5]));
+			exportval.setConsignee_Suburb(String.valueOf(obj[6]));
+			exportval.setConsignee_State(String.valueOf(obj[7]));
+			exportval.setConsignee_Postcode(String.valueOf(obj[8]));
+			exportval.setConsignee_Phone(String.valueOf(obj[9]));
+			exportval.setProduct_Description(String.valueOf(obj[10]));
+			exportval.setShipper_Country(String.valueOf(obj[11]));
+			exportval.setWeight(Double.valueOf(""+obj[12]));
+			exportval.setBarcodelabelNumber(String.valueOf(obj[13]));
+			exportval.setServicetype(String.valueOf(obj[14]));
+			exportval.setCurrency(String.valueOf(obj[15]));
+			
+			
+			
+			
+			
+			
+		   exportshipmentlist.add(exportval);
+		
+		}
+	
+		//ExportDeleteList.forEach(System.out::println);
+		return exportshipmentlist;
+		}
+	@Override
+	public List<ExportShipment> exportNonShipmentData(String fromDate, String toDate) {
+List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
+		
+		List<Object> ExportDeleteList = d2zDao.exportNonShipment(fromDate, toDate);
+	
+		Iterator itr = ExportDeleteList.iterator();
+		while(itr.hasNext()){
+		   Object[] obj = (Object[]) itr.next();
+		   System.out.println(obj.length);
+		   //now you have one array of Object for each row
+		   
+		  
+		   ExportShipment exportval = new ExportShipment();
+			exportval.setBroker_name(String.valueOf(obj[0]));
+			exportval.setReference_number(String.valueOf(obj[1]));
+			exportval.setValue(Double.valueOf(""+obj[2]));
+			exportval.setShippedQuantity(Integer.valueOf(""+obj[3]));
+			exportval.setConsignee_name(String.valueOf(obj[4]));
+			exportval.setConsignee_addr1(String.valueOf(obj[5]));
+			exportval.setConsignee_Suburb(String.valueOf(obj[6]));
+			exportval.setConsignee_State(String.valueOf(obj[7]));
+			exportval.setConsignee_Postcode(String.valueOf(obj[8]));
+			exportval.setConsignee_Phone(String.valueOf(obj[9]));
+			exportval.setProduct_Description(String.valueOf(obj[10]));
+			exportval.setShipper_Country(String.valueOf(obj[11]));
+			exportval.setWeight(Double.valueOf(""+obj[12]));
+			exportval.setBarcodelabelNumber(String.valueOf(obj[13]));
+			exportval.setServicetype(String.valueOf(obj[14]));
+			exportval.setCurrency(String.valueOf(obj[15]));
+			
+			
+			
+			
+			
+			
+		   exportshipmentlist.add(exportval);
+		
+		}
+	
+		//ExportDeleteList.forEach(System.out::println);
+		return exportshipmentlist;
+		}
 	@Override
 	public ResponseMessage trackingEvent(List<String> trackingNbrs) {
 		ResponseMessage respMsg = null;

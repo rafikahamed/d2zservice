@@ -22,6 +22,8 @@ import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.model.ExportDelete;
+import com.d2z.d2zservice.model.ExportShipment;
 
 public interface ISuperUserD2ZService{
 
@@ -33,11 +35,13 @@ public interface ISuperUserD2ZService{
 
 	public UserDetails fetchUserDetails(String companyName);
 
-	public List<SenderdataMaster> exportDeteledConsignments(String fromDate, String toDate);
+	public List<ExportDelete> exportDeteledConsignments(String fromDate, String toDate);
 
 	List<SenderdataMaster> exportConsignmentData(String fromDate, String toDate);
 
-	List<SenderdataMaster> exportShipmentData(String fromDate, String toDate);
+	List<ExportShipment> exportShipmentData(String fromDate, String toDate);
+	
+	List<ExportShipment> exportNonShipmentData(String fromDate, String toDate);
 
 	public ResponseMessage trackingEvent(List<String> trackingNumbers);
 

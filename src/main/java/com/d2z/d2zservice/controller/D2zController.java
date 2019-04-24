@@ -190,5 +190,10 @@ public class D2zController {
 	 public void triggerFreipost() {
 		d2zService.triggerFreipost();
 		
-	}	
+	}
+	@RequestMapping(method = RequestMethod.GET, path = "/FDM")
+	 public void triggerFDM() {
+		d2zService.triggerFDM();
+		
+	}
 }   

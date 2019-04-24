@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
@@ -49,7 +51,7 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
     }
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/consignments-create")
-	 public List<SenderDataResponse> createConsignments(@Valid @RequestBody CreateConsignmentRequest orderDetail) throws ReferenceNumberNotUniqueException {
+	 public List<SenderDataResponse> createConsignments(@Valid @RequestBody CreateConsignmentRequest orderDetail) throws ReferenceNumberNotUniqueException, EtowerFailureResponseException {
 		List<SenderDataResponse> senderDataResponse = d2zService.createConsignments(orderDetail);
 		return senderDataResponse;
     }	

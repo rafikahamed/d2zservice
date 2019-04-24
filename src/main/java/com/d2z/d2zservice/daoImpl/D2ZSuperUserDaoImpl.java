@@ -163,10 +163,10 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	}
 
 	@Override
-	public List<SenderdataMaster> exportDeteledConsignments(String fromDate, String toDate) {
+	public List<String> exportDeteledConsignments(String fromDate, String toDate) {
 		String fromTime = fromDate.concat(" ").concat("00:00:00");
 		String toTime = toDate.concat(" ").concat("23:59:59");
-		List<SenderdataMaster> deletedConsignments = senderDataRepository.fetchDeletedConsignments(fromTime,toTime);
+		List<String> deletedConsignments = senderDataRepository.fetchDeletedConsignments(fromTime,toTime);
 		System.out.println(deletedConsignments.size());
 		
 		return deletedConsignments;
@@ -183,14 +183,22 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	}
 	
 	@Override
-	public List<SenderdataMaster> exportShipment(String fromDate, String toDate) {
+	public List<Object> exportShipment(String fromDate, String toDate) {
 		String fromTime = fromDate.concat(" ").concat("00:00:00");
 		String toTime = toDate.concat(" ").concat("23:59:59");
-		List<SenderdataMaster> exportedShipment = senderDataRepository.exportShipment(fromTime,toTime);
+		List<Object> exportedShipment = senderDataRepository.exportShipment(fromTime,toTime);
 		System.out.println(exportedShipment.size());
 		return exportedShipment;
 	}
 
+	@Override
+	public List<Object> exportNonShipment(String fromDate, String toDate) {
+		String fromTime = fromDate.concat(" ").concat("00:00:00");
+		String toTime = toDate.concat(" ").concat("23:59:59");
+		List<Object> exportedShipment = senderDataRepository.exportNonShipment(fromTime,toTime);
+		System.out.println(exportedShipment.size());
+		return exportedShipment;
+	}
 	@Override
 	public ResponseMessage insertTrackingDetails(TrackingEventResponse trackEventresponse) {
 		List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();

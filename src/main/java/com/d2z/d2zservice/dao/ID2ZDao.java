@@ -1,6 +1,7 @@
 package com.d2z.d2zservice.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.ETowerResponse;
@@ -9,7 +10,9 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
+import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.model.ClientDashbaord;
+import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
@@ -17,6 +20,7 @@ import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.etower.CreateShippingRequest;
+import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
@@ -40,7 +44,7 @@ public interface ID2ZDao {
 
 	List<Trackandtrace> trackParcel(String refNbr);
 
-	public String createConsignments(List<SenderDataApi> orderDetailList,int userId, String userName);
+	public String createConsignments(List<SenderDataApi> orderDetailList,int userId, String userName,Map<String,LabelData> barcodeMap);
 	
 	public List<PostcodeZone> fetchAllPostCodeZone();
 	
@@ -99,10 +103,13 @@ public interface ID2ZDao {
 
 	public List<SenderdataMaster> fetchDataForAusPost(String[] refNbrs);
 
-	public void createShippingOrderEtower(List<CreateShippingRequest> eTowerRequest,
-			List<SenderDataResponse> senderDataResponseList);
+	public void createShippingOrderEtower(CreateConsignmentRequest incomingRequest,List<CreateShippingRequest> eTowerRequest,
+			List<SenderDataResponse> senderDataResponseList) throws EtowerFailureResponseException;
 
 	public int fetchUserIdByReferenceNumber(String string);
+
+	String[] fetchArticleIDForFDMCall();
+
 
 
 }

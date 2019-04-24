@@ -27,11 +27,13 @@ public interface ID2ZSuperUserDao {
 
 	User fetchUserDetails(String companyName);
 
-	List<SenderdataMaster> exportDeteledConsignments(String fromDate, String toDate);
+	List<String> exportDeteledConsignments(String fromDate, String toDate);
 
 	List<SenderdataMaster> exportConsignments(String fromDate, String toDate);
 
-	List<SenderdataMaster> exportShipment(String fromDate, String toDate);
+	List<Object> exportShipment(String fromDate, String toDate);
+	
+	List<Object> exportNonShipment(String fromDate, String toDate);
 
 	List<String> fetchTrackingNumbersForETowerCall();
 

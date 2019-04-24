@@ -34,6 +34,8 @@ import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.model.ExportDelete;
+import com.d2z.d2zservice.model.ExportShipment;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 
 @RestController
@@ -67,8 +69,12 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 		return superUserD2zService.fetchUserDetails(companyName);
     }
 
-	@RequestMapping( method = RequestMethod.GET, path = "/export/delete")
+	/*@RequestMapping( method = RequestMethod.GET, path = "/export/delete")
 	 public List<SenderdataMaster> exportDeteledConsignments(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
+		return superUserD2zService.exportDeteledConsignments(fromDate, toDate);
+    }*/
+	@RequestMapping( method = RequestMethod.GET, path = "/export/delete")
+	public List<ExportDelete> exportDeteledConsignments(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
 		return superUserD2zService.exportDeteledConsignments(fromDate, toDate);
     }
 	
@@ -78,10 +84,14 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
    }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/export/shipment")
-	 public List<SenderdataMaster> exportShipmentData(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
+	 public List<ExportShipment> exportShipmentData(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
 		return superUserD2zService.exportShipmentData(fromDate, toDate);
 	}
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/export/nonshipment")
+	 public List<ExportShipment> exportNonShipmentData(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
+		return superUserD2zService.exportNonShipmentData(fromDate, toDate);
+	}
 	@RequestMapping( method = RequestMethod.GET, path = "/track/etower/{trackingNumbers}")
     public ResponseMessage trackingCode(@PathVariable List<String> trackingNumbers) {
 		return superUserD2zService.trackingEvent(trackingNumbers);
