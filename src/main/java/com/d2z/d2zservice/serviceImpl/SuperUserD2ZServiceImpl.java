@@ -158,7 +158,7 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 		Iterator itr = ExportDeleteList.iterator();
 		while(itr.hasNext()){
 		   Object[] obj = (Object[]) itr.next();
-		   System.out.println(obj.length);
+		  // System.out.println(obj.length);
 		   //now you have one array of Object for each row
 		   
 		  
