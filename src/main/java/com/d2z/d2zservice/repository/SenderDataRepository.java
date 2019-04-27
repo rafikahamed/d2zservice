@@ -41,7 +41,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query(nativeQuery = true, value="Select reference_number from senderdata_master t where t.isDeleted = 'N'") 
 	List<String> fetchAllReferenceNumbers();
 	 
-	@Query(nativeQuery = true, value="Select reference_number, datamatrix,articleId from senderdata_master t where sender_Files_ID=:senderFileID") 
+	@Query(nativeQuery = true, value="Select reference_number, datamatrix from senderdata_master t where sender_Files_ID=:senderFileID") 
 	List<String> fetchBySenderFileId(@Param("senderFileID") String senderFileID);
 	 
 	@Query(nativeQuery = true, value="SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
@@ -90,87 +90,101 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"and sender_files_id like '%API%' and airwaybill is null and isDeleted != 'Y'")
 	 List<String> fetchDirectInjectionData(@Param("companyName") String companyName);
 
-	 /*@Query("SELECT t FROM SenderdataMaster t where t.isDeleted = 'Y' and t.timestamp between :fromTimestamp and :toTimestamp") 
-	 List<SenderdataMaster> fetchDeletedConsignments(@Param("fromTimestamp") String fromTimestamp , @Param("toTimestamp") String toTimestamp);
-*/
-	 @Query(nativeQuery = true, value = "select D.user_name , C.reference_number,C.ArticleID from\r\n" + 
-		 		"(select A.Client_Broker_id,B.Reference_number,B.ArticleID\r\n" + 
-		 		"from (SELECT  senderdata0_.User_ID, senderdata0_.Reference_number,trackandtr1_ .ArticleID\r\n" + 
-		 		"FROM   dbo.senderdata_master senderdata0_ \r\n" + 
-		 		"       INNER JOIN trackandtrace trackandtr1_ \r\n" + 
-		 		"               ON senderdata0_.reference_number = trackandtr1_.reference_number \r\n" + 
-		 		"WHERE  trackandtr1_.trackeventdetails = 'SHIPMENT ALLOCATED' \r\n" + 
-		 		"       AND trackandtr1_.isdeleted <> 'Y' \r\n" + 
-		 		"       AND ( trackandtr1_.trackeventdateoccured BETWEEN :fromTimestamp AND :toTimestamp )\r\n" + 
-		 		"	    )B\r\n" + 
-		 		"inner join Users A\r\n" + 
-		 		"on A.User_Id = B.User_ID\r\n" + 
-		 		"and A.role_id='3') C\r\n" + 
-		 		"inner join Users D\r\n" + 
-		 		"on D.User_Id = C.Client_Broker_id")
-		 		
-		 List<String> fetchDeletedConsignments(@Param("fromTimestamp") String fromTimestamp , @Param("toTimestamp") String toTimestamp);
-		 
+	/* @Query("SELECT t FROM SenderdataMaster t where t.isDeleted = 'Y' and t.timestamp between :fromTimestamp and :toTimestamp") 
+	 List<SenderdataMaster> fetchDeletedConsignments(@Param("fromTimestamp") String fromTimestamp , @Param("toTimestamp") String toTimestamp);*/
+	 
+	 
+	 @Query(nativeQuery = true, value = "select A.user_name,B.reference_number,B.ArticleID \r\n" + 
+	 		"	 from (SELECT U.Client_Broker_id,S.reference_number,S.ArticleID\r\n" + 
+	 		"	 FROM SENDERDATA_MASTER S\r\n" + 
+	 		"	 INNER JOIN Users U\r\n" + 
+	 		"	 ON  S.isdeleted = 'Y' and U.role_id='3' and S.User_ID=U.User_Id \r\n" + 
+	 		"	  AND s.timestamp BETWEEN :fromTimestamp AND :toTimestamp) B\r\n" + 
+	 		"	 inner join Users A\r\n" + 
+	 		"	 on A.User_Id=B.Client_Broker_id\r\n" + 
+	 		"	 order by A.User_Name")
+	 /*@Query(nativeQuery = true, value = "select D.user_name , C.reference_number,C.ArticleID from\r\n" + 
+	 		"(select A.Client_Broker_id,B.Reference_number,B.ArticleID\r\n" + 
+	 		"from (SELECT  senderdata0_.User_ID, senderdata0_.Reference_number,trackandtr1_ .ArticleID\r\n" + 
+	 		"FROM   dbo.senderdata_master senderdata0_ \r\n" + 
+	 		"       INNER JOIN trackandtrace trackandtr1_ \r\n" + 
+	 		"               ON senderdata0_.reference_number = trackandtr1_.reference_number \r\n" + 
+	 		"WHERE " + 
+	 		"        trackandtr1_.isdeleted ='Y' \r\n" + 
+	 		"       AND ( trackandtr1_.trackeventdateoccured BETWEEN :fromTimestamp AND :toTimestamp )\r\n" + 
+	 		"	    )B\r\n" + 
+	 		"inner join Users A\r\n" + 
+	 		"on A.User_Id = B.User_ID\r\n" + 
+	 		"and A.role_id='3') C\r\n" + 
+	 		"inner join Users D\r\n" + 
+	 		"on D.User_Id = C.Client_Broker_id")*/
+	 		
+	 List<String> fetchDeletedConsignments(@Param("fromTimestamp") String fromTimestamp , @Param("toTimestamp") String toTimestamp);
+	 
+
 	 @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.trackEventDateOccured between :fromTime and :toTime") 
 	 List<SenderdataMaster> exportConsignments(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
+
 	 @Query(nativeQuery = true, value = "SELECT D.user_name, \r\n" + 
-		 		"       C.reference_number,C.value,C.shipped_Quantity,\r\n" + 
-		 		"C.consignee_name,C.consignee_addr1,C.consignee_Suburb,\r\n" + 
-		 		"C.consignee_State,C.consignee_Postcode,C.consignee_Phone,\r\n" + 
-		 		"C.product_Description,C.shipper_Country,C.weight,C.barcodelabelNumber,\r\n" + 
-		 		"C.servicetype,C.currency\r\n" + 
-		 		"FROM   (SELECT A.client_broker_id, \r\n" + 
-		 		"               B.reference_number,B.value,B.shipped_Quantity,\r\n" + 
-		 		"B.consignee_name,B.consignee_addr1,B.consignee_Suburb,\r\n" + 
-		 		"B.consignee_State,B.consignee_Postcode,B.consignee_Phone,\r\n" + 
-		 		"B.product_Description,B.shipper_Country,B.weight,B.barcodelabelNumber,\r\n" + 
-		 		"B.servicetype,B.currency\r\n" + 
-		 		"        FROM   (SELECT senderdata0_.reference_number,senderdata0_.value,\r\n" + 
-		 		"senderdata0_.shipped_Quantity,senderdata0_.consignee_name,senderdata0_.consignee_addr1,\r\n" + 
-		 		"senderdata0_.consignee_Suburb,senderdata0_.consignee_State,\r\n" + 
-		 		"senderdata0_.consignee_Postcode,senderdata0_.consignee_Phone,\r\n" + 
-		 		"senderdata0_.product_Description,senderdata0_.shipper_Country,senderdata0_.User_ID,\r\n" + 
-		 		"senderdata0_.weight,senderdata0_.barcodelabelNumber,senderdata0_.servicetype,senderdata0_.currency\r\n" + 
-		 		"  FROM   dbo.senderdata_master senderdata0_ \r\n" + 
-		 		"                       INNER JOIN trackandtrace trackandtr1_ \r\n" + 
-		 		"                               ON senderdata0_.reference_number = \r\n" + 
-		 		"                                  trackandtr1_.reference_number \r\n" + 
-		 		"                WHERE  trackandtr1_.trackeventdetails = 'SHIPMENT ALLOCATED' \r\n" + 
-		 		"                       AND trackandtr1_.isdeleted <> 'Y' \r\n" + 
-		 		"                       AND ( trackandtr1_.trackeventdateoccured BETWEEN :fromTime AND :toTime  \r\n" + 
-		 		"                           ))B \r\n" + 
-		 		"               INNER JOIN users A \r\n" + 
-		 		"                       ON A.user_id = B.user_id \r\n" + 
-		 		"                          AND A.role_id = '3') C \r\n" + 
-		 		"       INNER JOIN users D \r\n" + 
-		 		"               ON D.user_id = C.client_broker_id ") 
-		 		
-		 List<Object> exportShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
-		/* @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'SHIPMENT ALLOCATED' and t.isDeleted != 'Y' and t.trackEventDateOccured between :fromTime and :toTime") 
-		List<SenderdataMaster> exportShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);*/
-		 @Query(nativeQuery = true, value = "SELECT B.user_name, \r\n" + 
-		 		"       C.reference_number,C.value,C.shipped_Quantity,\r\n" + 
-		 		"C.consignee_name,C.consignee_addr1,C.consignee_Suburb,\r\n" + 
-		 		"C.consignee_State,C.consignee_Postcode,C.consignee_Phone,\r\n" + 
-		 		"C.product_Description,C.shipper_Country,C.weight,C.barcodelabelNumber,\r\n" + 
-		 		"C.servicetype,C.currency\r\n" + 
-		 		"FROM   (SELECT U.client_broker_id, \r\n" + 
-		 		"              senderdata0_.reference_number,senderdata0_.value,\r\n" + 
-		 		"senderdata0_.shipped_Quantity,senderdata0_.consignee_name,senderdata0_.consignee_addr1,\r\n" + 
-		 		"senderdata0_.consignee_Suburb,senderdata0_.consignee_State,\r\n" + 
-		 		"senderdata0_.consignee_Postcode,senderdata0_.consignee_Phone,\r\n" + 
-		 		"senderdata0_.product_Description,senderdata0_.shipper_Country,senderdata0_.User_ID,\r\n" + 
-		 		"senderdata0_.weight,senderdata0_.barcodelabelNumber,senderdata0_.servicetype,senderdata0_.currency\r\n" + 
-		 		"  FROM   dbo.senderdata_master senderdata0_ \r\n" + 
-		 		"                       INNER JOIN users U   ON u.user_id = senderdata0_.user_id \r\n" + 
-		 		"                AND senderdata0_.airwaybill IS NULL \r\n" + 
-		 		"                          AND senderdata0_.isdeleted = 'N' \r\n" + 
-		 		"                          AND senderdata0_.timestamp BETWEEN :fromTime AND :toTime \r\n" + 
-		 		"                           )C \r\n" + 
-		 		"               INNER JOIN users B \r\n" + 
-		 		"                      ON C.client_broker_id = B.user_id ")
-			 List<Object> exportNonShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
+	 		"       C.reference_number,C.value,C.shipped_Quantity,\r\n" + 
+	 		"C.consignee_name,C.consignee_addr1,C.consignee_Suburb,\r\n" + 
+	 		"C.consignee_State,C.consignee_Postcode,C.consignee_Phone,\r\n" + 
+	 		"C.product_Description,C.shipper_Country,C.weight,C.barcodelabelNumber,\r\n" + 
+	 		"C.servicetype,C.currency\r\n" + 
+	 		"FROM   (SELECT A.client_broker_id, \r\n" + 
+	 		"               B.reference_number,B.value,B.shipped_Quantity,\r\n" + 
+	 		"B.consignee_name,B.consignee_addr1,B.consignee_Suburb,\r\n" + 
+	 		"B.consignee_State,B.consignee_Postcode,B.consignee_Phone,\r\n" + 
+	 		"B.product_Description,B.shipper_Country,B.weight,B.barcodelabelNumber,\r\n" + 
+	 		"B.servicetype,B.currency\r\n" + 
+	 		"        FROM   (SELECT senderdata0_.reference_number,senderdata0_.value,\r\n" + 
+	 		"senderdata0_.shipped_Quantity,senderdata0_.consignee_name,senderdata0_.consignee_addr1,\r\n" + 
+	 		"senderdata0_.consignee_Suburb,senderdata0_.consignee_State,\r\n" + 
+	 		"senderdata0_.consignee_Postcode,senderdata0_.consignee_Phone,\r\n" + 
+	 		"senderdata0_.product_Description,senderdata0_.shipper_Country,senderdata0_.User_ID,\r\n" + 
+	 		"senderdata0_.weight,senderdata0_.barcodelabelNumber,senderdata0_.servicetype,senderdata0_.currency\r\n" + 
+	 		"  FROM   dbo.senderdata_master senderdata0_ \r\n" + 
+	 		"                       INNER JOIN trackandtrace trackandtr1_ \r\n" + 
+	 		"                               ON senderdata0_.reference_number = \r\n" + 
+	 		"                                  trackandtr1_.reference_number \r\n" + 
+	 		"                WHERE  trackandtr1_.trackeventdetails = 'SHIPMENT ALLOCATED' \r\n" + 
+	 		"                       AND trackandtr1_.isdeleted <> 'Y' \r\n" + 
+	 		"                       AND ( trackandtr1_.trackeventdateoccured BETWEEN :fromTime AND :toTime  \r\n" + 
+	 		"                           ))B \r\n" + 
+	 		"               INNER JOIN users A \r\n" + 
+	 		"                       ON A.user_id = B.user_id \r\n" + 
+	 		"                          AND A.role_id = '3') C \r\n" + 
+	 		"       INNER JOIN users D \r\n" + 
+	 		"               ON D.user_id = C.client_broker_id ") 
+	 		
+	 List<Object> exportShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
+	/* @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'SHIPMENT ALLOCATED' and t.isDeleted != 'Y' and t.trackEventDateOccured between :fromTime and :toTime") 
+	List<SenderdataMaster> exportShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);*/
+	/* @Query(nativeQuery = true, value = "SELECT B.user_name, \r\n" + 
+	 		"       C.reference_number,C.value,C.shipped_Quantity,\r\n" + 
+	 		"C.consignee_name,C.consignee_addr1,C.consignee_Suburb,\r\n" + 
+	 		"C.consignee_State,C.consignee_Postcode,C.consignee_Phone,\r\n" + 
+	 		"C.product_Description,C.shipper_Country,C.weight,C.barcodelabelNumber,\r\n" + 
+	 		"C.servicetype,C.currency\r\n" + 
+	 		"FROM   (SELECT U.client_broker_id, \r\n" + 
+	 		"              senderdata0_.reference_number,senderdata0_.value,\r\n" + 
+	 		"senderdata0_.shipped_Quantity,senderdata0_.consignee_name,senderdata0_.consignee_addr1,\r\n" + 
+	 		"senderdata0_.consignee_Suburb,senderdata0_.consignee_State,\r\n" + 
+	 		"senderdata0_.consignee_Postcode,senderdata0_.consignee_Phone,\r\n" + 
+	 		"senderdata0_.product_Description,senderdata0_.shipper_Country,senderdata0_.User_ID,\r\n" + 
+	 		"senderdata0_.weight,senderdata0_.barcodelabelNumber,senderdata0_.servicetype,senderdata0_.currency\r\n" + 
+	 		"  FROM   dbo.senderdata_master senderdata0_ \r\n" + 
+	 		"                       INNER JOIN users U   ON u.user_id = senderdata0_.user_id \r\n" + 
+	 		"                AND senderdata0_.airwaybill IS NULL \r\n" + 
+	 		"                          AND senderdata0_.isdeleted = 'N' \r\n" + 
+	 		"                          AND senderdata0_.timestamp BETWEEN :fromTime AND :toTime \r\n" + 
+	 		"                           )C \r\n" + 
+	 		"               INNER JOIN users B \r\n" + 
+	 		"                      ON C.client_broker_id = B.user_id ")*/
+	 
+	 @Query("SELECT s FROM SenderdataMaster s where s.airwayBill IS NULL and s.isDeleted = 'N'  and s.timestamp between :fromTime and :toTime") 
 		
+		 List<SenderdataMaster> exportNonShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
 	 @Query("SELECT new com.d2z.d2zservice.entity.Consignments(t.reference_number,t.injectionState, t.weight) FROM SenderdataMaster t where t.reference_number in :referenceNumbers")
 	 List<Consignments> fetchConsignmentsForBagging(List<String> referenceNumbers);
 
@@ -264,4 +278,5 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT t FROM SenderdataMaster t where t.reference_number in :refNbrs and mlid = '33PE9'")
 	List<SenderdataMaster> fetchDataForAusPost(String[] refNbrs);
 	 
+
 } 

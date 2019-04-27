@@ -193,10 +193,10 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 		return exportshipmentlist;
 		}
 	@Override
-	public List<ExportShipment> exportNonShipmentData(String fromDate, String toDate) {
-List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
+	public List<SenderdataMaster> exportNonShipmentData(String fromDate, String toDate) {
+/*List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 		
-		List<Object> ExportDeleteList = d2zDao.exportNonShipment(fromDate, toDate);
+		List<SenderdataMaster> ExportDeleteList = d2zDao.exportNonShipment(fromDate, toDate);
 	
 		Iterator itr = ExportDeleteList.iterator();
 		while(itr.hasNext()){
@@ -233,7 +233,8 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 		}
 	
 		//ExportDeleteList.forEach(System.out::println);
-		return exportshipmentlist;
+		return exportshipmentlist;*/
+		return d2zDao.exportNonShipment(fromDate, toDate);
 		}
 	@Override
 	public ResponseMessage trackingEvent(List<String> trackingNbrs) {
