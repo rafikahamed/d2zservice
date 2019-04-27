@@ -119,11 +119,15 @@ public class JwtTokenUtil implements Serializable {
         final String username = getUsernameFromToken(token);
         final Date created = getIssuedAtDateFromToken(token);
         //final Date expiration = getExpirationDateFromToken(token);
+//        return (
+//            username.equals(user.getUsername())
+//                && !isTokenExpired(token)
+//                && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate())
+//        );
         return (
-            username.equals(user.getUsername())
-                && !isTokenExpired(token)
-                && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate())
-        );
+                username.equals(user.getUsername())
+                    && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate())
+            );
     }
 
     private Date calculateExpirationDate(Date createdDate) {

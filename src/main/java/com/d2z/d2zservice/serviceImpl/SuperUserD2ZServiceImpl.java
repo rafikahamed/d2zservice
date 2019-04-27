@@ -500,6 +500,8 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 				 downloadInvoice.setFuelsurcharge(obj[5].toString());
 			 if(obj[6] != null)
 				 downloadInvoice.setTotal(obj[6].toString());
+			 if(obj[7] != null)
+				 downloadInvoice.setServiceType(obj[7].toString());
 			 downloadInvoiceList.add(downloadInvoice);
        }
 		return downloadInvoiceList;
