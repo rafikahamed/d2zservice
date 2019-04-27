@@ -76,15 +76,22 @@ public class JwtTokenUtil implements Serializable {
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         final Date createdDate = clock.now();
-        final Date expirationDate = calculateExpirationDate(createdDate);
+        //final Date expirationDate = calculateExpirationDate(createdDate);
 
         return Jwts.builder()
             .setClaims(claims)
             .setSubject(subject)
             .setIssuedAt(createdDate)
-            .setExpiration(expirationDate)
             .signWith(SignatureAlgorithm.HS512, secret)
             .compact();
+        
+//        return Jwts.builder()
+//                .setClaims(claims)
+//                .setSubject(subject)
+//                .setIssuedAt(createdDate)
+//             .setExpiration(expirationDate)
+//                .signWith(SignatureAlgorithm.HS512, secret)
+//                .compact();
     }
 
     public Boolean canTokenBeRefreshed(String token, Date lastPasswordReset) {
@@ -111,7 +118,7 @@ public class JwtTokenUtil implements Serializable {
         JwtUser user = (JwtUser) userDetails;
         final String username = getUsernameFromToken(token);
         final Date created = getIssuedAtDateFromToken(token);
-        final Date expiration = getExpirationDateFromToken(token);
+        //final Date expiration = getExpirationDateFromToken(token);
         return (
             username.equals(user.getUsername())
                 && !isTokenExpired(token)
