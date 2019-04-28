@@ -479,8 +479,8 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 	}
 
 	@Override
-	public List<DownloadInvice> downloadInvoice(List<String> broker, List<String> airwayBill) {
-		List<String> downloadInvoiceData = d2zDao.downloadInvoice(broker,airwayBill);
+	public List<DownloadInvice> downloadInvoice(List<String> broker, List<String> airwayBill, String billed, String invoiced) {
+		List<String> downloadInvoiceData = d2zDao.downloadInvoice(broker,airwayBill,billed,billed);
 		List<DownloadInvice> downloadInvoiceList = new ArrayList<DownloadInvice>();
 		Iterator itr = downloadInvoiceData.iterator();
 		 while(itr.hasNext()) {
@@ -595,8 +595,8 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 	}
 
 	@Override
-	public List<DownloadInvice> downloadNonD2zInvoice(List<String> broker,List<String> airwayBill) {
-		List<String> downloadNonD2zInvoiceData = d2zDao.downloadNonD2zInvoice(broker,airwayBill);
+	public List<DownloadInvice> downloadNonD2zInvoice(List<String> broker,List<String> airwayBill,String billed,String invoiced) {
+		List<String> downloadNonD2zInvoiceData = d2zDao.downloadNonD2zInvoice(broker,airwayBill,billed,invoiced);
 		List<DownloadInvice> downloadNonD2zInvoiceList = new ArrayList<DownloadInvice>();
 		Iterator itr = downloadNonD2zInvoiceData.iterator();
 		 while(itr.hasNext()) {
@@ -616,6 +616,8 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 				 downloadInvoice.setFuelsurcharge(obj[5].toString());
 			 if(obj[6] != null)
 				 downloadInvoice.setTotal(obj[6].toString());
+			 if(obj[7] != null)
+				 downloadInvoice.setServiceType(obj[7].toString());
 			 downloadNonD2zInvoiceList.add(downloadInvoice);
        }
 		return downloadNonD2zInvoiceList;

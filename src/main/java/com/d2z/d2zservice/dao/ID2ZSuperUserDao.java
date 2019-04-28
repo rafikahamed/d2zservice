@@ -67,7 +67,7 @@ public interface ID2ZSuperUserDao {
 
 	List<String> fetchNotBilled();
 
-	List<String> downloadInvoice(List<String> broker, List<String> airwayBill);
+	List<String> downloadInvoice(List<String> broker, List<String> airwayBill, String billed, String invoiced);
 
 	UserMessage fetchNonD2zClient(List<NonD2ZData> nonD2zData);
 
@@ -89,7 +89,7 @@ public interface ID2ZSuperUserDao {
 
 	List<NonD2ZData> brokerNonD2zShipment();
 
-	List<String> downloadNonD2zInvoice(List<String> broker, List<String> airwayBill);
+	List<String> downloadNonD2zInvoice(List<String> broker, List<String> airwayBill, String billed, String invoiced);
 
 	UserMessage approveNdInvoiced(ApprovedInvoice approvedInvoice);
 

@@ -171,13 +171,13 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 		return superUserD2zService.uploadReconcileNonD2z(reconcileData);
     }
 	
-	@RequestMapping( method = RequestMethod.GET, path = "/download-reconcile")
-    public List<Reconcile> downloadReconcile(@RequestParam("reconcileNumbers") List<String> reconcileNumbers) {
+	@RequestMapping( method = RequestMethod.POST, path = "/download-reconcile")
+    public List<Reconcile> downloadReconcile(@RequestBody List<String> reconcileNumbers) {
 		return superUserD2zService.downloadReconcile(reconcileNumbers);
     }
 	
-	@RequestMapping( method = RequestMethod.GET, path = "/download-non-d2z-reconcile")
-    public List<ReconcileND> downloadNonD2zReconcile(@RequestParam("nonD2zReconcileNumbers") List<String> nonD2zReconcileNumbers) {
+	@RequestMapping( method = RequestMethod.POST, path = "/download-non-d2z-reconcile")
+    public List<ReconcileND> downloadNonD2zReconcile(@RequestBody List<String> nonD2zReconcileNumbers) {
 		return superUserD2zService.downloadNonD2zReconcile(nonD2zReconcileNumbers);
     }
 	
@@ -192,13 +192,15 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/download-Invoice")
-    public List<DownloadInvice> downloadInvoice(@RequestParam("broker") List<String> broker, @RequestParam("airwayBill") List<String> airwayBill) {
-		return superUserD2zService.downloadInvoice(broker, airwayBill);
+    public List<DownloadInvice> downloadInvoice(@RequestParam("broker") List<String> broker, @RequestParam("airwayBill") List<String> airwayBill,
+    		@RequestParam("billed") String billed, @RequestParam("invoiced") String invoiced) {
+		return superUserD2zService.downloadInvoice(broker, airwayBill, billed, invoiced);
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/download-nonD2z-Invoice")
-    public List<DownloadInvice> downloadNonD2zInvoice(@RequestParam("broker") List<String> broker, @RequestParam("airwayBill") List<String> airwayBill) {
-		return superUserD2zService.downloadNonD2zInvoice(broker, airwayBill);
+    public List<DownloadInvice> downloadNonD2zInvoice(@RequestParam("broker") List<String> broker, @RequestParam("airwayBill") List<String> airwayBill,
+    		@RequestParam("billed") String billed, @RequestParam("invoiced") String invoiced) {
+		return superUserD2zService.downloadNonD2zInvoice(broker, airwayBill, billed, invoiced);
     }
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/Non-D2Z-Client")

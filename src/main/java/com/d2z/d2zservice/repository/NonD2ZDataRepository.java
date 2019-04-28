@@ -28,12 +28,13 @@ public interface NonD2ZDataRepository extends CrudRepository<NonD2ZData, Long>{
 
 	@Query(nativeQuery = true, value="SELECT DISTINCT S.articleid  AS TrackingNumber, S.reference_number AS reference, "
 			+ "S.postcode AS postcode, S.weight AS Weight, B.rate AS postage, S.fuelsurcharge AS Fuelsurcharge, "
-			+ "S.brokerrate AS total FROM NonD2ZData S INNER JOIN POSTCODEZONES P ON P.postcode = S.postcode AND "
+			+ "S.brokerrate AS total, S.ServiceType AS ServiceType FROM NonD2ZData S INNER JOIN POSTCODEZONES P ON P.postcode = S.postcode AND "
 			+ "P.suburb = S.suburb INNER JOIN BROKERRATES B ON S.ShipmentNumber in (:airwayBill) AND "
 			+ "B.brokerusername in (:broker) AND ( S.weight BETWEEN Cast(B.minweight AS DECIMAL(18, 4)) "
 			+ "AND Cast( B.maxweight AS DECIMAL(18, 4)) ) AND S.servicetype = B.servicetype AND S.postcode = P.postcode "
-			+ "AND B.zoneid = P.zone")
-	List<String> downloadNonD2zInvoice(@Param("broker") List<String> broker, @Param("airwayBill")  List<String> airwayBill);
+			+ "AND B.zoneid = P.zone and S.Billed=:billed and S.Invoiced=:invoiced ")
+	List<String> downloadNonD2zInvoice(@Param("broker") List<String> broker, @Param("airwayBill")  List<String> airwayBill,
+			@Param("billed") String billed, @Param("invoiced") String invoiced);
 
 	@Procedure(name = "InvoiceUpdateND")
 	void approveNdInvoiced(@Param("Indicator") String Indicator, @Param("Airwaybill") String Airwaybill);

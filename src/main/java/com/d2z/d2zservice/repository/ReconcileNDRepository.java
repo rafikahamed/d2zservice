@@ -8,7 +8,7 @@ import com.d2z.d2zservice.entity.ReconcileND;
 
 public interface ReconcileNDRepository extends CrudRepository<ReconcileND, Long>{
 	
-	@Query("SELECT r FROM ReconcileND r where r.articleId in (:nonD2zReconcileNumbers)") 
+	@Query(nativeQuery = true, value="SELECT * FROM ReconcileND where articleId in (:nonD2zReconcileNumbers) union SELECT * FROM ReconcileND where reference_number in (:nonD2zReconcileNumbers)") 
 	List<ReconcileND> downloadNonD2zReconcile(@Param("nonD2zReconcileNumbers") List<String> nonD2zReconcileNumbers);
 	
 }

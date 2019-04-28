@@ -65,7 +65,7 @@ public interface ISuperUserD2ZService{
 
 	public List<NotBilled> fetchNotBilled();
 
-	public List<DownloadInvice> downloadInvoice(List<String> broker, List<String> airwayBill);
+	public List<DownloadInvice> downloadInvoice(List<String> broker, List<String> airwayBill, String billed, String invoiced);
 
 	public UserMessage fetchNonD2zClient(List<NonD2ZData> nonD2zData) throws ReferenceNumberNotUniqueException;
 
@@ -79,7 +79,7 @@ public interface ISuperUserD2ZService{
 
 	public List<InvoiceShipment> brokerNonD2zShipment();
 
-	public List<DownloadInvice> downloadNonD2zInvoice(List<String> broker,List<String> airwayBill);
+	public List<DownloadInvice> downloadNonD2zInvoice(List<String> broker,List<String> airwayBill,String billed,String invoiced);
 
 	public UserMessage approveNdInvoiced(ApprovedInvoice approvedInvoice);
 

@@ -13,7 +13,7 @@ import java.math.BigDecimal;
  */
 @Entity
 @NamedQuery(name="Reconcile.findAll", query="SELECT r FROM Reconcile r")
-@JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Reconcile implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -63,6 +63,9 @@ public class Reconcile implements Serializable {
 
 	@Column(name="WeightDifference")
 	private double weightDifference;
+	
+	@Column(name="Zone")
+	private String zone;
 
 	public Reconcile() {
 	}
@@ -187,4 +190,12 @@ public class Reconcile implements Serializable {
 		this.weightDifference = weightDifference;
 	}
 
+	public String getZone() {
+		return zone;
+	}
+
+	public void setZone(String zone) {
+		this.zone = zone;
+	}
+	
 }
