@@ -91,7 +91,6 @@ public class AusPostProxy {
 			try {
 				jsonResponse = ow.writeValueAsString(response);
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	        System.out.println("Response :: " + jsonResponse);
