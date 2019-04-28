@@ -19,6 +19,7 @@ import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.UserDetails;
+import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.etower.CreateShippingRequest;
 import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
@@ -110,6 +111,6 @@ public interface ID2ZDao {
 
 	String[] fetchArticleIDForFDMCall();
 
-
+	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails);
 
 }

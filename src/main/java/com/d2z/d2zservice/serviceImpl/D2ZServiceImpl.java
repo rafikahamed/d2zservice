@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,16 +17,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
-
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.validation.Valid;
-
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang.StringUtils;
+import org.jfree.chart.util.TextUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
@@ -64,7 +62,7 @@ import com.d2z.d2zservice.model.auspost.FromAddress;
 import com.d2z.d2zservice.model.auspost.Items;
 import com.d2z.d2zservice.model.auspost.ShipmentRequest;
 import com.d2z.d2zservice.model.auspost.ToAddress;
-import com.d2z.d2zservice.model.etower.CreateShippingResponse;
+import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.fdm.ArrayOfConsignment;
 import com.d2z.d2zservice.model.fdm.ArrayofDetail;
 import com.d2z.d2zservice.model.fdm.Consignment;
@@ -73,6 +71,7 @@ import com.d2z.d2zservice.model.fdm.Line;
 import com.d2z.d2zservice.proxy.AusPostProxy;
 import com.d2z.d2zservice.proxy.EbayProxy;
 import com.d2z.d2zservice.proxy.FDMProxy;
+import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
@@ -81,7 +80,6 @@ import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -122,7 +120,6 @@ public class D2ZServiceImpl implements ID2ZService{
 	
 	@Autowired
 	EmailUtil emailUtil; 
-
 	
 	@Autowired
 	FreipostWrapper freipostWrapper; 
@@ -132,7 +129,10 @@ public class D2ZServiceImpl implements ID2ZService{
 	
 	@Autowired
 	FDMProxy fdmProxy;
-
+	
+	@Autowired
+	TrackAndTraceRepository trackAndTraceRepository;
+	
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException{
 		d2zValidator.isReferenceNumberUniqueUI(orderDetailList);
@@ -1215,6 +1215,23 @@ public class D2ZServiceImpl implements ID2ZService{
 		fdmProxy.makeCallToFDMManifestMapping(request);
 		}
 	}
-	
 
+	@Override
+	public ResponseMessage auTrackingEvent() {
+		ResponseMessage respMsg = null;
+		List<String> articleIdData = trackAndTraceRepository.getArticleId();
+		List<List<String>> articleIdList = ListUtils.partition(articleIdData, 10);
+		int count = 1;
+		for(List<String> articleIdNumbers : articleIdList) {
+			System.out.println(count + ":::" + articleIdNumbers.size());
+			count++;
+			String articleIds = StringUtils.join(articleIdNumbers, ", ");
+			TrackingResponse auTrackingDetails = ausPostProxy.trackingEvent(articleIds);
+			System.out.println("AU Track Response");
+			System.out.println(auTrackingDetails.toString());
+			respMsg = d2zDao.insertAUTrackingDetails(auTrackingDetails);
+	 	}
+		return respMsg;
+	}
+	
 }

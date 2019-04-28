@@ -84,4 +84,6 @@ public interface ID2ZService {
 	public void triggerFreipost();
 
 	public void triggerFDM();
+
+	public ResponseMessage auTrackingEvent();
 }

@@ -1,8 +1,10 @@
 package com.d2z.d2zservice.daoImpl;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +32,10 @@ import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.UserDetails;
+import com.d2z.d2zservice.model.auspost.TrackableItems;
+import com.d2z.d2zservice.model.auspost.TrackingEvents;
+import com.d2z.d2zservice.model.auspost.TrackingResponse;
+import com.d2z.d2zservice.model.auspost.TrackingResults;
 import com.d2z.d2zservice.model.etower.CreateShippingRequest;
 import com.d2z.d2zservice.model.etower.CreateShippingResponse;
 import com.d2z.d2zservice.model.etower.ETowerTrackingDetails;
@@ -954,4 +960,37 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return barcodeMap;
 		
 	}
+
+	@Override
+	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails) {
+		List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
+		List<TrackingResults> trackingData = auTrackingDetails.getTracking_results();
+		ResponseMessage responseMsg =  new ResponseMessage();
+		if(trackingData.isEmpty()) {
+			responseMsg.setResponseMessage("No Data from ETower");
+		}else {
+			for(TrackingResults data : trackingData ) {
+				if(data!=null && data.getTrackable_items()!=null) {
+					for(TrackableItems trackingLabel : data.getTrackable_items()) {
+						if(trackingLabel != null && trackingLabel.getEvents() != null) {
+							for(TrackingEvents trackingEvents: trackingLabel.getEvents()) {
+								Trackandtrace trackandTrace = new Trackandtrace();
+								trackandTrace.setArticleID(trackingLabel.getArticle_id());
+								trackandTrace.setTrackEventDetails(trackingEvents.getDescription());
+								trackandTrace.setTrackEventDateOccured(trackingEvents.getDate().substring(0,19));
+								trackandTrace.setLocation(trackingEvents.getLocation());
+								trackandTrace.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+								trackandTrace.setFileName("AU-Post");
+								trackAndTraceList.add(trackandTrace);
+							}
+						}
+					}
+				}
+			}
+			trackAndTraceRepository.saveAll(trackAndTraceList);
+			responseMsg.setResponseMessage("Data uploaded successfully from AU Post");
+		}
+		return responseMsg;
+	}
+	
 }
