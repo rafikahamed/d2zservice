@@ -866,7 +866,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		}
 
 		}
-	}
+	
 	@Override
 	public UserMessage addUser(UserDetails userData) {
 		UserMessage userMsg = new UserMessage();

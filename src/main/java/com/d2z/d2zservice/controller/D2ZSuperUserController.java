@@ -89,7 +89,7 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 	}
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/export/nonshipment")
-	 public List<SenderdataMaster> exportNonShipmentData(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
+	 public List<ExportShipment> exportNonShipmentData(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
 		return superUserD2zService.exportNonShipmentData(fromDate, toDate);
 	}
 	@RequestMapping( method = RequestMethod.GET, path = "/track/etower/{trackingNumbers}")

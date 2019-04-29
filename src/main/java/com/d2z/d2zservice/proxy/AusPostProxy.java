@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 @Service
 public class AusPostProxy {
 	
-	public void createOrderIncludingShipments(CreateShippingRequest request) {
+	public String createOrderIncludingShipments(CreateShippingRequest request) {
 	    String url = "https://digitalapi.auspost.com.au/shipping/v1/orders";
 		RestTemplate template = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
@@ -62,6 +62,7 @@ public class AusPostProxy {
 				e.printStackTrace();
 			}
 	        System.out.println("Response :: " + jsonResponse);
+	        return jsonResponse;
 	}
 	
 	public TrackingResponse trackingEvent(String articleIds) {

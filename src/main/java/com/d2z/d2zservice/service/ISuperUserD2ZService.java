@@ -41,7 +41,7 @@ public interface ISuperUserD2ZService{
 
 	List<ExportShipment> exportShipmentData(String fromDate, String toDate);
 	
-	List<SenderdataMaster> exportNonShipmentData(String fromDate, String toDate);
+	List<ExportShipment> exportNonShipmentData(String fromDate, String toDate);
 
 	public ResponseMessage trackingEvent(List<String> trackingNumbers);
 

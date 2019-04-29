@@ -33,7 +33,7 @@ public interface ID2ZSuperUserDao {
 
 	List<Object> exportShipment(String fromDate, String toDate);
 	
-	List<SenderdataMaster> exportNonShipment(String fromDate, String toDate);
+	List<Object> exportNonShipment(String fromDate, String toDate);
 
 	List<String> fetchTrackingNumbersForETowerCall();
 

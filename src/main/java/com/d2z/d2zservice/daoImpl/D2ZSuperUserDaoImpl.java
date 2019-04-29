@@ -196,10 +196,10 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	}
 
 	@Override
-	public List<SenderdataMaster> exportNonShipment(String fromDate, String toDate) {
+	public List<Object> exportNonShipment(String fromDate, String toDate) {
 		String fromTime = fromDate.concat(" ").concat("00:00:00");
 		String toTime = toDate.concat(" ").concat("23:59:59");
-		List<SenderdataMaster> exportedShipment = senderDataRepository.exportNonShipment(fromTime,toTime);
+		List<Object> exportedShipment = senderDataRepository.exportNonShipment(fromTime,toTime);
 		System.out.println(exportedShipment.size());
 		return exportedShipment;
 	}
