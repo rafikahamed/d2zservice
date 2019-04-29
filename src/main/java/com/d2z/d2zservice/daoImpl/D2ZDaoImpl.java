@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.APIRates;
+import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.EbayResponse;
 import com.d2z.d2zservice.entity.PostcodeZone;
@@ -47,6 +48,7 @@ import com.d2z.d2zservice.model.etower.TrackEventResponseData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.repository.APIRatesRepository;
+import com.d2z.d2zservice.repository.AUPostResponseRepository;
 import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
@@ -85,6 +87,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 	@Autowired
 	APIRatesRepository apiRatesRepository;
 	
+	@Autowired
+	AUPostResponseRepository aupostresponseRepository;
 
 	@Autowired
 	private ETowerProxy eTowerProxy;
@@ -993,4 +997,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return responseMsg;
 	}
 	
+	@Override
+	public void logAUPostResponse(List<AUPostResponse> aupostresponse)
+	{
+		aupostresponseRepository.saveAll(aupostresponse);
+	}
 }

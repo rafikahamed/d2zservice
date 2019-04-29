@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -25,9 +26,11 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jfree.chart.util.TextUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZDao;
+import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
@@ -801,7 +804,67 @@ public class D2ZServiceImpl implements ID2ZService{
         
         request.setShipments(shipments);       
         
-		ausPostProxy.createOrderIncludingShipments(request);
+        String response = ausPostProxy.createOrderIncludingShipments(request);
+		List <AUPostResponse> AUPostResponseList =  new ArrayList<AUPostResponse>();
+		JacksonJsonParser jsonParser = new JacksonJsonParser();
+		Map<String, Object> responses= jsonParser.parseMap(response);
+		if(responses.containsKey("order"))
+		{
+		LinkedHashMap<String, Object> order  = (LinkedHashMap<String, Object>) responses.get("order");
+
+		String orderid = (String) order.get("order_id");
+		String orderreference = (String) order.get("order_reference");
+		String ordercreationdate = (String) order.get("order_creation_date");
+		List<Map<String, Object>> shipmentlist = (List<Map<String, Object>>)order.get("shipments");
+		for (Map<String, Object> shipment: shipmentlist){
+			AUPostResponse auresponse = new AUPostResponse();
+			auresponse.setApiname("AU post");
+		auresponse.setOrderid(orderid);
+		auresponse.setOrderreference(orderreference);
+		auresponse.setOrderCreationDate(ordercreationdate.substring(0, 19));
+		//auresponse.setOrderCreationDate(Timestamp.valueOf(ordercreationdate));
+		auresponse.setShipmentId((String) shipment.get("shipment_id"));
+			Map<String, Object> shipment_summary = (Map<String, Object>) shipment.get("shipment_summary");
+			auresponse.setCost((String)shipment_summary.get("total_cost"));
+			auresponse.setFuelSurcharge((String)shipment_summary.get("fuel_surcharge"));
+			auresponse.setGST((String)shipment_summary.get("total_gst"));
+			
+			
+			List<Map<String, Object>> itemlist = (List<Map<String, Object>>)shipment.get("items");
+			for (Map<String, Object> item: itemlist){
+				auresponse.setItemId((String)(item.get("item_id")));
+				Map<String, Object> tracking_summary = (Map<String, Object>) item.get("tracking_details");
+				auresponse.setArticleId((String)(tracking_summary.get("article_id")));
+				auresponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+				AUPostResponseList.add(auresponse);
+			}
+
+		}
+		}
+		else {
+			List<Map<String, Object>> errorlist = (List<Map<String, Object>>)responses.get("errors");
+			
+			for (Map<String, Object> error: errorlist){
+				AUPostResponse auresponse = new AUPostResponse();
+				auresponse.setApiname("AU post");
+				auresponse.setErrorCode((String)error.get("code"));
+				auresponse.setName((String)error.get("name"));
+				auresponse.setMessage((String)error.get("message"));
+				String Field = error.get("context").toString().split("=")[1];
+				auresponse.setField(Field.substring(0, (Field.length()-1)));
+				auresponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+				AUPostResponseList.add(auresponse);
+		
+			}
+			
+		
+		}
+		//AUResponseRepository.saveAll(AUPostResponseList);
+		d2zDao.logAUPostResponse(AUPostResponseList);
+
+		
+		}
+
 		}
 	}
 	@Override

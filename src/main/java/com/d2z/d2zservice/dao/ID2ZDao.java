@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.d2z.d2zservice.entity.APIRates;
+import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
@@ -112,5 +113,6 @@ public interface ID2ZDao {
 	String[] fetchArticleIDForFDMCall();
 
 	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails);
-
+    
+	public void logAUPostResponse(List<AUPostResponse> aupostresponse);
 }
