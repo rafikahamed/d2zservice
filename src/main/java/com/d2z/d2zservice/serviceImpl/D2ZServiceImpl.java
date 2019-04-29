@@ -48,6 +48,7 @@ import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_Shipment;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
+import com.d2z.d2zservice.model.FDMManifestDetails;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -1204,27 +1205,28 @@ public class D2ZServiceImpl implements ID2ZService{
 	
 	@Override
 	public void triggerFDM() {
-		
 		String[] referenceNumbers = d2zDao.fetchArticleIDForFDMCall();
 		System.out.println("Track and trace:"+referenceNumbers.length);
 		List<SenderdataMaster> senderData = d2zDao.fetchDataForAusPost(referenceNumbers);
 		System.out.println("Sender Data:"+senderData.size());
-		List<SenderdataMaster> testData =  new ArrayList<SenderdataMaster>();
-		testData.add(senderData.get(0));
-		testData.add(senderData.get(1));
+//		List<SenderdataMaster> testData =  new ArrayList<SenderdataMaster>();
+//		testData.add(senderData.get(2));
+//		testData.add(senderData.get(3));
+//		testData.add(senderData.get(4));
 		if(!senderData.isEmpty()) {
 		FDMManifestRequest request = new FDMManifestRequest();
 		Date dNow = new Date();
         SimpleDateFormat ft = new SimpleDateFormat("yyMMddhhmm");
         String orderRef = ft.format(dNow);
         
-        request.setMessage_no(orderRef);
-        request.setCustomer_id("D2Z");
+        FDMManifestDetails fdmDetails = new FDMManifestDetails();
+        fdmDetails.setMessage_no(orderRef);
+        fdmDetails.setCustomer_id("D2Z");
         
         ArrayOfConsignment consignmentsArray =  new ArrayOfConsignment();
         List<Consignment> consignments = new ArrayList<Consignment>();
         
-		for(SenderdataMaster data : testData) {
+		for(SenderdataMaster data : senderData) {
 			Consignment consignment = new Consignment();
 			consignment.setConnote_no(data.getArticleId().substring(0, 20));
 			consignment.setTracking_connote(data.getArticleId());
@@ -1266,15 +1268,14 @@ public class D2ZServiceImpl implements ID2ZService{
 			lineItem.setDim_length(data.getDimensions_Length() == null ? "" : data.getDimensions_Length().toString());
 		    lineItem.setDim_width(data.getDimensions_Width() == null ? "" : data.getDimensions_Width().toString());
 			itemList.add(lineItem);
-			
 			details.setLine(itemList);
-
 			consignment.setDetails(details);
 			consignments.add(consignment);
 		
 		}
 		consignmentsArray.setConsignment(consignments);
-		request.setConsignments(consignmentsArray);
+		fdmDetails.setConsignments(consignmentsArray);
+		request.setManifest(fdmDetails);
 		fdmProxy.makeCallToFDMManifestMapping(request);
 		}
 	}
