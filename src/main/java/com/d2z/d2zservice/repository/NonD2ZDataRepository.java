@@ -23,7 +23,7 @@ public interface NonD2ZDataRepository extends CrudRepository<NonD2ZData, Long>{
 	@Procedure(name = "reconcileratesND")
 	void reconcileratesND(@Param("Reference_number") String Reference_number);
 	
-	@Query(value="Select distinct c.brokerName,c.shipmentNumber from NonD2ZData c where c.invoiced is null")
+	@Query(value="Select distinct c.brokerName,c.shipmentNumber from NonD2ZData c where c.invoiced = 'N'")
 	List<NonD2ZData> brokerNonD2zShipment();
 
 	@Query(nativeQuery = true, value="SELECT DISTINCT S.articleid  AS TrackingNumber, S.reference_number AS reference, "
@@ -39,7 +39,7 @@ public interface NonD2ZDataRepository extends CrudRepository<NonD2ZData, Long>{
 	@Procedure(name = "InvoiceUpdateND")
 	void approveNdInvoiced(@Param("Indicator") String Indicator, @Param("Airwaybill") String Airwaybill);
 	
-	@Query(value="Select distinct c.brokerName,c.shipmentNumber from NonD2ZData c where c.invoiced = 'Y' and c.billed is null")
+	@Query(value="Select distinct c.brokerName,c.shipmentNumber from NonD2ZData c where c.invoiced = 'Y' and c.billed ='N' ")
 	List<NonD2ZData> brokerNdInvoiced();
 	
 	@Query(nativeQuery = true, value="SELECT DISTINCT N.brokername, N.shipmentnumber, N.articleid, N.reference_number, "
