@@ -826,9 +826,9 @@ public class D2ZServiceImpl implements ID2ZService{
 		//auresponse.setOrderCreationDate(Timestamp.valueOf(ordercreationdate));
 		auresponse.setShipmentId((String) shipment.get("shipment_id"));
 			Map<String, Object> shipment_summary = (Map<String, Object>) shipment.get("shipment_summary");
-			auresponse.setCost((String)shipment_summary.get("total_cost"));
-			auresponse.setFuelSurcharge((String)shipment_summary.get("fuel_surcharge"));
-			auresponse.setGST((String)shipment_summary.get("total_gst"));
+			auresponse.setCost(""+shipment_summary.get("total_cost"));
+			auresponse.setFuelSurcharge(""+shipment_summary.get("fuel_surcharge"));
+			auresponse.setGST(""+shipment_summary.get("total_gst"));
 			
 			
 			List<Map<String, Object>> itemlist = (List<Map<String, Object>>)shipment.get("items");
