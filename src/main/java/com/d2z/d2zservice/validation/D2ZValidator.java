@@ -6,6 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
@@ -15,6 +16,7 @@ import com.d2z.d2zservice.exception.InvalidServiceTypeException;
 import com.d2z.d2zservice.exception.InvalidSuburbPostcodeException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
+import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.singleton.D2ZSingleton;
@@ -153,6 +155,52 @@ public class D2ZValidator {
 		} 
 		if(!incorrectRefNbr.isEmpty()) {
 			throw new InvalidServiceTypeException("Invalid Service Type",incorrectRefNbr);
+		}
+	}
+
+	public void isReferenceNumberUniqueReconcile(List<ReconcileData> reconcileData, String client) throws ReferenceNumberNotUniqueException{
+		List<String> referenceNumber_DB = null;
+		if(client.equalsIgnoreCase("D2Z")) {
+			referenceNumber_DB = d2zSuperUserDao.fetchAllReconcileReferenceNumbers();
+		}else {
+			referenceNumber_DB = d2zSuperUserDao.fetchAllReconcileNonD2zReferenceNumbers();
+		}
+		List<String> incomingRefNbr = reconcileData.stream().map(obj -> {
+			return obj.getRefrenceNumber(); })
+				.collect(Collectors.toList());
+		referenceNumber_DB.addAll(incomingRefNbr);
+		List<String> duplicateRefNbr = referenceNumber_DB.stream().collect(Collectors.groupingBy(Function.identity(),     
+	              Collectors.counting()))                                             
+	          .entrySet().stream()
+	          .filter(e -> e.getValue() > 1)                                      
+	          .map(e -> e.getKey())                                                  
+	          .collect(Collectors.toList());
+		
+		if(!duplicateRefNbr.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Reference Number must be unique",duplicateRefNbr);
+		}
+	}
+
+	public void isArticleIdUniqueReconcile(List<ReconcileData> reconcileData, String client) throws ReferenceNumberNotUniqueException {
+		List<String> articleId_DB = null;
+		if(client.equalsIgnoreCase("D2Z")) {
+			articleId_DB = d2zSuperUserDao.fetchAllReconcileArticleIdNumbers();
+		}else {
+			articleId_DB = d2zSuperUserDao.fetchAllReconcileNonD2zArticleIdNumbers();
+		}
+		List<String> incomingRefNbr = reconcileData.stream().map(obj -> {
+			return obj.getArticleNo(); })
+				.collect(Collectors.toList());
+		articleId_DB.addAll(incomingRefNbr);
+		List<String> duplicateRefNbr = articleId_DB.stream().collect(Collectors.groupingBy(Function.identity(),     
+	              Collectors.counting()))                                             
+	          .entrySet().stream()
+	          .filter(e -> e.getValue() > 1)                                      
+	          .map(e -> e.getKey())                                                  
+	          .collect(Collectors.toList());
+		
+		if(!duplicateRefNbr.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Article Id must be unique",duplicateRefNbr);
 		}
 	}
 

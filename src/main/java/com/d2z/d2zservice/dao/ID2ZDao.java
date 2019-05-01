@@ -115,4 +115,5 @@ public interface ID2ZDao {
 	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails);
     
 	public void logAUPostResponse(List<AUPostResponse> aupostresponse);
+
 }

@@ -59,7 +59,7 @@ public interface ISuperUserD2ZService{
 
 	public List<InvoiceShipment> brokerInvoiced();
 
-	public UserMessage fetchReconcile(List<ReconcileData> reconcileData);
+	public UserMessage fetchReconcile(List<ReconcileData> reconcileData) throws ReferenceNumberNotUniqueException;
 
 	public UserMessage approvedInvoice(ApprovedInvoice approvedInvoice);
 
@@ -73,7 +73,7 @@ public interface ISuperUserD2ZService{
 
 	public List<DropDownModel> fetchNonD2zBrokerUserName();
 
-	public UserMessage uploadReconcileNonD2z(List<ReconcileData> reconcileData);
+	public UserMessage uploadReconcileNonD2z(List<ReconcileData> reconcileData) throws ReferenceNumberNotUniqueException;
 
 	public List<ReconcileND> downloadNonD2zReconcile(List<String> nonD2zReconcileNumbers);
 

@@ -19,6 +19,9 @@ public interface NonD2ZDataRepository extends CrudRepository<NonD2ZData, Long>{
 	
 	@Query(value="Select c from NonD2ZData c where c.articleId = :articleNo") 
 	NonD2ZData reconcileNonD2zData(@Param("articleNo") String articleNo);
+	
+	@Query(value="Select c from NonD2ZData c where c.reference_number = :referenceNumber") 
+	NonD2ZData reconcileNonD2zFreipostData(@Param("referenceNumber") String referenceNumber);
 
 	@Procedure(name = "reconcileratesND")
 	void reconcileratesND(@Param("Reference_number") String Reference_number);
