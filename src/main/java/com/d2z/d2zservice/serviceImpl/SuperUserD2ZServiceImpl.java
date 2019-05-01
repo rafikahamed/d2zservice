@@ -480,7 +480,7 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 
 	@Override
 	public List<DownloadInvice> downloadInvoice(List<String> broker, List<String> airwayBill, String billed, String invoiced) {
-		List<String> downloadInvoiceData = d2zDao.downloadInvoice(broker,airwayBill,billed,billed);
+		List<String> downloadInvoiceData = d2zDao.downloadInvoice(broker,airwayBill,billed,invoiced);
 		List<DownloadInvice> downloadInvoiceList = new ArrayList<DownloadInvice>();
 		Iterator itr = downloadInvoiceData.iterator();
 		 while(itr.hasNext()) {
