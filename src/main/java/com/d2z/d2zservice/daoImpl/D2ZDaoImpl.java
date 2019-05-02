@@ -553,8 +553,6 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public String allocateShipment(String referenceNumbers, String shipmentNumber) {
-		System.out.println(referenceNumbers.toString());
-		System.out.println(shipmentNumber);
 		senderDataRepository.allocateShipment(referenceNumbers, shipmentNumber);
 		Runnable r = new Runnable( ) {			
 	        public void run() {
