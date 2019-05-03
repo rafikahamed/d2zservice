@@ -5,10 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.BrokerRates;
 import com.d2z.d2zservice.entity.D2ZRates;
@@ -38,6 +36,7 @@ import com.d2z.d2zservice.repository.NonD2ZDataRepository;
 import com.d2z.d2zservice.repository.ReconcileNDRepository;
 import com.d2z.d2zservice.repository.ReconcileRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
+import com.d2z.d2zservice.repository.ServiceTypeListRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
@@ -68,6 +67,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	
 	@Autowired
 	MlidRepository mlidRepository;
+	
+	@Autowired
+	ServiceTypeListRepository serviceTypeListRepository;
 	
 	@Autowired
 	ReconcileRepository reconcileRepository;
@@ -192,10 +194,10 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	}
 
 	@Override
-	public List<SenderdataMaster> exportNonShipment(String fromDate, String toDate) {
+	public List<Object> exportNonShipment(String fromDate, String toDate) {
 		String fromTime = fromDate.concat(" ").concat("00:00:00");
 		String toTime = toDate.concat(" ").concat("23:59:59");
-		List<SenderdataMaster> exportedShipment = senderDataRepository.exportNonShipment(fromTime,toTime);
+		List<Object> exportedShipment = senderDataRepository.exportNonShipment(fromTime,toTime);
 		System.out.println(exportedShipment.size());
 		return exportedShipment;
 	}
@@ -370,7 +372,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 
 	@Override
 	public List<String> fetchMlidList() {
-		List<String> mlidList = mlidRepository.getServiceTypeList();
+		List<String> mlidList = serviceTypeListRepository.getServiceTypeList();
 		return mlidList;
 	}
 
@@ -440,8 +442,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	}
 
 	@Override
-	public List<String> downloadInvoice(List<String> broker, List<String> airwayBill) {
-		List<String> downloadInvoice = senderDataRepository.downloadInvoice(broker,airwayBill);
+	public List<String> downloadInvoice(List<String> broker, List<String> airwayBill, String billed, String invoiced) {
+		List<String> downloadInvoice = senderDataRepository.downloadInvoice(broker,airwayBill,billed,invoiced);
 		return downloadInvoice;
 	}
 
@@ -509,8 +511,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	}
 
 	@Override
-	public List<String> downloadNonD2zInvoice(List<String> broker,List<String> airwayBill) {
-		List<String> downloadInvoice = nonD2ZDataRepository.downloadNonD2zInvoice(broker,airwayBill);
+	public List<String> downloadNonD2zInvoice(List<String> broker,List<String> airwayBill, String billed,String invoiced ) {
+		List<String> downloadInvoice = nonD2ZDataRepository.downloadNonD2zInvoice(broker,airwayBill,billed,invoiced);
 		return downloadInvoice;
 	}
 
@@ -536,6 +538,36 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	public List<String> fetchNonD2zNotBilled() {
 		List<String> notBilledData = nonD2ZDataRepository.fetchNonD2zNotBilled();
 		return notBilledData;
+	}
+
+	@Override
+	public NonD2ZData reconcileNonD2zFreipostData(String referenceNumber) {
+		NonD2ZData nonD2zData = nonD2ZDataRepository.reconcileNonD2zFreipostData(referenceNumber);
+		return nonD2zData;
+	}
+
+	@Override
+	public List<String> fetchAllReconcileReferenceNumbers() {
+		List<String> referenceNumber_DB= reconcileRepository.fetchAllReconcileReferenceNumbers();
+    	return referenceNumber_DB;
+	}
+
+	@Override
+	public List<String> fetchAllReconcileArticleIdNumbers() {
+		List<String> articleId_DB= reconcileRepository.fetchAllReconcileArticleIdNumbers();
+    	return articleId_DB;
+	}
+
+	@Override
+	public List<String> fetchAllReconcileNonD2zReferenceNumbers() {
+		List<String> referenceNumberNonD2z_DB= reconcileNDRepository.fetchAllReconcileNonD2zReferenceNumbers();
+    	return referenceNumberNonD2z_DB;
+	}
+
+	@Override
+	public List<String> fetchAllReconcileNonD2zArticleIdNumbers() {
+		List<String> referenceNumberNonD2z_DB= reconcileNDRepository.fetchAllReconcileNonD2zArticleIdNumbers();
+    	return referenceNumberNonD2z_DB;
 	}
 	
 }

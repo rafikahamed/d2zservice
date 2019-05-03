@@ -23,9 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 @Service
 public class AusPostProxy {
-
 	
-	public void createOrderIncludingShipments(CreateShippingRequest request) {
+	public String createOrderIncludingShipments(CreateShippingRequest request) {
 	    String url = "https://digitalapi.auspost.com.au/shipping/v1/orders";
 		RestTemplate template = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
@@ -63,10 +62,11 @@ public class AusPostProxy {
 				e.printStackTrace();
 			}
 	        System.out.println("Response :: " + jsonResponse);
+	        return jsonResponse;
 	}
-	public void trackingEvent(String articleIds) {
-		String article = "33PE9102041801000935107,33PE9102064501000935107";
-	    String url = "https://digitalapi.auspost.com.au/shipping/v1/track?tracking_Ids={article}";
+	
+	public TrackingResponse trackingEvent(String articleIds) {
+	    String url = "https://digitalapi.auspost.com.au/shipping/v1/track?tracking_ids="+articleIds;
 		RestTemplate template = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -76,24 +76,23 @@ public class AusPostProxy {
 			base64encodedString = Base64.getEncoder().encodeToString("b38ca324-caf7-4d80-8c4a-e9862a4e5ba6:456hg4%tgC".getBytes("utf-8"));
 			System.out.println("base64encodedString ::: "+ base64encodedString);
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		headers.add("Authorization","Basic "+ base64encodedString);
-		
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-		 
-		ResponseEntity<TrackingResponse> responseEntity = template.exchange(url, HttpMethod.GET, requestEntity, TrackingResponse.class,article);
+		ResponseEntity<TrackingResponse> responseEntity = template.exchange(url, HttpMethod.GET, requestEntity, TrackingResponse.class);
 		System.out.println(responseEntity.getStatusCode());
 		TrackingResponse response = responseEntity.getBody();
-	        ObjectWriter ow = new ObjectMapper().writer();
-	        String jsonResponse = null;
-			try {
-				jsonResponse = ow.writeValueAsString(response);
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
-	        System.out.println("Response :: " + jsonResponse);
-	       
+//	        ObjectWriter ow = new ObjectMapper().writer();
+//	        String jsonResponse = null;
+//			try {
+//				jsonResponse = ow.writeValueAsString(response);
+//			} catch (JsonProcessingException e) {
+//				e.printStackTrace();
+//			}
+//	        System.out.println("Response :: " + jsonResponse);
+	     return response;
 	}
+	
+	
 }

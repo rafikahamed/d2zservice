@@ -7,30 +7,35 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
-
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.validation.Valid;
-
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang.StringUtils;
+import org.jfree.chart.util.TextUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 
+import org.springframework.scheduling.annotation.Scheduled;
+
+import org.springframework.boot.json.JacksonJsonParser;
+
+import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZDao;
+import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
@@ -48,6 +53,7 @@ import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_Shipment;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
+import com.d2z.d2zservice.model.FDMManifestDetails;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -65,7 +71,7 @@ import com.d2z.d2zservice.model.auspost.FromAddress;
 import com.d2z.d2zservice.model.auspost.Items;
 import com.d2z.d2zservice.model.auspost.ShipmentRequest;
 import com.d2z.d2zservice.model.auspost.ToAddress;
-import com.d2z.d2zservice.model.etower.CreateShippingResponse;
+import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.fdm.ArrayOfConsignment;
 import com.d2z.d2zservice.model.fdm.ArrayofDetail;
 import com.d2z.d2zservice.model.fdm.Consignment;
@@ -74,6 +80,7 @@ import com.d2z.d2zservice.model.fdm.Line;
 import com.d2z.d2zservice.proxy.AusPostProxy;
 import com.d2z.d2zservice.proxy.EbayProxy;
 import com.d2z.d2zservice.proxy.FDMProxy;
+import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
@@ -82,7 +89,6 @@ import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -123,7 +129,6 @@ public class D2ZServiceImpl implements ID2ZService{
 	
 	@Autowired
 	EmailUtil emailUtil; 
-
 	
 	@Autowired
 	FreipostWrapper freipostWrapper; 
@@ -133,7 +138,10 @@ public class D2ZServiceImpl implements ID2ZService{
 	
 	@Autowired
 	FDMProxy fdmProxy;
-
+	
+	@Autowired
+	TrackAndTraceRepository trackAndTraceRepository;
+	
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException{
 		d2zValidator.isReferenceNumberUniqueUI(orderDetailList);
@@ -703,10 +711,8 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Override
 	public ResponseMessage allocateShipment(String referenceNumbers, String shipmentNumber) throws ReferenceNumberNotUniqueException {
 		ResponseMessage userMsg = new ResponseMessage();
-
 		String[] refNbrs = referenceNumbers.split(",");
 		List<SenderdataMaster> incorrectRefNbr = d2zDao.findRefNbrByShipmentNbr(refNbrs);
-
 		List<String> invalidData = incorrectRefNbr.stream()
 	               .map(a -> {
 	            	   StringBuffer msg = new StringBuffer(a.getReference_number());
@@ -725,8 +731,23 @@ public class D2ZServiceImpl implements ID2ZService{
 			throw new ReferenceNumberNotUniqueException("Request failed",invalidData);
 		}
 		
-		String msg =  d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
+
+		//String msg =  d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
+		List<String> refNumberList = new ArrayList<String>(Arrays.asList(refNbrs)); 
+		List<List<String>> referNumPartList = ListUtils.partition(refNumberList, 300);
+		int count = 1;
+		String msg = null;
+		for(List<String> referenceNum : referNumPartList) {
+			System.out.println(count + ":::" + referenceNum.size());
+			count++;
+			String refNumbers = StringUtils.join(referenceNum, ",");
+			msg =  d2zDao.allocateShipment(refNumbers,shipmentNumber);
+		}
 	/*	List<SenderdataMaster> senderData =  d2zDao.fetchDataForAusPost(refNbrs);
+
+		
+		List<SenderdataMaster> senderData =  d2zDao.fetchDataForAusPost(refNbrs);
+
 		if(null != senderData && !senderData.isEmpty()) {
 			Runnable r = new Runnable( ) {			
 		        public void run() {
@@ -814,9 +835,69 @@ public class D2ZServiceImpl implements ID2ZService{
         
         request.setShipments(shipments);       
         
-		ausPostProxy.createOrderIncludingShipments(request);
+        String response = ausPostProxy.createOrderIncludingShipments(request);
+		List <AUPostResponse> AUPostResponseList =  new ArrayList<AUPostResponse>();
+		JacksonJsonParser jsonParser = new JacksonJsonParser();
+		Map<String, Object> responses= jsonParser.parseMap(response);
+		if(responses.containsKey("order"))
+		{
+		LinkedHashMap<String, Object> order  = (LinkedHashMap<String, Object>) responses.get("order");
+
+		String orderid = (String) order.get("order_id");
+		String orderreference = (String) order.get("order_reference");
+		String ordercreationdate = (String) order.get("order_creation_date");
+		List<Map<String, Object>> shipmentlist = (List<Map<String, Object>>)order.get("shipments");
+		for (Map<String, Object> shipment: shipmentlist){
+			AUPostResponse auresponse = new AUPostResponse();
+			auresponse.setApiname("AU post");
+		auresponse.setOrderid(orderid);
+		auresponse.setOrderreference(orderreference);
+		auresponse.setOrderCreationDate(ordercreationdate.substring(0, 19));
+		//auresponse.setOrderCreationDate(Timestamp.valueOf(ordercreationdate));
+		auresponse.setShipmentId((String) shipment.get("shipment_id"));
+			Map<String, Object> shipment_summary = (Map<String, Object>) shipment.get("shipment_summary");
+			auresponse.setCost(""+shipment_summary.get("total_cost"));
+			auresponse.setFuelSurcharge(""+shipment_summary.get("fuel_surcharge"));
+			auresponse.setGST(""+shipment_summary.get("total_gst"));
+			
+			
+			List<Map<String, Object>> itemlist = (List<Map<String, Object>>)shipment.get("items");
+			for (Map<String, Object> item: itemlist){
+				auresponse.setItemId((String)(item.get("item_id")));
+				Map<String, Object> tracking_summary = (Map<String, Object>) item.get("tracking_details");
+				auresponse.setArticleId((String)(tracking_summary.get("article_id")));
+				auresponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+				AUPostResponseList.add(auresponse);
+			}
+
 		}
-	}
+		}
+		else {
+			List<Map<String, Object>> errorlist = (List<Map<String, Object>>)responses.get("errors");
+			
+			for (Map<String, Object> error: errorlist){
+				AUPostResponse auresponse = new AUPostResponse();
+				auresponse.setApiname("AU post");
+				auresponse.setErrorCode((String)error.get("code"));
+				auresponse.setName((String)error.get("name"));
+				auresponse.setMessage((String)error.get("message"));
+				String Field = error.get("context").toString().split("=")[1];
+				auresponse.setField(Field.substring(0, (Field.length()-1)));
+				auresponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+				AUPostResponseList.add(auresponse);
+		
+			}
+			
+		
+		}
+		//AUResponseRepository.saveAll(AUPostResponseList);
+		d2zDao.logAUPostResponse(AUPostResponseList);
+
+		
+		}
+
+		}
+	
 	@Override
 	public UserMessage addUser(UserDetails userData) {
 		UserMessage userMsg = new UserMessage();
@@ -1157,27 +1238,32 @@ public class D2ZServiceImpl implements ID2ZService{
 		
 		List<String> referenceNumbers = d2zDao.fetchArticleIDForFDMCall();
 		System.out.println("Track and trace:"+referenceNumbers.size());
+
 		List<SenderdataMaster> senderData = d2zDao.fetchDataForAusPost(referenceNumbers);
 		System.out.println("Sender Data:"+senderData.size());
 		List<SenderdataMaster> testData =  new ArrayList<SenderdataMaster>();
 		testData.add(senderData.get(0));
 		testData.add(senderData.get(1));
+		testData.add(senderData.get(2));
+		testData.add(senderData.get(3));
+		testData.add(senderData.get(4));
 		if(!senderData.isEmpty()) {
 		FDMManifestRequest request = new FDMManifestRequest();
 		Date dNow = new Date();
         SimpleDateFormat ft = new SimpleDateFormat("yyMMddhhmm");
         String orderRef = ft.format(dNow);
         
-        request.setMessage_no(orderRef);
-        request.setCustomer_id("D2Z");
+        FDMManifestDetails fdmDetails = new FDMManifestDetails();
+        fdmDetails.setMessage_no(orderRef);
+        fdmDetails.setCustomer_id("D2Z");
         
         ArrayOfConsignment consignmentsArray =  new ArrayOfConsignment();
         List<Consignment> consignments = new ArrayList<Consignment>();
         
-		for(SenderdataMaster data : testData) {
+		for(SenderdataMaster data : senderData) {
 			Consignment consignment = new Consignment();
-			consignment.setConnote_no(data.getArticleId().substring(0, 20));
-			consignment.setTracking_connote(data.getArticleId());
+			consignment.setConnote_no(data.getArticleId());
+			consignment.setTracking_connote(data.getReference_number());
 			String date = data.getTimestamp();
 			try {
 				Date dateFormat =  new SimpleDateFormat("YYMMDDHHMMSS").parse(date);
@@ -1216,18 +1302,34 @@ public class D2ZServiceImpl implements ID2ZService{
 			lineItem.setDim_length(data.getDimensions_Length() == null ? "" : data.getDimensions_Length().toString());
 		    lineItem.setDim_width(data.getDimensions_Width() == null ? "" : data.getDimensions_Width().toString());
 			itemList.add(lineItem);
-			
 			details.setLine(itemList);
-
 			consignment.setDetails(details);
 			consignments.add(consignment);
 		
 		}
 		consignmentsArray.setConsignment(consignments);
-		request.setConsignments(consignmentsArray);
+		fdmDetails.setConsignments(consignmentsArray);
+		request.setManifest(fdmDetails);
 		fdmProxy.makeCallToFDMManifestMapping(request);
 		}
 	}
-	
 
+	@Override
+	public ResponseMessage auTrackingEvent() {
+		ResponseMessage respMsg = null;
+		List<String> articleIdData = trackAndTraceRepository.getArticleId();
+		List<List<String>> articleIdList = ListUtils.partition(articleIdData, 10);
+		int count = 1;
+		for(List<String> articleIdNumbers : articleIdList) {
+			System.out.println(count + ":::" + articleIdNumbers.size());
+			count++;
+			String articleIds = StringUtils.join(articleIdNumbers, ", ");
+			TrackingResponse auTrackingDetails = ausPostProxy.trackingEvent(articleIds);
+			System.out.println("AU Track Response");
+			System.out.println(auTrackingDetails.toString());
+			respMsg = d2zDao.insertAUTrackingDetails(auTrackingDetails);
+	 	}
+		return respMsg;
+	}
+	
 }

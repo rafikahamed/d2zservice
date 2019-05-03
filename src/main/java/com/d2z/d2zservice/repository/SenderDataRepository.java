@@ -160,7 +160,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 List<Object> exportShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
 	/* @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'SHIPMENT ALLOCATED' and t.isDeleted != 'Y' and t.trackEventDateOccured between :fromTime and :toTime") 
 	List<SenderdataMaster> exportShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);*/
-	/* @Query(nativeQuery = true, value = "SELECT B.user_name, \r\n" + 
+	 @Query(nativeQuery = true, value = "SELECT B.user_name, \r\n" + 
 	 		"       C.reference_number,C.value,C.shipped_Quantity,\r\n" + 
 	 		"C.consignee_name,C.consignee_addr1,C.consignee_Suburb,\r\n" + 
 	 		"C.consignee_State,C.consignee_Postcode,C.consignee_Phone,\r\n" + 
@@ -180,11 +180,11 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"                          AND senderdata0_.timestamp BETWEEN :fromTime AND :toTime \r\n" + 
 	 		"                           )C \r\n" + 
 	 		"               INNER JOIN users B \r\n" + 
-	 		"                      ON C.client_broker_id = B.user_id ")*/
+	 		"                      ON C.client_broker_id = B.user_id ")
 	 
-	 @Query("SELECT s FROM SenderdataMaster s where s.airwayBill IS NULL and s.isDeleted = 'N'  and s.timestamp between :fromTime and :toTime") 
+	// @Query("SELECT s FROM SenderdataMaster s where s.airwayBill IS NULL and s.isDeleted = 'N'  and s.timestamp between :fromTime and :toTime") 
 		
-		 List<SenderdataMaster> exportNonShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
+		 List<Object> exportNonShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
 	 @Query("SELECT new com.d2z.d2zservice.entity.Consignments(t.reference_number,t.injectionState, t.weight) FROM SenderdataMaster t where t.reference_number in :referenceNumbers")
 	 List<Consignments> fetchConsignmentsForBagging(List<String> referenceNumbers);
 
@@ -227,14 +227,14 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 
 
 	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwaybill FROM (SELECT DISTINCT U.client_broker_id, S.airwaybill FROM senderdata_master S INNER JOIN users U \n" + 
-			"ON S.airwaybill IS NOT NULL AND U.role_id = '3' AND S.user_id = U.user_id AND S.Invoiced IS NULL) B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name")
+			"ON S.airwaybill IS NOT NULL AND U.role_id = '3' AND S.user_id = U.user_id AND S.Invoiced = 'N') B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name")
 	List<String> fetchSenderShipmenntData();
 
 	
 	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwaybill FROM \n" + 
 			"(\n" + 
 			"SELECT DISTINCT U.client_broker_id, S.airwaybill FROM senderdata_master S INNER JOIN users U \n" + 
-			"ON S.airwaybill IS NOT NULL AND U.role_id = '3' AND S.user_id = U.user_id AND S.Invoiced = 'Y' and S.Billed <> 'Y'\n" + 
+			"ON S.airwaybill IS NOT NULL AND U.role_id = '3' AND S.user_id = U.user_id AND S.Invoiced = 'Y' and S.Billed = 'N'\n" + 
 			") \n" + 
 			"B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name;")
 	List<String> brokerInvoiced();
@@ -265,18 +265,20 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	List<String> fetchNotBilled();
 	
 	@Query(nativeQuery = true, value="SELECT DISTINCT S.articleid  AS TrackingNumber, S.reference_number AS reference, S.consignee_postcode AS postcode, S.weight AS Weight,\n" + 
-			"				  B.rate AS postage, S.fuelsurcharge AS Fuelsurcharge, S.brokerrate AS total FROM SENDERDATA_MASTER S\n" + 
+			"				  B.rate AS postage, S.fuelsurcharge AS Fuelsurcharge, S.brokerrate AS total, S.servicetype AS servicetype FROM SENDERDATA_MASTER S\n" + 
 			"				  INNER JOIN POSTCODEZONES P ON P.postcode = S.consignee_postcode AND P.suburb = S.consignee_suburb INNER JOIN BROKERRATES B\n" + 
 			"                ON S.airwaybill in (:airwayBill) AND B.brokerusername in (:broker) AND ( S.weight BETWEEN Cast(B.minweight AS DECIMAL(18, 4)) AND\n" + 
 			" 				  Cast( B.maxweight AS DECIMAL(18, 4)) ) AND S.servicetype = B.servicetype AND S.consignee_postcode = P.postcode\n" + 
-			"					AND B.zoneid = P.zone")
-	List<String> downloadInvoice(@Param("broker") List<String> broker, @Param("airwayBill")  List<String> airwayBill);
+			"					AND B.zoneid = P.zone AND S.Billed = :billed AND S.Invoiced = :invoiced ")
+	List<String> downloadInvoice(@Param("broker") List<String> broker, @Param("airwayBill")  List<String> airwayBill, @Param("billed") String billed,
+									@Param("invoiced") String invoiced);
 
 	@Query("SELECT t.user_ID FROM SenderdataMaster t where  t.reference_number = :reference_number")
 	 Integer fetchUserIdByReferenceNumber( String reference_number);
 
-	@Query("SELECT t FROM SenderdataMaster t where t.reference_number in :refNbrs and mlid = '33PE9'")
+
+	@Query("SELECT t FROM SenderdataMaster t where t.reference_number in (:refNbrs) and mlid = '33PE9'")
 	List<SenderdataMaster> fetchDataForAusPost(List<String>  refNbrs);
-	 
+ 
 
 } 

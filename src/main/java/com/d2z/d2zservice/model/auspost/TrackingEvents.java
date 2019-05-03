@@ -5,6 +5,7 @@ public class TrackingEvents {
 	private String location;
 	private String description;
 	private String date;
+	
 	public String getLocation() {
 		return location;
 	}

@@ -38,10 +38,21 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 		 		"AND t.trackeventdateoccured BETWEEN Dateadd(day, -2, Getdate()) AND Dateadd(day, -1, Getdate())")
 		 List<String> fetchArticleIDForFDMCall();
 
+
 	 @Query("SELECT t FROM Trackandtrace t where t.trackEventCode = 'SA' AND t.fileName = 'AUPostCreate'")
 	List<Trackandtrace> fetchArticleIDForAUPost();
-	 
-	 
-	 
 
+    
+//	 @Query(nativeQuery = true, value="SELECT ArticleId\r\n" + 
+//	 		"FROM   trackandtrace t\r\n" + 
+//	 		"WHERE  Substring(articleid, 1, 5) = '33PE9'\r\n" + 
+//	 		"       AND trackeventdetails = 'Shipment Allocated'\r\n" + 
+//	 		"       AND t.trackeventdateoccured BETWEEN Dateadd(day, -14, Getdate()) AND\r\n" + 
+//	 		"       Getdate() order by TrackEventDateOccured asc")
+//	 List<String> getArticleId();
+
+	 
+	 @Query(nativeQuery = true, value="SELECT distinct(ArticleId) FROM   trackandtrace;")
+	 List<String> getArticleId();
+	 
 }

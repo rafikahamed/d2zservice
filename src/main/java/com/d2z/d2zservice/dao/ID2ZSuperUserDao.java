@@ -33,7 +33,7 @@ public interface ID2ZSuperUserDao {
 
 	List<Object> exportShipment(String fromDate, String toDate);
 	
-	List<SenderdataMaster> exportNonShipment(String fromDate, String toDate);
+	List<Object> exportNonShipment(String fromDate, String toDate);
 
 	List<String> fetchTrackingNumbersForETowerCall();
 
@@ -67,7 +67,7 @@ public interface ID2ZSuperUserDao {
 
 	List<String> fetchNotBilled();
 
-	List<String> downloadInvoice(List<String> broker, List<String> airwayBill);
+	List<String> downloadInvoice(List<String> broker, List<String> airwayBill, String billed, String invoiced);
 
 	UserMessage fetchNonD2zClient(List<NonD2ZData> nonD2zData);
 
@@ -89,12 +89,22 @@ public interface ID2ZSuperUserDao {
 
 	List<NonD2ZData> brokerNonD2zShipment();
 
-	List<String> downloadNonD2zInvoice(List<String> broker, List<String> airwayBill);
+	List<String> downloadNonD2zInvoice(List<String> broker, List<String> airwayBill, String billed, String invoiced);
 
 	UserMessage approveNdInvoiced(ApprovedInvoice approvedInvoice);
 
 	List<NonD2ZData> brokerNdInvoiced();
 
 	List<String> fetchNonD2zNotBilled();
+
+	NonD2ZData reconcileNonD2zFreipostData(String referenceNumber);
+
+	List<String> fetchAllReconcileReferenceNumbers();
+
+	List<String> fetchAllReconcileArticleIdNumbers();
+
+	List<String> fetchAllReconcileNonD2zReferenceNumbers();
+
+	List<String> fetchAllReconcileNonD2zArticleIdNumbers();
 
 }

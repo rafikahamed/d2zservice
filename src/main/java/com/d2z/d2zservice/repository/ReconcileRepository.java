@@ -14,5 +14,11 @@ public interface ReconcileRepository extends CrudRepository<Reconcile, Long>{
 
 	@Query(nativeQuery = true, value="SELECT * FROM Reconcile where articleId in (:reconcileReferenceNum) union SELECT * FROM Reconcile  where reference_number in (:reconcileReferenceNum)") 
 	List<Reconcile> downloadReconcile(@Param("reconcileReferenceNum") List<String> reconcileReferenceNum);
+    
+	@Query(value="SELECT distinct(t.reference_number) from Reconcile t where t.reference_number is not null") 
+	List<String> fetchAllReconcileReferenceNumbers();
+	
+	@Query(value="SELECT distinct(t.articleId) from Reconcile t where t.articleId is not null") 
+	List<String> fetchAllReconcileArticleIdNumbers();
 	
 }

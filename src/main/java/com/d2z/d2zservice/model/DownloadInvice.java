@@ -9,6 +9,7 @@ public class DownloadInvice {
 	private String postage;
 	private String fuelsurcharge;
 	private String total;
+	private String serviceType;
 	
 	public String getTrackingNumber() {
 		return trackingNumber;
@@ -51,6 +52,12 @@ public class DownloadInvice {
 	}
 	public void setTotal(String total) {
 		this.total = total;
+	}
+	public String getServiceType() {
+		return serviceType;
+	}
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
 	}
 	
 }

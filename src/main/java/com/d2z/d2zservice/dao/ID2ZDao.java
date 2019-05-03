@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.d2z.d2zservice.entity.APIRates;
+import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
@@ -19,6 +20,7 @@ import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.UserDetails;
+import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.etower.CreateShippingRequest;
 import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
@@ -114,6 +116,8 @@ public interface ID2ZDao {
 
 	
 
-
+	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails);
+    
+	public void logAUPostResponse(List<AUPostResponse> aupostresponse);
 
 }

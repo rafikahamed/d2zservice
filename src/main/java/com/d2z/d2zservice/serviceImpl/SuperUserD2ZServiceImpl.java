@@ -193,10 +193,10 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 		return exportshipmentlist;
 		}
 	@Override
-	public List<SenderdataMaster> exportNonShipmentData(String fromDate, String toDate) {
-/*List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
+	public List<ExportShipment> exportNonShipmentData(String fromDate, String toDate) {
+List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 		
-		List<SenderdataMaster> ExportDeleteList = d2zDao.exportNonShipment(fromDate, toDate);
+		List<Object> ExportDeleteList = d2zDao.exportNonShipment(fromDate, toDate);
 	
 		Iterator itr = ExportDeleteList.iterator();
 		while(itr.hasNext()){
@@ -233,8 +233,8 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 		}
 	
 		//ExportDeleteList.forEach(System.out::println);
-		return exportshipmentlist;*/
-		return d2zDao.exportNonShipment(fromDate, toDate);
+		return exportshipmentlist;
+	
 		}
 	@Override
 	public ResponseMessage trackingEvent(List<String> trackingNbrs) {
@@ -389,12 +389,15 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 	}
 
 	@Override
-	public UserMessage fetchReconcile(List<ReconcileData> reconcileData) {
-		//this.reconcileFlag = false;
+	public UserMessage fetchReconcile(List<ReconcileData> reconcileData) throws ReferenceNumberNotUniqueException {
 		List<Reconcile> reconcileCalculatedList = new ArrayList<Reconcile>();
-		//List<Reconcile> reconcileCalculatedMissedList = new ArrayList<Reconcile>();
 		List<String> reconcileReferenceNum = new ArrayList<String>();
-		//List<Reconcile> reconcileFinal = new ArrayList<Reconcile>();
+		//Check for duplicates
+		if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("freipost")) {
+			d2zValidator.isReferenceNumberUniqueReconcile(reconcileData,"D2Z");
+		}else{
+			d2zValidator.isArticleIdUniqueReconcile(reconcileData,"D2Z");
+		}
 		reconcileData.forEach(reconcile -> {
 			List<String> reconcileList = d2zDao.reconcileData(reconcile.getArticleNo(), reconcile.getRefrenceNumber());
 			Reconcile reconcileObj = new Reconcile();
@@ -442,7 +445,8 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 			 reconcileCalculatedList.add(reconcileObj);
 		});
 			d2zDao.reconcileUpdate(reconcileCalculatedList);
-			d2zDao.reconcilerates(reconcileReferenceNum);
+			if(!reconcileReferenceNum.isEmpty())
+				d2zDao.reconcilerates(reconcileReferenceNum);
 			UserMessage userMsg = new UserMessage();
 			userMsg.setMessage("Reconcile data uploaded successfully, Please click download button to explore the data");
 			return userMsg;
@@ -479,8 +483,8 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 	}
 
 	@Override
-	public List<DownloadInvice> downloadInvoice(List<String> broker, List<String> airwayBill) {
-		List<String> downloadInvoiceData = d2zDao.downloadInvoice(broker,airwayBill);
+	public List<DownloadInvice> downloadInvoice(List<String> broker, List<String> airwayBill, String billed, String invoiced) {
+		List<String> downloadInvoiceData = d2zDao.downloadInvoice(broker,airwayBill,billed,invoiced);
 		List<DownloadInvice> downloadInvoiceList = new ArrayList<DownloadInvice>();
 		Iterator itr = downloadInvoiceData.iterator();
 		 while(itr.hasNext()) {
@@ -500,6 +504,8 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 				 downloadInvoice.setFuelsurcharge(obj[5].toString());
 			 if(obj[6] != null)
 				 downloadInvoice.setTotal(obj[6].toString());
+			 if(obj[7] != null)
+				 downloadInvoice.setServiceType(obj[7].toString());
 			 downloadInvoiceList.add(downloadInvoice);
        }
 		return downloadInvoiceList;
@@ -532,11 +538,21 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 	}
 
 	@Override
-	public UserMessage uploadReconcileNonD2z(List<ReconcileData> reconcileNonD2zData) {
+	public UserMessage uploadReconcileNonD2z(List<ReconcileData> reconcileNonD2zData) throws ReferenceNumberNotUniqueException{
 		List<ReconcileND> reconcileNoND2zList = new ArrayList<ReconcileND>();
 		List<String> reconcileArticleIdNum = new ArrayList<String>();
+		if(reconcileNonD2zData.get(0).getSupplierType().equalsIgnoreCase("freipost")) {
+			d2zValidator.isReferenceNumberUniqueReconcile(reconcileNonD2zData,"ND2Z");
+		}else{
+			d2zValidator.isArticleIdUniqueReconcile(reconcileNonD2zData,"ND2Z");
+		}
 		reconcileNonD2zData.forEach(reconcileNonD2z -> {
-			NonD2ZData reconcileObj = d2zDao.reconcileNonD2zData(reconcileNonD2z.getArticleNo());
+			NonD2ZData reconcileObj = null;
+			if(reconcileNonD2z.getSupplierType().equalsIgnoreCase("freipost")) {
+				reconcileObj = d2zDao.reconcileNonD2zFreipostData(reconcileNonD2z.getRefrenceNumber());
+			}else {
+				reconcileObj = d2zDao.reconcileNonD2zData(reconcileNonD2z.getArticleNo());
+			}
 			ReconcileND reconcileNonD2Obj = new ReconcileND();
 			MathContext mc = new MathContext(2);
 			if(reconcileObj != null){
@@ -557,7 +573,11 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 				reconcileNonD2Obj.setSupplierType(reconcileNonD2z.getSupplierType());
 				reconcileArticleIdNum.add(reconcileObj.getArticleId());
 			}else{
-				reconcileNonD2Obj.setArticleId(reconcileNonD2z.getArticleNo());
+				if(reconcileNonD2z.getSupplierType().equalsIgnoreCase("freipost")) {
+					reconcileNonD2Obj.setReference_number(reconcileNonD2z.getRefrenceNumber());
+				}else {
+					reconcileNonD2Obj.setArticleId(reconcileNonD2z.getArticleNo());
+				}
 			}
 			reconcileNoND2zList.add(reconcileNonD2Obj);
 		});
@@ -593,8 +613,8 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 	}
 
 	@Override
-	public List<DownloadInvice> downloadNonD2zInvoice(List<String> broker,List<String> airwayBill) {
-		List<String> downloadNonD2zInvoiceData = d2zDao.downloadNonD2zInvoice(broker,airwayBill);
+	public List<DownloadInvice> downloadNonD2zInvoice(List<String> broker,List<String> airwayBill,String billed,String invoiced) {
+		List<String> downloadNonD2zInvoiceData = d2zDao.downloadNonD2zInvoice(broker,airwayBill,billed,invoiced);
 		List<DownloadInvice> downloadNonD2zInvoiceList = new ArrayList<DownloadInvice>();
 		Iterator itr = downloadNonD2zInvoiceData.iterator();
 		 while(itr.hasNext()) {
@@ -614,6 +634,8 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 				 downloadInvoice.setFuelsurcharge(obj[5].toString());
 			 if(obj[6] != null)
 				 downloadInvoice.setTotal(obj[6].toString());
+			 if(obj[7] != null)
+				 downloadInvoice.setServiceType(obj[7].toString());
 			 downloadNonD2zInvoiceList.add(downloadInvoice);
        }
 		return downloadNonD2zInvoiceList;

@@ -20,6 +20,7 @@ import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
+import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
@@ -180,20 +181,27 @@ public class D2zController {
 		ClientDashbaord clientDahbaord = d2zService.clientDahbaord(userId);
 		return clientDahbaord;
 	}	
+	
 	@RequestMapping( method = RequestMethod.GET, path = "/contactUs")
     public UserMessage contactUs(@RequestParam("email") String email, @RequestParam("message") String message, @RequestParam("name") String name,
     			@RequestParam("subject") String subject) {
 		UserMessage userMsg = d2zService.contactUs(email, message, name, subject);
 		return userMsg;
     }
+	
 	@RequestMapping(method = RequestMethod.GET, path = "/freipost")
 	 public void triggerFreipost() {
 		d2zService.triggerFreipost();
-		
 	}
+	
 	@RequestMapping(method = RequestMethod.GET, path = "/FDM")
 	 public void triggerFDM() {
 		d2zService.triggerFDM();
-		
 	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/aupost/track-labels")
+	public ResponseMessage auTrackingEvent() {
+		return d2zService.auTrackingEvent();
+	}
+	
 }   

@@ -41,7 +41,7 @@ public interface ISuperUserD2ZService{
 
 	List<ExportShipment> exportShipmentData(String fromDate, String toDate);
 	
-	List<SenderdataMaster> exportNonShipmentData(String fromDate, String toDate);
+	List<ExportShipment> exportNonShipmentData(String fromDate, String toDate);
 
 	public ResponseMessage trackingEvent(List<String> trackingNumbers);
 
@@ -59,13 +59,13 @@ public interface ISuperUserD2ZService{
 
 	public List<InvoiceShipment> brokerInvoiced();
 
-	public UserMessage fetchReconcile(List<ReconcileData> reconcileData);
+	public UserMessage fetchReconcile(List<ReconcileData> reconcileData) throws ReferenceNumberNotUniqueException;
 
 	public UserMessage approvedInvoice(ApprovedInvoice approvedInvoice);
 
 	public List<NotBilled> fetchNotBilled();
 
-	public List<DownloadInvice> downloadInvoice(List<String> broker, List<String> airwayBill);
+	public List<DownloadInvice> downloadInvoice(List<String> broker, List<String> airwayBill, String billed, String invoiced);
 
 	public UserMessage fetchNonD2zClient(List<NonD2ZData> nonD2zData) throws ReferenceNumberNotUniqueException;
 
@@ -73,13 +73,13 @@ public interface ISuperUserD2ZService{
 
 	public List<DropDownModel> fetchNonD2zBrokerUserName();
 
-	public UserMessage uploadReconcileNonD2z(List<ReconcileData> reconcileData);
+	public UserMessage uploadReconcileNonD2z(List<ReconcileData> reconcileData) throws ReferenceNumberNotUniqueException;
 
 	public List<ReconcileND> downloadNonD2zReconcile(List<String> nonD2zReconcileNumbers);
 
 	public List<InvoiceShipment> brokerNonD2zShipment();
 
-	public List<DownloadInvice> downloadNonD2zInvoice(List<String> broker,List<String> airwayBill);
+	public List<DownloadInvice> downloadNonD2zInvoice(List<String> broker,List<String> airwayBill,String billed,String invoiced);
 
 	public UserMessage approveNdInvoiced(ApprovedInvoice approvedInvoice);
 

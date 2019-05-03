@@ -222,6 +222,15 @@ public class SenderdataMaster implements Serializable {
 	@Column(name = "MLID")
 	private String mlid;
 	
+	@Column(name="FuelSurcharge")
+	private BigDecimal fuelSurcharge;
+	
+	@Column(name="Invoiced")
+	private String invoiced;
+	
+	@Column(name="Billed")
+	private String billed;
+	
 	@Column(name="ReturnAddress1")
 	private String returnAddress1;
 	
@@ -653,6 +662,30 @@ public class SenderdataMaster implements Serializable {
 
 	public void setReturnAddress2(String returnAddress2) {
 		this.returnAddress2 = returnAddress2;
+	}
+
+	public BigDecimal getFuelSurcharge() {
+		return fuelSurcharge;
+	}
+
+	public void setFuelSurcharge(BigDecimal fuelSurcharge) {
+		this.fuelSurcharge = fuelSurcharge;
+	}
+
+	public String getInvoiced() {
+		return invoiced;
+	}
+
+	public void setInvoiced(String invoiced) {
+		this.invoiced = invoiced;
+	}
+
+	public String getBilled() {
+		return billed;
+	}
+
+	public void setBilled(String billed) {
+		this.billed = billed;
 	}
 	
 }
