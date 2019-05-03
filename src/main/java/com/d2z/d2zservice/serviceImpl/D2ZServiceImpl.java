@@ -26,6 +26,7 @@ import javax.validation.Valid;
 
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
@@ -725,7 +726,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		}
 		
 		String msg =  d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
-		List<SenderdataMaster> senderData =  d2zDao.fetchDataForAusPost(refNbrs);
+	/*	List<SenderdataMaster> senderData =  d2zDao.fetchDataForAusPost(refNbrs);
 		if(null != senderData && !senderData.isEmpty()) {
 			Runnable r = new Runnable( ) {			
 		        public void run() {
@@ -733,12 +734,24 @@ public class D2ZServiceImpl implements ID2ZService{
 		        }
 		     };
 		    new Thread(r).start();
-		}
+		}*/
 		userMsg.setResponseMessage(msg);
 		return userMsg;
 	}
-	private void makeCalltoAusPost(List<SenderdataMaster> orderDetail) {
-		List<List<SenderdataMaster>> senderDataList = ListUtils.partition(orderDetail, 2000);
+	
+	//@Scheduled(cron = "0 0 0/2 * * ?")
+	@Scheduled(cron = "0 0/10 * * * ?")
+	private void makeCalltoAusPost() {
+		List<String> referenceNumbers = d2zDao.fetchDataForAUPost();
+		System.out.println("Track and trace:"+referenceNumbers.size());
+		if(referenceNumbers.size()<10) {
+			System.out.println("Less than 10 records for AUPost call");
+			return;
+		}
+		List<SenderdataMaster> senderMasterData = d2zDao.fetchDataForAusPost(referenceNumbers);
+		System.out.println("Sender Data:"+senderMasterData.size());
+		
+		List<List<SenderdataMaster>> senderDataList = ListUtils.partition(senderMasterData, 2000);
 		for(List<SenderdataMaster> senderData : senderDataList) {
 		CreateShippingRequest request =  new CreateShippingRequest();
 		
@@ -1136,14 +1149,14 @@ public class D2ZServiceImpl implements ID2ZService{
 
 	@Override
 	public void triggerFreipost() {
-		freipostWrapper.trackingEventService();
+		freipostWrapper.trackingEventService("124538");
 	}
 	
 	@Override
 	public void triggerFDM() {
 		
-		String[] referenceNumbers = d2zDao.fetchArticleIDForFDMCall();
-		System.out.println("Track and trace:"+referenceNumbers.length);
+		List<String> referenceNumbers = d2zDao.fetchArticleIDForFDMCall();
+		System.out.println("Track and trace:"+referenceNumbers.size());
 		List<SenderdataMaster> senderData = d2zDao.fetchDataForAusPost(referenceNumbers);
 		System.out.println("Sender Data:"+senderData.size());
 		List<SenderdataMaster> testData =  new ArrayList<SenderdataMaster>();
