@@ -162,12 +162,12 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
     }
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/reconcileInfo")
-    public UserMessage fetchReconcile(@RequestBody List<ReconcileData> reconcileData) {
+    public UserMessage fetchReconcile(@RequestBody List<ReconcileData> reconcileData) throws ReferenceNumberNotUniqueException {
 		return superUserD2zService.fetchReconcile(reconcileData);
     }
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/reconcileInfo-NonD2z")
-    public UserMessage uploadReconcileNonD2z(@RequestBody List<ReconcileData> reconcileData) {
+    public UserMessage uploadReconcileNonD2z(@RequestBody List<ReconcileData> reconcileData) throws ReferenceNumberNotUniqueException {
 		return superUserD2zService.uploadReconcileNonD2z(reconcileData);
     }
 	

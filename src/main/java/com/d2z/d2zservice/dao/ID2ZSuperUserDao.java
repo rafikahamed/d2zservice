@@ -97,4 +97,14 @@ public interface ID2ZSuperUserDao {
 
 	List<String> fetchNonD2zNotBilled();
 
+	NonD2ZData reconcileNonD2zFreipostData(String referenceNumber);
+
+	List<String> fetchAllReconcileReferenceNumbers();
+
+	List<String> fetchAllReconcileArticleIdNumbers();
+
+	List<String> fetchAllReconcileNonD2zReferenceNumbers();
+
+	List<String> fetchAllReconcileNonD2zArticleIdNumbers();
+
 }

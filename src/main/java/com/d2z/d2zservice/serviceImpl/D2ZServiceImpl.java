@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,7 +27,11 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jfree.chart.util.TextUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.scheduling.annotation.Scheduled;
+
 import org.springframework.boot.json.JacksonJsonParser;
+
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZDao;
@@ -706,10 +711,8 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Override
 	public ResponseMessage allocateShipment(String referenceNumbers, String shipmentNumber) throws ReferenceNumberNotUniqueException {
 		ResponseMessage userMsg = new ResponseMessage();
-
 		String[] refNbrs = referenceNumbers.split(",");
 		List<SenderdataMaster> incorrectRefNbr = d2zDao.findRefNbrByShipmentNbr(refNbrs);
-
 		List<String> invalidData = incorrectRefNbr.stream()
 	               .map(a -> {
 	            	   StringBuffer msg = new StringBuffer(a.getReference_number());
@@ -728,8 +731,23 @@ public class D2ZServiceImpl implements ID2ZService{
 			throw new ReferenceNumberNotUniqueException("Request failed",invalidData);
 		}
 		
-		String msg =  d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
+
+		//String msg =  d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
+		List<String> refNumberList = new ArrayList<String>(Arrays.asList(refNbrs)); 
+		List<List<String>> referNumPartList = ListUtils.partition(refNumberList, 300);
+		int count = 1;
+		String msg = null;
+		for(List<String> referenceNum : referNumPartList) {
+			System.out.println(count + ":::" + referenceNum.size());
+			count++;
+			String refNumbers = StringUtils.join(referenceNum, ",");
+			msg =  d2zDao.allocateShipment(refNumbers,shipmentNumber);
+		}
+	/*	List<SenderdataMaster> senderData =  d2zDao.fetchDataForAusPost(refNbrs);
+
+		
 		List<SenderdataMaster> senderData =  d2zDao.fetchDataForAusPost(refNbrs);
+
 		if(null != senderData && !senderData.isEmpty()) {
 			Runnable r = new Runnable( ) {			
 		        public void run() {
@@ -737,12 +755,24 @@ public class D2ZServiceImpl implements ID2ZService{
 		        }
 		     };
 		    new Thread(r).start();
-		}
+		}*/
 		userMsg.setResponseMessage(msg);
 		return userMsg;
 	}
-	private void makeCalltoAusPost(List<SenderdataMaster> orderDetail) {
-		List<List<SenderdataMaster>> senderDataList = ListUtils.partition(orderDetail, 2000);
+	
+	//@Scheduled(cron = "0 0 0/2 * * ?")
+	@Scheduled(cron = "0 0/10 * * * ?")
+	private void makeCalltoAusPost() {
+		List<String> referenceNumbers = d2zDao.fetchDataForAUPost();
+		System.out.println("Track and trace:"+referenceNumbers.size());
+		if(referenceNumbers.size()<10) {
+			System.out.println("Less than 10 records for AUPost call");
+			return;
+		}
+		List<SenderdataMaster> senderMasterData = d2zDao.fetchDataForAusPost(referenceNumbers);
+		System.out.println("Sender Data:"+senderMasterData.size());
+		
+		List<List<SenderdataMaster>> senderDataList = ListUtils.partition(senderMasterData, 2000);
 		for(List<SenderdataMaster> senderData : senderDataList) {
 		CreateShippingRequest request =  new CreateShippingRequest();
 		
@@ -1200,19 +1230,23 @@ public class D2ZServiceImpl implements ID2ZService{
 
 	@Override
 	public void triggerFreipost() {
-		freipostWrapper.trackingEventService();
+		freipostWrapper.trackingEventService("124538");
 	}
 	
 	@Override
 	public void triggerFDM() {
-		String[] referenceNumbers = d2zDao.fetchArticleIDForFDMCall();
-		System.out.println("Track and trace:"+referenceNumbers.length);
+		
+		List<String> referenceNumbers = d2zDao.fetchArticleIDForFDMCall();
+		System.out.println("Track and trace:"+referenceNumbers.size());
+
 		List<SenderdataMaster> senderData = d2zDao.fetchDataForAusPost(referenceNumbers);
 		System.out.println("Sender Data:"+senderData.size());
-//		List<SenderdataMaster> testData =  new ArrayList<SenderdataMaster>();
-//		testData.add(senderData.get(2));
-//		testData.add(senderData.get(3));
-//		testData.add(senderData.get(4));
+		List<SenderdataMaster> testData =  new ArrayList<SenderdataMaster>();
+		testData.add(senderData.get(0));
+		testData.add(senderData.get(1));
+		testData.add(senderData.get(2));
+		testData.add(senderData.get(3));
+		testData.add(senderData.get(4));
 		if(!senderData.isEmpty()) {
 		FDMManifestRequest request = new FDMManifestRequest();
 		Date dNow = new Date();
@@ -1228,8 +1262,8 @@ public class D2ZServiceImpl implements ID2ZService{
         
 		for(SenderdataMaster data : senderData) {
 			Consignment consignment = new Consignment();
-			consignment.setConnote_no(data.getArticleId().substring(0, 20));
-			consignment.setTracking_connote(data.getArticleId());
+			consignment.setConnote_no(data.getArticleId());
+			consignment.setTracking_connote(data.getReference_number());
 			String date = data.getTimestamp();
 			try {
 				Date dateFormat =  new SimpleDateFormat("YYMMDDHHMMSS").parse(date);

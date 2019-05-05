@@ -5,10 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.BrokerRates;
 import com.d2z.d2zservice.entity.D2ZRates;
@@ -540,6 +538,36 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	public List<String> fetchNonD2zNotBilled() {
 		List<String> notBilledData = nonD2ZDataRepository.fetchNonD2zNotBilled();
 		return notBilledData;
+	}
+
+	@Override
+	public NonD2ZData reconcileNonD2zFreipostData(String referenceNumber) {
+		NonD2ZData nonD2zData = nonD2ZDataRepository.reconcileNonD2zFreipostData(referenceNumber);
+		return nonD2zData;
+	}
+
+	@Override
+	public List<String> fetchAllReconcileReferenceNumbers() {
+		List<String> referenceNumber_DB= reconcileRepository.fetchAllReconcileReferenceNumbers();
+    	return referenceNumber_DB;
+	}
+
+	@Override
+	public List<String> fetchAllReconcileArticleIdNumbers() {
+		List<String> articleId_DB= reconcileRepository.fetchAllReconcileArticleIdNumbers();
+    	return articleId_DB;
+	}
+
+	@Override
+	public List<String> fetchAllReconcileNonD2zReferenceNumbers() {
+		List<String> referenceNumberNonD2z_DB= reconcileNDRepository.fetchAllReconcileNonD2zReferenceNumbers();
+    	return referenceNumberNonD2z_DB;
+	}
+
+	@Override
+	public List<String> fetchAllReconcileNonD2zArticleIdNumbers() {
+		List<String> referenceNumberNonD2z_DB= reconcileNDRepository.fetchAllReconcileNonD2zArticleIdNumbers();
+    	return referenceNumberNonD2z_DB;
 	}
 	
 }

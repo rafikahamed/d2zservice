@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -57,6 +59,7 @@ import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
+import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
@@ -86,6 +89,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	APIRatesRepository apiRatesRepository;
+	
+	@Autowired
+	FreipostWrapper freipostWrapper;
 	
 	@Autowired
 	AUPostResponseRepository aupostresponseRepository;
@@ -160,7 +166,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 
 	public void makeCalltoEtower(List<String> incomingRefNbr) {
 		System.out.println("Background Thread created.....");
-		List<SenderdataMaster> eTowerOrders = senderDataRepository.fetchDataForEtowerCall(incomingRefNbr);
+		List<SenderdataMaster> eTowerOrders = senderDataRepository.fetchDataBasedonSupplier(incomingRefNbr,"eTower");
 		System.out.println(eTowerOrders.size());
 		if(!eTowerOrders.isEmpty()) {
 			List<CreateShippingRequest> eTowerRequest = new ArrayList<CreateShippingRequest>();
@@ -554,6 +560,25 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public String allocateShipment(String referenceNumbers, String shipmentNumber) {
 		senderDataRepository.allocateShipment(referenceNumbers, shipmentNumber);
+		makeEtowerForecastCall(referenceNumbers);
+		makeFriePostUpdataManifestCall(referenceNumbers);
+		return "Shipment allocation Successful";
+	}
+
+	private void makeFriePostUpdataManifestCall(String referenceNumbers) {
+		// TODO Auto-generated method stub
+		Runnable r = new Runnable( ) {			
+	        public void run() {
+	        	String[] refNbrArray = referenceNumbers.split(",");
+	        	List<SenderdataMaster> senderMasterData = senderDataRepository.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"FreiPost");
+	        	if(!senderMasterData.isEmpty()) {
+	        		freipostWrapper.uploadManifestService(senderMasterData);
+	        	}
+	        }};
+	        new Thread(r).start();
+	}
+
+	private void makeEtowerForecastCall(String referenceNumbers) {
 		Runnable r = new Runnable( ) {			
 	        public void run() {
 	        	String[] refNbrArray = referenceNumbers.split(",");
@@ -617,7 +642,6 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	    };
 	    new Thread(r).start();
 		
-		return "Shipment allocation Successful";
 	}
 
 	@Override
@@ -894,10 +918,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public List<SenderdataMaster> fetchDataForAusPost(String[] refNbrs) {
+	public List<SenderdataMaster> fetchDataForAusPost(List<String> refNbrs) {
 		// TODO Auto-generated method stub
 		return senderDataRepository.fetchDataForAusPost(refNbrs);
 	}
+
 
 	@Override
 	public int fetchUserIdByReferenceNumber(String reference_number) {
@@ -907,10 +932,10 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 
 	@Override
-	public String[] fetchArticleIDForFDMCall() {
+	public List<String>  fetchArticleIDForFDMCall() {
 		List<String> referenceNumber = trackAndTraceRepository.fetchArticleIDForFDMCall();
-		String[] refArray =referenceNumber.stream().toArray(String[]::new);
-		return refArray;
+		//String[] refArray =referenceNumber.stream().toArray(String[]::new);
+		return referenceNumber;
 	}
 
 	private Map<String, LabelData> processGainLabelsResponse(GainLabelsResponse response) {
@@ -966,6 +991,21 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
+	public List<String>  fetchDataForAUPost() {
+		List<Trackandtrace> trackandtraceData = trackAndTraceRepository.fetchArticleIDForAUPost();
+		List<Trackandtrace> updatedData = new ArrayList<Trackandtrace>();
+		List<String> refNbrs = new ArrayList<String>(); 
+		if(trackandtraceData.size() >= 10) {
+			for(Trackandtrace data : trackandtraceData) {
+				data.setFileName("AUPost");
+				updatedData.add(data);
+				refNbrs.add(data.getReference_number());
+			}
+			trackAndTraceRepository.saveAll(updatedData);
+		}
+		
+		return refNbrs;
+	}
 	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails) {
 		List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
 		List<TrackingResults> trackingData = auTrackingDetails.getTracking_results();

@@ -212,8 +212,8 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 @Query("SELECT s FROM SenderdataMaster s  where s.reference_number in (:referenceNumbers) ")
 	 List<SenderdataMaster> fetchConsignmentsByRefNbr(@Param("referenceNumbers") List<String> referenceNumbers);
 	 
-	@Query("SELECT s FROM SenderdataMaster s JOIN s.consignmentCount c where s.reference_number in (:referenceNumbers) and s.mlid = c.mlid and c.supplier = 'eTower'")
-	 List<SenderdataMaster> fetchDataForEtowerCall(@Param("referenceNumbers") List<String> referenceNumbers);
+	@Query("SELECT s FROM SenderdataMaster s JOIN s.consignmentCount c where s.reference_number in (:referenceNumbers) and s.mlid = c.mlid and c.supplier = :supplier")
+	 List<SenderdataMaster> fetchDataBasedonSupplier(@Param("referenceNumbers") List<String> referenceNumbers,@Param("supplier") String supplier);
 
 	 @Query("SELECT s.articleId FROM SenderdataMaster s JOIN s.consignmentCount c where s.reference_number in (:referenceNumbers) and s.mlid = c.mlid and c.supplier = 'eTower'")
 	 List<String> fetchDataForEtowerForeCastCall(@Param("referenceNumbers") String[] referenceNumbers);
@@ -276,8 +276,9 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT t.user_ID FROM SenderdataMaster t where  t.reference_number = :reference_number")
 	 Integer fetchUserIdByReferenceNumber( String reference_number);
 
-	@Query("SELECT t FROM SenderdataMaster t where t.mlid = '33PE9' AND t.reference_number in (:refNbrs) ")
-	List<SenderdataMaster> fetchDataForAusPost(String[] refNbrs);
-	 
+
+	@Query("SELECT t FROM SenderdataMaster t where t.reference_number in (:refNbrs) and mlid = '33PE9'")
+	List<SenderdataMaster> fetchDataForAusPost(List<String>  refNbrs);
+ 
 
 } 

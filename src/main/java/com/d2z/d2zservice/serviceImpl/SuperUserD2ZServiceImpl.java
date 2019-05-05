@@ -389,12 +389,15 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 	}
 
 	@Override
-	public UserMessage fetchReconcile(List<ReconcileData> reconcileData) {
-		//this.reconcileFlag = false;
+	public UserMessage fetchReconcile(List<ReconcileData> reconcileData) throws ReferenceNumberNotUniqueException {
 		List<Reconcile> reconcileCalculatedList = new ArrayList<Reconcile>();
-		//List<Reconcile> reconcileCalculatedMissedList = new ArrayList<Reconcile>();
 		List<String> reconcileReferenceNum = new ArrayList<String>();
-		//List<Reconcile> reconcileFinal = new ArrayList<Reconcile>();
+		//Check for duplicates
+		if(reconcileData.get(0).getSupplierType().equalsIgnoreCase("freipost")) {
+			d2zValidator.isReferenceNumberUniqueReconcile(reconcileData,"D2Z");
+		}else{
+			d2zValidator.isArticleIdUniqueReconcile(reconcileData,"D2Z");
+		}
 		reconcileData.forEach(reconcile -> {
 			List<String> reconcileList = d2zDao.reconcileData(reconcile.getArticleNo(), reconcile.getRefrenceNumber());
 			Reconcile reconcileObj = new Reconcile();
@@ -442,7 +445,8 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 			 reconcileCalculatedList.add(reconcileObj);
 		});
 			d2zDao.reconcileUpdate(reconcileCalculatedList);
-			d2zDao.reconcilerates(reconcileReferenceNum);
+			if(!reconcileReferenceNum.isEmpty())
+				d2zDao.reconcilerates(reconcileReferenceNum);
 			UserMessage userMsg = new UserMessage();
 			userMsg.setMessage("Reconcile data uploaded successfully, Please click download button to explore the data");
 			return userMsg;
@@ -534,11 +538,21 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 	}
 
 	@Override
-	public UserMessage uploadReconcileNonD2z(List<ReconcileData> reconcileNonD2zData) {
+	public UserMessage uploadReconcileNonD2z(List<ReconcileData> reconcileNonD2zData) throws ReferenceNumberNotUniqueException{
 		List<ReconcileND> reconcileNoND2zList = new ArrayList<ReconcileND>();
 		List<String> reconcileArticleIdNum = new ArrayList<String>();
+		if(reconcileNonD2zData.get(0).getSupplierType().equalsIgnoreCase("freipost")) {
+			d2zValidator.isReferenceNumberUniqueReconcile(reconcileNonD2zData,"ND2Z");
+		}else{
+			d2zValidator.isArticleIdUniqueReconcile(reconcileNonD2zData,"ND2Z");
+		}
 		reconcileNonD2zData.forEach(reconcileNonD2z -> {
-			NonD2ZData reconcileObj = d2zDao.reconcileNonD2zData(reconcileNonD2z.getArticleNo());
+			NonD2ZData reconcileObj = null;
+			if(reconcileNonD2z.getSupplierType().equalsIgnoreCase("freipost")) {
+				reconcileObj = d2zDao.reconcileNonD2zFreipostData(reconcileNonD2z.getRefrenceNumber());
+			}else {
+				reconcileObj = d2zDao.reconcileNonD2zData(reconcileNonD2z.getArticleNo());
+			}
 			ReconcileND reconcileNonD2Obj = new ReconcileND();
 			MathContext mc = new MathContext(2);
 			if(reconcileObj != null){
@@ -559,7 +573,11 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 				reconcileNonD2Obj.setSupplierType(reconcileNonD2z.getSupplierType());
 				reconcileArticleIdNum.add(reconcileObj.getArticleId());
 			}else{
-				reconcileNonD2Obj.setArticleId(reconcileNonD2z.getArticleNo());
+				if(reconcileNonD2z.getSupplierType().equalsIgnoreCase("freipost")) {
+					reconcileNonD2Obj.setReference_number(reconcileNonD2z.getRefrenceNumber());
+				}else {
+					reconcileNonD2Obj.setArticleId(reconcileNonD2z.getArticleNo());
+				}
 			}
 			reconcileNoND2zList.add(reconcileNonD2Obj);
 		});

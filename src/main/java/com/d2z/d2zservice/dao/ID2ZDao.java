@@ -103,16 +103,21 @@ public interface ID2ZDao {
 
 	public List<SenderdataMaster> fetchConsignmentsManifestShippment(List<String> incomingRefNbr);
 
-	public List<SenderdataMaster> fetchDataForAusPost(String[] refNbrs);
+	public List<SenderdataMaster> fetchDataForAusPost(List<String> refNbrs);
 
 	public void createShippingOrderEtower(CreateConsignmentRequest incomingRequest,List<CreateShippingRequest> eTowerRequest,
 			List<SenderDataResponse> senderDataResponseList) throws EtowerFailureResponseException;
 
 	public int fetchUserIdByReferenceNumber(String string);
 
-	String[] fetchArticleIDForFDMCall();
+	List<String>  fetchArticleIDForFDMCall();
+
+	public List<String>  fetchDataForAUPost();
+
+	
 
 	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails);
     
 	public void logAUPostResponse(List<AUPostResponse> aupostresponse);
+
 }
