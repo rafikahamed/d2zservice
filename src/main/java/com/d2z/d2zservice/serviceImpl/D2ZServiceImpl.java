@@ -760,8 +760,8 @@ public class D2ZServiceImpl implements ID2ZService{
 		return userMsg;
 	}
 	
-	//@Scheduled(cron = "0 0 0/2 * * ?")
-	@Scheduled(cron = "0 0/10 * * * ?")
+	@Scheduled(cron = "0 0 0/2 * * ?")
+	//@Scheduled(cron = "0 0/10 * * * ?")
 	private void makeCalltoAusPost() {
 		List<String> referenceNumbers = d2zDao.fetchDataForAUPost();
 		System.out.println("Track and trace:"+referenceNumbers.size());

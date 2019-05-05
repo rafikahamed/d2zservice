@@ -192,7 +192,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 					request.setServiceOption("E-Parcel");
 
 				}
-				request.setFacility(orderDetail.getInjectionState());
+				request.setFacility("SYD2");
 				request.setWeight(Double.valueOf(orderDetail.getWeight()));
 				request.setInvoiceValue(orderDetail.getValue());
 				request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
