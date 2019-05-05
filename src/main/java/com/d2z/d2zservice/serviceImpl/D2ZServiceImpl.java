@@ -881,8 +881,11 @@ public class D2ZServiceImpl implements ID2ZService{
 				auresponse.setErrorCode((String)error.get("code"));
 				auresponse.setName((String)error.get("name"));
 				auresponse.setMessage((String)error.get("message"));
-				String Field = error.get("context").toString().split("=")[1];
-				auresponse.setField(Field.substring(0, (Field.length()-1)));
+				auresponse.setField((String)error.get("field"));
+			
+				/*String Field = error.get("context").toString().split("=")[1];
+				auresponse.setField(Field.substring(0, (Field.length()-1)));*/
+			
 				auresponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 				AUPostResponseList.add(auresponse);
 		
