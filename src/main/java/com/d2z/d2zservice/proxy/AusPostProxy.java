@@ -72,8 +72,7 @@ public class AusPostProxy {
 	        }
 	        System.out.println("Response :: " + jsonResponse);
 	        return jsonResponse;
-	        System.out.println("Response :: " + jsonResponse);
-	        return jsonResponse;
+	       
 	}
 	
 	public TrackingResponse trackingEvent(String articleIds) {
