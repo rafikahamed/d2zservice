@@ -1,5 +1,6 @@
 package com.d2z.d2zservice.init;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +14,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 @SpringBootApplication(exclude = {ErrorMvcAutoConfiguration.class})
 @EnableAutoConfiguration 
@@ -25,6 +28,13 @@ public class D2zServiceApplication {
 	
 	public static void main(String[] args) {
 		SpringApplication.run(D2zServiceApplication.class, args);
+		try {
+		    String result = InetAddress.getLocalHost().getHostName();
+		    if (StringUtils.isNotEmpty( result))
+		        System.out.println("Service HOST Name --->"+result);
+		} catch (UnknownHostException e) {
+		    // failed;  try alternate means.
+		}
 	}
 	
 	@Bean
