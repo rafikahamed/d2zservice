@@ -84,8 +84,8 @@ public class D2zBrokerController {
 		return response;
     }
 	
-	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/{referenceNumbers}/shipment/{shipmentNumber}")
-	 public ResponseMessage allocateShipment(@PathVariable String referenceNumbers,@PathVariable String shipmentNumber) throws ReferenceNumberNotUniqueException {
-		return  d2zService.allocateShipment(referenceNumbers,shipmentNumber);
+	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/shipment/{shipmentNumber}")
+	 public ResponseMessage allocateShipment(@RequestBody String referenceNumbers,@PathVariable String shipmentNumber) throws ReferenceNumberNotUniqueException {
+		return  d2zService.allocateShipment(referenceNumbers.toString(),shipmentNumber);
 	}	
 }

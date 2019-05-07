@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import com.d2z.d2zservice.model.auspost.CreateShippingRequest;
@@ -28,6 +29,7 @@ public class AusPostProxy {
 	    String url = "https://digitalapi.auspost.com.au/shipping/v1/orders";
 		RestTemplate template = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
+		  String jsonResponse = null;
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add("account-number", "0008433003");
 		 String base64encodedString = null;
@@ -50,19 +52,27 @@ public class AusPostProxy {
 				e.printStackTrace();
 			}
 	        System.out.println("Request :: " + jsonReq);
+	        try {
 		ResponseEntity<CreateShippingResponse> responseEntity = template.exchange(url, HttpMethod.POST, requestEntity, CreateShippingResponse.class);
 		System.out.println(responseEntity.getStatusCode());
 		CreateShippingResponse response = responseEntity.getBody();
 	        ObjectWriter ow = new ObjectMapper().writer();
-	        String jsonResponse = null;
+	        
 			try {
 				jsonResponse = ow.writeValueAsString(response);
 			} catch (JsonProcessingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+	        }
+	        catch(HttpStatusCodeException e)
+	        {
+	        	System.out.println("error code :"+ e.getStatusCode());
+	        	jsonResponse = e.getResponseBodyAsString();
+	        }
 	        System.out.println("Response :: " + jsonResponse);
 	        return jsonResponse;
+	       
 	}
 	
 	public TrackingResponse trackingEvent(String articleIds) {

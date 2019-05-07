@@ -29,7 +29,7 @@ public class FreiPostConnector  extends WebServiceGatewaySupport {
        // return (UploadManifestResponse)getWebServiceTemplate().marshalSendAndReceive("http://www.logicons.com/LCIAPITest/Service.svc/UploadManifest", uploadManifestRequest);
     }
     @SuppressWarnings("unchecked")
-    public GetTrackingDetailsResponse trackingEventService( String invoiceNumber){
+    public GetTrackingDetailsResponse trackingEventService(GetTrackingDetails trackingDetails){
     	
     	WebServiceTemplate webServiceTemplate = getWebServiceTemplate();
     	ClientInterceptor[] interceptors = webServiceTemplate.getInterceptors();
@@ -65,19 +65,7 @@ public class FreiPostConnector  extends WebServiceGatewaySupport {
     	 
     	webServiceTemplate.setInterceptors(interceptors);
     	
-    	ObjectFactory factory = new ObjectFactory();
-    	org.tempuri.ObjectFactory objFactory = new org.tempuri.ObjectFactory();
-    	Credentials credentials = factory.createCredentials();
-    	credentials.setUsername(factory.createCredentialsUsername("admin@d2z"));
-    	credentials.setPassword(factory.createCredentialsPassword("admin"));
-    	
-    	GetTrackingDetails trackingDetails = objFactory.createGetTrackingDetails();
-    	GetTrackingDetailsRequest trackingRequest = new GetTrackingDetailsRequest();
-    	trackingRequest.setInvoiceNumber(factory.createGetTrackingDetailsRequestInvoiceNumber(invoiceNumber));
-    	trackingRequest.setCredentials(factory.createGetTrackingDetailsRequestCredentials(credentials));
-    	trackingRequest.setTrackingNumber(factory.createGetTrackingDetailsRequestTrackingNumber(""));
-    	trackingDetails.setRequest(objFactory.createGetTrackingDetailsRequest(trackingRequest));
-    	
+    
     	SoapActionCallback soapAction = new SoapActionCallback("http://tempuri.org/IService/GetTrackingDetails");
 		JAXBElement<GetTrackingDetailsResponse> response = (JAXBElement<GetTrackingDetailsResponse>)webServiceTemplate.marshalSendAndReceive(trackingDetails,soapAction);
     	return response.getValue();
