@@ -42,7 +42,7 @@ import com.d2z.d2zservice.service.ISuperUserD2ZService;
 @RequestMapping(value = "/v1/d2z/superUser-level")
 public class D2ZSuperUserController {
 
-Logger logger = LoggerFactory.getLogger(D2zController.class);
+	Logger logger = LoggerFactory.getLogger(D2zController.class);
 	
 	@Autowired
     private  ISuperUserD2ZService superUserD2zService;
