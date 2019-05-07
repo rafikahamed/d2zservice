@@ -17,7 +17,7 @@ public class SwaggerConfig {
 	
 	@Bean
 	public Docket merchantApi() {
-	        return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).select().paths(regex("/v1/d2z/.*"))
+	        return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).select().paths(regex("/v1/.*"))
 	                .build();
 	}
     

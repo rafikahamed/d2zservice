@@ -733,6 +733,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		
 
 		String msg =  d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
+
 		/*List<String> refNumberList = new ArrayList<String>(Arrays.asList(refNbrs)); 
 		List<List<String>> referNumPartList = ListUtils.partition(refNumberList, 300);
 		int count = 1;
@@ -743,6 +744,7 @@ public class D2ZServiceImpl implements ID2ZService{
 			String refNumbers = StringUtils.join(referenceNum, ",");
 			msg =  d2zDao.allocateShipment(refNumbers,shipmentNumber);
 		}*/
+
 	/*	List<SenderdataMaster> senderData =  d2zDao.fetchDataForAusPost(refNbrs);
 
 		

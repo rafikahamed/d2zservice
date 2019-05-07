@@ -1,10 +1,7 @@
 package com.d2z.d2zservice.controller;
 
 import java.util.List;
-
-
 import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +23,10 @@ import com.d2z.d2zservice.service.IBrokerD2ZService;
 import com.d2z.d2zservice.service.ID2ZService;
 
 @RestController
-@RequestMapping(value = "/v1/d2z/broker-level")
-public class D2zBrokerController {
+@RequestMapping(value = "/v1/speedcouriers/broker-level")
+public class SPCourierBrokerController {
 	
-	Logger logger = LoggerFactory.getLogger(D2zController.class);
+	Logger logger = LoggerFactory.getLogger(SPCourierBrokerController.class);
 	
 	@Autowired
     private  IBrokerD2ZService brokerD2zService;
@@ -88,4 +85,5 @@ public class D2zBrokerController {
 	 public ResponseMessage allocateShipment(@RequestBody String referenceNumbers,@PathVariable String shipmentNumber) throws ReferenceNumberNotUniqueException {
 		return  d2zService.allocateShipment(referenceNumbers.toString(),shipmentNumber);
 	}	
+
 }
