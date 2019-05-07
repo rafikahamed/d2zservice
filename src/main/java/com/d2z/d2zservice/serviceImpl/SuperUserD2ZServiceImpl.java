@@ -251,7 +251,7 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 		return respMsg;
 	}
 
-	@Scheduled(cron = "0 0 0/2 * * ?")
+	//@Scheduled(cron = "0 0 0/2 * * ?")
 //	@Scheduled(cron = "0 0/10 * * * ?")
 	public void scheduledTrackingEvent() {
 		List<String> trackingNumbers = d2zDao.fetchTrackingNumbersForETowerCall();

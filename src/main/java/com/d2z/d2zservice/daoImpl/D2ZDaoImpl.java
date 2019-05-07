@@ -192,7 +192,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 					request.setServiceOption("E-Parcel");
 
 				}
-				request.setFacility("SYD2");
+				request.setFacility(orderDetail.getInjectionState());
 				request.setWeight(Double.valueOf(orderDetail.getWeight()));
 				request.setInvoiceValue(orderDetail.getValue());
 				request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
@@ -1041,5 +1041,10 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public void logAUPostResponse(List<AUPostResponse> aupostresponse)
 	{
 		aupostresponseRepository.saveAll(aupostresponse);
+	}
+
+	@Override
+	public void updateCubicWeight() {
+		senderDataRepository.updateCubicWeight();		
 	}
 }

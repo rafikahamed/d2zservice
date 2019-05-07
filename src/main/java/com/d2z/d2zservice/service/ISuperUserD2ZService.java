@@ -86,5 +86,7 @@ public interface ISuperUserD2ZService{
 	public List<InvoiceShipment> brokerNdInvoiced();
 
 	public List<NotBilled> fetchNonD2zNotBilled();
+	
+	public void scheduledTrackingEvent();
 
 }

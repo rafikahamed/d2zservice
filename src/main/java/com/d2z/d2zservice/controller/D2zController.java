@@ -198,7 +198,10 @@ public class D2zController {
 	 public void triggerFDM() {
 		d2zService.triggerFDM();
 	}
-	
+	@RequestMapping(method = RequestMethod.GET, path = "/auPost")
+	 public void triggerAuPost() {
+		d2zService.makeCalltoAusPost();
+	}
 	@RequestMapping(method = RequestMethod.GET, path = "/aupost/track-labels")
 	public ResponseMessage auTrackingEvent() {
 		return d2zService.auTrackingEvent();

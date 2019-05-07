@@ -64,6 +64,9 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Procedure(name = "shipment_allocation")
 	void allocateShipment(@Param("Reference_number") String Reference_number, @Param("Airwaybill") String Airwaybill);
 
+	@Procedure(name = "update_cubicWeight")
+	void updateCubicWeight();
+	
 	@Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y' and t.manifest_number is null") 
 	List<SenderdataMaster> fetchManifestData(@Param("fileName") String fileName);
 
@@ -277,7 +280,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 Integer fetchUserIdByReferenceNumber( String reference_number);
 
 
-	@Query("SELECT t FROM SenderdataMaster t where t.reference_number in (:refNbrs) and mlid = '33PE9'")
+	@Query("SELECT t FROM SenderdataMaster t where t.reference_number in (:refNbrs) and mlid = '33PE9' and t.isDeleted = 'N'")
 	List<SenderdataMaster> fetchDataForAusPost(List<String>  refNbrs);
  
 

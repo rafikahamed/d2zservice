@@ -98,7 +98,7 @@ public class Trackandtrace implements Serializable {
 		this.articleID = articleID;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Reference_number",referencedColumnName = "Reference_number", insertable=false, updatable=false)
     private SenderdataMaster senderData;
 	

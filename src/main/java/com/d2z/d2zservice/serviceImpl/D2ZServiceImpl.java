@@ -693,7 +693,7 @@ public class D2ZServiceImpl implements ID2ZService{
 				request.setServiceOption("E-Parcel");
 
 			}
-			request.setFacility(orderDetail.getInjectionState());
+			request.setFacility("SYD2");
 			request.setWeight(Double.valueOf(orderDetail.getWeight()));
 			request.setInvoiceValue(orderDetail.getValue());
 			request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
@@ -732,8 +732,8 @@ public class D2ZServiceImpl implements ID2ZService{
 		}
 		
 
-		//String msg =  d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
-		List<String> refNumberList = new ArrayList<String>(Arrays.asList(refNbrs)); 
+		String msg =  d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
+		/*List<String> refNumberList = new ArrayList<String>(Arrays.asList(refNbrs)); 
 		List<List<String>> referNumPartList = ListUtils.partition(refNumberList, 300);
 		int count = 1;
 		String msg = null;
@@ -742,7 +742,7 @@ public class D2ZServiceImpl implements ID2ZService{
 			count++;
 			String refNumbers = StringUtils.join(referenceNum, ",");
 			msg =  d2zDao.allocateShipment(refNumbers,shipmentNumber);
-		}
+		}*/
 	/*	List<SenderdataMaster> senderData =  d2zDao.fetchDataForAusPost(refNbrs);
 
 		
@@ -760,9 +760,10 @@ public class D2ZServiceImpl implements ID2ZService{
 		return userMsg;
 	}
 	
-	@Scheduled(cron = "0 0 0/2 * * ?")
+	//@Scheduled(cron = "0 0 0/2 * * ?")
 	//@Scheduled(cron = "0 0/10 * * * ?")
-	private void makeCalltoAusPost() {
+	public void makeCalltoAusPost() {
+		d2zDao.updateCubicWeight();
 		List<String> referenceNumbers = d2zDao.fetchDataForAUPost();
 		System.out.println("Track and trace:"+referenceNumbers.size());
 		if(referenceNumbers.size()<10) {
@@ -786,9 +787,13 @@ public class D2ZServiceImpl implements ID2ZService{
         List<ShipmentRequest> shipments = new ArrayList<ShipmentRequest>();
         for(SenderdataMaster data : senderData)
         {
+        	String email = null;
+        if(data.getConsignee_Email()!=null&&!data.getConsignee_Email().trim().isEmpty()&&data.getConsignee_Email().contains("@")) {
+        	email = data.getConsignee_Email();
+        }
         ShipmentRequest shipmentRequest = new ShipmentRequest();
         shipmentRequest.setSender_references(data.getReference_number());
-        shipmentRequest.setEmail_tracking_enabled(data.getConsignee_Email()!=null&&!data.getConsignee_Email().trim().isEmpty());
+        shipmentRequest.setEmail_tracking_enabled(email!=null);
        
         FromAddress from = new FromAddress();
         
@@ -806,7 +811,7 @@ public class D2ZServiceImpl implements ID2ZService{
         	phone = data.getConsignee_Phone();
         }
         to.setPhone(phone);
-        to.setEmail(data.getConsignee_Email());
+        to.setEmail(email);
         to.setDelivery_instructions(data.getDeliveryInstructions());
         shipmentRequest.setTo(to);
         

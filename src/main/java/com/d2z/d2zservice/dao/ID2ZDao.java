@@ -120,4 +120,6 @@ public interface ID2ZDao {
     
 	public void logAUPostResponse(List<AUPostResponse> aupostresponse);
 
+	public void updateCubicWeight();
+
 }

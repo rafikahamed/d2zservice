@@ -86,4 +86,6 @@ public interface ID2ZService {
 	public void triggerFDM();
 
 	public ResponseMessage auTrackingEvent();
+	
+	public void makeCalltoAusPost();
 }
