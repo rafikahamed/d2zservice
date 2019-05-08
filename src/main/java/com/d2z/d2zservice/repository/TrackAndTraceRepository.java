@@ -52,7 +52,48 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 //	 List<String> getArticleId();
 
 	 
-	 @Query(nativeQuery = true, value="SELECT distinct(ArticleId) FROM   trackandtrace;")
+	// @Query(nativeQuery = true, value="SELECT distinct(ArticleId) FROM   trackandtrace;")
+	 @Query(nativeQuery = true, value="SELECT DISTINCT s.articleid\r\n" + 
+	 		"\r\n" + 
+	 		"FROM            senderdata_master S\r\n" + 
+	 		"\r\n" + 
+	 		"WHERE           s.user_id='52'\r\n" + 
+	 		"\r\n" + 
+	 		"AND             s.mlid='33PE9'\r\n" + 
+	 		"\r\n" + 
+	 		"AND             s.articleid IN\r\n" + 
+	 		"\r\n" + 
+	 		"            (\r\n" + 
+	 		"\r\n" + 
+	 		"            SELECT DISTINCT t.articleid\r\n" + 
+	 		"\r\n" + 
+	 		"            FROM            trackandtrace t\r\n" + 
+	 		"\r\n" + 
+	 		"            WHERE           t.trackeventdetails = 'SHIPMENT ALLOCATED'\r\n" + 
+	 		"\r\n" + 
+	 		"            AND             t.filename = 'AUPost' ) AND S.articleid NOT IN\r\n" + 
+	 		"\r\n" + 
+	 		"                (\r\n" + 
+	 		"\r\n" + 
+	 		"                SELECT DISTINCT t.articleid\r\n" + 
+	 		"\r\n" + 
+	 		"                FROM            trackandtrace t\r\n" + 
+	 		"\r\n" + 
+	 		"                WHERE           (\r\n" + 
+	 		"\r\n" + 
+	 		"                                                t.trackeventdetails = 'DELIVERED'\r\n" + 
+	 		"\r\n" + 
+	 		"                                AND             t.filename = 'AUPost')\r\n" + 
+	 		"\r\n" + 
+	 		"                OR              (\r\n" + 
+	 		"\r\n" + 
+	 		"                                                t.trackeventdetails = 'SHIPMENT ALLOCATED'\r\n" + 
+	 		"\r\n" + 
+	 		"                                AND             t.filename = 'AUPost'\r\n" + 
+	 		"\r\n" + 
+	 		"                                AND             t.trackeventdateoccured <= dateadd(day,-21,getdate())))\r\n" + 
+	 		"\r\n" + 
+	 		"")
 	 List<String> getArticleId();
 	 
 }
