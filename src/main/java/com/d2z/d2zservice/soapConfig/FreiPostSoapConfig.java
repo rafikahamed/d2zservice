@@ -21,7 +21,8 @@ public class FreiPostSoapConfig {
 	    @Bean
 	    public FreiPostConnector connectFreipost(Jaxb2Marshaller marshaller) {
 	    	FreiPostConnector client = new FreiPostConnector();
-	        client.setDefaultUri("http://www.logicons.com/LCIAPITest/Service.svc");
+	        //client.setDefaultUri("http://www.logicons.com/LCIAPITest/Service.svc");
+	    	client.setDefaultUri("http://www.logicons.com/LCIAPI/Service.svc");
 	        client.setMarshaller(marshaller);
 	        client.setUnmarshaller(marshaller);
 	        return client;

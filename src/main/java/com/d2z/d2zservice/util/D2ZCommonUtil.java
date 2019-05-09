@@ -17,4 +17,16 @@ public class D2ZCommonUtil {
 		    return BCrypt.hashpw(plainTextPassword, BCrypt.gensalt());
 		}
 
+		public static String formatDataMatrix(String datamatrix) {
+			StringBuffer formattedDatamatrix = new StringBuffer(datamatrix);
+			formattedDatamatrix.insert(0, '[');
+			formattedDatamatrix.insert(3, ']');
+			formattedDatamatrix.insert(18, '[');
+			formattedDatamatrix.insert(21, ']');
+			formattedDatamatrix.insert(43, '[');
+			formattedDatamatrix.insert(47, ']');
+			formattedDatamatrix.insert(52, '[');
+			formattedDatamatrix.insert(57, ']');
+			return formattedDatamatrix.toString();
+		}
 }

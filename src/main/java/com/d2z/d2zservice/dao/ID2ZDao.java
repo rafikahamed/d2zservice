@@ -122,4 +122,6 @@ public interface ID2ZDao {
 
 	public void updateCubicWeight();
 
+	public void makeFriePostUpdataManifestCall(String string);
+
 }
