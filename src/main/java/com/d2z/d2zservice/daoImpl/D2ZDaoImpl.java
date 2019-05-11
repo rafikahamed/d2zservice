@@ -1028,7 +1028,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 								trackandTrace.setTrackEventDateOccured(trackingEvents.getDate().substring(0,19));
 								trackandTrace.setLocation(trackingEvents.getLocation());
 								trackandTrace.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
-								trackandTrace.setFileName("AU-Post");
+							//	trackandTrace.setFileName("AU-Post");
+								trackandTrace.setFileName("AUPost");
 								trackAndTraceList.add(trackandTrace);
 							}
 						}
