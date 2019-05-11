@@ -647,8 +647,8 @@ public class D2ZServiceImpl implements ID2ZService{
 	
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
-	
-		if("1PS2".equalsIgnoreCase(orderDetail.getConsignmentData().get(0).getServiceType())){
+	    String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
+		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType)){
 			makeCreateShippingOrderEtowerCall(orderDetail,senderDataResponseList);
 			 return senderDataResponseList;
 		}
@@ -686,6 +686,12 @@ public class D2ZServiceImpl implements ID2ZService{
 			request.setCity(orderDetail.getConsigneeSuburb());
 			request.setState(orderDetail.getConsigneeState());
 			request.setPostcode(orderDetail.getConsigneePostcode());
+			if("1PM3E".equalsIgnoreCase(orderDetail.getServiceType())) {
+				request.setFacility("MEL3");
+				orderDetail.setCarrier("Express");
+			}else if("1PS2".equalsIgnoreCase(orderDetail.getServiceType())) {
+				request.setFacility("SYD2");
+			}
 			if(("Express").equalsIgnoreCase(orderDetail.getCarrier())){
 			request.setServiceOption("Express-Post");
 			}
@@ -693,7 +699,6 @@ public class D2ZServiceImpl implements ID2ZService{
 				request.setServiceOption("E-Parcel");
 
 			}
-			request.setFacility("SYD2");
 			request.setWeight(Double.valueOf(orderDetail.getWeight()));
 			request.setInvoiceValue(orderDetail.getValue());
 			request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
@@ -765,7 +770,6 @@ public class D2ZServiceImpl implements ID2ZService{
 	//@Scheduled(cron = "0 0 0/2 * * ?")
 	//@Scheduled(cron = "0 0/10 * * * ?")
 	public void makeCalltoAusPost() {
-		d2zDao.updateCubicWeight();
 		List<String> referenceNumbers = d2zDao.fetchDataForAUPost();
 		System.out.println("Track and trace:"+referenceNumbers.size());
 		if(referenceNumbers.size()<10) {
@@ -1293,13 +1297,13 @@ public class D2ZServiceImpl implements ID2ZService{
 			consignment.setCust_email(data.getConsignee_Email());
 			consignment.setInstruction(data.getDeliveryInstructions());
 			consignment.setCustomer_code("D2Z");
-			consignment.setCarrier("Australia Post");
-			consignment.setVendor_name(data.getShipper_Name());
-			consignment.setVendor_street1(data.getShipper_Addr1());
-			consignment.setVendor_suburb(data.getShipper_City());
-			consignment.setVendor_pcode(data.getShipper_Postcode());
-			consignment.setVendor_state(data.getShipper_State());
-			consignment.setVendor_country(data.getShipper_Country());
+			consignment.setCarrier("AUSPOST");
+			consignment.setVendor_name("D2Z");
+			consignment.setVendor_street1("Ground Floor, Suite 3, 410 Church Street");
+			consignment.setVendor_suburb("North Parramatta");
+			consignment.setVendor_pcode("2151");
+			consignment.setVendor_state("NSW");
+			consignment.setVendor_country("AU");
 			consignment.setTotal_weight(String.valueOf(data.getCubic_Weight()));
 			ArrayofDetail details = new ArrayofDetail();
 			List<Line> itemList = new ArrayList<Line>();

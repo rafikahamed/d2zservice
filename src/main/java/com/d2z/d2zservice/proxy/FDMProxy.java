@@ -33,7 +33,8 @@ public class FDMProxy {
 		JSONObject json = new JSONObject(jsonStr);
 		String requestXml = XML.toString(json);
 		System.out.println("FDM Request XML --> "+requestXml); 
-		String url = "https://my.fdm.com.au/TestWebAPI/api/ManifestMessaging";
+		//String url = "https://my.fdm.com.au/TestWebAPI/api/ManifestMessaging"; //test url
+		String url = "https://my.fdm.com.au/MyFdmWebAPI/api/ManifestMessaging";//prod url
 		ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory());
 		RestTemplate template = new RestTemplate(factory);
 		template.setInterceptors(Collections.singletonList(new RequestResponseLoggingInterceptor()));

@@ -485,9 +485,12 @@ public class D2ZDaoImpl implements ID2ZDao{
 			if(null!= barcodeMap && !barcodeMap.isEmpty() && barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData labelData= barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setBarcodelabelNumber(labelData.getBarCode());
-				senderDataObj.setArticleId(labelData.getArticleId());
-		        String datamatrix = labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "");
-				senderDataObj.setDatamatrix(datamatrix);
+				senderDataObj.setIsDeleted("N");
+				senderDataObj.setStatus("CONSIGNMENT CREATED");
+				senderDataObj.setInjectionType("Direct Injection");
+				senderDataObj.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+				senderDataObj.setArticleId(labelData.getArticleId());		        
+				senderDataObj.setDatamatrix(D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
 			}
 			senderDataList.add(senderDataObj);
 		}
@@ -565,12 +568,13 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return "Shipment allocation Successful";
 	}
 
-	private void makeFriePostUpdataManifestCall(String referenceNumbers) {
+	public void makeFriePostUpdataManifestCall(String referenceNumbers) {
 		// TODO Auto-generated method stub
 		Runnable r = new Runnable( ) {			
 	        public void run() {
+	    		updateCubicWeight();
 	        	String[] refNbrArray = referenceNumbers.split(",");
-	        	List<SenderdataMaster> senderMasterData = senderDataRepository.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"FreiPost");
+	        	List<SenderdataMaster> senderMasterData = senderDataRepository.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
 	        	if(!senderMasterData.isEmpty()) {
 	        		freipostWrapper.uploadManifestService(senderMasterData);
 	        	}
@@ -1024,7 +1028,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 								trackandTrace.setTrackEventDateOccured(trackingEvents.getDate().substring(0,19));
 								trackandTrace.setLocation(trackingEvents.getLocation());
 								trackandTrace.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
-								trackandTrace.setFileName("AU-Post");
+							//	trackandTrace.setFileName("AU-Post");
+								trackandTrace.setFileName("AUPost");
 								trackAndTraceList.add(trackandTrace);
 							}
 						}

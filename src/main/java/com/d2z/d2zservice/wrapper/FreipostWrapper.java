@@ -47,8 +47,10 @@ public class FreipostWrapper {
 	    	UploadManifestRequest uploadManifestRequest = new UploadManifestRequest();
 	    	uploadManifestRequest.setAllocateTrackingNumber(true);
 	    	uploadManifestRequest.setCredentials(factory.createUploadManifestRequestCredentials(credentials));
-	    	ArrayOfTrackingItemUpload arrayofTrackingItemUpload = new ArrayOfTrackingItemUpload();
+	    	ArrayOfTrackingItemUpload arrayofTrackingItemUpload = factory.createArrayOfTrackingItemUpload();
 	    	 List<TrackingItemUpload> trackingItemUpload = new ArrayList<TrackingItemUpload>();
+	    	 
+	    	 
 	    	 for(SenderdataMaster senderData : senderMasterData) {
 	    		 TrackingItemUpload trackingItems = new TrackingItemUpload();
 		    	 trackingItems.setABNARNNumber(factory.createTrackingItemUploadABNARNNumber("0"));
@@ -73,10 +75,14 @@ public class FreipostWrapper {
 		    	 trackingItems.setInvoiceValue(BigDecimal.valueOf(senderData.getValue()));
 		    	 trackingItems.setOriginCountry(factory.createTrackingItemUploadOriginCountry(getOriginCountry(senderData.getConsignee_State())));
 		    	 trackingItems.setServiceType(factory.createTrackingItemUploadServiceType("APST"));
+		    	 trackingItems.setTrackingNumber(factory.createTrackingItemUploadTrackingNumber(senderData.getBarcodelabelNumber()));
 		    	 trackingItems.setWeight(senderData.getCubic_Weight());
+		    	 trackingItemUpload.add(trackingItems);
 	    	 }
-	    	 
-	        UploadManifestResponse response = freipostConnector.uploadManifestService(uploadManifestRequest);
+	    	 arrayofTrackingItemUpload.getTrackingItemUpload().addAll(trackingItemUpload);
+	    	 uploadManifestRequest.setManifest(factory.createUploadManifestRequestManifest(arrayofTrackingItemUpload));
+	    	 uploadManifest.setRequest(objFactory.createUploadManifestRequest(uploadManifestRequest));
+	        UploadManifestResponse response = freipostConnector.uploadManifestService(uploadManifest);
 		return response;
 		 
 	        
