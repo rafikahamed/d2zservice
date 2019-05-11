@@ -33,7 +33,6 @@ public class D2zServiceApplication {
 		    if (StringUtils.isNotEmpty( result))
 		        System.out.println("Service HOST Name --->"+result);
 		} catch (UnknownHostException e) {
-		    // failed;  try alternate means.
 		}
 	}
 	
