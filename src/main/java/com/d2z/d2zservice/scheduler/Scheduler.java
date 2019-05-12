@@ -48,7 +48,7 @@ public class Scheduler {
 	@Scheduled(cron = "0 0 12 * * ?",zone = "GMT")
 	public void triggerFDMCall() {
 		try {
-			System.out.println("Calling FDM");
+			System.out.println("Calling - FDM");
 			d2zService.triggerFDM();
 		}
 		catch(Exception e)
