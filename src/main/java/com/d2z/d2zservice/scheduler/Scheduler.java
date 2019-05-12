@@ -36,14 +36,14 @@ public class Scheduler {
 	{
 		System.out.println(e.getLocalizedMessage());
 	}
-	try {
+/*	try {
 		System.out.println("Calling AUPost Tracking Proxy");
 		d2zService.auTrackingEvent();
 	}
 	catch(Exception e)
 	{
 		System.out.println(e.getLocalizedMessage());
-	}
+	}*/
 	}
 	@Scheduled(cron = "0 0 12 * * ?",zone = "GMT")
 	public void triggerFDMCall() {
