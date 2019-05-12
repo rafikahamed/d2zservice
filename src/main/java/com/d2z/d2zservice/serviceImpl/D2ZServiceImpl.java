@@ -1255,12 +1255,6 @@ public class D2ZServiceImpl implements ID2ZService{
 
 		List<SenderdataMaster> senderData = d2zDao.fetchDataForAusPost(referenceNumbers);
 		System.out.println("Sender Data:"+senderData.size());
-		List<SenderdataMaster> testData =  new ArrayList<SenderdataMaster>();
-		testData.add(senderData.get(0));
-		testData.add(senderData.get(1));
-		testData.add(senderData.get(2));
-		testData.add(senderData.get(3));
-		testData.add(senderData.get(4));
 		if(!senderData.isEmpty()) {
 		FDMManifestRequest request = new FDMManifestRequest();
 		Date dNow = new Date();

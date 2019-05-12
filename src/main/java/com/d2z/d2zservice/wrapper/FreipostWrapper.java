@@ -45,7 +45,7 @@ public class FreipostWrapper {
 	    	
 	    	UploadManifest uploadManifest = objFactory.createUploadManifest();
 	    	UploadManifestRequest uploadManifestRequest = new UploadManifestRequest();
-	    	uploadManifestRequest.setAllocateTrackingNumber(true);
+	    	uploadManifestRequest.setAllocateTrackingNumber(false);
 	    	uploadManifestRequest.setCredentials(factory.createUploadManifestRequestCredentials(credentials));
 	    	ArrayOfTrackingItemUpload arrayofTrackingItemUpload = factory.createArrayOfTrackingItemUpload();
 	    	 List<TrackingItemUpload> trackingItemUpload = new ArrayList<TrackingItemUpload>();
