@@ -39,7 +39,7 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 		 List<String> fetchArticleIDForFDMCall();
 
 
-	 @Query("SELECT top 2000 t FROM Trackandtrace t where t.trackEventCode = 'SA' AND t.fileName = 'AUPostCreate'")
+	 @Query(nativeQuery = true, value="SELECT top 2000 t FROM Trackandtrace t where t.trackEventCode = 'SA' AND t.fileName = 'AUPostCreate'")
 	List<Trackandtrace> fetchArticleIDForAUPost();
 
     
