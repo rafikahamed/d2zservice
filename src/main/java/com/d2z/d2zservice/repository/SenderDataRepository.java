@@ -262,7 +262,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwayBill, B.ArticleId, B.reference_number, B.D2ZRate FROM\n" + 
 			"( \n" + 
 			"SELECT DISTINCT U.client_broker_id, S.airwaybill, S.ArticleId, S.reference_number, S.D2ZRate FROM senderdata_master S INNER JOIN users U  \n" + 
-			"ON s.reference_number not in ( select distinct reference_number from reconcile ) AND U.role_id = '3' AND S.user_id = U.user_id \n" + 
+			"ON s.reference_number not in ( select distinct reference_number from reconcile where Reference_number is not null ) AND U.role_id = '3' AND S.user_id = U.user_id \n" + 
 			") \n" + 
 			"B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name")
 	List<String> fetchNotBilled();
