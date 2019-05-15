@@ -88,5 +88,7 @@ public interface ISuperUserD2ZService{
 	public List<NotBilled> fetchNonD2zNotBilled();
 	
 	public void scheduledTrackingEvent();
+	
+	public void scheduledPCATrackingEvent();
 
 }

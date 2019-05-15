@@ -36,6 +36,8 @@ public interface ID2ZSuperUserDao {
 	List<Object> exportNonShipment(String fromDate, String toDate);
 
 	List<String> fetchTrackingNumbersForETowerCall();
+	
+	List<String> fetchTrackingNumbersForPCACall();
 
 	ResponseMessage insertTrackingDetails(TrackingEventResponse response);
 

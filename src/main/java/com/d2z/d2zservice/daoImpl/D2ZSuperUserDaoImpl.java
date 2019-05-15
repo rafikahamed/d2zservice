@@ -279,7 +279,12 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 		return dbResult;
 		
 	}
-
+	@Override
+	public List<String> fetchTrackingNumbersForPCACall() {
+		List<String> dbResult  =  trackAndTraceRepository.fetchTrackingNumbersForPCACall();
+		return dbResult;
+		
+	}
 
 	@Override
 	public String uploadBrokerRates(List<BrokerRatesData> brokerRatesData) {

@@ -43,6 +43,7 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.proxy.ETowerProxy;
+import com.d2z.d2zservice.proxy.PcaProxy;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.model.ExportShipment;
@@ -59,6 +60,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService{
 	@Autowired
 	private ETowerProxy proxy;
 	
+	@Autowired
+	private PcaProxy pcaproxy;
 	@Autowired
     private D2ZValidator d2zValidator;
 
@@ -253,6 +256,7 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 
 	//@Scheduled(cron = "0 0 0/2 * * ?")
 //	@Scheduled(cron = "0 0/10 * * * ?")
+	@Override
 	public void scheduledTrackingEvent() {
 		List<String> trackingNumbers = d2zDao.fetchTrackingNumbersForETowerCall();
 		if(trackingNumbers.isEmpty()) {
@@ -262,7 +266,17 @@ List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
 			trackingEvent(trackingNumbers);
 		}
 	}
-
+	@Override
+	public void scheduledPCATrackingEvent() {
+		List<String> trackingNumbers = d2zDao.fetchTrackingNumbersForPCACall();
+		if(trackingNumbers.isEmpty()) {
+			System.out.println("PCA call not required");
+		}
+		else {
+			//trackingEvent(trackingNumbers);
+			pcaproxy.trackingEvent(trackingNumbers);
+		}
+	}
 	@Override
 	public UserMessage uploadBrokerRates(List<BrokerRatesData> brokerRatesData) {
 		String uploadInvoiceData = d2zDao.uploadBrokerRates(brokerRatesData);

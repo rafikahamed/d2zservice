@@ -36,6 +36,16 @@ public class Scheduler {
 	{
 		System.out.println(e.getLocalizedMessage());
 	}
+	
+/*	try {
+		System.out.println("Calling PCA Proxy");
+		superUserD2zService.scheduledPCATrackingEvent();
+	}
+	catch(Exception e)
+	{
+		System.out.println(e.getLocalizedMessage());
+	}*/
+	
 /*	try {
 		System.out.println("Calling AUPost Tracking Proxy");
 		d2zService.auTrackingEvent();
