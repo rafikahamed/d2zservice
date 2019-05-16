@@ -480,7 +480,10 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setSku(senderDataValue.getSku());
 			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
 			senderDataObj.setDeliveryInstructions(senderDataValue.getDeliveryInstructions());
-			senderDataObj.setCarrier("eParcel");
+			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType())){
+				senderDataObj.setCarrier("Express");
+			}else {
+			senderDataObj.setCarrier("eParcel");}
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
 			if(null!= barcodeMap && !barcodeMap.isEmpty() && barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData labelData= barcodeMap.get(senderDataValue.getReferenceNumber());
