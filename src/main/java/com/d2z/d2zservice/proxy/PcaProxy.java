@@ -13,12 +13,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+@Service
 public class PcaProxy {
-	
 	
 	public  void trackingEvent(List<String> articleIds) {
 	    String url = "https://s1.pcaex.com/api/tracking";
