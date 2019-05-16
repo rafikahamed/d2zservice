@@ -21,7 +21,6 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class PcaProxy {
 	
-	
 	public  void trackingEvent(List<String> articleIds) {
 	    String url = "https://s1.pcaex.com/api/tracking";
 		RestTemplate template = new RestTemplate();
