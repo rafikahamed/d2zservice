@@ -229,14 +229,14 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 List<SenderdataMaster> fetchConsignmentsManifestShippment(@Param("referenceNumbers") List<String> referenceNumbers);
 
 
-	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwaybill FROM (SELECT DISTINCT U.client_broker_id, S.airwaybill FROM senderdata_master S INNER JOIN users U \n" + 
+	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwaybill FROM (SELECT DISTINCT U.client_broker_id, S.airwaybill FROM Senderdata_Invoicing S INNER JOIN users U \n" + 
 			"ON S.airwaybill IS NOT NULL AND U.role_id = '3' AND S.user_id = U.user_id AND S.Invoiced = 'N') B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name")
 	List<String> fetchSenderShipmenntData();
 
 	
 	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwaybill FROM \n" + 
 			"(\n" + 
-			"SELECT DISTINCT U.client_broker_id, S.airwaybill FROM senderdata_master S INNER JOIN users U \n" + 
+			"SELECT DISTINCT U.client_broker_id, S.airwaybill FROM Senderdata_Invoicing S INNER JOIN users U \n" + 
 			"ON S.airwaybill IS NOT NULL AND U.role_id = '3' AND S.user_id = U.user_id AND S.Invoiced = 'Y' and S.Billed = 'N'\n" + 
 			") \n" + 
 			"B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name;")
@@ -247,28 +247,28 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 			"	SELECT B.client_broker_id, A.User_ID, A.airwayBill, A.articleId, A.reference_number, A.d2zRate, A.weight, A.brokerRate  FROM\n" + 
 			"	(\n" + 
 			"		select User_ID, airwayBill, articleId, reference_number, d2zRate, weight, brokerRate \n" + 
-			"			from SENDERDATA_MASTER where articleId = :articleNo or reference_number = :refrenceNumber\n" + 
+			"			from Senderdata_Invoicing where articleId = :articleNo or reference_number = :refrenceNumber\n" + 
 			"	) A INNER JOIN users B ON A.user_id = B.user_id\n" + 
 			") C INNER JOIN users D on C.client_broker_id = D.user_id \n" + 
 			"")
 	List<String> reconcileData(@Param("articleNo") String articleNo, @Param("refrenceNumber") String refrenceNumber);
 
-	@Procedure(name = "InvoiceUpdate")
-	void approvedInvoice(@Param("Indicator") String Indicator, @Param("Airwaybill") String Airwaybill);
+//	@Procedure(name = "InvoiceUpdate")
+//	void approvedInvoice(@Param("Indicator") String Indicator, @Param("Airwaybill") String Airwaybill);
 	
 	@Procedure(name = "reconcilerates")
 	void reconcilerates(@Param("Reference_number") String Reference_number);
 	
 	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwayBill, B.ArticleId, B.reference_number, B.D2ZRate FROM\n" + 
 			"( \n" + 
-			"SELECT DISTINCT U.client_broker_id, S.airwaybill, S.ArticleId, S.reference_number, S.D2ZRate FROM senderdata_master S INNER JOIN users U  \n" + 
+			"SELECT DISTINCT U.client_broker_id, S.airwaybill, S.ArticleId, S.reference_number, S.D2ZRate FROM Senderdata_Invoicing S INNER JOIN users U  \n" + 
 			"ON s.reference_number not in ( select distinct reference_number from reconcile where Reference_number is not null ) AND U.role_id = '3' AND S.user_id = U.user_id \n" + 
 			") \n" + 
 			"B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name")
 	List<String> fetchNotBilled();
 	
 	@Query(nativeQuery = true, value="SELECT DISTINCT S.articleid  AS TrackingNumber, S.reference_number AS reference, S.consignee_postcode AS postcode, S.weight AS Weight,\n" + 
-			"				  B.rate AS postage, S.fuelsurcharge AS Fuelsurcharge, S.brokerrate AS total, S.servicetype AS servicetype FROM SENDERDATA_MASTER S\n" + 
+			"				  B.rate AS postage, S.fuelsurcharge AS Fuelsurcharge, S.brokerrate AS total, S.servicetype AS servicetype FROM Senderdata_Invoicing S\n" + 
 			"				  INNER JOIN POSTCODEZONES P ON P.postcode = S.consignee_postcode AND P.suburb = S.consignee_suburb INNER JOIN BROKERRATES B\n" + 
 			"                ON S.airwaybill in (:airwayBill) AND B.brokerusername in (:broker) AND ( S.weight BETWEEN Cast(B.minweight AS DECIMAL(18, 4)) AND\n" + 
 			" 				  Cast( B.maxweight AS DECIMAL(18, 4)) ) AND S.servicetype = B.servicetype AND S.consignee_postcode = P.postcode\n" + 

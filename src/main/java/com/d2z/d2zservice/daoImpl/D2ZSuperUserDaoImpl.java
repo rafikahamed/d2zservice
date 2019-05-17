@@ -36,6 +36,7 @@ import com.d2z.d2zservice.repository.NonD2ZDataRepository;
 import com.d2z.d2zservice.repository.ReconcileNDRepository;
 import com.d2z.d2zservice.repository.ReconcileRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
+import com.d2z.d2zservice.repository.Senderdata_InvoicingRepository;
 import com.d2z.d2zservice.repository.ServiceTypeListRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
@@ -52,6 +53,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	
 	@Autowired
 	SenderDataRepository senderDataRepository;
+	
+	@Autowired
+	Senderdata_InvoicingRepository senderdata_InvoicingRepository;
 	
 	@Autowired
 	BrokerRatesRepository brokerRatesRepository;
@@ -425,7 +429,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 
 	@Override
 	public UserMessage approvedInvoice(ApprovedInvoice approvedInvoice) {
-		senderDataRepository.approvedInvoice(approvedInvoice.getIndicator(), approvedInvoice.getAirwaybill());
+		senderdata_InvoicingRepository.approvedInvoice(approvedInvoice.getIndicator(), approvedInvoice.getAirwaybill());
 		UserMessage userMsg = new UserMessage();
 		if(approvedInvoice.getIndicator().equalsIgnoreCase("Invoiced")) {
 			userMsg.setMessage("Invoiced Approved Successfully");
