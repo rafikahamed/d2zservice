@@ -1250,9 +1250,11 @@ public class D2ZServiceImpl implements ID2ZService{
 	@Override
 	public void triggerFDM() {
 		
-		List<String> referenceNumbers = d2zDao.fetchArticleIDForFDMCall();
-		System.out.println("Track and trace:"+referenceNumbers.size());
-
+		List<String> refNumbers = d2zDao.fetchArticleIDForFDMCall();
+		System.out.println("Track and trace:"+refNumbers.size());
+		List<List<String>> refNbrList = ListUtils.partition(refNumbers, 500);
+		for(List<String> referenceNumbers : refNbrList) {
+		
 		List<SenderdataMaster> senderData = d2zDao.fetchDataForAusPost(referenceNumbers);
 		System.out.println("Sender Data:"+senderData.size());
 		if(!senderData.isEmpty()) {
@@ -1319,6 +1321,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		fdmDetails.setConsignments(consignmentsArray);
 		request.setManifest(fdmDetails);
 		fdmProxy.makeCallToFDMManifestMapping(request);
+		}
 		}
 	}
 
