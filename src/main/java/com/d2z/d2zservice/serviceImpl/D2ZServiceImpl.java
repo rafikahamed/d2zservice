@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
+import com.d2z.d2zservice.entity.FFResponse;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
@@ -80,6 +81,7 @@ import com.d2z.d2zservice.model.fdm.Line;
 import com.d2z.d2zservice.proxy.AusPostProxy;
 import com.d2z.d2zservice.proxy.EbayProxy;
 import com.d2z.d2zservice.proxy.FDMProxy;
+import com.d2z.d2zservice.repository.FFResponseRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
@@ -117,6 +119,9 @@ public class D2ZServiceImpl implements ID2ZService{
 	
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	FFResponseRepository ffresponseRepository;
 	
 	@Autowired
 	ShipmentDetailsWriter shipmentWriter;
@@ -1253,6 +1258,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		List<String> refNumbers = d2zDao.fetchArticleIDForFDMCall();
 		System.out.println("Track and trace:"+refNumbers.size());
 		List<List<String>> refNbrList = ListUtils.partition(refNumbers, 500);
+	
 		for(List<String> referenceNumbers : refNbrList) {
 		
 		List<SenderdataMaster> senderData = d2zDao.fetchDataForAusPost(referenceNumbers);
@@ -1265,15 +1271,28 @@ public class D2ZServiceImpl implements ID2ZService{
         
         FDMManifestDetails fdmDetails = new FDMManifestDetails();
         fdmDetails.setMessage_no(orderRef);
+        
         fdmDetails.setCustomer_id("D2Z");
+    	List <FFResponse> FFResponseList =  new ArrayList<FFResponse>();
         
         ArrayOfConsignment consignmentsArray =  new ArrayOfConsignment();
         List<Consignment> consignments = new ArrayList<Consignment>();
         
 		for(SenderdataMaster data : senderData) {
 			Consignment consignment = new Consignment();
+			FFResponse ffresponse = new FFResponse();
+			ffresponse.setMessage(orderRef);
+			ffresponse.setBarcodelabelnumber(data.getBarcodelabelNumber());
+			ffresponse.setWeight(String.valueOf(data.getCubic_Weight()));
+			ffresponse.setArticleid(data.getArticleId());
+			ffresponse.setReferencenumber(data.getReference_number());
+			//ffresponse.setSupplier(data.getsu);
+			ffresponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+			ffresponse.setSupplier("FDM");
+			ffresponse.setResponse("Pending");
 			consignment.setConnote_no(data.getArticleId());
 			consignment.setTracking_connote(data.getReference_number());
+			
 			String date = data.getTimestamp();
 			try {
 				Date dateFormat =  new SimpleDateFormat("YYMMDDHHMMSS").parse(date);
@@ -1305,6 +1324,7 @@ public class D2ZServiceImpl implements ID2ZService{
 			List<Line> itemList = new ArrayList<Line>();
 			Line lineItem = new Line();
 			lineItem.setBarcode(data.getBarcodelabelNumber());
+			
 			lineItem.setArticle_no(data.getArticleId());
 			lineItem.setDescription(data.getProduct_Description());
 			lineItem.setWeight(String.valueOf(data.getCubic_Weight()));
@@ -1315,12 +1335,24 @@ public class D2ZServiceImpl implements ID2ZService{
 			details.setLine(itemList);
 			consignment.setDetails(details);
 			consignments.add(consignment);
+			FFResponseList.add(ffresponse);
+			
 		
 		}
 		consignmentsArray.setConsignment(consignments);
 		fdmDetails.setConsignments(consignmentsArray);
 		request.setManifest(fdmDetails);
-		fdmProxy.makeCallToFDMManifestMapping(request);
+		ffresponseRepository.saveAll(FFResponseList);
+		String response = fdmProxy.makeCallToFDMManifestMapping(request);
+		List <FFResponse> FFresponsequery = ffresponseRepository.findByMessageNoIs(orderRef);
+		List <FFResponse> FFResponseUpdaList =  new ArrayList<FFResponse>();
+		for (FFResponse temp : FFresponsequery) {
+			temp.setResponse(response);
+			FFResponseUpdaList .add(temp);
+		}
+	
+		ffresponseRepository.saveAll(FFResponseUpdaList);
+		
 		}
 		}
 	}
