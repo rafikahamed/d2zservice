@@ -1,6 +1,8 @@
 package com.d2z.d2zservice.wrapper;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -20,7 +22,9 @@ import org.tempuri.GetTrackingDetailsResponse;
 import org.tempuri.UploadManifest;
 import org.tempuri.UploadManifestResponse;
 
+import com.d2z.d2zservice.entity.FFResponse;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.repository.FFResponseRepository;
 import com.d2z.d2zservice.soapConfig.FreiPostSoapConfig;
 import com.d2z.d2zservice.soapConnector.FreiPostConnector;
 
@@ -29,6 +33,8 @@ public class FreipostWrapper {
 
 	@Autowired 
 	private FreiPostConnector freipostConnector;
+	@Autowired
+	FFResponseRepository ffresponseRepository;
 	 public UploadManifestResponse uploadManifestService(List<SenderdataMaster> senderMasterData) {
 		/*AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 	        ctx.register(FreiPostSoapConfig.class);
@@ -49,10 +55,19 @@ public class FreipostWrapper {
 	    	uploadManifestRequest.setCredentials(factory.createUploadManifestRequestCredentials(credentials));
 	    	ArrayOfTrackingItemUpload arrayofTrackingItemUpload = factory.createArrayOfTrackingItemUpload();
 	    	 List<TrackingItemUpload> trackingItemUpload = new ArrayList<TrackingItemUpload>();
-	    	 
-	    	 
+	    	 List <FFResponse> FFResponseList =  new ArrayList<FFResponse>();
+	    	 String orderno = UUID.randomUUID().toString();
 	    	 for(SenderdataMaster senderData : senderMasterData) {
 	    		 TrackingItemUpload trackingItems = new TrackingItemUpload();
+	    		 FFResponse ffresponse = new FFResponse();
+	    		 ffresponse.setBarcodelabelnumber(senderData.getBarcodelabelNumber());
+	 			ffresponse.setWeight(String.valueOf(senderData.getCubic_Weight()));
+	 			ffresponse.setArticleid(senderData.getArticleId());
+	 			ffresponse.setReferencenumber(senderData.getReference_number());
+	 			ffresponse.setMessage(orderno);
+	 			//ffresponse.setSupplier(data.getsu);
+	 			ffresponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+	 			ffresponse.setSupplier("FreiPost");
 		    	 trackingItems.setABNARNNumber(factory.createTrackingItemUploadABNARNNumber("0"));
 		    	 trackingItems.setBagName(factory.createTrackingItemUploadBagName("1"));
 		    	 
@@ -78,11 +93,25 @@ public class FreipostWrapper {
 		    	 trackingItems.setTrackingNumber(factory.createTrackingItemUploadTrackingNumber(senderData.getBarcodelabelNumber()));
 		    	 trackingItems.setWeight(senderData.getCubic_Weight());
 		    	 trackingItemUpload.add(trackingItems);
+		    	 FFResponseList.add(ffresponse);
 	    	 }
 	    	 arrayofTrackingItemUpload.getTrackingItemUpload().addAll(trackingItemUpload);
 	    	 uploadManifestRequest.setManifest(factory.createUploadManifestRequestManifest(arrayofTrackingItemUpload));
 	    	 uploadManifest.setRequest(objFactory.createUploadManifestRequest(uploadManifestRequest));
+	    		ffresponseRepository.saveAll(FFResponseList);
 	        UploadManifestResponse response = freipostConnector.uploadManifestService(uploadManifest);
+	       String resp = response.getUploadManifestResult().getValue().getResponse().getValue().getResponseCode().value();
+	        List <FFResponse> FFresponsequery = ffresponseRepository.findByMessageNoIs(orderno);
+			List <FFResponse> FFResponseUpdaList =  new ArrayList<FFResponse>();
+			for (FFResponse temp : FFresponsequery) {
+				temp.setResponse(resp);
+				FFResponseUpdaList .add(temp);
+			}
+		
+			ffresponseRepository.saveAll(FFResponseUpdaList);
+			
+			
+	     //   response.
 		return response;
 		 
 	        
