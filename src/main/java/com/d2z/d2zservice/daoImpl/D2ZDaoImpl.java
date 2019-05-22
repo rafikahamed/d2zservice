@@ -1,21 +1,16 @@
 package com.d2z.d2zservice.daoImpl;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.AUPostResponse;
@@ -440,6 +435,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		User userInfo = userRepository.findByUsername(userName);
 		String fileSeqId = "D2ZAPI"+senderDataRepository.fetchNextSeq();
+		System.out.println("create consignment API object construction --->"+orderDetailList.size());
 		for(SenderDataApi senderDataValue: orderDetailList) {
 			SenderdataMaster senderDataObj = new SenderdataMaster();
 			senderDataObj.setUser_ID(userId);
@@ -498,8 +494,17 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataList.add(senderDataObj);
 		}
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
-		senderDataRepository.inOnlyTest(fileSeqId);
+		System.out.println("create consignment API object construction Done data got inserted--->"+insertedOrder.size());
+		storProcCall(fileSeqId);
 		return fileSeqId;
+	}
+	
+	public synchronized void storProcCall(String fileSeqId) {
+		System.out.println("Before calling the store procedure, Sequence Id --->"+fileSeqId);
+		System.out.println("Before the store procedure call, Timing --->"+java.time.LocalDateTime.now());
+		senderDataRepository.inOnlyTest(fileSeqId);
+		System.out.println("After the store procedure call, Timing --->"+java.time.LocalDateTime.now());
+		System.out.println("After calling the store procedure, Sequence Id --->"+fileSeqId);
 	}
 	
     public List<PostcodeZone> fetchAllPostCodeZone(){
