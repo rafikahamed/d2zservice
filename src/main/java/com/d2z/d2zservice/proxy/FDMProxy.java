@@ -26,14 +26,14 @@ import com.google.gson.Gson;
 public class FDMProxy {
 
 
-	public FDMManifestResponse makeCallToFDMManifestMapping(FDMManifestRequest request) 
+	public String makeCallToFDMManifestMapping(FDMManifestRequest request) 
 	{
 		Gson gson = new Gson();
 		String jsonStr = gson.toJson(request); 
 		JSONObject json = new JSONObject(jsonStr);
 		String requestXml = XML.toString(json);
 		System.out.println("FDM Request XML --> "+requestXml); 
-		//String url = "https://my.fdm.com.au/TestWebAPI/api/ManifestMessaging"; //test url
+	//	String url = "https://my.fdm.com.au/TestWebAPI/api/ManifestMessaging"; //test url
 		String url = "https://my.fdm.com.au/MyFdmWebAPI/api/ManifestMessaging";//prod url
 		ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory());
 		RestTemplate template = new RestTemplate(factory);
@@ -58,8 +58,8 @@ public class FDMProxy {
 		ResponseEntity<FDMManifestResponse> responseEntity = template.exchange(url, HttpMethod.POST, requestEntity, FDMManifestResponse.class);
 		System.out.println("FDM Status Code --->"+responseEntity.getStatusCode());
 		FDMManifestResponse response = responseEntity.getBody();
-	    
-		return response;
+	    //re
+		return ""+responseEntity.getStatusCodeValue();
 	}
 }
 
