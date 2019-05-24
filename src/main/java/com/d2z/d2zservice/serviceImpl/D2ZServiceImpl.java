@@ -1364,7 +1364,7 @@ public class D2ZServiceImpl implements ID2ZService {
 				fdmDetails.setConsignments(consignmentsArray);
 				request.setManifest(fdmDetails);
 				ftpUploader.fdmFileCreation(request);
-				// ffresponseRepository.saveAll(FFResponseList);
+				ffresponseRepository.saveAll(FFResponseList);
 				// String response = fdmProxy.makeCallToFDMManifestMapping(request);
 				// List <FFResponse> FFresponsequery =
 				// ffresponseRepository.findByMessageNoIs(orderRef);

@@ -1069,10 +1069,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public void createShippingOrderPFL(CreateConsignmentRequest incomingRequest,
-			List<PflCreateShippingRequest> PFLRequest, List<SenderDataResponse> senderDataResponseList)
-			 {
+			List<PflCreateShippingRequest> PFLRequest, List<SenderDataResponse> senderDataResponseList){
 		// TODO Auto-generated method stub
-		
 		String response = pflProxy.makeCallForCreateShippingOrder(PFLRequest);
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 		List<String> gainLabelTrackingNo = new ArrayList<String>();
@@ -1096,8 +1094,6 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
     		 		senderDataresponse.setReferenceNumber(data.getReferenceNo());
     		 		senderDataresponse.setBarcodeLabelNumber(data.getTrackingNo());
     		 		senderDataResponseList.add(senderDataresponse);
-    		 		
-    		 		
 				}
 				logEtowerResponse(responseEntity);
 				if(!gainLabelTrackingNo.isEmpty()) {
