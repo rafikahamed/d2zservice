@@ -15,6 +15,7 @@ import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
+import com.d2z.d2zservice.model.PflCreateShippingRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
@@ -114,7 +115,8 @@ public interface ID2ZDao {
 
 	public List<String>  fetchDataForAUPost();
 
-	
+	public void createShippingOrderPFL(CreateConsignmentRequest incomingRequest,List<PflCreateShippingRequest> PFLRequest,
+			List<SenderDataResponse> senderDataResponseList) ;
 
 	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails);
     

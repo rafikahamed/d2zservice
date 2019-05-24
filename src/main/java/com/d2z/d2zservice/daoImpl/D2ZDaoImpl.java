@@ -25,6 +25,7 @@ import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
+import com.d2z.d2zservice.model.PflCreateShippingRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
@@ -44,6 +45,7 @@ import com.d2z.d2zservice.model.etower.ResponseData;
 import com.d2z.d2zservice.model.etower.TrackEventResponseData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.proxy.ETowerProxy;
+import com.d2z.d2zservice.proxy.PFLProxy;
 import com.d2z.d2zservice.repository.APIRatesRepository;
 import com.d2z.d2zservice.repository.AUPostResponseRepository;
 import com.d2z.d2zservice.repository.ETowerResponseRepository;
@@ -93,6 +95,10 @@ public class D2ZDaoImpl implements ID2ZDao{
 
 	@Autowired
 	private ETowerProxy eTowerProxy;
+	
+	@Autowired
+	private PFLProxy pflProxy;
+	
 	@Override
 	public String exportParcel(List<SenderData> orderDetailList) {
 		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
@@ -1060,4 +1066,127 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public void updateCubicWeight() {
 		senderDataRepository.updateCubicWeight();		
 	}
+
+	@Override
+	public void createShippingOrderPFL(CreateConsignmentRequest incomingRequest,
+			List<PflCreateShippingRequest> PFLRequest, List<SenderDataResponse> senderDataResponseList)
+			 {
+		// TODO Auto-generated method stub
+		
+		String response = pflProxy.makeCallForCreateShippingOrder(PFLRequest);
+		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
+		List<String> gainLabelTrackingNo = new ArrayList<String>();
+
+		/*if(response==null) {
+			throw new EtowerFailureResponseException("Failed. Please contact D2Z");
+		}else {
+			if(response.getStatus().equalsIgnoreCase("Success")) {
+				for(PFLResponseData data : response.getData()) {
+					/*PFLResponse errorResponse  = new PFLResponse();
+				 	errorResponse.setAPIName("Create Shipping Order");
+    			 	errorResponse.setStatus(data.getStatus());
+    			 	errorResponse.setOrderId(data.getOrderId());
+    		 		errorResponse.setReferenceNumber(data.getReference());
+    		 		errorResponse.setTrackingNo(data.getTracking());
+    		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+    		 		responseEntity.add(errorResponse);
+    		 			
+    		 		gainLabelTrackingNo.add(data.getTrackingNo());
+    		 		SenderDataResponse senderDataresponse = new SenderDataResponse();
+    		 		senderDataresponse.setReferenceNumber(data.getReferenceNo());
+    		 		senderDataresponse.setBarcodeLabelNumber(data.getTrackingNo());
+    		 		senderDataResponseList.add(senderDataresponse);
+    		 		
+    		 		
+				}
+				logEtowerResponse(responseEntity);
+				if(!gainLabelTrackingNo.isEmpty()) {
+					Runnable r = new Runnable( ) {			
+				        public void run() {
+	    					GainLabelsResponse gainLabelResponse = eTowerProxy.makeCallToGainLabels(gainLabelTrackingNo);
+	    					Map<String,LabelData> barcodeMap = processGainLabelsResponse(gainLabelResponse);
+	    					
+	    					int userId = userRepository.fetchUserIdbyUserName(incomingRequest.getUserName());
+	        		 		createConsignments(incomingRequest.getConsignmentData(),userId,incomingRequest.getUserName(),barcodeMap);
+
+				        }
+				     };
+				    new Thread(r).start();
+				}
+			}
+			else if(response.getStatus().equalsIgnoreCase("Partial Success")) {
+				for(PFLResponseData data : response.getData()) {
+    				List<PFLErrorResponse> errors = data.getErrors();
+    				if(null == errors) {
+    				ETowerResponse errorResponse  = new ETowerResponse();
+				 	errorResponse.setAPIName("Create Shipping Order");
+    			 	errorResponse.setStatus(data.getStatus());
+    			 	errorResponse.setOrderId(data.getOrderId());
+    		 		errorResponse.setReferenceNumber(data.getReferenceNo());
+    		 		errorResponse.setTrackingNo(data.getTrackingNo());
+    		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+    		 		responseEntity.add(errorResponse);
+    		 		gainLabelTrackingNo.add(data.getTrackingNo());
+    				}
+    				else {
+    				 for(EtowerErrorResponse error : errors) {
+    					ETowerResponse errorResponse  = new ETowerResponse();
+	     			 	errorResponse.setAPIName("Create Shipping Order");
+	     			 	errorResponse.setStatus(response.getStatus());
+	     			 	errorResponse.setStatus(data.getStatus());
+	     			 	errorResponse.setOrderId(data.getOrderId());
+	     		 		errorResponse.setReferenceNumber(data.getReferenceNo());
+	     		 		errorResponse.setTrackingNo(data.getTrackingNo());
+	     		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+    				    errorResponse.setErrorCode(error.getCode());
+    				 	errorResponse.setErrorMessage(error.getMessage());
+    				 	responseEntity.add(errorResponse);
+    				}
+    				}
+			}
+				logEtowerResponse(responseEntity);
+
+				if(!gainLabelTrackingNo.isEmpty()) {
+					GainLabelsResponse gainLabelResponse = eTowerProxy.makeCallToGainLabels(gainLabelTrackingNo);
+					Map<String,LabelData> barcodeMap = processGainLabelsResponse(gainLabelResponse);
+					
+					int userId = userRepository.fetchUserIdbyUserName(incomingRequest.getUserName());
+					String senderFileID = createConsignments(incomingRequest.getConsignmentData(),userId,incomingRequest.getUserName(),barcodeMap);
+
+    		 		List<String> insertedOrder = fetchBySenderFileID(senderFileID);
+    				
+    				Iterator itr = insertedOrder.iterator();
+    				 while(itr.hasNext()) {   
+    					 Object[] obj = (Object[]) itr.next();
+    					 SenderDataResponse senderDataresponse = new SenderDataResponse();
+    					 senderDataresponse.setReferenceNumber(obj[0].toString());
+    					 senderDataresponse.setBarcodeLabelNumber(obj[2]!=null?obj[2].toString():"");
+    					 senderDataResponseList.add(senderDataresponse);
+    		       }
+		        
+				}
+			}
+			else if(response.getStatus().equalsIgnoreCase("Failure")) {
+				for(ResponseData data : response.getData()) {
+    				List<EtowerErrorResponse> errors = data.getErrors();
+				 for(EtowerErrorResponse error : errors) {
+ 					ETowerResponse errorResponse  = new ETowerResponse();
+	     			 	errorResponse.setAPIName("Create Shipping Order");
+	     			 	errorResponse.setStatus(response.getStatus());
+	     			 	errorResponse.setStatus(data.getStatus());
+	     			 	errorResponse.setOrderId(data.getOrderId());
+	     		 		errorResponse.setReferenceNumber(data.getReferenceNo());
+	     		 		errorResponse.setTrackingNo(data.getTrackingNo());
+	     		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+ 				    errorResponse.setErrorCode(error.getCode());
+ 				 	errorResponse.setErrorMessage(error.getMessage());
+				 	responseEntity.add(errorResponse);
+ 				}
+				}
+				logEtowerResponse(responseEntity);
+				throw new EtowerFailureResponseException("Internal Server Error. Please contact D2Z");
+			}
+		}*/
+	}
+	
 }
