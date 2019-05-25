@@ -213,4 +213,10 @@ public class D2ZSuperUserController {
 		return superUserD2zService.fetchNonD2zBrokerUserName();
     }
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/d2z-apiLogs")
+    public List<?> fetchApiLogs(@RequestParam("vendor") String vendor, @RequestParam("fromDate") String fromDate,
+    		@RequestParam("toDate") String toDate){
+		return superUserD2zService.fetchApiLogs(vendor, fromDate, toDate);
+    }
+	
 }

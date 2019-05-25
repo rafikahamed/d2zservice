@@ -2,7 +2,6 @@ package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -45,8 +44,6 @@ public class ETowerResponse implements Serializable {
 	
 	@Column(name="Status")
 	private String status;
-	
-	
 
 	public String getStatus() {
 		return status;
@@ -119,6 +116,5 @@ public class ETowerResponse implements Serializable {
 	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
 	}
-	
 	
 }

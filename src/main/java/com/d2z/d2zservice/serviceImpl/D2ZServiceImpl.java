@@ -650,9 +650,9 @@ public class D2ZServiceImpl implements ID2ZService {
 			throw new MaxSizeCountException("We are allowing max 300 records, Your Request contains - "
 					+ orderDetail.getConsignmentData().size() + " Records");
 		}
-		d2zValidator.isReferenceNumberUnique(orderDetail.getConsignmentData());
-		d2zValidator.isServiceValid(orderDetail);
-		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+//		d2zValidator.isReferenceNumberUnique(orderDetail.getConsignmentData());
+//		d2zValidator.isServiceValid(orderDetail);
+//		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
@@ -661,9 +661,9 @@ public class D2ZServiceImpl implements ID2ZService {
 			makeCreateShippingOrderEtowerCall(orderDetail, senderDataResponseList);
 			return senderDataResponseList;
 		} else if ("FWS".equalsIgnoreCase(serviceType)) {
-//			System.out.println("making PFL call");
-//			makeCreateShippingOrderPFLCall(orderDetail,senderDataResponseList);
-//			return senderDataResponseList;
+			System.out.println("making PFL call");
+			makeCreateShippingOrderPFLCall(orderDetail,senderDataResponseList);
+			return senderDataResponseList;
 		}
 		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(), userId,
 				orderDetail.getUserName(), null);

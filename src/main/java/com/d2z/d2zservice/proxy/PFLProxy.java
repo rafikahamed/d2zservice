@@ -50,14 +50,10 @@ public class PFLProxy {
 		HttpHeaders headers = new HttpHeaders();
 		
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set("SHIPMENTAPI-DATE", currentDate);
-		headers.set("SHIPMENTAPI-AUTH", Token+":"+authorizationHeader);
-		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-
-        HttpEntity<List<PflCreateShippingRequest>> httpEntity = new HttpEntity<List<PflCreateShippingRequest>>(request,headers);
-
-         System.out.println("Request Headers:: " + headers.toString());
-		//HttpEntity<CreateShippingRequest> requestEntity = new HttpEntity<>(request, headers);
+		headers.add("SHIPMENTAPI-DATE", currentDate);
+		headers.add("SHIPMENTAPI-AUTH", Token+":"+authorizationHeader);
+		
+		   System.out.println("Request Headers:: " + headers.toString());
 		   ObjectWriter ow1 = new ObjectMapper().writer();
 	        String jsonReq = null;
 			try {
@@ -67,11 +63,15 @@ public class PFLProxy {
 				e.printStackTrace();
 			}
 	        System.out.println("Request Body:: " + jsonReq);
-	        try {
-		ResponseEntity<PFLCreateShippingResponse> responseEntity = template.exchange(url, HttpMethod.POST, httpEntity, PFLCreateShippingResponse.class);
-		System.out.println(responseEntity.getStatusCode());
-		PFLCreateShippingResponse response = responseEntity.getBody();
-	        ObjectWriter ow = new ObjectMapper().writer();
+	        
+        HttpEntity<String> httpEntity = new HttpEntity<String>(jsonReq,headers);
+        
+      
+	    try {
+			ResponseEntity<PFLCreateShippingResponse> responseEntity = template.exchange(url, HttpMethod.POST, httpEntity, PFLCreateShippingResponse.class);
+			System.out.println(responseEntity.getStatusCode());
+			PFLCreateShippingResponse response = responseEntity.getBody();
+		        ObjectWriter ow = new ObjectMapper().writer();
 	        
 			try {
 				jsonResponse = ow.writeValueAsString(response);

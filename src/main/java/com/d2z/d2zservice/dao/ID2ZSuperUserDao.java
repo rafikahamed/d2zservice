@@ -1,7 +1,9 @@
 package com.d2z.d2zservice.dao;
 
 import java.util.List;
-
+import com.d2z.d2zservice.entity.AUPostResponse;
+import com.d2z.d2zservice.entity.ETowerResponse;
+import com.d2z.d2zservice.entity.FFResponse;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
@@ -108,5 +110,11 @@ public interface ID2ZSuperUserDao {
 	List<String> fetchAllReconcileNonD2zReferenceNumbers();
 
 	List<String> fetchAllReconcileNonD2zArticleIdNumbers();
+
+	List<ETowerResponse> fetchEtowerLogResponse(String fromDate, String toDate);
+
+	List<AUPostResponse> fetchAUPosLogtResponse(String fromDate, String toDate);
+
+	List<FFResponse> fetchFFLogResponse(String fromDate, String toDate);
 
 }
