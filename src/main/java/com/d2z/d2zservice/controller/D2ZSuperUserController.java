@@ -214,9 +214,9 @@ public class D2ZSuperUserController {
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/d2z-apiLogs")
-    public List<?> fetchApiLogs(@RequestParam("vendor") String vendor, @RequestParam("fromDate") String fromDate,
+    public List<?> fetchApiLogs(@RequestParam("client") String client, @RequestParam("fromDate") String fromDate,
     		@RequestParam("toDate") String toDate){
-		return superUserD2zService.fetchApiLogs(vendor, fromDate, toDate);
+		return superUserD2zService.fetchApiLogs(client, fromDate, toDate);
     }
 	
 }

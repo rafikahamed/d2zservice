@@ -687,17 +687,20 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	}
 
 	@Override
-	public List<?> fetchApiLogs(String vendor, String fromDate, String toDate) {
+	public List<?> fetchApiLogs(String client, String fromDate, String toDate) {
 		
-		if(vendor.equalsIgnoreCase("etower")) {
+		if(client.equalsIgnoreCase("etower")) {
 			List<ETowerResponse> etowerResponse = d2zDao.fetchEtowerLogResponse(fromDate,toDate);
 			return etowerResponse;
-		}else if(vendor.equalsIgnoreCase("auPost")) {
+		}else if(client.equalsIgnoreCase("auPost")) {
 			List<AUPostResponse> auPostResponse = d2zDao.fetchAUPosLogtResponse(fromDate,toDate);
 			return auPostResponse;
-		}else if(vendor.equalsIgnoreCase("fdn") || vendor.equalsIgnoreCase("freiPost")) {
-			List<FFResponse> ffResponse = d2zDao.fetchFFLogResponse(fromDate,toDate);
-			return ffResponse;
+		}else if(client.equalsIgnoreCase("fdm")) {
+			List<FFResponse> fdmResponse = d2zDao.fetchFdmLogResponse(fromDate,toDate);
+			return fdmResponse;
+		}else if(client.equalsIgnoreCase("freiPost")) {
+			List<FFResponse> freiPostResponse = d2zDao.fetchFreiPostResponseResponse(fromDate,toDate);
+			return freiPostResponse;
 		}
 		return null;
 	}

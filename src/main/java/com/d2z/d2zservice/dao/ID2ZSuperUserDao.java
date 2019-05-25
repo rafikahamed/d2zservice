@@ -115,6 +115,8 @@ public interface ID2ZSuperUserDao {
 
 	List<AUPostResponse> fetchAUPosLogtResponse(String fromDate, String toDate);
 
-	List<FFResponse> fetchFFLogResponse(String fromDate, String toDate);
+	List<FFResponse> fetchFdmLogResponse(String fromDate, String toDate);
+
+	List<FFResponse> fetchFreiPostResponseResponse(String fromDate, String toDate);
 
 }

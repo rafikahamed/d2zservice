@@ -1,11 +1,8 @@
 package com.d2z.d2zservice.daoImpl;
 
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -620,9 +617,15 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
-	public List<FFResponse> fetchFFLogResponse(String fromDate, String toDate) {
-		List<FFResponse> ffResponseData = ffResponseRepository.fetchFFLogResponse(fromDate,toDate);
-		return ffResponseData;
+	public List<FFResponse> fetchFdmLogResponse(String fromDate, String toDate) {
+		List<FFResponse> fdmResponseData = ffResponseRepository.fetchdmFLogResponse(fromDate,toDate);
+		return fdmResponseData;
+	}
+
+	@Override
+	public List<FFResponse> fetchFreiPostResponseResponse(String fromDate, String toDate) {
+		List<FFResponse> freiPostResponseData = ffResponseRepository.fetchFreiPostResponseResponse(fromDate,toDate);
+		return freiPostResponseData;
 	}
 	
 }
