@@ -68,6 +68,8 @@ import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.FDMManifestDetails;
 import com.d2z.d2zservice.model.ParcelStatus;
+import com.d2z.d2zservice.model.PflCreateShippingOrderInfo;
+import com.d2z.d2zservice.model.PflCreateShippingRequest;
 import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
@@ -650,9 +652,9 @@ public class D2ZServiceImpl implements ID2ZService {
 			throw new MaxSizeCountException("We are allowing max 300 records, Your Request contains - "
 					+ orderDetail.getConsignmentData().size() + " Records");
 		}
-//		d2zValidator.isReferenceNumberUnique(orderDetail.getConsignmentData());
-//		d2zValidator.isServiceValid(orderDetail);
-//		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+		d2zValidator.isReferenceNumberUnique(orderDetail.getConsignmentData());
+		d2zValidator.isServiceValid(orderDetail);
+		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
@@ -685,12 +687,11 @@ public class D2ZServiceImpl implements ID2ZService {
 
 	private void makeCreateShippingOrderPFLCall(CreateConsignmentRequest data,
 			List<SenderDataResponse> senderDataResponseList) {
-		List<com.d2z.d2zservice.model.PflCreateShippingRequest> pflRequest = new ArrayList<com.d2z.d2zservice.model.PflCreateShippingRequest>();
-
+		PflCreateShippingRequest pflRequest = new PflCreateShippingRequest();
+		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
 		for (SenderDataApi orderDetail : data.getConsignmentData()) {
-			com.d2z.d2zservice.model.PflCreateShippingRequest request = new com.d2z.d2zservice.model.PflCreateShippingRequest();
-
-			request.setCustomer_ref(orderDetail.getReferenceNumber());
+			PflCreateShippingOrderInfo request = new PflCreateShippingOrderInfo();
+			request.setCustom_ref(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
 			String recpName = orderDetail.getConsigneeName().length() > 34
 					? orderDetail.getConsigneeName().substring(0, 34)
@@ -704,11 +705,10 @@ public class D2ZServiceImpl implements ID2ZService {
 			request.setState(orderDetail.getConsigneeState());
 			request.setPostcode(orderDetail.getConsigneePostcode());
 			request.setCountry("AU");
-
 			request.setWeight(Double.valueOf(orderDetail.getWeight()));
-
-			pflRequest.add(request);
+			pflOrderInfoRequest.add(request);
 		}
+		pflRequest.setOrderinfo(pflOrderInfoRequest);
 		d2zDao.createShippingOrderPFL(data, pflRequest, senderDataResponseList);
 	}
 

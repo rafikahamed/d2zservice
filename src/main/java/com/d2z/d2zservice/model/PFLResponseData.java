@@ -2,14 +2,16 @@ package com.d2z.d2zservice.model;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public class PFLResponseData {
+	
 	private String status;
 	private String Id;
 	private String reference;
 	private String tracking;
+	private String hub;
+	private String matrix;
 	private List<PFLErrorResponse> errors;
+	
 	public String getStatus() {
 		return status;
 	}
@@ -40,6 +42,17 @@ public class PFLResponseData {
 	public void setErrors(List<PFLErrorResponse> errors) {
 		this.errors = errors;
 	}
-
+	public String getHub() {
+		return hub;
+	}
+	public void setHub(String hub) {
+		this.hub = hub;
+	}
+	public String getMatrix() {
+		return matrix;
+	}
+	public void setMatrix(String matrix) {
+		this.matrix = matrix;
+	}
 	
 }

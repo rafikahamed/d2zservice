@@ -115,7 +115,7 @@ public interface ID2ZDao {
 
 	public List<String>  fetchDataForAUPost();
 
-	public void createShippingOrderPFL(CreateConsignmentRequest incomingRequest,List<PflCreateShippingRequest> PFLRequest,
+	public void createShippingOrderPFL(CreateConsignmentRequest incomingRequest,PflCreateShippingRequest PFLRequest,
 			List<SenderDataResponse> senderDataResponseList) ;
 
 	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails);
