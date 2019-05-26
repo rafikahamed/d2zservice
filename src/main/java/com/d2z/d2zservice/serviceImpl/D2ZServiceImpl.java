@@ -1285,98 +1285,98 @@ public class D2ZServiceImpl implements ID2ZService {
 		for (List<String> referenceNumbers : refNbrList) {
 			List<SenderdataMaster> senderData = d2zDao.fetchDataForAusPost(referenceNumbers);
 			System.out.println("Sender Data:" + senderData.size());
-			if (!senderData.isEmpty()) {
-				FDMManifestRequest request = new FDMManifestRequest();
-				Date dNow = new Date();
-				SimpleDateFormat ft = new SimpleDateFormat("yyMMddhhmm");
-				String orderRef = ft.format(dNow);
-
-				FDMManifestDetails fdmDetails = new FDMManifestDetails();
-				fdmDetails.setMessage_no(orderRef);
-				fdmDetails.setCustomer_id("D2Z");
-				List<FFResponse> FFResponseList = new ArrayList<FFResponse>();
-
-				ArrayOfConsignment consignmentsArray = new ArrayOfConsignment();
-				List<Consignment> consignments = new ArrayList<Consignment>();
-				for (SenderdataMaster data : senderData) {
-					Consignment consignment = new Consignment();
-					FFResponse ffresponse = new FFResponse();
-					ffresponse.setMessage(orderRef);
-					ffresponse.setBarcodelabelnumber(data.getBarcodelabelNumber());
-					ffresponse.setWeight(String.valueOf(data.getCubic_Weight()));
-					ffresponse.setArticleid(data.getArticleId());
-					ffresponse.setReferencenumber(data.getReference_number());
-					// ffresponse.setSupplier(data.getsu);
-					ffresponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-					ffresponse.setSupplier("FDM");
-					ffresponse.setResponse("Pending");
-					consignment.setConnote_no(data.getArticleId());
-					consignment.setTracking_connote(data.getReference_number());
-
-					String date = data.getTimestamp();
-					try {
-						Date dateFormat = new SimpleDateFormat("YYMMDDHHMMSS").parse(date);
-						consignment.setConnote_date(dateFormat.toString());
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					consignment.setCustname(data.getConsignee_name());
-					consignment.setCust_street1(data.getConsignee_addr1());
-					consignment.setCust_street2(data.getConsignee_addr2());
-					consignment.setCust_suburb(data.getConsignee_Suburb());
-					consignment.setCust_pcode(data.getConsignee_Postcode());
-					consignment.setCust_state(data.getConsignee_State());
-					consignment.setCust_country("AU");
-					consignment.setCust_ph(data.getConsignee_Phone());
-					consignment.setCust_email(data.getConsignee_Email());
-					consignment.setInstruction(data.getDeliveryInstructions());
-					consignment.setCustomer_code("D2Z");
-					consignment.setCarrier("AUSPOST");
-					consignment.setVendor_name("D2Z");
-					consignment.setVendor_street1("Ground Floor, Suite 3, 410 Church Street");
-					consignment.setVendor_suburb("North Parramatta");
-					consignment.setVendor_pcode("2151");
-					consignment.setVendor_state("NSW");
-					consignment.setVendor_country("AU");
-					consignment.setTotal_weight(String.valueOf(data.getCubic_Weight()));
-					ArrayofDetail details = new ArrayofDetail();
-					List<Line> itemList = new ArrayList<Line>();
-					Line lineItem = new Line();
-					lineItem.setBarcode(data.getBarcodelabelNumber());
-
-					lineItem.setArticle_no(data.getArticleId());
-					lineItem.setDescription(data.getProduct_Description());
-					lineItem.setWeight(String.valueOf(data.getCubic_Weight()));
-					lineItem.setDim_height(
-							data.getDimensions_Height() == null ? "" : data.getDimensions_Height().toString());
-					lineItem.setDim_length(
-							data.getDimensions_Length() == null ? "" : data.getDimensions_Length().toString());
-					lineItem.setDim_width(
-							data.getDimensions_Width() == null ? "" : data.getDimensions_Width().toString());
-					itemList.add(lineItem);
-					details.setLine(itemList);
-					consignment.setDetails(details);
-					consignments.add(consignment);
-					FFResponseList.add(ffresponse);
+				if (!senderData.isEmpty()) {
+					FDMManifestRequest request = new FDMManifestRequest();
+					Date dNow = new Date();
+					SimpleDateFormat ft = new SimpleDateFormat("yyMMddhhmm");
+					String orderRef = ft.format(dNow);
+	
+					FDMManifestDetails fdmDetails = new FDMManifestDetails();
+					fdmDetails.setMessage_no(orderRef);
+					fdmDetails.setCustomer_id("D2Z");
+					List<FFResponse> FFResponseList = new ArrayList<FFResponse>();
+	
+					ArrayOfConsignment consignmentsArray = new ArrayOfConsignment();
+					List<Consignment> consignments = new ArrayList<Consignment>();
+						for (SenderdataMaster data : senderData) {
+							Consignment consignment = new Consignment();
+							FFResponse ffresponse = new FFResponse();
+							ffresponse.setMessage(orderRef);
+							ffresponse.setBarcodelabelnumber(data.getBarcodelabelNumber());
+							ffresponse.setWeight(String.valueOf(data.getCubic_Weight()));
+							ffresponse.setArticleid(data.getArticleId());
+							ffresponse.setReferencenumber(data.getReference_number());
+							// ffresponse.setSupplier(data.getsu);
+							ffresponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+							ffresponse.setSupplier("FDM");
+							ffresponse.setResponse("Pending");
+							consignment.setConnote_no(data.getArticleId());
+							consignment.setTracking_connote(data.getReference_number());
+		
+							String date = data.getTimestamp();
+							try {
+								Date dateFormat = new SimpleDateFormat("YYMMDDHHMMSS").parse(date);
+								consignment.setConnote_date(dateFormat.toString());
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							consignment.setCustname(data.getConsignee_name());
+							consignment.setCust_street1(data.getConsignee_addr1());
+							consignment.setCust_street2(data.getConsignee_addr2());
+							consignment.setCust_suburb(data.getConsignee_Suburb());
+							consignment.setCust_pcode(data.getConsignee_Postcode());
+							consignment.setCust_state(data.getConsignee_State());
+							consignment.setCust_country("AU");
+							consignment.setCust_ph(data.getConsignee_Phone());
+							consignment.setCust_email(data.getConsignee_Email());
+							consignment.setInstruction(data.getDeliveryInstructions());
+							consignment.setCustomer_code("D2Z");
+							consignment.setCarrier("AUSPOST");
+							consignment.setVendor_name("D2Z");
+							consignment.setVendor_street1("Ground Floor, Suite 3, 410 Church Street");
+							consignment.setVendor_suburb("North Parramatta");
+							consignment.setVendor_pcode("2151");
+							consignment.setVendor_state("NSW");
+							consignment.setVendor_country("AU");
+							consignment.setTotal_weight(String.valueOf(data.getCubic_Weight()));
+							ArrayofDetail details = new ArrayofDetail();
+							List<Line> itemList = new ArrayList<Line>();
+							Line lineItem = new Line();
+							lineItem.setBarcode(data.getBarcodelabelNumber());
+		
+							lineItem.setArticle_no(data.getArticleId());
+							lineItem.setDescription(data.getProduct_Description());
+							lineItem.setWeight(String.valueOf(data.getCubic_Weight()));
+							lineItem.setDim_height(
+									data.getDimensions_Height() == null ? "" : data.getDimensions_Height().toString());
+							lineItem.setDim_length(
+									data.getDimensions_Length() == null ? "" : data.getDimensions_Length().toString());
+							lineItem.setDim_width(
+									data.getDimensions_Width() == null ? "" : data.getDimensions_Width().toString());
+							itemList.add(lineItem);
+							details.setLine(itemList);
+							consignment.setDetails(details);
+							consignments.add(consignment);
+							FFResponseList.add(ffresponse);
+						}
+					 consignmentsArray.setConsignment(consignments);
+					 fdmDetails.setConsignments(consignmentsArray);
+					 request.setManifest(fdmDetails);
+					 //ftpUploader.fdmFileCreation(request);
+					ffresponseRepository.saveAll(FFResponseList);
+					 String response = fdmProxy.makeCallToFDMManifestMapping(request);
+					 List <FFResponse> FFresponsequery =
+					 ffresponseRepository.findByMessageNoIs(orderRef);
+					 List <FFResponse> FFResponseUpdaList = new ArrayList<FFResponse>();
+					 for (FFResponse temp : FFresponsequery) {
+					 temp.setResponse(response);
+					 FFResponseUpdaList .add(temp);
+					 }
+					 ffresponseRepository.saveAll(FFResponseUpdaList);
 				}
-				consignmentsArray.setConsignment(consignments);
-				fdmDetails.setConsignments(consignmentsArray);
-				request.setManifest(fdmDetails);
-				ftpUploader.fdmFileCreation(request);
-				ffresponseRepository.saveAll(FFResponseList);
-				// String response = fdmProxy.makeCallToFDMManifestMapping(request);
-				// List <FFResponse> FFresponsequery =
-				// ffresponseRepository.findByMessageNoIs(orderRef);
-				// List <FFResponse> FFResponseUpdaList = new ArrayList<FFResponse>();
-				// for (FFResponse temp : FFresponsequery) {
-				// temp.setResponse(response);
-				// FFResponseUpdaList .add(temp);
-				// }
-				// ffresponseRepository.saveAll(FFResponseUpdaList);
-			}
 		}
-		ftpUploader.ftpUpload();
+		//ftpUploader.ftpUpload();
 	}
 
 	@Override
