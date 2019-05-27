@@ -16,7 +16,7 @@ public class D2ZSingleton {
 	private static List<String> postCodeZoneList;
 	private static Map<String,String> postCodeStateMap;
 	private static Map<String,Double> postCodeWeightMap = new HashMap<String,Double>(); ;
-
+	private static Map<String,String> postCodeZoneMap;
 	
     public static List<String> getPostCodeZoneList() {
 		return postCodeZoneList;
@@ -59,7 +59,11 @@ public class D2ZSingleton {
 			postCodeStateMap = new HashMap<String,String>();
 			postCodeZoneDaoObj.forEach(obj -> {
 				postCodeStateMap.put(obj.getPostcodeId().getPostcode(), obj.getState());
-			});		
+			});	
+			postCodeZoneMap = new HashMap<String,String>();
+			postCodeZoneDaoObj.forEach(obj -> {
+				postCodeZoneMap.put(obj.getPostcodeId().getSuburb()+obj.getPostcodeId().getPostcode(), obj.getZone());
+			});	
 	}
 
 	public static Map<String, String> getPostCodeStateMap(){
@@ -67,6 +71,9 @@ public class D2ZSingleton {
 	}
 	public static Map<String, Double> getPostCodeWeightMap() {
 		return postCodeWeightMap;
+	}
+	public static Map<String, String> getPostCodeZoneMap() {
+		return postCodeZoneMap;
 	}
 
 }

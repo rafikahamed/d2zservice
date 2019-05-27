@@ -28,7 +28,7 @@ import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
 public interface ID2ZDao {
 	
-	public String exportParcel(List<SenderData> orderDetailList);
+	public String exportParcel(List<SenderData> orderDetailList,Map<String, LabelData> barcodeMap);
 
 	public List<String> fileList(Integer userId);
 	
@@ -105,9 +105,6 @@ public interface ID2ZDao {
 
 	public List<SenderdataMaster> fetchDataForAusPost(List<String> refNbrs);
 
-	public void createShippingOrderEtower(CreateConsignmentRequest incomingRequest,List<CreateShippingRequest> eTowerRequest,
-			List<SenderDataResponse> senderDataResponseList) throws EtowerFailureResponseException;
-
 	public int fetchUserIdByReferenceNumber(String string);
 
 	List<String>  fetchArticleIDForFDMCall();
@@ -123,5 +120,14 @@ public interface ID2ZDao {
 	public void updateCubicWeight();
 
 	public void makeFriePostUpdataManifestCall(String string);
+
+	public void updateRates();
+
+	public int fetchUserIdbyUserName(String userName);
+
+	public List<SenderdataMaster> fetchDataBasedonSupplier(List<String> incomingRefNbr, String string);
+
+	public List<String> fetchDataForEtowerForeCastCall(String[] refNbrs);
+
 
 }

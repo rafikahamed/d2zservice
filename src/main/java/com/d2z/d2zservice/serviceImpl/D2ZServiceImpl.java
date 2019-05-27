@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -88,6 +90,7 @@ import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.util.EmailUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
+import com.d2z.d2zservice.wrapper.ETowerWrapper;
 import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
@@ -139,6 +142,9 @@ public class D2ZServiceImpl implements ID2ZService{
 	FreipostWrapper freipostWrapper; 
 	
 	@Autowired
+	ETowerWrapper eTowerWrapper; 
+	
+	@Autowired
 	AusPostProxy ausPostProxy;
 	
 	@Autowired
@@ -148,13 +154,23 @@ public class D2ZServiceImpl implements ID2ZService{
 	TrackAndTraceRepository trackAndTraceRepository;
 	
 	@Override
-	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException{
-		d2zValidator.isReferenceNumberUniqueUI(orderDetailList);
+	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException, EtowerFailureResponseException{
+		List<String> incomingRefNbr = orderDetailList.stream().map(obj -> {
+			return obj.getReferenceNumber(); })
+				.collect(Collectors.toList());
+		d2zValidator.isReferenceNumberUniqueUI(incomingRefNbr);
 		d2zValidator.isServiceValidUI(orderDetailList);
 		d2zValidator.isPostCodeValidUI(orderDetailList);
-		String senderFileID  = d2zDao.exportParcel(orderDetailList);
-		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
+
+		
+		String serviceType = orderDetailList.get(0).getServiceType();
+		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType)){
+			eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(orderDetailList,senderDataResponseList);
+			 return senderDataResponseList;
+		}
+		String senderFileID  = d2zDao.exportParcel(orderDetailList,null);
+		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		SenderDataResponse senderDataResponse = null;
 		Iterator itr = insertedOrder.iterator();
 		 while(itr.hasNext()) {   
@@ -165,6 +181,14 @@ public class D2ZServiceImpl implements ID2ZService{
 				 senderDataResponse.setBarcodeLabelNumber("]d2".concat(obj[1].toString().replaceAll("\\[|\\]", "")));
 			 senderDataResponseList.add(senderDataResponse);
         }
+		 Runnable r = new Runnable( ) {			
+		        public void run() {
+		    		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(incomingRefNbr,"eTower");
+
+		        	 eTowerWrapper.makeCalltoEtower(eTowerOrders);
+		        }
+		     };
+		    new Thread(r).start();
 		return senderDataResponseList;
 	}
 	
@@ -653,8 +677,8 @@ public class D2ZServiceImpl implements ID2ZService{
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 	    String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
-		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType)){
-			makeCreateShippingOrderEtowerCall(orderDetail,senderDataResponseList);
+		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType)){
+			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			 return senderDataResponseList;
 		}
 		
@@ -675,44 +699,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		return senderDataResponseList;
 	}
 
-	private void makeCreateShippingOrderEtowerCall(CreateConsignmentRequest data,List<SenderDataResponse> senderDataResponseList) throws EtowerFailureResponseException {
-		List<com.d2z.d2zservice.model.etower.CreateShippingRequest> eTowerRequest = new ArrayList<com.d2z.d2zservice.model.etower.CreateShippingRequest>();
-
-		for(SenderDataApi orderDetail : data.getConsignmentData()) {
-			com.d2z.d2zservice.model.etower.CreateShippingRequest request = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
-			
-			request.setReferenceNo(orderDetail.getReferenceNumber());
-			request.setRecipientCompany(orderDetail.getConsigneeCompany());
-			String recpName = orderDetail.getConsigneeName().length() >34 ? orderDetail.getConsigneeName().substring(0, 34) : orderDetail.getConsigneeName(); 
-			request.setRecipientName(recpName);
-			request.setAddressLine1(orderDetail.getConsigneeAddr1());
-			request.setAddressLine2(orderDetail.getConsigneeAddr2());
-			request.setEmail(orderDetail.getConsigneeEmail());
-			request.setCity(orderDetail.getConsigneeSuburb());
-			request.setState(orderDetail.getConsigneeState());
-			request.setPostcode(orderDetail.getConsigneePostcode());
-			if("1PM3E".equalsIgnoreCase(orderDetail.getServiceType())) {
-				request.setFacility("MEL3");
-				orderDetail.setCarrier("Express");
-			}else if("1PS2".equalsIgnoreCase(orderDetail.getServiceType())) {
-				request.setFacility("SYD2");
-			}
-			if(("Express").equalsIgnoreCase(orderDetail.getCarrier())){
-			request.setServiceOption("Express-Post");
-			}
-			else {
-				request.setServiceOption("E-Parcel");
-
-			}
-			request.setWeight(Double.valueOf(orderDetail.getWeight()));
-			request.setInvoiceValue(orderDetail.getValue());
-			request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
-			eTowerRequest.add(request);
-		}
-		d2zDao.createShippingOrderEtower(data,eTowerRequest,senderDataResponseList);
-		
-	}
-
+	
 	@Override
 	public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList) {
 		return d2zDao.editConsignments(requestList);
@@ -744,30 +731,15 @@ public class D2ZServiceImpl implements ID2ZService{
 
 		String msg =  d2zDao.allocateShipment(referenceNumbers,shipmentNumber);
 
-		/*List<String> refNumberList = new ArrayList<String>(Arrays.asList(refNbrs)); 
-		List<List<String>> referNumPartList = ListUtils.partition(refNumberList, 300);
-		int count = 1;
-		String msg = null;
-		for(List<String> referenceNum : referNumPartList) {
-			System.out.println(count + ":::" + referenceNum.size());
-			count++;
-			String refNumbers = StringUtils.join(referenceNum, ",");
-			msg =  d2zDao.allocateShipment(refNumbers,shipmentNumber);
-		}*/
-
-	/*	List<SenderdataMaster> senderData =  d2zDao.fetchDataForAusPost(refNbrs);
-
-		
-		List<SenderdataMaster> senderData =  d2zDao.fetchDataForAusPost(refNbrs);
-
-		if(null != senderData && !senderData.isEmpty()) {
-			Runnable r = new Runnable( ) {			
-		        public void run() {
-		        	 makeCalltoAusPost(senderData);
-		        }
-		     };
+		Runnable r = new Runnable( ) {			
+	        public void run() {
+	        	 List<String> articleIDS = d2zDao.fetchDataForEtowerForeCastCall(refNbrs);
+	        	 if(!articleIDS.isEmpty()) {
+	        	 eTowerWrapper.makeEtowerForecastCall(articleIDS);
+	        	 }
+	        }
+	        };
 		    new Thread(r).start();
-		}*/
 		userMsg.setResponseMessage(msg);
 		return userMsg;
 	}
@@ -815,7 +787,7 @@ public class D2ZServiceImpl implements ID2ZService{
         to.setPostcode(data.getConsignee_Postcode());
         to.setState(data.getConsignee_State());
         to.setSuburb(data.getConsignee_Suburb());
-        to.getLines().add(data.getConsignee_addr1());
+        to.getLines().add(data.getConsignee_addr1().length()>39?data.getConsignee_addr1().substring(0, 39):data.getConsignee_addr1());
         String regex = "^[0-9]{1,20}$";
         String phone = "";
         if(null!=data.getConsignee_Phone() && data.getConsignee_Phone().matches(regex)) {
@@ -1257,7 +1229,7 @@ public class D2ZServiceImpl implements ID2ZService{
 		
 		List<String> refNumbers = d2zDao.fetchArticleIDForFDMCall();
 		System.out.println("Track and trace:"+refNumbers.size());
-		List<List<String>> refNbrList = ListUtils.partition(refNumbers, 500);
+		List<List<String>> refNbrList = ListUtils.partition(refNumbers, 2000);
 	
 		for(List<String> referenceNumbers : refNbrList) {
 		
@@ -1373,6 +1345,11 @@ public class D2ZServiceImpl implements ID2ZService{
 			respMsg = d2zDao.insertAUTrackingDetails(auTrackingDetails);
 	 	}
 		return respMsg;
+	}
+
+	@Override
+	public void updateRates() {
+		d2zDao.updateRates();
 	}
 	
 }

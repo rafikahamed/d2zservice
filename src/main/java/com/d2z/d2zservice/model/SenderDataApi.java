@@ -16,7 +16,7 @@ public class SenderDataApi {
 	private int userID;
 	private String senderFilesID;
 	@NotEmpty(message = "Reference Number is mandatory")
-	@Pattern(regexp="^[a-zA-Z0-9]+$", message = "Invalid reference number")
+	//@Pattern(regexp="^[a-zA-Z0-9]+$", message = "Invalid reference number")
 	private String referenceNumber;
 	//@NotEmpty(message = "Consignee Name is mandatory")
 	//@Pattern(regexp="^[a-zA-Z0-9]+$", message = "Consignee Name must contain only alphabets")
@@ -97,7 +97,15 @@ public class SenderDataApi {
 	private String labelSenderName;
 	private String deliveryInstructions;
 	private String carrier;
-	
+	private String zoneID;
+	public String getZoneID() {
+		return zoneID;
+	}
+
+	public void setZoneID(String zoneID) {
+		this.zoneID = zoneID;
+	}
+
 	public String getConsigneeAddr2() {
 		return consigneeAddr2;
 	}

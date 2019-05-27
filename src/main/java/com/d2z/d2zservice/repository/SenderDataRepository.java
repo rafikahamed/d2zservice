@@ -41,7 +41,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query(nativeQuery = true, value="Select reference_number from senderdata_master t where t.isDeleted = 'N'") 
 	List<String> fetchAllReferenceNumbers();
 	 
-	@Query(nativeQuery = true, value="Select reference_number, datamatrix from senderdata_master t where sender_Files_ID=:senderFileID") 
+	@Query(nativeQuery = true, value="Select reference_number, datamatrix,articleId from senderdata_master t where sender_Files_ID=:senderFileID") 
 	List<String> fetchBySenderFileId(@Param("senderFileID") String senderFileID);
 	 
 	@Query(nativeQuery = true, value="SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
@@ -66,6 +66,9 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 
 	@Procedure(name = "update_cubicWeight")
 	void updateCubicWeight();
+	
+	@Procedure(name = "rates")
+	void updateRates();
 	
 	@Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y' and t.manifest_number is null") 
 	List<SenderdataMaster> fetchManifestData(@Param("fileName") String fileName);

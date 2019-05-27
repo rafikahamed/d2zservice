@@ -27,85 +27,16 @@ public class FreiPostConnector  extends WebServiceGatewaySupport {
  
     @SuppressWarnings("unchecked")
 	public UploadManifestResponse uploadManifestService( UploadManifest uploadManifestRequest){
-      	WebServiceTemplate webServiceTemplate = getWebServiceTemplate();
-    	ClientInterceptor[] interceptors = webServiceTemplate.getInterceptors();
-        
-    	interceptors = (ClientInterceptor[]) ArrayUtils.add(interceptors, new ClientInterceptor() {
-    	    @Override
-    	    public boolean handleRequest(MessageContext messageContext) throws WebServiceClientException {
-    	        return true;
-    	    }
-    	 
-    	    @Override
-    	    public boolean handleResponse(MessageContext messageContext) throws WebServiceClientException {
-    	        return true;
-    	    }
-    	 
-    	    @Override
-    	    public boolean handleFault(MessageContext messageContext) throws WebServiceClientException {
-    	        return true;
-    	    }
-    	 
-    	    @Override
-    	    public void afterCompletion(MessageContext messageContext, Exception ex) throws WebServiceClientException {
-    	        try {
-    	            System.out.println("Request :");
-    	            messageContext.getRequest().writeTo(System.out);
-    	            System.out.println("\nResponse : ");
-    	            messageContext.getResponse().writeTo(System.out);
-    	            System.out.println();
-    	        } catch (IOException ignored) {
-    	        }
-    	    }
-    	});
-    	 
-    	webServiceTemplate.setInterceptors(interceptors);
-    	
-    
+    	System.out.println("Calling FreiPost - Update Manifest");
     	SoapActionCallback soapAction = new SoapActionCallback("http://tempuri.org/IService/UploadManifest");
-		UploadManifestResponse response = (UploadManifestResponse) webServiceTemplate.marshalSendAndReceive(uploadManifestRequest,soapAction);
+		UploadManifestResponse response = (UploadManifestResponse) getWebServiceTemplate().marshalSendAndReceive(uploadManifestRequest,soapAction);
     	return response;       
     }
     @SuppressWarnings("unchecked")
     public GetTrackingDetailsResponse trackingEventService(GetTrackingDetails trackingDetails){
-    	
-    	WebServiceTemplate webServiceTemplate = getWebServiceTemplate();
-    	ClientInterceptor[] interceptors = webServiceTemplate.getInterceptors();
-        
-    	interceptors = (ClientInterceptor[]) ArrayUtils.add(interceptors, new ClientInterceptor() {
-    	    @Override
-    	    public boolean handleRequest(MessageContext messageContext) throws WebServiceClientException {
-    	        return true;
-    	    }
-    	 
-    	    @Override
-    	    public boolean handleResponse(MessageContext messageContext) throws WebServiceClientException {
-    	        return true;
-    	    }
-    	 
-    	    @Override
-    	    public boolean handleFault(MessageContext messageContext) throws WebServiceClientException {
-    	        return true;
-    	    }
-    	 
-    	    @Override
-    	    public void afterCompletion(MessageContext messageContext, Exception ex) throws WebServiceClientException {
-    	        try {
-    	            System.out.println("Request :");
-    	            messageContext.getRequest().writeTo(System.out);
-    	            System.out.println("\nResponse : ");
-    	            messageContext.getResponse().writeTo(System.out);
-    	            System.out.println();
-    	        } catch (IOException ignored) {
-    	        }
-    	    }
-    	});
-    	 
-    	webServiceTemplate.setInterceptors(interceptors);
-    	
-    
+    	System.out.println("Calling FreiPost - Tracking Event");
     	SoapActionCallback soapAction = new SoapActionCallback("http://tempuri.org/IService/GetTrackingDetails");
-		JAXBElement<GetTrackingDetailsResponse> response = (JAXBElement<GetTrackingDetailsResponse>)webServiceTemplate.marshalSendAndReceive(trackingDetails,soapAction);
+		JAXBElement<GetTrackingDetailsResponse> response = (JAXBElement<GetTrackingDetailsResponse>)getWebServiceTemplate().marshalSendAndReceive(trackingDetails,soapAction);
     	return response.getValue();
     }
 }

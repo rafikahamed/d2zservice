@@ -3,14 +3,12 @@ package com.d2z.d2zservice.interceptor;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -23,8 +21,17 @@ import com.d2z.d2zservice.security.HMACGenerator;
 public class ETowerHeaderRequestInterceptor implements ClientHttpRequestInterceptor {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private String SECRET_KEY;
+    private String token;
+    
+    
+	public ETowerHeaderRequestInterceptor(String sECRET_KEY, String token) {
+		super();
+		SECRET_KEY = sECRET_KEY;
+		this.token = token;
+	}
 
-    HMACGenerator hmacGenerator = new HMACGenerator();
+	HMACGenerator hmacGenerator=  new HMACGenerator();
     
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
@@ -33,11 +40,12 @@ public class ETowerHeaderRequestInterceptor implements ClientHttpRequestIntercep
 		currentDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String currentDate = currentDateFormat.format(new Date());
 		System.out.println("US: "+currentDateFormat.format(new Date()));
-		
+		System.out.println("key "+SECRET_KEY);
+		System.out.println("token "+token);
 	//	String SECRET_KEY = "79db9e5OEeOpvgAVXUFWSD";
-		String SECRET_KEY = "zwmaAqqPaIHHQLecRmtSoA";
+		//String SECRET_KEY = "zwmaAqqPaIHHQLecRmtSoA";
        //String authorizationHeader = "WallTech test5AdbzO5OEeOpvgAVXUFE0A:" + hmacGenerator.calculateHMAC(SECRET_KEY,request.getURI().toString(),request.getMethod().toString());
-		 String authorizationHeader = "WallTech pclP23MTpyqGq_UQ3MkFjW:" + hmacGenerator.calculateHMAC(SECRET_KEY,request.getURI().toString(),request.getMethod().toString());
+		 String authorizationHeader = "WallTech "+token+":" + hmacGenerator.calculateHMAC(SECRET_KEY,request.getURI().toString(),request.getMethod().toString());
     	System.out.println("Before calling");
     	 HttpHeaders headers = request.getHeaders();
          headers.add("X-WallTech-Date", currentDate);

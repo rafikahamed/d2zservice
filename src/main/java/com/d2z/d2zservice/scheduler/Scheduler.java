@@ -66,4 +66,15 @@ public class Scheduler {
 			System.out.println(e.getLocalizedMessage());
 		}
 	}
+	@Scheduled(cron = "0 0 2,8,14 * * ?",zone="GMT")
+	public void updateRates() {
+		try {
+			System.out.println("Scheduling - Rates update");
+			d2zService.updateRates();
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.getLocalizedMessage());
+		}
+	}
 }

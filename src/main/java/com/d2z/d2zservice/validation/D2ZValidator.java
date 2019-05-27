@@ -2,6 +2,7 @@ package com.d2z.d2zservice.validation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -32,25 +33,12 @@ public class D2ZValidator {
 
 	public void isPostCodeValid(List<SenderDataApi> senderData) {
 		List<String> postCodeZoneList = D2ZSingleton.getInstance().getPostCodeZoneList();
-		//System.out.println(postCodeZoneList.toString());
-		//postCodeZoneList.forEach(System.out::println);
-		
-		//System.out.println("Incoming suburb & postcode");
-		
-		/*senderData.stream().map(obj -> {
-			return obj.getConsigneeSuburb().toUpperCase().concat(obj.getConsigneePostcode()); })
-				.collect(Collectors.toList()).forEach(System.out::println);*/
 
-		/*if(!postCodeZoneList.containsAll(senderData.stream().map(obj -> {
-			return obj.getConsigneeSuburb().toUpperCase().concat(obj.getConsigneePostcode()); })
-				.collect(Collectors.toList()))) {
-			throw new InvalidSuburbPostcodeException("Invalid Consignee Postcode or Consignee Suburb");
-		}*/
-		
 		List<String> incorrectPostcode_Suburb = new ArrayList<String>();
 		senderData.forEach(obj -> {
 			if(!postCodeZoneList.contains(obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim()))) {
 				incorrectPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim());
+				
 			}
 		});
 		if(!incorrectPostcode_Suburb.isEmpty()) {
@@ -91,11 +79,9 @@ public class D2ZValidator {
 		}
 	}
 	
-	public void isReferenceNumberUniqueUI(List<SenderData> senderData) throws ReferenceNumberNotUniqueException{
+	public void isReferenceNumberUniqueUI(List<String> incomingRefNbr) throws ReferenceNumberNotUniqueException{
 		List<String> referenceNumber_DB = d2zDao.fetchAllReferenceNumbers();
-		List<String> incomingRefNbr = senderData.stream().map(obj -> {
-			return obj.getReferenceNumber(); })
-				.collect(Collectors.toList());
+		
 		referenceNumber_DB.addAll(incomingRefNbr);
 
 		List<String> duplicateRefNbr = referenceNumber_DB.stream().collect(Collectors.groupingBy(Function.identity(),     

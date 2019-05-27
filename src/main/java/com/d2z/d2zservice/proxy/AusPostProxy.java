@@ -5,6 +5,7 @@ import java.util.Base64;
 import java.util.List;
 
 import org.apache.poi.util.SystemOutLogger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -24,9 +25,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 @Service
 public class AusPostProxy {
-	
+	@Value("${auPost.url}")
+	private String baseUrl;
 	public String createOrderIncludingShipments(CreateShippingRequest request) {
-	    String url = "https://digitalapi.auspost.com.au/shipping/v1/orders";
+	    String url = baseUrl+ "/shipping/v1/orders";
 		RestTemplate template = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		  String jsonResponse = null;
@@ -76,7 +78,7 @@ public class AusPostProxy {
 	}
 	
 	public TrackingResponse trackingEvent(String articleIds) {
-	    String url = "https://digitalapi.auspost.com.au/shipping/v1/track?tracking_ids="+articleIds;
+	    String url = baseUrl+"/shipping/v1/track?tracking_ids="+articleIds;
 		RestTemplate template = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);

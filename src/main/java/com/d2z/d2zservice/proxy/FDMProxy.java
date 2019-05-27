@@ -6,6 +6,7 @@ import java.util.Collections;
 
 import org.json.JSONObject;
 import org.json.XML;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -25,7 +26,8 @@ import com.google.gson.Gson;
 @Service
 public class FDMProxy {
 
-
+	@Value("${fdm.url}")
+    private String url;
 	public String makeCallToFDMManifestMapping(FDMManifestRequest request) 
 	{
 		Gson gson = new Gson();
@@ -34,7 +36,7 @@ public class FDMProxy {
 		String requestXml = XML.toString(json);
 		System.out.println("FDM Request XML --> "+requestXml); 
 	//	String url = "https://my.fdm.com.au/TestWebAPI/api/ManifestMessaging"; //test url
-		String url = "https://my.fdm.com.au/MyFdmWebAPI/api/ManifestMessaging";//prod url
+		//String url = "https://my.fdm.com.au/MyFdmWebAPI/api/ManifestMessaging";//prod url
 		ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory());
 		RestTemplate template = new RestTemplate(factory);
 		template.setInterceptors(Collections.singletonList(new RequestResponseLoggingInterceptor()));
