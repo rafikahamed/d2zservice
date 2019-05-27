@@ -91,4 +91,6 @@ public interface ISuperUserD2ZService{
 	
 	public void scheduledPCATrackingEvent();
 
+	public List<?> fetchApiLogs(String client, String fromDate, String toDate);
+
 }

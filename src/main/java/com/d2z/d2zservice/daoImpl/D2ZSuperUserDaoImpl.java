@@ -8,8 +8,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
+import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.BrokerRates;
 import com.d2z.d2zservice.entity.D2ZRates;
+import com.d2z.d2zservice.entity.ETowerResponse;
+import com.d2z.d2zservice.entity.FFResponse;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
@@ -28,9 +31,12 @@ import com.d2z.d2zservice.model.ZoneRates;
 import com.d2z.d2zservice.model.etower.ETowerTrackingDetails;
 import com.d2z.d2zservice.model.etower.TrackEventResponseData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
+import com.d2z.d2zservice.repository.AUPostResponseRepository;
 import com.d2z.d2zservice.repository.BrokerRatesRepository;
 import com.d2z.d2zservice.repository.ConsigneeCountRepository;
 import com.d2z.d2zservice.repository.D2ZRatesRepository;
+import com.d2z.d2zservice.repository.ETowerResponseRepository;
+import com.d2z.d2zservice.repository.FFResponseRepository;
 import com.d2z.d2zservice.repository.MlidRepository;
 import com.d2z.d2zservice.repository.NonD2ZDataRepository;
 import com.d2z.d2zservice.repository.ReconcileNDRepository;
@@ -43,105 +49,111 @@ import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
 
 @Repository
-public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
+public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 
 	@Autowired
 	TrackAndTraceRepository trackAndTraceRepository;
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	SenderDataRepository senderDataRepository;
-	
+
 	@Autowired
 	Senderdata_InvoicingRepository senderdata_InvoicingRepository;
-	
+
 	@Autowired
 	BrokerRatesRepository brokerRatesRepository;
 
 	@Autowired
 	D2ZRatesRepository d2zRatesRepository;
-	
+
 	@Autowired
 	UserServiceRepository userServiceRepository;
-	
+
 	@Autowired
 	ConsigneeCountRepository consigneeCountRepository;
-	
+
 	@Autowired
 	MlidRepository mlidRepository;
-	
+
 	@Autowired
 	ServiceTypeListRepository serviceTypeListRepository;
-	
+
 	@Autowired
 	ReconcileRepository reconcileRepository;
-	
+
 	@Autowired
 	ReconcileNDRepository reconcileNDRepository;
-	
+
 	@Autowired
 	NonD2ZDataRepository nonD2ZDataRepository;
 	
+	@Autowired
+	ETowerResponseRepository eTowerResponseRepository;
+	
+	@Autowired
+	AUPostResponseRepository auPostResponseRepository;
+	
+	@Autowired
+	FFResponseRepository ffResponseRepository;
+
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
 		List<Trackandtrace> trackingDetailsList = new ArrayList<Trackandtrace>();
-		for(UploadTrackingFileData fileDataValue: fileData) {
+		for (UploadTrackingFileData fileDataValue : fileData) {
 			Trackandtrace trackingDetails = new Trackandtrace();
 			trackingDetails.setReference_number(fileDataValue.getReferenceNumber());
 			trackingDetails.setArticleID(fileDataValue.getConnoteNo());
 			trackingDetails.setTrackEventDetails(fileDataValue.getTrackEventDetails().toUpperCase());
-			/*System.out.println(fileDataValue.getTrackEventDateOccured());
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		    Date parsedDate;
-		    Timestamp timestamp = null;
-			try {
-				parsedDate = dateFormat.parse(fileDataValue.getTrackEventDateOccured());
-				timestamp = new java.sql.Timestamp(parsedDate.getTime());
-			} catch (ParseException e) {
-				throw new InvalidDateException("Invalid Date");
-			}*/
-			//trackingDetails.setTrackEventDateOccured(Timestamp.valueOf(fileDataValue.getTrackEventDateOccured()));
+			/*
+			 * System.out.println(fileDataValue.getTrackEventDateOccured());
+			 * SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+			 * Date parsedDate; Timestamp timestamp = null; try { parsedDate =
+			 * dateFormat.parse(fileDataValue.getTrackEventDateOccured()); timestamp = new
+			 * java.sql.Timestamp(parsedDate.getTime()); } catch (ParseException e) { throw
+			 * new InvalidDateException("Invalid Date"); }
+			 */
+			// trackingDetails.setTrackEventDateOccured(Timestamp.valueOf(fileDataValue.getTrackEventDateOccured()));
 			trackingDetails.setTrackEventDateOccured(fileDataValue.getTrackEventDateOccured());
 			trackingDetails.setFileName(fileDataValue.getFileName());
 			trackingDetails.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
 			trackingDetails.setIsDeleted("N");
-			//trackAndTraceRepository.save(trackingDetails);
+			// trackAndTraceRepository.save(trackingDetails);
 			trackingDetailsList.add(trackingDetails);
 		}
-		List<Trackandtrace> insertedData=  (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackingDetailsList);
+		List<Trackandtrace> insertedData = (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackingDetailsList);
 		trackAndTraceRepository.updateTracking();
 		trackAndTraceRepository.deleteDuplicates();
 		return insertedData;
 	}
 
 	@Override
-	public List<Trackandtrace> uploadArrivalReport(List<ArrivalReportFileData> fileData){
+	public List<Trackandtrace> uploadArrivalReport(List<ArrivalReportFileData> fileData) {
 		List<Trackandtrace> trackingDetailsList = new ArrayList<Trackandtrace>();
-		for(ArrivalReportFileData fileDataValue: fileData) {	
+		for (ArrivalReportFileData fileDataValue : fileData) {
 			Trackandtrace trackingDetails = new Trackandtrace();
 			trackingDetails.setReference_number(fileDataValue.getReferenceNumber());
 			trackingDetails.setArticleID(fileDataValue.getConnoteNo());
 			String trackEvent = "Shortage";
-			if("CLEAR".equalsIgnoreCase(fileDataValue.getStatus())) {
+			if ("CLEAR".equalsIgnoreCase(fileDataValue.getStatus())) {
 				trackEvent = "Received and Clear";
-			}else if("HELD".equalsIgnoreCase(fileDataValue.getStatus())){
+			} else if ("HELD".equalsIgnoreCase(fileDataValue.getStatus())) {
 				trackEvent = "Received and Held";
 			}
 			trackingDetails.setTrackEventDetails(trackEvent.toUpperCase());
-			/*System.out.println(fileDataValue.getScannedDateTime());
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		    Date parsedDate;
-		    Timestamp timestamp = null;
-			try {
-				parsedDate = dateFormat.parse(fileDataValue.getScannedDateTime());
-				timestamp = new java.sql.Timestamp(parsedDate.getTime());
-
-			} catch (ParseException e) {
-				throw new InvalidDateException("Invalid Date");
-			}*/
-			//trackingDetails.setTrackEventDateOccured(Timestamp.valueOf(fileDataValue.getScannedDateTime()));
+			/*
+			 * System.out.println(fileDataValue.getScannedDateTime()); SimpleDateFormat
+			 * dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); Date parsedDate;
+			 * Timestamp timestamp = null; try { parsedDate =
+			 * dateFormat.parse(fileDataValue.getScannedDateTime()); timestamp = new
+			 * java.sql.Timestamp(parsedDate.getTime());
+			 * 
+			 * } catch (ParseException e) { throw new InvalidDateException("Invalid Date");
+			 * }
+			 */
+			// trackingDetails.setTrackEventDateOccured(Timestamp.valueOf(fileDataValue.getScannedDateTime()));
 			trackingDetails.setTrackEventDateOccured(fileDataValue.getScannedDateTime());
 			System.out.println(trackingDetails.getTrackEventDateOccured());
 			trackingDetails.setFileName(fileDataValue.getFileName());
@@ -150,10 +162,10 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 			trackingDetails.setIsDeleted("N");
 			trackingDetailsList.add(trackingDetails);
 		}
-		List<Trackandtrace> insertedData= (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackingDetailsList);
+		List<Trackandtrace> insertedData = (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackingDetailsList);
 		trackAndTraceRepository.updateTracking();
 		trackAndTraceRepository.deleteDuplicates();
-		return insertedData;	
+		return insertedData;
 	}
 
 	@Override
@@ -172,27 +184,26 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	public List<String> exportDeteledConsignments(String fromDate, String toDate) {
 		String fromTime = fromDate.concat(" ").concat("00:00:00");
 		String toTime = toDate.concat(" ").concat("23:59:59");
-		List<String> deletedConsignments = senderDataRepository.fetchDeletedConsignments(fromTime,toTime);
+		List<String> deletedConsignments = senderDataRepository.fetchDeletedConsignments(fromTime, toTime);
 		System.out.println(deletedConsignments.size());
-		
+
 		return deletedConsignments;
 	}
-	
+
 	@Override
 	public List<SenderdataMaster> exportConsignments(String fromDate, String toDate) {
 		String fromTime = fromDate.concat(" ").concat("00:00:00");
 		String toTime = toDate.concat(" ").concat("23:59:59");
-		List<SenderdataMaster> exportedConsignments = 
-				senderDataRepository.exportConsignments(fromTime,toTime);
+		List<SenderdataMaster> exportedConsignments = senderDataRepository.exportConsignments(fromTime, toTime);
 		System.out.println(exportedConsignments.size());
 		return exportedConsignments;
 	}
-	
+
 	@Override
 	public List<Object> exportShipment(String fromDate, String toDate) {
 		String fromTime = fromDate.concat(" ").concat("00:00:00");
 		String toTime = toDate.concat(" ").concat("23:59:59");
-		List<Object> exportedShipment = senderDataRepository.exportShipment(fromTime,toTime);
+		List<Object> exportedShipment = senderDataRepository.exportShipment(fromTime, toTime);
 		System.out.println(exportedShipment.size());
 		return exportedShipment;
 	}
@@ -201,112 +212,120 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	public List<Object> exportNonShipment(String fromDate, String toDate) {
 		String fromTime = fromDate.concat(" ").concat("00:00:00");
 		String toTime = toDate.concat(" ").concat("23:59:59");
-		List<Object> exportedShipment = senderDataRepository.exportNonShipment(fromTime,toTime);
+		List<Object> exportedShipment = senderDataRepository.exportNonShipment(fromTime, toTime);
 		System.out.println(exportedShipment.size());
 		return exportedShipment;
 	}
+
 	@Override
 	public ResponseMessage insertTrackingDetails(TrackingEventResponse trackEventresponse) {
 		List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
 		List<TrackEventResponseData> responseData = trackEventresponse.getData();
-		ResponseMessage responseMsg =  new ResponseMessage();
+		ResponseMessage responseMsg = new ResponseMessage();
 
-		if(responseData.isEmpty()) {
+		if (responseData.isEmpty()) {
 			responseMsg.setResponseMessage("No Data from ETower");
-		}
-		else {
-		
-		for(TrackEventResponseData data : responseData ) {
-		
-			if(data!=null && data.getEvents()!=null) {
-			for(ETowerTrackingDetails trackingDetails : data.getEvents()) {
-				Trackandtrace trackandTrace = new Trackandtrace();
-				trackandTrace.setArticleID(trackingDetails.getTrackingNo());
-				trackandTrace.setFileName("eTowerAPI");
-				//Date date = Date.from(Instant.ofEpochSecond(trackingDetails.getEventTime()));
-				//Date date = new Date((long)trackingDetails.getEventTime());
-				
-				//DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
-              //  String trackEventOccurred = dateFormat.format(date);
-                //System.out.println("DAte: "+date);
-                //System.out.println("String: "+trackEventOccurred);
-                trackandTrace.setTrackEventDateOccured(trackingDetails.getEventTime());
-				trackandTrace.setTrackEventCode(trackingDetails.getEventCode());
-			/*	if(trackingDetails.getActivity()!=null) {
-					if(trackingDetails.getActivity().contains("Attempted Delivery") || trackingDetails.getActivity().contains("Unable to complete delivery") ) {
-						trackandTrace.setTrackEventDetails("ATTEMPTED DELIVERY");
-					}else if(trackingDetails.getActivity().contains("Collection")) {
-						trackandTrace.setTrackEventDetails("AWAITING COLLECTION");
-					}else if(trackingDetails.getActivity().contains("Delivered") || trackingDetails.getActivity().contains("Receiver requested Safe Drop") ) {
-						trackandTrace.setTrackEventDetails("DELIVERED");
-					}else if(trackingDetails.getActivity().contains("Accepted by Driver") || trackingDetails.getActivity().contains("With Australia Post for delivery today") 
-							|| trackingDetails.getActivity().contains("In Transit")) {
-						trackandTrace.setTrackEventDetails("IN TRANSIT");
-					}else if(trackingDetails.getActivity().contains("facility") || trackingDetails.getActivity().contains("Transferred") ) {
-						trackandTrace.setTrackEventDetails("ITEM PROCESSED BY FACILITY");
-					}else if(trackingDetails.getActivity().contains("Shipping information") || trackingDetails.getActivity().contains("Order Processed") 
-							|| trackingDetails.getActivity().contains("Order Accepted") || trackingDetails.getActivity().contains("Lodged")
-							|| trackingDetails.getActivity().contains("Manifested")) {
-						trackandTrace.setTrackEventDetails("SHIPPING INFORMATION RECEIVED");
-					}else {
+		} else {
+
+			for (TrackEventResponseData data : responseData) {
+
+				if (data != null && data.getEvents() != null) {
+					for (ETowerTrackingDetails trackingDetails : data.getEvents()) {
+						Trackandtrace trackandTrace = new Trackandtrace();
+						trackandTrace.setArticleID(trackingDetails.getTrackingNo());
+						trackandTrace.setFileName("eTowerAPI");
+						// Date date = Date.from(Instant.ofEpochSecond(trackingDetails.getEventTime()));
+						// Date date = new Date((long)trackingDetails.getEventTime());
+
+						// DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						// String trackEventOccurred = dateFormat.format(date);
+						// System.out.println("DAte: "+date);
+						// System.out.println("String: "+trackEventOccurred);
+						trackandTrace.setTrackEventDateOccured(trackingDetails.getEventTime());
+						trackandTrace.setTrackEventCode(trackingDetails.getEventCode());
+						/*
+						 * if(trackingDetails.getActivity()!=null) {
+						 * if(trackingDetails.getActivity().contains("Attempted Delivery") ||
+						 * trackingDetails.getActivity().contains("Unable to complete delivery") ) {
+						 * trackandTrace.setTrackEventDetails("ATTEMPTED DELIVERY"); }else
+						 * if(trackingDetails.getActivity().contains("Collection")) {
+						 * trackandTrace.setTrackEventDetails("AWAITING COLLECTION"); }else
+						 * if(trackingDetails.getActivity().contains("Delivered") ||
+						 * trackingDetails.getActivity().contains("Receiver requested Safe Drop") ) {
+						 * trackandTrace.setTrackEventDetails("DELIVERED"); }else
+						 * if(trackingDetails.getActivity().contains("Accepted by Driver") ||
+						 * trackingDetails.getActivity().
+						 * contains("With Australia Post for delivery today") ||
+						 * trackingDetails.getActivity().contains("In Transit")) {
+						 * trackandTrace.setTrackEventDetails("IN TRANSIT"); }else
+						 * if(trackingDetails.getActivity().contains("facility") ||
+						 * trackingDetails.getActivity().contains("Transferred") ) {
+						 * trackandTrace.setTrackEventDetails("ITEM PROCESSED BY FACILITY"); }else
+						 * if(trackingDetails.getActivity().contains("Shipping information") ||
+						 * trackingDetails.getActivity().contains("Order Processed") ||
+						 * trackingDetails.getActivity().contains("Order Accepted") ||
+						 * trackingDetails.getActivity().contains("Lodged") ||
+						 * trackingDetails.getActivity().contains("Manifested")) {
+						 * trackandTrace.setTrackEventDetails("SHIPPING INFORMATION RECEIVED"); }else {
+						 * trackandTrace.setTrackEventDetails(trackingDetails.getActivity()); } }
+						 */
 						trackandTrace.setTrackEventDetails(trackingDetails.getActivity());
+						trackandTrace.setCourierEvents(trackingDetails.getActivity());
+						trackandTrace.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+						trackandTrace.setReference_number(trackingDetails.getTrackingNo());
+						trackandTrace.setLocation(trackingDetails.getLocation());
+						trackandTrace.setIsDeleted("N");
+						if ("ARRIVED AT DESTINATION AIRPORT".equalsIgnoreCase(trackandTrace.getTrackEventDetails())
+								|| ("COLLECTED FROM AIRPORT TERMINAL"
+										.equalsIgnoreCase(trackandTrace.getTrackEventDetails()))
+								|| ("PREPARING TO DISPATCH".equalsIgnoreCase(trackandTrace.getTrackEventDetails()))) {
+							trackandTrace.setIsDeleted("Y");
+						}
+						trackAndTraceList.add(trackandTrace);
 					}
-				}		*/
-				trackandTrace.setTrackEventDetails(trackingDetails.getActivity());
-				trackandTrace.setCourierEvents(trackingDetails.getActivity());
-				trackandTrace.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
-				trackandTrace.setReference_number(trackingDetails.getTrackingNo());
-				trackandTrace.setLocation(trackingDetails.getLocation());
-				trackandTrace.setIsDeleted("N");
-				if("ARRIVED AT DESTINATION AIRPORT".equalsIgnoreCase(trackandTrace.getTrackEventDetails()) ||
-						("COLLECTED FROM AIRPORT TERMINAL".equalsIgnoreCase(trackandTrace.getTrackEventDetails())) ||
-							("PREPARING TO DISPATCH".equalsIgnoreCase(trackandTrace.getTrackEventDetails())))
-					{
-					trackandTrace.setIsDeleted("Y");
-					}
-				trackAndTraceList.add(trackandTrace);
+
+				}
 			}
-			
-			}
-		}
-		trackAndTraceRepository.saveAll(trackAndTraceList);
-		trackAndTraceRepository.updateTracking();
-		trackAndTraceRepository.deleteDuplicates();
-		responseMsg.setResponseMessage("Data uploaded successfully from ETower");
+			trackAndTraceRepository.saveAll(trackAndTraceList);
+			trackAndTraceRepository.updateTracking();
+			trackAndTraceRepository.deleteDuplicates();
+			responseMsg.setResponseMessage("Data uploaded successfully from ETower");
 		}
 		return responseMsg;
 	}
 
 	@Override
 	public List<String> fetchTrackingNumbersForETowerCall() {
-		List<String> dbResult  =  trackAndTraceRepository.fetchTrackingNumbersForETowerCall();
+		List<String> dbResult = trackAndTraceRepository.fetchTrackingNumbersForETowerCall();
 		return dbResult;
-		
+
 	}
+
 	@Override
 	public List<String> fetchTrackingNumbersForPCACall() {
-		List<String> dbResult  =  trackAndTraceRepository.fetchTrackingNumbersForPCACall();
+		List<String> dbResult = trackAndTraceRepository.fetchTrackingNumbersForPCACall();
 		return dbResult;
-		
+
 	}
 
 	@Override
 	public String uploadBrokerRates(List<BrokerRatesData> brokerRatesData) {
 		String message = "";
 		List<BrokerRates> brokerRatesList = new ArrayList<BrokerRates>();
-		for(BrokerRatesData brokerRateData : brokerRatesData) {
-			
-			for(ZoneDetails zoneData : brokerRateData.getZone()) {
-				
-				
-				for(ZoneRates zoneRates : zoneData.getRates()) {
-					BrokerRates brokerRates_DB = brokerRatesRepository.findByCompositeKey(brokerRateData.getBrokerUserName(), brokerRateData.getInjectionType(), 
-							brokerRateData.getServiceType(), zoneData.getZoneID(), zoneRates.getMinWeight(), zoneRates.getMaxWeight());
-					if(null != brokerRates_DB) {
+		for (BrokerRatesData brokerRateData : brokerRatesData) {
+
+			for (ZoneDetails zoneData : brokerRateData.getZone()) {
+
+				for (ZoneRates zoneRates : zoneData.getRates()) {
+					BrokerRates brokerRates_DB = brokerRatesRepository.findByCompositeKey(
+							brokerRateData.getBrokerUserName(), brokerRateData.getInjectionType(),
+							brokerRateData.getServiceType(), zoneData.getZoneID(), zoneRates.getMinWeight(),
+							zoneRates.getMaxWeight());
+					if (null != brokerRates_DB) {
 						brokerRates_DB.setBackupInd("Y");
 						brokerRatesList.add(brokerRates_DB);
 					}
-					BrokerRates brokerRates = new  BrokerRates();
+					BrokerRates brokerRates = new BrokerRates();
 					brokerRates.setBrokerUserName(brokerRateData.getBrokerUserName());
 					brokerRates.setInjectionType(brokerRateData.getInjectionType());
 					brokerRates.setServiceType(brokerRateData.getServiceType());
@@ -319,16 +338,15 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 					brokerRates.setBackupInd("N");
 					brokerRates.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
 					brokerRatesList.add(brokerRates);
-					
+
 				}
 			}
-			
+
 		}
 		List<BrokerRates> insertedData = (List<BrokerRates>) brokerRatesRepository.saveAll(brokerRatesList);
-		if(null!= insertedData && insertedData.size() > 0) {
+		if (null != insertedData && insertedData.size() > 0) {
 			message = "Data uploaded Successfully";
-		}
-		else {
+		} else {
 			message = "Failed to upload Data";
 		}
 		return message;
@@ -338,18 +356,18 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	public String uploadD2ZRates(List<D2ZRatesData> d2zRatesData) {
 		String message = "";
 		List<D2ZRates> d2zRatesList = new ArrayList<D2ZRates>();
-		for(D2ZRatesData d2zRateData : d2zRatesData) {
-			
-			for(ZoneDetails zoneData : d2zRateData.getZone()) {
-				
-				
-				for(ZoneRates zoneRates : zoneData.getRates()) {
-					D2ZRates d2zRates_DB = d2zRatesRepository.findByCompositeKey(d2zRateData.getServiceType(), zoneData.getZoneID(), zoneRates.getMinWeight(), zoneRates.getMaxWeight());
-					if(null != d2zRates_DB) {
+		for (D2ZRatesData d2zRateData : d2zRatesData) {
+
+			for (ZoneDetails zoneData : d2zRateData.getZone()) {
+
+				for (ZoneRates zoneRates : zoneData.getRates()) {
+					D2ZRates d2zRates_DB = d2zRatesRepository.findByCompositeKey(d2zRateData.getServiceType(),
+							zoneData.getZoneID(), zoneRates.getMinWeight(), zoneRates.getMaxWeight());
+					if (null != d2zRates_DB) {
 						d2zRates_DB.setBackupInd("Y");
 						d2zRatesList.add(d2zRates_DB);
 					}
-					D2ZRates d2zRates = new  D2ZRates();
+					D2ZRates d2zRates = new D2ZRates();
 					d2zRates.setServiceType(d2zRateData.getServiceType());
 					d2zRates.setFuelSurcharge(d2zRateData.getFuelSurcharge());
 					d2zRates.setZoneID(zoneData.getZoneID());
@@ -359,16 +377,15 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 					d2zRates.setBackupInd("N");
 					d2zRates.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
 					d2zRatesList.add(d2zRates);
-					
+
 				}
 			}
-			
+
 		}
 		List<D2ZRates> insertedData = (List<D2ZRates>) d2zRatesRepository.saveAll(d2zRatesList);
-		if(null!= insertedData && insertedData.size() > 0) {
+		if (null != insertedData && insertedData.size() > 0) {
 			message = "Data uploaded Successfully";
-		}
-		else {
+		} else {
 			message = "Failed to upload Data";
 		}
 		return message;
@@ -411,19 +428,20 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 
 	@Override
 	public List<String> reconcileData(String articleNo, String refrenceNumber) {
-		List<String> reconciledata = senderDataRepository.reconcileData(articleNo,refrenceNumber);
+		List<String> reconciledata = senderDataRepository.reconcileData(articleNo, refrenceNumber);
 		return reconciledata;
 	}
 
 	@Override
 	public List<Reconcile> reconcileUpdate(List<Reconcile> reconcileCalculatedList) {
-		List<Reconcile> reconcileList =  (List<Reconcile>) reconcileRepository.saveAll(reconcileCalculatedList);
+		List<Reconcile> reconcileList = (List<Reconcile>) reconcileRepository.saveAll(reconcileCalculatedList);
 		return reconcileList;
 	}
 
 	@Override
 	public List<Reconcile> fetchReconcileData(List<String> reconcileReferenceNum) {
-		List<Reconcile> reconcileFinal =  (List<Reconcile>) reconcileRepository.fetchReconcileData(reconcileReferenceNum);
+		List<Reconcile> reconcileFinal = (List<Reconcile>) reconcileRepository
+				.fetchReconcileData(reconcileReferenceNum);
 		return reconcileFinal;
 	}
 
@@ -431,9 +449,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	public UserMessage approvedInvoice(ApprovedInvoice approvedInvoice) {
 		senderdata_InvoicingRepository.approvedInvoice(approvedInvoice.getIndicator(), approvedInvoice.getAirwaybill());
 		UserMessage userMsg = new UserMessage();
-		if(approvedInvoice.getIndicator().equalsIgnoreCase("Invoiced")) {
+		if (approvedInvoice.getIndicator().equalsIgnoreCase("Invoiced")) {
 			userMsg.setMessage("Invoiced Approved Successfully");
-		}else if(approvedInvoice.getIndicator().equalsIgnoreCase("Billed")) {
+		} else if (approvedInvoice.getIndicator().equalsIgnoreCase("Billed")) {
 			userMsg.setMessage("Invoiced Billed Successfully");
 		}
 		return userMsg;
@@ -441,7 +459,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 
 	@Override
 	public void reconcilerates(List<String> reconcileReferenceNum) {
-		senderDataRepository.reconcilerates(reconcileReferenceNum.stream().map(Object::toString).collect(Collectors.joining(",")));
+		senderDataRepository
+				.reconcilerates(reconcileReferenceNum.stream().map(Object::toString).collect(Collectors.joining(",")));
 	}
 
 	@Override
@@ -452,14 +471,16 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 
 	@Override
 	public List<String> downloadInvoice(List<String> broker, List<String> airwayBill, String billed, String invoiced) {
-		List<String> downloadInvoice = senderDataRepository.downloadInvoice(broker,airwayBill,billed,invoiced);
+		List<String> downloadInvoice = senderDataRepository.downloadInvoice(broker, airwayBill, billed, invoiced);
 		return downloadInvoice;
 	}
 
 	@Override
 	public UserMessage fetchNonD2zClient(List<NonD2ZData> nonD2zData) {
 		nonD2ZDataRepository.saveAll(nonD2zData);
-		List<String> articleNbr = nonD2zData.stream().map(obj -> {return obj.getArticleId(); }).collect(Collectors.toList());
+		List<String> articleNbr = nonD2zData.stream().map(obj -> {
+			return obj.getArticleId();
+		}).collect(Collectors.toList());
 		nonD2ZDataRepository.nonD2zRates(articleNbr.stream().map(Object::toString).collect(Collectors.joining(",")));
 		UserMessage userMsg = new UserMessage();
 		userMsg.setMessage("Non-D2Z Data Uploaded Successfully into the system");
@@ -474,13 +495,14 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 
 	@Override
 	public List<Reconcile> downloadReconcile() {
-		//List<Reconcile> reconcileFinal =  (List<Reconcile>) reconcileRepository.downloadReconcile();
+		// List<Reconcile> reconcileFinal = (List<Reconcile>)
+		// reconcileRepository.downloadReconcile();
 		return null;
 	}
 
 	@Override
 	public List<Reconcile> downloadReconcile(List<String> reconcileNumbers) {
-		List<Reconcile> reconcileFinal =  (List<Reconcile>) reconcileRepository.downloadReconcile(reconcileNumbers);
+		List<Reconcile> reconcileFinal = (List<Reconcile>) reconcileRepository.downloadReconcile(reconcileNumbers);
 		return reconcileFinal;
 	}
 
@@ -498,18 +520,20 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 
 	@Override
 	public List<ReconcileND> reconcileNonD2zUpdate(List<ReconcileND> reconcileNoND2zList) {
-		List<ReconcileND> reconcileList =  (List<ReconcileND>) reconcileNDRepository.saveAll(reconcileNoND2zList);
+		List<ReconcileND> reconcileList = (List<ReconcileND>) reconcileNDRepository.saveAll(reconcileNoND2zList);
 		return reconcileList;
 	}
 
 	@Override
 	public void reconcileratesND(List<String> reconcileArticleIdNum) {
-		nonD2ZDataRepository.reconcileratesND(reconcileArticleIdNum.stream().map(Object::toString).collect(Collectors.joining(",")));
+		nonD2ZDataRepository.reconcileratesND(
+				reconcileArticleIdNum.stream().map(Object::toString).collect(Collectors.joining(",")));
 	}
 
 	@Override
 	public List<ReconcileND> downloadNonD2zReconcile(List<String> nonD2zReconcileNumbers) {
-		List<ReconcileND> reconcileNonD2zFinal =  (List<ReconcileND>) reconcileNDRepository.downloadNonD2zReconcile(nonD2zReconcileNumbers);
+		List<ReconcileND> reconcileNonD2zFinal = (List<ReconcileND>) reconcileNDRepository
+				.downloadNonD2zReconcile(nonD2zReconcileNumbers);
 		return reconcileNonD2zFinal;
 	}
 
@@ -520,8 +544,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	}
 
 	@Override
-	public List<String> downloadNonD2zInvoice(List<String> broker,List<String> airwayBill, String billed,String invoiced ) {
-		List<String> downloadInvoice = nonD2ZDataRepository.downloadNonD2zInvoice(broker,airwayBill,billed,invoiced);
+	public List<String> downloadNonD2zInvoice(List<String> broker, List<String> airwayBill, String billed,
+			String invoiced) {
+		List<String> downloadInvoice = nonD2ZDataRepository.downloadNonD2zInvoice(broker, airwayBill, billed, invoiced);
 		return downloadInvoice;
 	}
 
@@ -529,9 +554,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 	public UserMessage approveNdInvoiced(ApprovedInvoice approvedInvoice) {
 		nonD2ZDataRepository.approveNdInvoiced(approvedInvoice.getIndicator(), approvedInvoice.getAirwaybill());
 		UserMessage userMsg = new UserMessage();
-		if(approvedInvoice.getIndicator().equalsIgnoreCase("Invoiced")) {
+		if (approvedInvoice.getIndicator().equalsIgnoreCase("Invoiced")) {
 			userMsg.setMessage("Invoiced Approved Successfully");
-		}else if(approvedInvoice.getIndicator().equalsIgnoreCase("Billed")) {
+		} else if (approvedInvoice.getIndicator().equalsIgnoreCase("Billed")) {
 			userMsg.setMessage("Invoiced Billed Successfully");
 		}
 		return userMsg;
@@ -557,26 +582,50 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao{
 
 	@Override
 	public List<String> fetchAllReconcileReferenceNumbers() {
-		List<String> referenceNumber_DB= reconcileRepository.fetchAllReconcileReferenceNumbers();
-    	return referenceNumber_DB;
+		List<String> referenceNumber_DB = reconcileRepository.fetchAllReconcileReferenceNumbers();
+		return referenceNumber_DB;
 	}
 
 	@Override
 	public List<String> fetchAllReconcileArticleIdNumbers() {
-		List<String> articleId_DB= reconcileRepository.fetchAllReconcileArticleIdNumbers();
-    	return articleId_DB;
+		List<String> articleId_DB = reconcileRepository.fetchAllReconcileArticleIdNumbers();
+		return articleId_DB;
 	}
 
 	@Override
 	public List<String> fetchAllReconcileNonD2zReferenceNumbers() {
-		List<String> referenceNumberNonD2z_DB= reconcileNDRepository.fetchAllReconcileNonD2zReferenceNumbers();
-    	return referenceNumberNonD2z_DB;
+		List<String> referenceNumberNonD2z_DB = reconcileNDRepository.fetchAllReconcileNonD2zReferenceNumbers();
+		return referenceNumberNonD2z_DB;
 	}
 
 	@Override
 	public List<String> fetchAllReconcileNonD2zArticleIdNumbers() {
-		List<String> referenceNumberNonD2z_DB= reconcileNDRepository.fetchAllReconcileNonD2zArticleIdNumbers();
-    	return referenceNumberNonD2z_DB;
+		List<String> referenceNumberNonD2z_DB = reconcileNDRepository.fetchAllReconcileNonD2zArticleIdNumbers();
+		return referenceNumberNonD2z_DB;
+	}
+
+	@Override
+	public List<ETowerResponse> fetchEtowerLogResponse(String fromDate, String toDate) {
+		List<ETowerResponse> etowerResponseData = eTowerResponseRepository.fetchEtowerLogResponse(fromDate,toDate);
+		return etowerResponseData;
+	}
+
+	@Override
+	public List<AUPostResponse> fetchAUPosLogtResponse(String fromDate, String toDate) {
+		List<AUPostResponse> auPostResponseData = auPostResponseRepository.fetchAUPostLogResponse(fromDate,toDate);
+		return auPostResponseData;
+	}
+
+	@Override
+	public List<FFResponse> fetchFdmLogResponse(String fromDate, String toDate) {
+		List<FFResponse> fdmResponseData = ffResponseRepository.fetchdmFLogResponse(fromDate,toDate);
+		return fdmResponseData;
+	}
+
+	@Override
+	public List<FFResponse> fetchFreiPostResponseResponse(String fromDate, String toDate) {
+		List<FFResponse> freiPostResponseData = ffResponseRepository.fetchFreiPostResponseResponse(fromDate,toDate);
+		return freiPostResponseData;
 	}
 	
 }

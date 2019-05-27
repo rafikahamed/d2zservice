@@ -36,4 +36,38 @@ public class HMACGenerator {
 		}
 	return result;
 		}
+	
+	
+	public static String calculatePFLHMAC(String key,String url) {
+		String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
+		String Token ="QT6P9I85LHETLYP43G7J440GD6W77TFX";
+		
+	/*	 ZoneId singaporeZoneId = ZoneId.of("Australia/Sydney");
+	        System.out.println("TimeZone : " + singaporeZoneId);
+	        LocalDateTime ldt = LocalDateTime.now();
+
+	        //LocalDateTime + ZoneId = ZonedDateTime
+	        ZonedDateTime asiaZonedDateTime = ldt.atZone(singaporeZoneId);*/
+		SimpleDateFormat currentDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+		currentDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		//currentDateFormat.T
+		String currentDate = currentDateFormat.format(new Date());
+		
+		//String currentDate = "Mon, 23 Jan 2017 23:11:09 +0000";
+		String toSignIn =":"+ currentDate+":"+url;
+		System.out.println(toSignIn);
+		String result = "";
+		try {
+		SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(),HMAC_SHA1_ALGORITHM);
+		Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
+		mac.init(signingKey);
+		//byte[] rawHmac=mac.doFinal(toSignIn.getBytes());
+	     result = Base64.encodeBase64String(mac.doFinal(toSignIn.getBytes()));
+	     System.out.println((result));
+	     System.out.println(Token+":"+result);
+		}catch (Exception e){
+			
+		}
+		return result;
+}
 }
