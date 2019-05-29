@@ -93,4 +93,6 @@ public interface ISuperUserD2ZService{
 
 	public List<?> fetchApiLogs(String client, String fromDate, String toDate);
 
+	public byte[] trackingLabel(List<String> refBarNumArray);
+
 }

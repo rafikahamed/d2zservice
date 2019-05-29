@@ -305,14 +305,15 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderData> eParcelData = new ArrayList<SenderData>();
 
 		List<SenderData> expressData = new ArrayList<SenderData>();
-
+		boolean setGS1Type=false;
 		for (SenderData data : senderData) {
 			if (data.getCarrier().equalsIgnoreCase("eParcel")) {
 				eParcelData.add(data);
+				
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
 				expressData.add(data);
 			}
-			data.setDatamatrixImage(generateDataMatrix(data.getDatamatrix()));
+			data.setDatamatrixImage(generateDataMatrix(data.getDatamatrix(),setGS1Type));
 		}
 
 		Map<String, Object> parameters = new HashMap<>();
@@ -356,13 +357,15 @@ public class D2ZServiceImpl implements ID2ZService {
 		return bytes;
 	}
 
-	private BufferedImage generateDataMatrix(String datamatrixInput) {
+	private BufferedImage generateDataMatrix(String datamatrixInput, boolean setGS1DataType) {
 		BufferedImage datamatrixImage = null;
 		try {
 			// Set up the DataMatrix object
 			DataMatrix dataMatrix = new DataMatrix();
 			// We need a GS1 DataMatrix barcode.
+			if(setGS1DataType)
 			dataMatrix.setDataType(DataType.GS1);
+			
 			// 0 means size will be set automatically according to amount of data (smallest
 			// possible).
 			dataMatrix.setPreferredSize(0);
@@ -454,35 +457,38 @@ public class D2ZServiceImpl implements ID2ZService {
 				trackingLabel.setReturnAddress1(trackingArray[23].toString());
 			if (trackingArray[24] != null)
 				trackingLabel.setReturnAddress2(trackingArray[24].toString());
-
-			trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix()));
+			if (trackingArray[25] != null)
+				trackingLabel.setProductDescription(trackingArray[25].toString());
+			if (trackingArray[26] != null)
+				trackingLabel.setServiceType(trackingArray[26].toString());
+			boolean setGS1DataType = false;
+			if(trackingLabel.getCarrier().equalsIgnoreCase("Express") || trackingLabel.getCarrier().equalsIgnoreCase("eParcel")) {
+				setGS1DataType = true;
+			}
+			trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix(),setGS1DataType));
 			trackingLabelList.add(trackingLabel);
 		}
 
-		/*
-		 * JRBeanCollectionDataSource beanColDataSource = new
-		 * JRBeanCollectionDataSource(trackingLabelList); Map<String,Object> parameters
-		 * = new HashMap<>(); byte[] bytes = null; //Blob blob = null; JasperReport
-		 * jasperReport = null; try (ByteArrayOutputStream byteArray = new
-		 * ByteArrayOutputStream()) { jasperReport =
-		 * JasperCompileManager.compileReport(getClass().getResource(
-		 * "/eparcelLabel.jrxml").openStream()); JRSaver.saveObject(jasperReport,
-		 * "label.jasper"); JasperPrint jasperPrint =
-		 * JasperFillManager.fillReport(jasperReport, parameters, beanColDataSource); //
-		 * return the PDF in bytes bytes =
-		 * JasperExportManager.exportReportToPdf(jasperPrint); // blob = new
-		 * javax.sql.rowset.serial.SerialBlob(bytes); } catch (JRException | IOException
-		 * e) { e.printStackTrace(); } return bytes;
-		 */
 		List<SenderData> eParcelData = new ArrayList<SenderData>();
 
 		List<SenderData> expressData = new ArrayList<SenderData>();
-
+		List<SenderData> fastwayData = new ArrayList<SenderData>();
+		List<SenderData> whiteLabelData = new ArrayList<SenderData>();
 		for (SenderData data : trackingLabelList) {
-			if (data.getCarrier().equalsIgnoreCase("eParcel")) {
+			if ("MCM1".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("Fastway")) {
+				whiteLabelData.add(data);
+			}
+			else if ("MCM2".equalsIgnoreCase(data.getServiceType()) && (data.getCarrier().equalsIgnoreCase("Express") || data.getCarrier().equalsIgnoreCase("eParcel")) ) {
+				whiteLabelData.add(data);
+			}
+			else if("MCM3".equalsIgnoreCase(data.getServiceType())) {
+				whiteLabelData.add(data);
+			}else  if(data.getCarrier().equalsIgnoreCase("eParcel")) {
 				eParcelData.add(data);
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
 				expressData.add(data);
+			}else if(data.getCarrier().equalsIgnoreCase("Fastway")) {
+				fastwayData.add(data);
 			}
 		}
 
@@ -493,6 +499,10 @@ public class D2ZServiceImpl implements ID2ZService {
 		JRBeanCollectionDataSource expressDataSource;
 		JasperReport eParcelLabel = null;
 		JasperReport expressLabel = null;
+		JRBeanCollectionDataSource fastwayDataSource;
+		JasperReport fastwayLabel = null;
+		JRBeanCollectionDataSource whiteLabelDataSource;
+		JasperReport whiteLabel = null;
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 			if (!eParcelData.isEmpty()) {
@@ -512,6 +522,22 @@ public class D2ZServiceImpl implements ID2ZService {
 				JRSaver.saveObject(expressLabel, "express.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(expressLabel, parameters, expressDataSource));
 			}
+			if (!fastwayData.isEmpty()) {
+				System.out.println("Generating Fastway..." + fastwayData.size());
+				fastwayDataSource = new JRBeanCollectionDataSource(fastwayData);
+				fastwayLabel = JasperCompileManager
+						.compileReport(getClass().getResource("/FastWayLabel.jrxml").openStream());
+				JRSaver.saveObject(fastwayLabel, "FastWayLabel.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(fastwayLabel, parameters, fastwayDataSource));
+			}
+			if (!whiteLabelData.isEmpty()) {
+				System.out.println("Generating WhiteLabel..." + whiteLabelData.size());
+				whiteLabelDataSource = new JRBeanCollectionDataSource(whiteLabelData);
+				whiteLabel = JasperCompileManager
+						.compileReport(getClass().getResource("/WhiteLabel.jrxml").openStream());
+				JRSaver.saveObject(whiteLabel, "whiteLabel.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(whiteLabel, parameters, whiteLabelDataSource));
+			}
 			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
 			JRPdfExporter exporter = new JRPdfExporter();
@@ -520,12 +546,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			exporter.exportReport();
 			// return the PDF in bytes
 			bytes = outputStream.toByteArray();
-			/*
-			 * try(OutputStream out = new FileOutputStream("Label.pdf")){ out.write(bytes);
-			 * }
-			 */
-			// bytes = JasperExportManager.exportReportToPdf(jasperPrint);
-			// blob = new javax.sql.rowset.serial.SerialBlob(bytes);
+			
 		} catch (JRException | IOException e) {
 			e.printStackTrace();
 		}
