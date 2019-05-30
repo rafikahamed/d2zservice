@@ -1276,8 +1276,9 @@ public class D2ZServiceImpl implements ID2ZService {
 	}
 
 	@Override
-	public void triggerFreipost() {
-		freipostWrapper.trackingEventService("124538");
+	public void triggerFreipost(String referenceNumbers) {
+		d2zDao.makeFriePostUpdataManifestCall(referenceNumbers);
+		//freipostWrapper.trackingEventService("124538");
 	}
 
 	@Override

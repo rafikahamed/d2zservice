@@ -129,6 +129,7 @@
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font fontName="MyArial" size="12"/>
+					<paragraph leftIndent="3"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeName}]]></textFieldExpression>
 			</textField>
@@ -136,6 +137,7 @@
 				<reportElement x="1" y="163" width="259" height="20" uuid="d8246c0d-1a86-432d-81f8-6b8e8ef4ec60"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
+					<paragraph leftIndent="3"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeAddr1}]]></textFieldExpression>
 			</textField>
@@ -143,6 +145,7 @@
 				<reportElement x="1" y="183" width="259" height="20" uuid="f7b75040-e9ad-455d-8461-2417c7f0a085"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
+					<paragraph leftIndent="3"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeAddr2}]]></textFieldExpression>
 			</textField>
@@ -165,6 +168,7 @@
 				</box>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
+					<paragraph leftIndent="3"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeSuburb}]]></textFieldExpression>
 			</textField>
@@ -179,6 +183,7 @@
 				</box>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
+					<paragraph leftIndent="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeState}]]></textFieldExpression>
 			</textField>
@@ -189,6 +194,7 @@
 				</box>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
+					<paragraph leftIndent="3"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneePostcode}]]></textFieldExpression>
 			</textField>
@@ -199,6 +205,7 @@
 				</box>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
+					<paragraph leftIndent="3"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Ph: ".concat( $F{consigneePhone})]]></textFieldExpression>
 			</textField>
@@ -206,6 +213,7 @@
 				<reportElement x="1" y="265" width="149" height="15" uuid="7d212c03-5247-449e-9a47-d082b9400eba"/>
 				<textElement>
 					<font fontName="MyArial" size="11"/>
+					<paragraph leftIndent="3"/>
 				</textElement>
 				<text><![CDATA[Dead weight]]></text>
 			</staticText>
@@ -213,6 +221,7 @@
 				<reportElement x="1" y="280" width="239" height="27" uuid="d868cb9f-9deb-4cf7-bd91-4396acd20e3a"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="MyArial" size="14"/>
+					<paragraph leftIndent="3"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{weight}.concat(" kg")]]></textFieldExpression>
 			</textField>
@@ -227,12 +236,13 @@
 				<textElement>
 					<font fontName="MyArial" size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[PCS]]></text>
+				<text><![CDATA[D2Z]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="0" y="372" width="257" height="15" uuid="74384646-f320-4f97-b252-5446ab2b0273"/>
 				<textElement>
 					<font fontName="MyArial" size="11"/>
+					<paragraph leftIndent="1"/>
 				</textElement>
 				<textFieldExpression><![CDATA[(($F{returnAddress1} == null) || ($F{returnAddress1}.isEmpty()))?"1 Maccullagh St":$F{returnAddress1}]]></textFieldExpression>
 			</textField>
@@ -243,6 +253,7 @@
 				</box>
 				<textElement>
 					<font fontName="MyArial" size="11"/>
+					<paragraph leftIndent="1"/>
 				</textElement>
 				<textFieldExpression><![CDATA[(($F{returnAddress2}==null) || ($F{returnAddress2}.isEmpty()))?"Golden Square VIC 3555":$F{returnAddress2}]]></textFieldExpression>
 			</textField>

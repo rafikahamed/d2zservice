@@ -189,8 +189,8 @@ public class D2zController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "/freipost")
-	public void triggerFreipost() {
-		d2zService.triggerFreipost();
+	public void triggerFreipost(@RequestBody String referenceNumbers) {
+		d2zService.triggerFreipost(referenceNumbers);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "/FDM")
