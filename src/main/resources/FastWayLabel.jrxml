@@ -236,7 +236,7 @@
 				<textElement>
 					<font fontName="MyArial" size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[D2Z]]></text>
+				<text><![CDATA[PCS]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="0" y="372" width="257" height="15" uuid="74384646-f320-4f97-b252-5446ab2b0273"/>
