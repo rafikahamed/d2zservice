@@ -23,6 +23,7 @@ import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
+import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
@@ -926,5 +927,29 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 
 		return image;
 	}
+	
+	
+	@Override
+	public List<Mlid> downloadMlid(String service) {
+		// TODO Auto-generated method stub
+		
+		return d2zDao.downloadMlid(service);
+		
+	}
+
+	@Override
+	public UserMessage uploadMlid(List<Object> MlidData) {
+		// TODO Auto-generated method stub
+		
+		return d2zDao.addMlid(MlidData);
+		}
+
+@Override
+	public UserMessage deleteMLID(String service)
+	{
+		UserMessage approvedInvoiceMsg = d2zDao.deleteMlid(service);
+		return approvedInvoiceMsg;
+	}
+
 
 }

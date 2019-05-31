@@ -13,6 +13,7 @@ import com.d2z.d2zservice.entity.BrokerRates;
 import com.d2z.d2zservice.entity.D2ZRates;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
+import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
@@ -634,5 +635,75 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		System.out.println(trackingDetails.size());
 		return trackingDetails;
 	}
+	@Override
+	public List<Mlid> downloadMlid(String service) {
+		// TODO Auto-generated method stub
+		System.out.println("serv:"+service);
+		List<Mlid> mlidlist = mlidRepository.downloadMlid(service);
+		System.out.println("size:"+mlidlist.size());
+		
+		return mlidlist;
+	}
+
+	@Override
+	public UserMessage addMlid(List<Object> MlidData) {
+		List<Mlid> mlidlist = new ArrayList<Mlid>();
+		System.out.println("size:"+MlidData.size());
+		String service = MlidData.get(1).toString().valueOf("ServiceType");
+		List<Mlid> mlidsearch = mlidRepository.downloadMlid(service);
+		UserMessage userMsg = new UserMessage();
+		if(mlidsearch.isEmpty()) {
+		for(Object mild : MlidData )
+		{
+			/*JacksonJsonParser jsonParser = new JacksonJsonParser();
+			Map<String, Object> responses = jsonParser.parseMap(mild.toString());*/
+			
+			Mlid mldata = new Mlid();
+			mldata.setServiceType(mild.toString().valueOf("ServiceType"));
+			mldata.setZoneID(mild.toString().valueOf("ZoneID"));
+			mldata.setMinweight(mild.toString().valueOf("Minweight"));
+			mldata.setMaxweight(mild.toString().valueOf("Maxweight"));
+			mldata.setMlid(mild.toString().valueOf("MLID"));
+			mldata.setInjectionState(mild.toString().valueOf("InjectionState"));
+			
+			mlidlist.add(mldata);
+			
+			
+			
+		}
+		mlidRepository.saveAll(mlidlist);
+		userMsg.setMessage("Added Succesfully");
+		}
+		// TODO Auto-generated method stub
+		//System.out.println("size:"+MlidData.size()+"service:"+ MlidData.get(1).getServiceType()+"::"+MlidData.get(1).getMLID());
+		//System.out.println("dt"+MlidData.get(1));
+	
+		/*String service = MlidData.get(1).getServiceType();
+		List<Mlid> mlidlist = mlidRepository.downloadMlid(service);
+		if(mlidlist.isEmpty()) {
+		
+		//mlidRepository.saveAll(MlidData);
+		userMsg.setMessage("Added Succesfully");
+		}*/
+		else
+		{
+			userMsg.setMessage("Service Type already exists");
+		}
+		
+		return userMsg;
+		
+	}
+	@Override
+	public UserMessage deleteMlid(String service)
+	{
+		UserMessage userMsg = new UserMessage();
+		System.out.println("servicenew:"+service+"delete");
+	int i =	mlidRepository.updateMlidList(service+"delete", service);
+	//System.out.println("count"+i);
+	userMsg.setMessage("Deleted Succesfully");
+		return userMsg;
+		
+	}
+
 	
 }
