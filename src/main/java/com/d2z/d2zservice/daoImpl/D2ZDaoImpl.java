@@ -163,6 +163,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 				senderDataObj.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
 				senderDataObj.setArticleId(labelData.getArticleId());		        
 				senderDataObj.setDatamatrix(D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
+				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
+
 			}
 			senderDataList.add(senderDataObj);
 		}
@@ -292,6 +294,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 				senderDataObj.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
 				senderDataObj.setArticleId(labelData.getArticleId());		        
 				senderDataObj.setDatamatrix(D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
+				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
 			}
 			senderDataList.add(senderDataObj);
 		}

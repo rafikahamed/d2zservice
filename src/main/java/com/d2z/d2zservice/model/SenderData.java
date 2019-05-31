@@ -17,7 +17,7 @@ public class SenderData {
 	private int userID;
 	private String senderFilesID;
 	@NotEmpty(message = "Reference Number is mandatory")
-	@Pattern(regexp="^[a-zA-Z0-9]+$", message = "Invalid reference number")
+	//@Pattern(regexp="^[a-zA-Z0-9]+$", message = "Invalid reference number")
 	private String referenceNumber;
 	//@NotEmpty(message = "Consignee Name is mandatory")
 //	@Pattern(regexp="^[a-zA-Z ]+$", message = "Consignee Name must contain only alphabets")

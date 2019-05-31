@@ -3,6 +3,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="eparcelLabel" pageWidth="378" pageHeight="563" columnWidth="358" leftMargin="10" rightMargin="10" topMargin="10" bottomMargin="10" uuid="497a1b87-dc25-40fb-8871-81fa7737ae82">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="net.sf.jasperreports.text.truncate.at.char" value="true"/>
 	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="441"/>
 	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="545"/>
 	<style name="labelStyle" isBlankWhenNull="true" fontName="MyArial"/>

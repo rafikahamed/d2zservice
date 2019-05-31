@@ -627,5 +627,12 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		List<FFResponse> freiPostResponseData = ffResponseRepository.fetchFreiPostResponseResponse(fromDate,toDate);
 		return freiPostResponseData;
 	}
+
+	@Override
+	public List<String> trackingLabel(List<String> refBarNumArray) {
+		List<String> trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNumArray);
+		System.out.println(trackingDetails.size());
+		return trackingDetails;
+	}
 	
 }

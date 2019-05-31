@@ -1,11 +1,19 @@
 package com.d2z.d2zservice.serviceImpl;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.ListUtils;
@@ -36,6 +44,7 @@ import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
@@ -46,6 +55,24 @@ import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.proxy.PcaProxy;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 import com.d2z.d2zservice.validation.D2ZValidator;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.util.JRSaver;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import uk.org.okapibarcode.backend.DataMatrix;
+import uk.org.okapibarcode.backend.OkapiException;
+import uk.org.okapibarcode.backend.Symbol;
+import uk.org.okapibarcode.backend.DataMatrix.ForceMode;
+import uk.org.okapibarcode.backend.Symbol.DataType;
+import uk.org.okapibarcode.output.Java2DRenderer;
+
 import com.d2z.d2zservice.model.ExportShipment;
 
 @Service
@@ -703,6 +730,201 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			return freiPostResponse;
 		}
 		return null;
+	}
+
+	@Override
+	public byte[] trackingLabel(List<String> refBarNumArray) {
+
+		List<SenderData> trackingLabelList = new ArrayList<SenderData>();
+		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNumArray);
+		Iterator itr = trackingLabelData.iterator();
+		while (itr.hasNext()) {
+			SenderData trackingLabel = new SenderData();
+			Object[] trackingArray = (Object[]) itr.next();
+			if (trackingArray[0] != null)
+				trackingLabel.setReferenceNumber(trackingArray[0].toString());
+			if (trackingArray[1] != null)
+				trackingLabel.setConsigneeName(trackingArray[1].toString());
+			if (trackingArray[2] != null)
+				trackingLabel.setConsigneeAddr1(trackingArray[2].toString());
+			if (trackingArray[3] != null)
+				trackingLabel.setConsigneeSuburb(trackingArray[3].toString());
+			if (trackingArray[4] != null)
+				trackingLabel.setConsigneeState(trackingArray[4].toString());
+			if (trackingArray[5] != null)
+				trackingLabel.setConsigneePostcode(trackingArray[5].toString());
+			if (trackingArray[6] != null)
+				trackingLabel.setConsigneePhone(trackingArray[6].toString());
+			if (trackingArray[7] != null)
+				trackingLabel.setWeight(trackingArray[7].toString());
+			if (trackingArray[8] != null)
+				trackingLabel.setShipperName(trackingArray[8].toString());
+			if (trackingArray[9] != null)
+				trackingLabel.setShipperAddr1(trackingArray[9].toString());
+			if (trackingArray[10] != null)
+				trackingLabel.setShipperCity(trackingArray[10].toString());
+			if (trackingArray[11] != null)
+				trackingLabel.setShipperState(trackingArray[11].toString());
+			if (trackingArray[12] != null)
+				trackingLabel.setShipperCountry(trackingArray[12].toString());
+			if (trackingArray[13] != null)
+				trackingLabel.setShipperPostcode(trackingArray[13].toString());
+			if (trackingArray[14] != null)
+				trackingLabel.setBarcodeLabelNumber(trackingArray[14].toString());
+			if (trackingArray[15] != null)
+				trackingLabel.setDatamatrix(trackingArray[15].toString());
+			if (trackingArray[16] != null)
+				trackingLabel.setInjectionState(trackingArray[16].toString());
+			if (trackingArray[17] != null)
+				trackingLabel.setSku(trackingArray[17].toString());
+			if (trackingArray[18] != null)
+				trackingLabel.setLabelSenderName(trackingArray[18].toString());
+			if (trackingArray[19] != null)
+				trackingLabel.setDeliveryInstructions(trackingArray[19].toString());
+			if (trackingArray[20] != null)
+				trackingLabel.setConsigneeCompany(trackingArray[20].toString());
+			if (trackingArray[21] != null)
+				trackingLabel.setCarrier(trackingArray[21].toString());
+			if (trackingArray[22] != null)
+				trackingLabel.setConsigneeAddr2(trackingArray[22].toString());
+			if (trackingArray[23] != null)
+				trackingLabel.setReturnAddress1(trackingArray[23].toString());
+			if (trackingArray[24] != null)
+				trackingLabel.setReturnAddress2(trackingArray[24].toString());
+			boolean setGS1DataType = false;
+			if(trackingLabel.getCarrier().equalsIgnoreCase("Express") || trackingLabel.getCarrier().equalsIgnoreCase("eParcel")) {
+				setGS1DataType = true;
+			}
+					trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix(),setGS1DataType));
+			trackingLabelList.add(trackingLabel);
+		}
+
+		/*
+		 * JRBeanCollectionDataSource beanColDataSource = new
+		 * JRBeanCollectionDataSource(trackingLabelList); Map<String,Object> parameters
+		 * = new HashMap<>(); byte[] bytes = null; //Blob blob = null; JasperReport
+		 * jasperReport = null; try (ByteArrayOutputStream byteArray = new
+		 * ByteArrayOutputStream()) { jasperReport =
+		 * JasperCompileManager.compileReport(getClass().getResource(
+		 * "/eparcelLabel.jrxml").openStream()); JRSaver.saveObject(jasperReport,
+		 * "label.jasper"); JasperPrint jasperPrint =
+		 * JasperFillManager.fillReport(jasperReport, parameters, beanColDataSource); //
+		 * return the PDF in bytes bytes =
+		 * JasperExportManager.exportReportToPdf(jasperPrint); // blob = new
+		 * javax.sql.rowset.serial.SerialBlob(bytes); } catch (JRException | IOException
+		 * e) { e.printStackTrace(); } return bytes;
+		 */
+		List<SenderData> eParcelData = new ArrayList<SenderData>();
+
+		List<SenderData> expressData = new ArrayList<SenderData>();
+		List<SenderData> fastwayData = new ArrayList<SenderData>();
+
+		for (SenderData data : trackingLabelList) {
+			if (data.getCarrier().equalsIgnoreCase("eParcel")) {
+				eParcelData.add(data);
+			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
+				expressData.add(data);
+			}else if(data.getCarrier().equalsIgnoreCase("Fastway")) {
+				fastwayData.add(data);
+			}
+		}
+
+		Map<String, Object> parameters = new HashMap<>();
+		byte[] bytes = null;
+		// Blob blob = null;
+		JRBeanCollectionDataSource eParcelDataSource;
+		JRBeanCollectionDataSource expressDataSource;
+		JasperReport eParcelLabel = null;
+		JasperReport expressLabel = null;
+		JRBeanCollectionDataSource fastwayDataSource;
+		JasperReport fastwayLabel = null;
+		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
+			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
+			if (!eParcelData.isEmpty()) {
+				System.out.println("Generating eParcel..." + eParcelData.size());
+				eParcelDataSource = new JRBeanCollectionDataSource(eParcelData);
+				eParcelLabel = JasperCompileManager
+						.compileReport(getClass().getResource("/eparcelLabel.jrxml").openStream());
+				JRSaver.saveObject(eParcelLabel, "label.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, eParcelDataSource));
+
+			}
+			if (!expressData.isEmpty()) {
+				System.out.println("Generating Express..." + expressData.size());
+				expressDataSource = new JRBeanCollectionDataSource(expressData);
+				expressLabel = JasperCompileManager
+						.compileReport(getClass().getResource("/ExpressLabel.jrxml").openStream());
+				JRSaver.saveObject(expressLabel, "express.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(expressLabel, parameters, expressDataSource));
+			}
+			if (!fastwayData.isEmpty()) {
+				System.out.println("Generating Fastway..." + fastwayData.size());
+				fastwayDataSource = new JRBeanCollectionDataSource(fastwayData);
+				fastwayLabel = JasperCompileManager
+						.compileReport(getClass().getResource("/FastWayLabel.jrxml").openStream());
+				JRSaver.saveObject(fastwayLabel, "FastWayLabel.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(fastwayLabel, parameters, fastwayDataSource));
+			}
+			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
+			JRPdfExporter exporter = new JRPdfExporter();
+			exporter.setExporterInput(SimpleExporterInput.getInstance(jasperPrintList));
+			exporter.setExporterOutput(exporterOutput);
+			exporter.exportReport();
+			// return the PDF in bytes
+			bytes = outputStream.toByteArray();
+			/*
+			 * try(OutputStream out = new FileOutputStream("Label.pdf")){ out.write(bytes);
+			 * }
+			 */
+			// bytes = JasperExportManager.exportReportToPdf(jasperPrint);
+			// blob = new javax.sql.rowset.serial.SerialBlob(bytes);
+		} catch (JRException | IOException e) {
+			e.printStackTrace();
+		}
+		return bytes;
+	
+	}
+	private BufferedImage generateDataMatrix(String datamatrixInput, boolean setGS1DataType) {
+		BufferedImage datamatrixImage = null;
+		try {
+			// Set up the DataMatrix object
+			DataMatrix dataMatrix = new DataMatrix();
+			// We need a GS1 DataMatrix barcode.
+			if(setGS1DataType)
+			dataMatrix.setDataType(DataType.GS1);
+			
+			// 0 means size will be set automatically according to amount of data (smallest
+			// possible).
+			dataMatrix.setPreferredSize(0);
+			// Don't want no funky rectangle shapes, if we can avoid it.
+			dataMatrix.setForceMode(ForceMode.SQUARE);
+			dataMatrix.setContent(datamatrixInput);
+			datamatrixImage = getMagnifiedBarcode(dataMatrix);
+			// return getBase64FromByteArrayOutputStream(getMagnifiedBarcode(dataMatrix,
+			// MAGNIFICATION));
+		} catch (OkapiException oe) {
+			oe.printStackTrace();
+		}
+		return datamatrixImage;
+
+	}
+
+	private BufferedImage getMagnifiedBarcode(Symbol symbol) {
+		final int MAGNIFICATION = 10;
+		final int BORDER_SIZE = 0 * MAGNIFICATION;
+		// Make DataMatrix object into bitmap
+		BufferedImage image = new BufferedImage((symbol.getWidth() * MAGNIFICATION) + (2 * BORDER_SIZE),
+				(symbol.getHeight() * MAGNIFICATION) + (2 * BORDER_SIZE), BufferedImage.TYPE_INT_RGB);
+		Graphics2D g2d = image.createGraphics();
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setColor(Color.WHITE);
+		g2d.fillRect(0, 0, (symbol.getWidth() * MAGNIFICATION) + (2 * BORDER_SIZE),
+				(symbol.getHeight() * MAGNIFICATION) + (2 * BORDER_SIZE));
+		Java2DRenderer renderer = new Java2DRenderer(g2d, 10, Color.WHITE, Color.BLACK);
+		renderer.render(symbol);
+
+		return image;
 	}
 
 }

@@ -1,12 +1,15 @@
 package com.d2z.d2zservice.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -218,5 +221,16 @@ public class D2ZSuperUserController {
     		@RequestParam("toDate") String toDate){
 		return superUserD2zService.fetchApiLogs(client, fromDate, toDate);
     }
+	@RequestMapping(method = RequestMethod.POST, path = "/tracking-label")
+	public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum) {
+		System.out.println("Incoming refBarNum :: " + refBarNum);
+		List<String> refBarNumArray = Stream.of(refBarNum.split(",")).collect(Collectors.toList());
+		byte[] bytes = superUserD2zService.trackingLabel(refBarNumArray);
+		return ResponseEntity.ok()
+				// Specify content type as PDF
+				.header("Content-Type", "application/pdf; charset=UTF-8")
+				// Tell browser to display PDF if it can
+				.header("Content-Disposition", "inline; filename=\"Label.pdf\"").body(bytes);
+	}
 	
 }

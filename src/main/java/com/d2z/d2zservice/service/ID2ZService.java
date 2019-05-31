@@ -81,7 +81,7 @@ public interface ID2ZService {
 
 	public UserMessage contactUs(String email, String message, String name, String subject);
 
-	public void triggerFreipost();
+	public void triggerFreipost(String referenceNumbers);
 
 	public void triggerFDM();
 
