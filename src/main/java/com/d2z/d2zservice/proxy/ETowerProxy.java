@@ -3,6 +3,7 @@ package com.d2z.d2zservice.proxy;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -25,25 +26,28 @@ public class ETowerProxy {
 	
 	//String baseURL = "http://qa-cn.etowertech.com/";
 	//Prod URL
-	String baseURL = "http://au.etowertech.com/";
+	@Value("${eTower.url}")
+	private String baseURL; //= "http://au.etowertech.com/";
+	@Value("${eTower.key}")
+	private String key;
+	@Value("${eTower.token}")
+	private String token;
+	
 	public TrackingEventResponse makeCallForTrackingEvents(List<String> trackingNumber) {
 
 
-		String url = baseURL+"/services/shipper/trackingEvents/";
-		//Prod URL
-		//SSL cert issue fix
-		//String url = "http://au.etowertech.com/services/integration/shipper/trackingEvents/";
-			//"https://au.etowertech.com/services/integration/shipper/trackingEvents/";
+		String url = baseURL+"services/shipper/trackingEvents/";
+		
+		System.out.println(url);
+	
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		requestFactory.setOutputStreaming(false);
         RestTemplate restTemplate = new RestTemplate(requestFactory);
-        restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor()));
+        restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(key,token)));
 	
 		HttpEntity<List<String>> httpEntity = new HttpEntity<List<String>>(trackingNumber);
 
         System.out.println("Making call to etower");
-        //ResponseEntity<List<List<ETowerTrackingDetails>>> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,new ParameterizedTypeReference<List<List<ETowerTrackingDetails>>>() {});
-        //TrackingEventResponse response = restTemplate.postForObject(url, httpEntity, TrackingEventResponse.class); 
         ResponseEntity<TrackingEventResponse> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,TrackingEventResponse.class);
         TrackingEventResponse responseList = response.getBody();
         ObjectWriter ow = new ObjectMapper().writer();
@@ -51,7 +55,6 @@ public class ETowerProxy {
 		try {
 			jsonResponse = ow.writeValueAsString(responseList);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         System.out.println("Response :: " + jsonResponse);
@@ -92,7 +95,7 @@ public class ETowerProxy {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		requestFactory.setOutputStreaming(false);
         RestTemplate restTemplate = new RestTemplate(requestFactory);
-        restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor()));
+        restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(key,token)));
     
 		HttpEntity<List<CreateShippingRequest>> httpEntity = new HttpEntity<List<CreateShippingRequest>>(request);
 
@@ -122,7 +125,7 @@ public class ETowerProxy {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		requestFactory.setOutputStreaming(false);
         RestTemplate restTemplate = new RestTemplate(requestFactory);
-        restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor()));
+        restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(key,token)));
         HttpEntity<List<String>> httpEntity = new HttpEntity<List<String>>(referenceNumbers);
 
         System.out.println("Making call to etower");
@@ -150,7 +153,7 @@ public class ETowerProxy {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		requestFactory.setOutputStreaming(false);
         RestTemplate restTemplate = new RestTemplate(requestFactory);
-        restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor()));
+        restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(key,token)));
      
 		HttpEntity<List<String>> httpEntity = new HttpEntity<List<String>>(trackingNumber);
 

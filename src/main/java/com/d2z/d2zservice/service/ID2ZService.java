@@ -27,7 +27,7 @@ import com.d2z.d2zservice.model.UserMessage;
 
 public interface ID2ZService {
 	
-	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException;
+	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException, EtowerFailureResponseException;
 
 	public List<DropDownModel> fileList(Integer userId);
 	
@@ -88,4 +88,6 @@ public interface ID2ZService {
 	public ResponseMessage auTrackingEvent();
 	
 	public void makeCalltoAusPost();
+
+	public void updateRates();
 }

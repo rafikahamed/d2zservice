@@ -68,6 +68,9 @@ import javax.persistence.Table;
 	  }),
    @NamedStoredProcedureQuery(name = "update_cubicWeight", 
 	  procedureName = "updateweightref"
+	 ),
+   @NamedStoredProcedureQuery(name = "rates", 
+	  procedureName = "Rates"
 	 )
 })
 public class SenderdataMaster implements Serializable {

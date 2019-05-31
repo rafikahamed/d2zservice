@@ -4,9 +4,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.d2z</groupId>
-	<artifactId>speedcourier-prodservice</artifactId>
-	<version>0.0.4-SNAPSHOT</version>
-	<name>speedcourier-service</name>
+	<artifactId>d2z-testservice</artifactId>
+	<version>0.1.2-SNAPSHOT</version>
+	<name>d2z-service</name>
 	<description>Demo project for Spring Boot</description>
 
 	<parent>
@@ -258,7 +258,7 @@
             	</configuration>
 			</plugin>
 		
-<plugin>
+  <plugin>
     <groupId>org.jvnet.jaxb2.maven2</groupId>
     <artifactId>maven-jaxb2-plugin</artifactId>
     <version>0.13.2</version>
@@ -271,7 +271,7 @@
     </executions>
     <configuration>
   <generateDirectory>${project.basedir}/src/main/java</generateDirectory>
-       <!--  <schemaDirectory>${project.basedir}/src/main/resources/wsdl</schemaDirectory>
+     <!--  <schemaDirectory>${project.basedir}/src/main/resources/wsdl</schemaDirectory>
         <schemaIncludes>
             <include>*.wsdl</include>
         </schemaIncludes> -->

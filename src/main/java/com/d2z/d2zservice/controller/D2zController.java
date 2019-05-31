@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.DropDownModel;
@@ -44,11 +45,11 @@ public class D2zController {
 	public UserDetails login(@RequestParam("userName") String userName, @RequestParam("passWord") String passWord) {
 		UserDetails userDetails = d2zService.login(userName, passWord);
 		return userDetails;
-	}
 
-	@RequestMapping(method = RequestMethod.POST, path = "/consignment-fileUpload")
-	public List<SenderDataResponse> consignmentFileUpload(@RequestBody List<@Valid SenderData> orderDetailList)
-			throws ReferenceNumberNotUniqueException {
+    }
+	
+	@RequestMapping( method = RequestMethod.POST, path = "/consignment-fileUpload")
+    public List<SenderDataResponse> consignmentFileUpload( @RequestBody List<@Valid SenderData> orderDetailList) throws ReferenceNumberNotUniqueException, EtowerFailureResponseException{
 		List<SenderDataResponse> successMsg = d2zService.exportParcel(orderDetailList);
 		return successMsg;
 	}

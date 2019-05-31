@@ -72,7 +72,10 @@ public class FreipostWrapper {
 		    	 trackingItems.setBagName(factory.createTrackingItemUploadBagName("1"));
 		    	 
 		    	 Consumer consumer = new Consumer();
-		    	 consumer.setAddress(factory.createConsumerAddress(senderData.getConsignee_addr1()));
+		    	 String addr = (null==senderData.getConsignee_addr2() || senderData.getConsignee_addr2().isEmpty())
+		    			 															?senderData.getConsignee_addr1()
+		    			 															:senderData.getConsignee_addr1().concat(",").concat(senderData.getConsignee_addr2());
+		    	 consumer.setAddress(factory.createConsumerAddress(addr));
 		    	 consumer.setCountry(factory.createConsumerCountry("AUSTRALIA"));
 		    	 consumer.setEmail(factory.createConsumerEmail("becattack@hotmail.com"));
 		    	 consumer.setID(UUID.randomUUID().toString());
@@ -86,7 +89,8 @@ public class FreipostWrapper {
 		    	 trackingItems.setCostFreight(factory.createTrackingItemUploadCostFreight(BigDecimal.valueOf(senderData.getValue())));
 		    	 trackingItems.setCurrency(factory.createTrackingItemUploadCurrency(senderData.getCurrency()));
 		    	 trackingItems.setDescription(factory.createTrackingItemUploadDescription(senderData.getProduct_Description()));
-		    	 trackingItems.setInvoiceNumber(factory.createTrackingItemUploadInvoiceNumber(senderData.getReference_number()));
+		    	 String invoiceNumber = senderData.getReference_number();
+		    	 trackingItems.setInvoiceNumber(factory.createTrackingItemUploadInvoiceNumber(invoiceNumber.startsWith("EPF")?invoiceNumber.substring(3):invoiceNumber));
 		    	 trackingItems.setInvoiceValue(BigDecimal.valueOf(senderData.getValue()));
 		    	 trackingItems.setOriginCountry(factory.createTrackingItemUploadOriginCountry(getOriginCountry(senderData.getConsignee_State())));
 		    	 trackingItems.setServiceType(factory.createTrackingItemUploadServiceType("APST"));
