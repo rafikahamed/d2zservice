@@ -222,6 +222,7 @@ public class D2ZSuperUserController {
     		@RequestParam("toDate") String toDate){
 		return superUserD2zService.fetchApiLogs(client, fromDate, toDate);
     }
+	
 	@RequestMapping(method = RequestMethod.POST, path = "/tracking-label")
 	public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum) {
 		System.out.println("Incoming refBarNum :: " + refBarNum);
