@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
@@ -232,5 +233,25 @@ public class D2ZSuperUserController {
 				// Tell browser to display PDF if it can
 				.header("Content-Disposition", "inline; filename=\"Label.pdf\"").body(bytes);
 	}
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/deleteMLID")
+    public UserMessage deleteMLID(@RequestParam("service") String service) {
+		UserMessage successMsg = superUserD2zService.deleteMLID(service);
+		return successMsg;
+    }
+	
+
+	@RequestMapping( method = RequestMethod.GET, path = "/downloadMLID")
+    public List<Mlid> downloadMLID(@RequestParam("service") String service) {
+		
+		return superUserD2zService.downloadMlid(service);
+    }
+	
+	@RequestMapping( method = RequestMethod.POST, path = "/addMLID", consumes=MediaType.APPLICATION_JSON)
+    public UserMessage addMLID(@RequestBody List<Object> MlidData) {
+		UserMessage successMsg = superUserD2zService.uploadMlid(MlidData);
+		return successMsg;
+    }
+
 	
 }

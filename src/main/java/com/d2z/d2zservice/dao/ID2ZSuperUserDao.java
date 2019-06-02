@@ -4,6 +4,7 @@ import java.util.List;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
+import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
@@ -121,4 +122,9 @@ public interface ID2ZSuperUserDao {
 
 	List<String> trackingLabel(List<String> refBarNumArray);
 
+UserMessage deleteMlid(String service);
+	
+	List<Mlid> downloadMlid(String service);
+	
+ UserMessage addMlid(List<Object> MlidData);
 }
