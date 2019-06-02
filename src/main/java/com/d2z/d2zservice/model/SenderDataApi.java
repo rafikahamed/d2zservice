@@ -20,6 +20,7 @@ public class SenderDataApi {
 	private String referenceNumber;
 	//@NotEmpty(message = "Consignee Name is mandatory")
 	//@Pattern(regexp="^[a-zA-Z0-9]+$", message = "Consignee Name must contain only alphabets")
+	@Size(max=40)
 	private String consigneeName;
 	private String consigneeCompany;
 	@NotEmpty(message = "Consignee Address is mandatory")

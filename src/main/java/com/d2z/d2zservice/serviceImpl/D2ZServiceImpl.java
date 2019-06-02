@@ -897,7 +897,8 @@ public class D2ZServiceImpl implements ID2ZService {
 				barcode.insert(41, '|');
 				barcode.insert(49, '|');
 				trackingDetail.setBarcode_id(barcode.toString());
-				trackingDetail.setConsignment_id(data.getArticleId().substring(0, 20));
+				
+				trackingDetail.setConsignment_id(data.getArticleId().substring(0, 12));
 				item.setTracking_details(trackingDetail);
 
 				items.add(item);
