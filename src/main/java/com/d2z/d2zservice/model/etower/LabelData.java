@@ -10,15 +10,12 @@ public class LabelData {
 	private String articleId;
 	private String barCode;
 	private String barCode2D;
-
-	public String getBarCode2D() {
-		return barCode2D;
-	}
-	public void setBarCode2D(String barCode2D) {
-		this.barCode2D = barCode2D;
-	}
+	private String provider;
+	private String hub;
+	private String matrix;
 	private String status;
 	private List<EtowerErrorResponse> errors;
+
 	public String getOrderId() {
 		return orderId;
 	}
@@ -60,6 +57,30 @@ public class LabelData {
 	}
 	public void setErrors(List<EtowerErrorResponse> errors) {
 		this.errors = errors;
+	}
+	public String getProvider() {
+		return provider;
+	}
+	public void setProvider(String provider) {
+		this.provider = provider;
+	}
+	public String getBarCode2D() {
+		return barCode2D;
+	}
+	public void setBarCode2D(String barCode2D) {
+		this.barCode2D = barCode2D;
+	}
+	public String getHub() {
+		return hub;
+	}
+	public void setHub(String hub) {
+		this.hub = hub;
+	}
+	public String getMatrix() {
+		return matrix;
+	}
+	public void setMatrix(String matrix) {
+		this.matrix = matrix;
 	}
 	
 }

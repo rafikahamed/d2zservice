@@ -7,13 +7,15 @@ import java.util.stream.Collectors;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.APIRates;
+import com.d2z.d2zservice.entity.FastwayPostcode;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.util.BeanUtil;
 
-
 public class D2ZSingleton {
+	
 	private static D2ZSingleton instance;
 	private static List<String> postCodeZoneList;
+	private static List<String> FWPostCodeZoneList;
 	private static Map<String,String> postCodeStateMap;
 	private static Map<String,Double> postCodeWeightMap = new HashMap<String,Double>(); ;
 	private static Map<String,String> postCodeZoneMap;
@@ -22,12 +24,16 @@ public class D2ZSingleton {
 		return postCodeZoneList;
 	}
     
+    public List<String> getFWPostCodeZoneList() {
+		return FWPostCodeZoneList;
+	}
     
 	private ID2ZDao d2zDao = BeanUtil.getBean(ID2ZDao.class);
 	
 	private D2ZSingleton() {
 		getPostCodeZone();
 		getRates_PostCodeWeight();
+		getFWPostCodeZone();
 	}
 	
 	private void getRates_PostCodeWeight() {
@@ -48,10 +54,9 @@ public class D2ZSingleton {
 	    }
 	    return instance;
 	}
+	
 	private void getPostCodeZone() {
 			List<PostcodeZone> postCodeZoneDaoObj = d2zDao.fetchAllPostCodeZone();
-			//System.out.println("Fetched PostCodeZone details");
-			//System.out.println(postCodeZoneDaoObj.toString());
 			postCodeZoneList = postCodeZoneDaoObj.stream().map(daoObj -> {
 				return daoObj.getPostcodeId().getSuburb().concat(daoObj.getPostcodeId().getPostcode());
 			}).collect(Collectors.toList());
@@ -65,6 +70,14 @@ public class D2ZSingleton {
 				postCodeZoneMap.put(obj.getPostcodeId().getSuburb()+obj.getPostcodeId().getPostcode(), obj.getZone());
 			});	
 	}
+	
+	private void getFWPostCodeZone(){
+		List<FastwayPostcode> postCodeFWZoneDaoObj = d2zDao.fetchFWPostCodeZone();
+		FWPostCodeZoneList = postCodeFWZoneDaoObj.stream().map(daoObj -> {
+			return daoObj.getFwPostCodeId().getSuburb().concat(daoObj.getFwPostCodeId().getPostcode());
+		}).collect(Collectors.toList());
+		System.out.println(FWPostCodeZoneList.size());
+	}
 
 	public static Map<String, String> getPostCodeStateMap(){
 		return postCodeStateMap;
@@ -77,3 +90,4 @@ public class D2ZSingleton {
 	}
 
 }
+	

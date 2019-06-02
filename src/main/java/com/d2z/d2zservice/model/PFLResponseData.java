@@ -1,7 +1,5 @@
 package com.d2z.d2zservice.model;
 
-import java.util.List;
-
 public class PFLResponseData {
 	
 	private String status;
@@ -10,7 +8,9 @@ public class PFLResponseData {
 	private String tracking;
 	private String hub;
 	private String matrix;
-	private List<PFLErrorResponse> errors;
+	private String error;
+	private String code;
+//	private List<PFLErrorResponse> errors;
 	
 	public String getStatus() {
 		return status;
@@ -36,12 +36,12 @@ public class PFLResponseData {
 	public void setTracking(String tracking) {
 		this.tracking = tracking;
 	}
-	public List<PFLErrorResponse> getErrors() {
-		return errors;
-	}
-	public void setErrors(List<PFLErrorResponse> errors) {
-		this.errors = errors;
-	}
+//	public List<PFLErrorResponse> getErrors() {
+//		return errors;
+//	}
+//	public void setErrors(List<PFLErrorResponse> errors) {
+//		this.errors = errors;
+//	}
 	public String getHub() {
 		return hub;
 	}
@@ -53,6 +53,18 @@ public class PFLResponseData {
 	}
 	public void setMatrix(String matrix) {
 		this.matrix = matrix;
+	}
+	public String getError() {
+		return error;
+	}
+	public void setError(String error) {
+		this.error = error;
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
 	}
 	
 }
