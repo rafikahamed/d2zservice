@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.APIRatesRequest;

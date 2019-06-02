@@ -2,27 +2,22 @@ package com.d2z.d2zservice.dao;
 
 import java.util.List;
 import java.util.Map;
-
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.ETowerResponse;
+import com.d2z.d2zservice.entity.FastwayPostcode;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
-import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.model.ClientDashbaord;
-import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
-import com.d2z.d2zservice.model.PflCreateShippingRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
-import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
-import com.d2z.d2zservice.model.etower.CreateShippingRequest;
 import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
@@ -89,7 +84,6 @@ public interface ID2ZDao {
 
 	public ClientDashbaord clientDahbaord(Integer userId);
 
-
 	List<String> fetchReferenceNumberByUserId(Integer userId);
 
 	public void deleteConsignment(String referenceNumbers);
@@ -112,9 +106,6 @@ public interface ID2ZDao {
 
 	public List<String>  fetchDataForAUPost();
 
-	public void createShippingOrderPFL(CreateConsignmentRequest incomingRequest,PflCreateShippingRequest PFLRequest,
-			List<SenderDataResponse> senderDataResponseList) ;
-
 	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails);
     
 	public void logAUPostResponse(List<AUPostResponse> aupostresponse);
@@ -131,5 +122,6 @@ public interface ID2ZDao {
 
 	public List<String> fetchDataForEtowerForeCastCall(String[] refNbrs);
 
+	public List<FastwayPostcode> fetchFWPostCodeZone();
 
 }
