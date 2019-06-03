@@ -294,6 +294,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 				senderDataObj.setInjectionType("Direct Injection");
 				senderDataObj.setInjectionState(pflLabel.getHub());
 				senderDataObj.setBarcodelabelNumber(pflLabel.getTrackingNo());
+				senderDataObj.setArticleId(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
 				senderDataObj.setCarrier("Fastway");
 			}
