@@ -69,6 +69,7 @@ import com.d2z.d2zservice.model.Ebay_Shipment;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.FDMManifestDetails;
+import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.PflCreateShippingOrderInfo;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
@@ -107,6 +108,7 @@ import com.d2z.d2zservice.util.FTPUploader;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.wrapper.ETowerWrapper;
 import com.d2z.d2zservice.wrapper.FreipostWrapper;
+import com.d2z.d2zservice.wrapper.PFLWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 import com.google.gson.Gson;
@@ -171,6 +173,9 @@ public class D2ZServiceImpl implements ID2ZService {
 
 	@Autowired
 	private FTPUploader ftpUploader;
+	
+	@Autowired
+	PFLWrapper pflWrapper;
 
 	private static final Logger logger = LoggerFactory.getLogger(D2ZServiceImpl.class);
 	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -690,8 +695,8 @@ public class D2ZServiceImpl implements ID2ZService {
 	}
 
 	@Override
-	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail)
-			throws ReferenceNumberNotUniqueException, EtowerFailureResponseException {
+	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail) throws 
+		ReferenceNumberNotUniqueException, EtowerFailureResponseException {
 		Integer userId = userRepository.fetchUserIdbyUserName(orderDetail.getUserName());
 		if (userId == null) {
 			throw new InvalidUserException("User does not exist", orderDetail.getUserName());
@@ -702,44 +707,59 @@ public class D2ZServiceImpl implements ID2ZService {
 		}
 		d2zValidator.isReferenceNumberUnique(orderDetail.getConsignmentData());
 		d2zValidator.isServiceValid(orderDetail);
-		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
-
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 
 	    String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
-		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType)){
+		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType)){
+			d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
-			 return senderDataResponseList;
-		}
-		else if ("FWS".equalsIgnoreCase(serviceType)) {
-			System.out.println("making PFL call");
-			makeCreateShippingOrderPFLCall(orderDetail,senderDataResponseList);
+			return senderDataResponseList;
+		}else if ("FWS".equalsIgnoreCase(serviceType)) {
+			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
+			makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName());
+			return senderDataResponseList;
+		}else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) || "MCM3".equalsIgnoreCase(serviceType)){
+			PFLSenderDataRequest consignmentData = d2zValidator.isFWSubPostCodeValid(orderDetail);
+			if(consignmentData.getPflSenderDataApi().size() > 0) {
+				makeCreateShippingOrderPFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName());
+			}
+			if(consignmentData.getNonPflSenderDataApi().size() > 0) {
+				d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+				String senderFileID = d2zDao.createConsignments(consignmentData.getNonPflSenderDataApi(), userId, orderDetail.getUserName(), null);
+				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
+				Iterator itr = insertedOrder.iterator();
+				while (itr.hasNext()) {
+					Object[] obj = (Object[]) itr.next();
+					senderDataResponse = new SenderDataResponse();
+					senderDataResponse.setReferenceNumber(obj[0].toString());
+					String barcode = obj[1].toString();
+					senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+					senderDataResponseList.add(senderDataResponse);
+				}
+			}
 			return senderDataResponseList;
 		}
-		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(), userId,
-				orderDetail.getUserName(), null);
+		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(), userId, orderDetail.getUserName(), null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
-
 		Iterator itr = insertedOrder.iterator();
 		while (itr.hasNext()) {
 			Object[] obj = (Object[]) itr.next();
 			senderDataResponse = new SenderDataResponse();
 			senderDataResponse.setReferenceNumber(obj[0].toString());
 			String barcode = obj[1].toString();
-			// String formattedBarcode =
-			// barcode.substring(0,barcode.length()-6).concat("120000");
 			senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
 			senderDataResponseList.add(senderDataResponse);
 		}
 		return senderDataResponseList;
 	}
 
-	private void makeCreateShippingOrderPFLCall(CreateConsignmentRequest data,
-			List<SenderDataResponse> senderDataResponseList) {
+	private void makeCreateShippingOrderPFLCall (List<SenderDataApi> data,
+			List<SenderDataResponse> senderDataResponseList, String userName) throws EtowerFailureResponseException {
 		PflCreateShippingRequest pflRequest = new PflCreateShippingRequest();
 		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
-		for (SenderDataApi orderDetail : data.getConsignmentData()) {
+		for (SenderDataApi orderDetail : data) {
 			PflCreateShippingOrderInfo request = new PflCreateShippingOrderInfo();
 			request.setCustom_ref(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
@@ -759,10 +779,8 @@ public class D2ZServiceImpl implements ID2ZService {
 			pflOrderInfoRequest.add(request);
 		}
 		pflRequest.setOrderinfo(pflOrderInfoRequest);
-		d2zDao.createShippingOrderPFL(data, pflRequest, senderDataResponseList);
+		pflWrapper.createShippingOrderPFL(data, pflRequest, userName, senderDataResponseList);
 	}
-
-	
 
 	@Override
 	public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList) {
@@ -851,7 +869,9 @@ public class D2ZServiceImpl implements ID2ZService {
 				to.setPostcode(data.getConsignee_Postcode());
 				to.setState(data.getConsignee_State());
 				to.setSuburb(data.getConsignee_Suburb());
-				to.getLines().add(data.getConsignee_addr1());
+				to.getLines().add(data.getConsignee_addr1().length() > 39	
+						        ? data.getConsignee_addr1().substring(0, 39)
+								:data.getConsignee_addr1());
 				String regex = "^[0-9]{1,20}$";
 				String phone = "";
 				if (null != data.getConsignee_Phone() && data.getConsignee_Phone().matches(regex)) {
@@ -870,7 +890,9 @@ public class D2ZServiceImpl implements ID2ZService {
 				// data.getDimensions_Length().toString());
 				// item.setWidth(data.getDimensions_Width() == null ? "" :
 				// data.getDimensions_Width().toString());
-				item.setItem_description(data.getProduct_Description());
+				item.setItem_description(data.getProduct_Description().length() > 50
+						? data.getProduct_Description().substring(0, 50)
+								:data.getProduct_Description());
 				item.setWeight(data.getCubic_Weight() == null ? "" : data.getCubic_Weight().toString());
 
 				com.d2z.d2zservice.model.auspost.TrackingDetails trackingDetail = new com.d2z.d2zservice.model.auspost.TrackingDetails();
@@ -879,7 +901,8 @@ public class D2ZServiceImpl implements ID2ZService {
 				barcode.insert(41, '|');
 				barcode.insert(49, '|');
 				trackingDetail.setBarcode_id(barcode.toString());
-				trackingDetail.setConsignment_id(data.getArticleId().substring(0, 20));
+				
+				trackingDetail.setConsignment_id(data.getArticleId().substring(0, 12));
 				item.setTracking_details(trackingDetail);
 
 				items.add(item);
