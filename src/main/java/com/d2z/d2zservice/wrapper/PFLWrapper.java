@@ -54,6 +54,7 @@ public class PFLWrapper {
 		for (PFLResponseData data : pflResponse.getResult()) {
 			LabelData labelData = new LabelData();
 			labelData.setReferenceNo(data.getReference());
+			labelData.setArticleId(data.getTracking());
 			labelData.setTrackingNo(data.getTracking());
 			labelData.setHub(data.getHub());
 			labelData.setMatrix(data.getMatrix());
