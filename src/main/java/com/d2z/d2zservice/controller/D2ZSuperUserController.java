@@ -253,5 +253,9 @@ public class D2ZSuperUserController {
 		return successMsg;
     }
 
+	@RequestMapping( method = RequestMethod.GET, path = "/mliddeleteList")
+    public List<DropDownModel> fetchMlidDeleteList() {
+		return superUserD2zService.fetchMlidDeleteList();
+    }
 	
 }

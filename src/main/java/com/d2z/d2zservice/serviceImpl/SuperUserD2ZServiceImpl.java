@@ -951,5 +951,18 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		return approvedInvoiceMsg;
 	}
 
+@Override
+public List<DropDownModel> fetchMlidDeleteList() {
+	List<String> listOfMlid = d2zDao.fetchMlidDeleteList();
+	List<DropDownModel> mlidList = new ArrayList<DropDownModel>();
+	for (String mlid : listOfMlid) {
+		DropDownModel dropDownVaL = new DropDownModel();
+		dropDownVaL.setName(mlid);
+		dropDownVaL.setValue(mlid);
+		mlidList.add(dropDownVaL);
+	}
+	return mlidList;
+}
+
 
 }

@@ -101,4 +101,6 @@ public UserMessage deleteMLID(String service);
 	public List<Mlid> downloadMlid(String service);
 	
 	public UserMessage uploadMlid(List<Object> MlidData);
+	
+	public List<DropDownModel> fetchMlidDeleteList();
 }

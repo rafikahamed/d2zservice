@@ -127,4 +127,8 @@ UserMessage deleteMlid(String service);
 	List<Mlid> downloadMlid(String service);
 	
  UserMessage addMlid(List<Object> MlidData);
+ 
+ List<String> fetchMlidDeleteList();
+
 }
+
