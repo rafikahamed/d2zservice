@@ -652,6 +652,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	public UserMessage addMlid(List<Object> MlidData) {
 		List<Mlid> mlidlist = new ArrayList<Mlid>();
 		System.out.println("size:"+MlidData.size());
+		System.out.println("obj:"+MlidData.get(1).toString());
 		
 		
 		   ObjectMapper oMapper = new ObjectMapper();
@@ -671,12 +672,13 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			 Map<String, Object> map = oMapper.convertValue(mild, Map.class);
 			Mlid mldata = new Mlid();
 			mldata.setServiceType(map.get("ServiceType").toString());
+			mldata.setDestinationzone(map.get("destinationzone").toString());
 			mldata.setZoneID(map.get("ZoneID").toString());
 			mldata.setMinweight(map.get("Minweight").toString());
 			mldata.setMaxweight(map.get("Maxweight").toString());
 			mldata.setMlid(map.get("MLID").toString());
 			mldata.setInjectionState(map.get("InjectionState").toString());
-			System.out.println("mldata:"+mldata.getZoneID());
+		
 			mlidlist.add(mldata);
 			
 			
