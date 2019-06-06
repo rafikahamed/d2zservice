@@ -77,7 +77,7 @@ public class ETowerWrapper {
 					barcodeMap);
 
 			List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
-
+			senderDataResponseList.clear();
 			Iterator itr = insertedOrder.iterator();
 			while (itr.hasNext()) {
 				Object[] obj = (Object[]) itr.next();
@@ -124,7 +124,7 @@ public class ETowerWrapper {
 			String senderFileID = d2zDao.exportParcel(data, barcodeMap);
 
 			List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
-
+			senderDataResponseList.clear();
 			Iterator itr = insertedOrder.iterator();
 			while (itr.hasNext()) {
 				Object[] obj = (Object[]) itr.next();
@@ -193,6 +193,7 @@ public class ETowerWrapper {
 						orderDetail.setInjectionState("SYD");
 
 					} else {
+						iterator.set(orderDetail);
 						continue;
 					}
 				}
@@ -204,10 +205,11 @@ public class ETowerWrapper {
 						.collect(Collectors.toList());
 				boolean containsDest = eTowerZoneID.stream().anyMatch(zoneId::equalsIgnoreCase);
 				if (containsDest) {
-					request.setFacility("SYD");
-					orderDetail.setInjectionState("SYD");
+					request.setFacility("SYD2");
+					orderDetail.setInjectionState("SYD2");
 
 				} else {
+					iterator.set(orderDetail);
 					continue;
 				}
 			}
@@ -317,6 +319,7 @@ public class ETowerWrapper {
 	private List<CreateShippingRequest> constructEtowerRequestWithAPIData(CreateConsignmentRequest data) {
 		List<com.d2z.d2zservice.model.etower.CreateShippingRequest> eTowerRequest = new ArrayList<com.d2z.d2zservice.model.etower.CreateShippingRequest>();
 		Map<String, String> postCodeZoneMap = D2ZSingleton.getInstance().getPostCodeZoneMap();
+		 
 		List<SenderDataApi> updatedOrderDetail = new ArrayList<SenderDataApi>();
 		for (SenderDataApi orderDetail : data.getConsignmentData()) {
 			com.d2z.d2zservice.model.etower.CreateShippingRequest request = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
@@ -363,6 +366,7 @@ public class ETowerWrapper {
 						request.setFacility("SYD");
 						orderDetail.setInjectionType("SYD");
 					} else {
+						updatedOrderDetail.add(orderDetail);
 						continue;
 					}
 				}
@@ -373,10 +377,11 @@ public class ETowerWrapper {
 						.collect(Collectors.toList());
 				boolean containsDest = eTowerZoneID.stream().anyMatch(zoneId::equalsIgnoreCase);
 				if (containsDest) {
-					request.setFacility("SYD");
-					orderDetail.setInjectionState("SYD");
+					request.setFacility("SYD2");
+					orderDetail.setInjectionState("SYD2");
 
 				} else {
+					updatedOrderDetail.add(orderDetail);
 					continue;
 				}
 			}

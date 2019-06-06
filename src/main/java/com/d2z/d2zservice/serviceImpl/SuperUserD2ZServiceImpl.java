@@ -820,6 +820,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 
 		List<SenderData> expressData = new ArrayList<SenderData>();
 		List<SenderData> fastwayData = new ArrayList<SenderData>();
+		List<SenderData> fastway_S_Data = new ArrayList<SenderData>();
 
 		for (SenderData data : trackingLabelList) {
 			if (data.getCarrier().equalsIgnoreCase("eParcel")) {
@@ -828,6 +829,9 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				expressData.add(data);
 			}else if(data.getCarrier().equalsIgnoreCase("Fastway")) {
 				fastwayData.add(data);
+			}
+			else if(data.getCarrier().equalsIgnoreCase("FastwayS")) {
+				fastway_S_Data.add(data);
 			}
 		}
 
@@ -840,6 +844,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		JasperReport expressLabel = null;
 		JRBeanCollectionDataSource fastwayDataSource;
 		JasperReport fastwayLabel = null;
+		JRBeanCollectionDataSource fastway_S_DataSource;
+		JasperReport fastway_S_Label = null;
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 			if (!eParcelData.isEmpty()) {
@@ -866,6 +872,14 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 						.compileReport(getClass().getResource("/FastWayLabel.jrxml").openStream());
 				JRSaver.saveObject(fastwayLabel, "FastWayLabel.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(fastwayLabel, parameters, fastwayDataSource));
+			}
+			if (!fastway_S_Data.isEmpty()) {
+				System.out.println("Generating FastwayS..." + fastway_S_Data.size());
+				fastway_S_DataSource = new JRBeanCollectionDataSource(fastway_S_Data);
+				fastway_S_Label = JasperCompileManager
+						.compileReport(getClass().getResource("/FastwayPCA.jrxml").openStream());
+				JRSaver.saveObject(fastway_S_Label, "FastwayPCA.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(fastway_S_Label, parameters, fastway_S_DataSource));
 			}
 			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
