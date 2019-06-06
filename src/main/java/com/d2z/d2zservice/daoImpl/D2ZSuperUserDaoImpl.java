@@ -1,5 +1,6 @@
 package com.d2z.d2zservice.daoImpl;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
+import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
@@ -724,6 +726,28 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			List<String> mlidList = mlidRepository.getServiceTypeList();
 			return mlidList;
 		
+	}
+
+	@Override
+	public List<AUWeight> downloadAUweight(List<Object> ArticleID) {
+		// TODO Auto-generated method stub
+		 ObjectMapper oMapper = new ObjectMapper();
+		
+		 List<AUWeight> auweightlist = new ArrayList<AUWeight>();
+		for(Object articleid : ArticleID )
+		{ System.out.println("articleid"+articleid.toString());
+			 Map<String, Object> map = oMapper.convertValue(articleid, Map.class);
+			AUWeight auwei = new AUWeight();
+			
+			 String ArticleId = map.get("ArticleID").toString();
+			 BigDecimal weight = senderDataRepository.fetchcubicweight(ArticleId);
+			 System.out.println("weight:"+weight);
+			 auwei.setArticleID(ArticleId);
+			 auwei.setCubicWeight(weight);
+			 auweightlist.add(auwei);
+			
+		}
+		return auweightlist;
 	}
 
 	

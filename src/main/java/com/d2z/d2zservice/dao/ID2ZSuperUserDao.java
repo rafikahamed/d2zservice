@@ -11,6 +11,7 @@ import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
+import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
@@ -129,6 +130,8 @@ UserMessage deleteMlid(String service);
  UserMessage addMlid(List<Object> MlidData);
  
  List<String> fetchMlidDeleteList();
+ 
+List<AUWeight> downloadAUweight(List<Object> ArticleID);
 
 }
 

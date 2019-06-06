@@ -33,6 +33,7 @@ import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
+import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
@@ -962,6 +963,12 @@ public List<DropDownModel> fetchMlidDeleteList() {
 		mlidList.add(dropDownVaL);
 	}
 	return mlidList;
+}
+
+@Override
+public List<AUWeight> downloadAUWeight(List<Object> AUWeight) {
+	// TODO Auto-generated method stub
+	return d2zDao.downloadAUweight(AUWeight);
 }
 
 

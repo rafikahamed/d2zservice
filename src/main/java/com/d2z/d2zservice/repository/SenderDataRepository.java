@@ -1,5 +1,6 @@
 package com.d2z.d2zservice.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
@@ -285,6 +286,10 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 
 	@Query("SELECT t FROM SenderdataMaster t where t.reference_number in (:refNbrs) and mlid = '33PE9' and t.isDeleted = 'N'")
 	List<SenderdataMaster> fetchDataForAusPost(List<String>  refNbrs);
+	
+	@Query("SELECT t.cubic_Weight FROM SenderdataMaster t where  t.articleId = :articleID")
+	BigDecimal fetchcubicweight(String articleID);
+	
  
 
 } 
