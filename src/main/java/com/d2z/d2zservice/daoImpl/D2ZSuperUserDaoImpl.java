@@ -735,13 +735,13 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		
 		 List<AUWeight> auweightlist = new ArrayList<AUWeight>();
 		for(Object articleid : ArticleID )
-		{ System.out.println("articleid"+articleid.toString());
+		{
 			 Map<String, Object> map = oMapper.convertValue(articleid, Map.class);
 			AUWeight auwei = new AUWeight();
 			
 			 String ArticleId = map.get("ArticleID").toString();
 			 BigDecimal weight = senderDataRepository.fetchcubicweight(ArticleId);
-			 System.out.println("weight:"+weight);
+			
 			 auwei.setArticleID(ArticleId);
 			 auwei.setCubicWeight(weight);
 			 auweightlist.add(auwei);
