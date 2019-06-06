@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -21,6 +23,23 @@ public class Mlid implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String destinationzone;
+	@Id
+ @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="RoWID")
+	   private int rowId; 
+	
+
+	public int getRowId() {
+		return rowId;
+	}
+
+	public void setRowId(int rowId) {
+		this.rowId = rowId;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 
 	@Column(name="InjectionState")
 	private String injectionState;
@@ -37,7 +56,7 @@ public class Mlid implements Serializable {
 	@Column(name="ServiceType")
 	private String serviceType;
 	
-	@Id
+	
 	@Column(name="ZoneID")
 	private String zoneID;
 

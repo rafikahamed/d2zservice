@@ -1,11 +1,14 @@
 package com.d2z.d2zservice.daoImpl;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
@@ -20,6 +23,7 @@ import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
+import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
@@ -48,6 +52,7 @@ import com.d2z.d2zservice.repository.ServiceTypeListRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Repository
 public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
@@ -649,23 +654,33 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	public UserMessage addMlid(List<Object> MlidData) {
 		List<Mlid> mlidlist = new ArrayList<Mlid>();
 		System.out.println("size:"+MlidData.size());
-		String service = MlidData.get(1).toString().valueOf("ServiceType");
+		System.out.println("obj:"+MlidData.get(1).toString());
+		
+		
+		   ObjectMapper oMapper = new ObjectMapper();
+		
+		   Map<String, Object> map1 = oMapper.convertValue(MlidData.get(1), Map.class);
+		   String service = map1.get("ServiceType").toString();
+			
+		System.out.println("service:"+service);
 		List<Mlid> mlidsearch = mlidRepository.downloadMlid(service);
 		UserMessage userMsg = new UserMessage();
+		System.out.println("mildsearchsize:"+mlidsearch.size()+".."+mlidsearch.isEmpty());
 		if(mlidsearch.isEmpty()) {
 		for(Object mild : MlidData )
 		{
 			/*JacksonJsonParser jsonParser = new JacksonJsonParser();
 			Map<String, Object> responses = jsonParser.parseMap(mild.toString());*/
-			
+			 Map<String, Object> map = oMapper.convertValue(mild, Map.class);
 			Mlid mldata = new Mlid();
-			mldata.setServiceType(mild.toString().valueOf("ServiceType"));
-			mldata.setZoneID(mild.toString().valueOf("ZoneID"));
-			mldata.setMinweight(mild.toString().valueOf("Minweight"));
-			mldata.setMaxweight(mild.toString().valueOf("Maxweight"));
-			mldata.setMlid(mild.toString().valueOf("MLID"));
-			mldata.setInjectionState(mild.toString().valueOf("InjectionState"));
-			
+			mldata.setServiceType(map.get("ServiceType").toString());
+			mldata.setDestinationzone(map.get("destinationzone").toString());
+			mldata.setZoneID(map.get("ZoneID").toString());
+			mldata.setMinweight(map.get("Minweight").toString());
+			mldata.setMaxweight(map.get("Maxweight").toString());
+			mldata.setMlid(map.get("MLID").toString());
+			mldata.setInjectionState(map.get("InjectionState").toString());
+		
 			mlidlist.add(mldata);
 			
 			
@@ -703,6 +718,36 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	userMsg.setMessage("Deleted Succesfully");
 		return userMsg;
 		
+	}
+
+	@Override
+	public List<String> fetchMlidDeleteList() {
+		
+			List<String> mlidList = mlidRepository.getServiceTypeList();
+			return mlidList;
+		
+	}
+
+	@Override
+	public List<AUWeight> downloadAUweight(List<Object> ArticleID) {
+		// TODO Auto-generated method stub
+		 ObjectMapper oMapper = new ObjectMapper();
+		
+		 List<AUWeight> auweightlist = new ArrayList<AUWeight>();
+		for(Object articleid : ArticleID )
+		{
+			 Map<String, Object> map = oMapper.convertValue(articleid, Map.class);
+			AUWeight auwei = new AUWeight();
+			
+			 String ArticleId = map.get("ArticleID").toString();
+			 BigDecimal weight = senderDataRepository.fetchcubicweight(ArticleId);
+			
+			 auwei.setArticleID(ArticleId);
+			 auwei.setCubicWeight(weight);
+			 auweightlist.add(auwei);
+			
+		}
+		return auweightlist;
 	}
 
 	

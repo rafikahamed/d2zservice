@@ -8,6 +8,7 @@ import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
+import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
@@ -101,4 +102,8 @@ public UserMessage deleteMLID(String service);
 	public List<Mlid> downloadMlid(String service);
 	
 	public UserMessage uploadMlid(List<Object> MlidData);
+	
+	public List<DropDownModel> fetchMlidDeleteList();
+	
+	public List<AUWeight> downloadAUWeight(List<Object> AUWeight);
 }

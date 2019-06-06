@@ -23,6 +23,7 @@ import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
+import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
@@ -254,5 +255,17 @@ public class D2ZSuperUserController {
 		return successMsg;
     }
 
+	@RequestMapping( method = RequestMethod.GET, path = "/mliddeleteList")
+    public List<DropDownModel> fetchMlidDeleteList() {
+		return superUserD2zService.fetchMlidDeleteList();
+    }
+	
+	
+	@RequestMapping( method = RequestMethod.POST, path = "/downloadAUweight", consumes=MediaType.APPLICATION_JSON)
+    public List<AUWeight> downloadAU(@RequestBody List<Object> ArticleID) {
+		
+		return superUserD2zService.downloadAUWeight(ArticleID);
+    }
+	
 	
 }
