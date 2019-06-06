@@ -715,7 +715,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			return senderDataResponseList;
-		}else if ("FWS".equalsIgnoreCase(serviceType)) {
+		}else if ("FWM".equalsIgnoreCase(serviceType)) {
 			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
 			makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName());
 			return senderDataResponseList;
