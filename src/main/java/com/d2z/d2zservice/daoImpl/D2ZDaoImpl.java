@@ -272,7 +272,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setCarrier("eParcel");
 			}
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
-			if(barcodeMap != null)
+			if(barcodeMap != null && !barcodeMap.isEmpty())
 				provider = barcodeMap.get(barcodeMap.keySet().toArray()[0]);
 			if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("Etower") && 
 						barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
