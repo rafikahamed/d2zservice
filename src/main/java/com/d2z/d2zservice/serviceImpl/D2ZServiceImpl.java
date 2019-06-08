@@ -497,6 +497,7 @@ public class D2ZServiceImpl implements ID2ZService {
 
 		List<SenderData> expressData = new ArrayList<SenderData>();
 		List<SenderData> fastwayData = new ArrayList<SenderData>();
+		List<SenderData> fastway_S_Data = new ArrayList<SenderData>();
 		List<SenderData> whiteLabelData = new ArrayList<SenderData>();
 		for (SenderData data : trackingLabelList) {
 			if ("MCM1".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("Fastway")) {
@@ -514,6 +515,9 @@ public class D2ZServiceImpl implements ID2ZService {
 			}else if(data.getCarrier().equalsIgnoreCase("Fastway")) {
 				fastwayData.add(data);
 			}
+			else if(data.getCarrier().equalsIgnoreCase("FastwayS")) {
+				fastway_S_Data.add(data);
+			}
 		}
 
 		Map<String, Object> parameters = new HashMap<>();
@@ -525,6 +529,8 @@ public class D2ZServiceImpl implements ID2ZService {
 		JasperReport expressLabel = null;
 		JRBeanCollectionDataSource fastwayDataSource;
 		JasperReport fastwayLabel = null;
+		JRBeanCollectionDataSource fastway_S_DataSource;
+		JasperReport fastway_S_Label = null;
 		JRBeanCollectionDataSource whiteLabelDataSource;
 		JasperReport whiteLabel = null;
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
@@ -553,6 +559,14 @@ public class D2ZServiceImpl implements ID2ZService {
 						.compileReport(getClass().getResource("/FastWayLabel.jrxml").openStream());
 				JRSaver.saveObject(fastwayLabel, "FastWayLabel.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(fastwayLabel, parameters, fastwayDataSource));
+			}
+			if (!fastway_S_Data.isEmpty()) {
+				System.out.println("Generating FastwayS..." + fastway_S_Data.size());
+				fastway_S_DataSource = new JRBeanCollectionDataSource(fastway_S_Data);
+				fastway_S_Label = JasperCompileManager
+						.compileReport(getClass().getResource("/FastwayPCA.jrxml").openStream());
+				JRSaver.saveObject(fastway_S_Label, "FastwayPCA.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(fastway_S_Label, parameters, fastway_S_DataSource));
 			}
 			if (!whiteLabelData.isEmpty()) {
 				System.out.println("Generating WhiteLabel..." + whiteLabelData.size());
