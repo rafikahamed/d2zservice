@@ -344,7 +344,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			trackAndTrace.setSignerName(null);
 			trackAndTrace.setSignature(null);
 			trackAndTrace.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
-			trackAndTrace.setArticleID(null);
+			trackAndTrace.setArticleID(senderData.getArticleId());
 			trackAndTraceList.add(trackAndTrace);
 		}
 		List<Trackandtrace> trackAndTraceInsert = (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackAndTraceList);

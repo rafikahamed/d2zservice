@@ -75,7 +75,7 @@ public class PFLWrapper {
 		}else {
 			if(pflResponse.getResult() != null) {
 				processLabelsResponse(pflResponse, barcodeMap);
-				String senderFileID = d2zDao.exportParcel(incomingRequest,null);
+				String senderFileID = d2zDao.exportParcel(incomingRequest,barcodeMap);
 				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 				Iterator itr = insertedOrder.iterator();
 				while (itr.hasNext()) {
