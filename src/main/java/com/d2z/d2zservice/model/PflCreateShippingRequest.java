@@ -13,7 +13,5 @@ public class PflCreateShippingRequest {
 	public void setOrderinfo(List<PflCreateShippingOrderInfo> orderinfo) {
 		this.orderinfo = orderinfo;
 	}
-	
-	
 
 }

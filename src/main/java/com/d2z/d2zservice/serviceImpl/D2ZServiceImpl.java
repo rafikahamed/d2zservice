@@ -69,6 +69,7 @@ import com.d2z.d2zservice.model.Ebay_Shipment;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.FDMManifestDetails;
+import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
 import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.PflCreateShippingOrderInfo;
@@ -177,33 +178,52 @@ public class D2ZServiceImpl implements ID2ZService {
 	@Autowired
 	PFLWrapper pflWrapper;
 
-	private static final Logger logger = LoggerFactory.getLogger(D2ZServiceImpl.class);
-	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-
 	@Override
-	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) throws ReferenceNumberNotUniqueException, EtowerFailureResponseException{
+	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) 
+					throws ReferenceNumberNotUniqueException, EtowerFailureResponseException{
 		List<String> incomingRefNbr = orderDetailList.stream().map(obj -> {
 			return obj.getReferenceNumber(); })
 				.collect(Collectors.toList());
 		d2zValidator.isReferenceNumberUniqueUI(incomingRefNbr);
-
 		d2zValidator.isServiceValidUI(orderDetailList);
-		d2zValidator.isPostCodeValidUI(orderDetailList);
-
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
+		SenderDataResponse senderDataResponse = null;
 
-		
 		String serviceType = orderDetailList.get(0).getServiceType();
 		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType)){
+			d2zValidator.isPostCodeValidUI(orderDetailList);
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(orderDetailList,senderDataResponseList);
-			 return senderDataResponseList;
+			return senderDataResponseList;
+		}else if ("FWM".equalsIgnoreCase(serviceType)) {
+			d2zValidator.isFWPostCodeUIValid(orderDetailList);
+			makeCreateShippingOrderFilePFLCall(orderDetailList,senderDataResponseList,null);
+			return senderDataResponseList;
+		}else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) || "MCM3".equalsIgnoreCase(serviceType)){
+			PFLSenderDataFileRequest consignmentData = d2zValidator.isFWSubPostCodeUIValid(orderDetailList);
+			if(consignmentData.getPflSenderDataApi().size() > 0) {
+				makeCreateShippingOrderFilePFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,null);
+			}
+			if(consignmentData.getNonPflSenderDataApi().size() > 0) {
+				d2zValidator.isPostCodeValidUI(orderDetailList);
+				String senderFileID  = d2zDao.exportParcel(orderDetailList,null);
+				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
+				Iterator itr = insertedOrder.iterator();
+				while (itr.hasNext()) {
+					Object[] obj = (Object[]) itr.next();
+					senderDataResponse = new SenderDataResponse();
+					senderDataResponse.setReferenceNumber(obj[0].toString());
+					String barcode = obj[1].toString();
+					senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+					senderDataResponseList.add(senderDataResponse);
+				}
+			}
+			return senderDataResponseList;
 		}
+		d2zValidator.isPostCodeValidUI(orderDetailList);
 		String senderFileID  = d2zDao.exportParcel(orderDetailList,null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
-		SenderDataResponse senderDataResponse = null;
 		Iterator itr = insertedOrder.iterator();
-
-		 while(itr.hasNext()) {   
+		while(itr.hasNext()) {   
 			 Object[] obj = (Object[]) itr.next();
 			 senderDataResponse = new SenderDataResponse();
 			 senderDataResponse.setReferenceNumber(obj[0].toString());
@@ -214,7 +234,6 @@ public class D2ZServiceImpl implements ID2ZService {
 		 Runnable r = new Runnable( ) {			
 		        public void run() {
 		    		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(incomingRefNbr,"eTower");
-
 		        	 eTowerWrapper.makeCalltoEtower(eTowerOrders);
 		        }
 		     };
@@ -711,7 +730,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		SenderDataResponse senderDataResponse = null;
 
 	    String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
-		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType)){
+		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType)){
 			d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			return senderDataResponseList;
@@ -780,6 +799,33 @@ public class D2ZServiceImpl implements ID2ZService {
 		}
 		pflRequest.setOrderinfo(pflOrderInfoRequest);
 		pflWrapper.createShippingOrderPFL(data, pflRequest, userName, senderDataResponseList);
+	}
+	
+	private void makeCreateShippingOrderFilePFLCall (List<SenderData> data,
+			List<SenderDataResponse> senderDataResponseList, String userName) throws EtowerFailureResponseException {
+		PflCreateShippingRequest pflRequest = new PflCreateShippingRequest();
+		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
+		for (SenderData orderDetail : data) {
+			PflCreateShippingOrderInfo request = new PflCreateShippingOrderInfo();
+			request.setCustom_ref(orderDetail.getReferenceNumber());
+			request.setRecipientCompany(orderDetail.getConsigneeCompany());
+			String recpName = orderDetail.getConsigneeName().length() > 34
+					? orderDetail.getConsigneeName().substring(0, 34)
+					: orderDetail.getConsigneeName();
+			request.setRecipientName(recpName);
+			request.setAddressLine1(orderDetail.getConsigneeAddr1());
+			request.setAddressLine2(orderDetail.getConsigneeAddr2());
+			request.setEmail(orderDetail.getConsigneeEmail());
+			request.setPhone(orderDetail.getConsigneePhone());
+			request.setCity(orderDetail.getConsigneeSuburb());
+			request.setState(orderDetail.getConsigneeState());
+			request.setPostcode(orderDetail.getConsigneePostcode());
+			request.setCountry("AU");
+			request.setWeight(Double.valueOf(orderDetail.getWeight()));
+			pflOrderInfoRequest.add(request);
+		}
+		pflRequest.setOrderinfo(pflOrderInfoRequest);
+		pflWrapper.createShippingOrderPFLUI(data, pflRequest, userName, senderDataResponseList);
 	}
 
 	@Override
@@ -869,9 +915,7 @@ public class D2ZServiceImpl implements ID2ZService {
 				to.setPostcode(data.getConsignee_Postcode());
 				to.setState(data.getConsignee_State());
 				to.setSuburb(data.getConsignee_Suburb());
-				to.getLines().add(data.getConsignee_addr1().length() > 39	
-						        ? data.getConsignee_addr1().substring(0, 39)
-								:data.getConsignee_addr1());
+				to.getLines().add(data.getConsignee_addr1());
 				String regex = "^[0-9]{1,20}$";
 				String phone = "";
 				if (null != data.getConsignee_Phone() && data.getConsignee_Phone().matches(regex)) {
@@ -1396,7 +1440,7 @@ public class D2ZServiceImpl implements ID2ZService {
 					 ftpUploader.fdmFileCreation(request);
 					 System.out.println("FDM Request ---->");
 					 System.out.println(request);
-					 ffresponseRepository.saveAll(FFResponseList);
+					 //ffresponseRepository.saveAll(FFResponseList);
 					// String response = fdmProxy.makeCallToFDMManifestMapping(request);
 					/* List <FFResponse> FFresponsequery =
 					 ffresponseRepository.findByMessageNoIs(orderRef);

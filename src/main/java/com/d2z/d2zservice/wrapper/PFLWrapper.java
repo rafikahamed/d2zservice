@@ -11,6 +11,7 @@ import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.model.PFLCreateShippingResponse;
 import com.d2z.d2zservice.model.PFLResponseData;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
+import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.etower.LabelData;
@@ -54,7 +55,7 @@ public class PFLWrapper {
 		for (PFLResponseData data : pflResponse.getResult()) {
 			LabelData labelData = new LabelData();
 			labelData.setReferenceNo(data.getReference());
-			labelData.setArticleId(data.getTracking());
+			labelData.setArticleId(data.getId());
 			labelData.setTrackingNo(data.getTracking());
 			labelData.setHub(data.getHub());
 			labelData.setMatrix(data.getMatrix());
@@ -62,6 +63,30 @@ public class PFLWrapper {
 			barcodeMap.put(data.getReference(), labelData);
 		}
 		return barcodeMap;
+	}
+
+	public void createShippingOrderPFLUI(List<SenderData> incomingRequest,
+			PflCreateShippingRequest PFLRequest, String userName, List<SenderDataResponse> senderDataResponseList) 
+					throws EtowerFailureResponseException{
+		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
+		PFLCreateShippingResponse pflResponse = pflProxy.makeCallForCreateShippingOrder(PFLRequest);
+		if(pflResponse==null) {
+			throw new EtowerFailureResponseException("Failed. Please contact D2Z");
+		}else {
+			if(pflResponse.getResult() != null) {
+				processLabelsResponse(pflResponse, barcodeMap);
+				String senderFileID = d2zDao.exportParcel(incomingRequest,null);
+				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
+				Iterator itr = insertedOrder.iterator();
+				while (itr.hasNext()) {
+					Object[] obj = (Object[]) itr.next();
+					SenderDataResponse senderDataresponse = new SenderDataResponse();
+					senderDataresponse.setReferenceNumber(obj[0].toString());
+					senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
+					senderDataResponseList.add(senderDataresponse);
+				}
+			}
+		}
 	}
 	
 }

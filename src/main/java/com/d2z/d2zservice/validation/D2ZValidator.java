@@ -17,6 +17,7 @@ import com.d2z.d2zservice.exception.InvalidServiceTypeException;
 import com.d2z.d2zservice.exception.InvalidSuburbPostcodeException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
+import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
 import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.SenderData;
@@ -203,6 +204,19 @@ public class D2ZValidator {
 			throw new InvalidSuburbPostcodeException("Postcode or Suburb is not matched for this services",incorrectFWPostcode_Suburb);
 		}
 	}
+	
+	public void isFWPostCodeUIValid(List<SenderData> consignmentData) {
+		List<String> postCodeFWZoneList = D2ZSingleton.getInstance().getFWPostCodeZoneList();
+		List<String> incorrectFWPostcode_Suburb = new ArrayList<String>();
+		consignmentData.forEach(obj -> {
+			if(!postCodeFWZoneList.contains(obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim()))) {
+				incorrectFWPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim());
+			}
+		});
+		if(!incorrectFWPostcode_Suburb.isEmpty()) {
+			throw new InvalidSuburbPostcodeException("Postcode or Suburb is not matched for this services",incorrectFWPostcode_Suburb);
+		}
+	}
 
 	public PFLSenderDataRequest isFWSubPostCodeValid(CreateConsignmentRequest consignmentData) {
 		List<SenderDataApi> pflSenderData = new ArrayList<SenderDataApi>();
@@ -210,6 +224,23 @@ public class D2ZValidator {
 		PFLSenderDataRequest pflRequest = new PFLSenderDataRequest();
 		List<String> postCodeFWSubList = D2ZSingleton.getInstance().getFWPostCodeZoneList();
 		consignmentData.getConsignmentData().forEach(obj -> {
+			if(postCodeFWSubList.contains(obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim()))) {
+				pflSenderData.add(obj);
+			}else {
+				nonPflSenderData.add(obj);
+			}
+		});
+		pflRequest.setPflSenderDataApi(pflSenderData);
+		pflRequest.setNonPflSenderDataApi(nonPflSenderData);
+		return pflRequest;
+	}
+	
+	public PFLSenderDataFileRequest isFWSubPostCodeUIValid(List<SenderData> consignmentData) {
+		List<SenderData> pflSenderData = new ArrayList<SenderData>();
+		List<SenderData> nonPflSenderData = new ArrayList<SenderData>();
+		PFLSenderDataFileRequest pflRequest = new PFLSenderDataFileRequest();
+		List<String> postCodeFWSubList = D2ZSingleton.getInstance().getFWPostCodeZoneList();
+		consignmentData.forEach(obj -> {
 			if(postCodeFWSubList.contains(obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim()))) {
 				pflSenderData.add(obj);
 			}else {

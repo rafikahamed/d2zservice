@@ -3,7 +3,6 @@ package com.d2z.d2zservice.scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
-
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 
