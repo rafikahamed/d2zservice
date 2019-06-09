@@ -514,8 +514,7 @@ public class D2ZServiceImpl implements ID2ZService {
 				expressData.add(data);
 			}else if(data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				fastwayData.add(data);
-			}
-			else if(data.getCarrier().equalsIgnoreCase("FastwayS")) {
+			}else if(data.getCarrier().equalsIgnoreCase("FastwayS")) {
 				fastway_S_Data.add(data);
 			}
 		}
