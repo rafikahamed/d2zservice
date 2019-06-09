@@ -36,7 +36,6 @@ public class D2ZCommonUtil {
 	public static String getAETCurrentTimestamp() {
 		Date dt = new Date();
 	    DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-	    System.out.println("IST time: " + format.format(dt));
 	    format.setTimeZone(TimeZone.getTimeZone("Australia/Sydney"));
 	    String parsedDate = format.format(dt);
 		return parsedDate;
