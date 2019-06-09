@@ -32,6 +32,9 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y'") 
 	List<SenderdataMaster> fetchConsignmentData(@Param("fileName") String fileName);
 	 
+	@Query("SELECT t FROM SenderdataMaster t where t.sender_Files_ID = :senderFileID") 
+	List<SenderdataMaster> fetchAllBySenderFileId(@Param("senderFileID") String senderFileID);
+
 	@Procedure(name = "consignee_delete")
 	void consigneeDelete(@Param("Reference_number") String Reference_number);
 		 

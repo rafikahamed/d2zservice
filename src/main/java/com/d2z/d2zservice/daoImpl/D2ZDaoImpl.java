@@ -172,8 +172,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 		}
 		senderDataRepository.saveAll(senderDataList);
 		senderDataRepository.inOnlyTest(fileSeqId);
-		if(null != provider && provider.getProvider().equalsIgnoreCase("PFL"))
-			updateTrackAndTrace(senderDataList);
+		List<SenderdataMaster> consignments = senderDataRepository.fetchAllBySenderFileId(fileSeqId);
+		//if(null != provider && provider.getProvider().equalsIgnoreCase("PFL"))
+			updateTrackAndTrace(consignments);
 		return fileSeqId;
 	}
 
@@ -319,8 +320,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
 		System.out.println("create consignment API object construction Done data got inserted--->"+insertedOrder.size());
 		storProcCall(fileSeqId);
-		if(provider !=null && provider.getProvider().equalsIgnoreCase("PFL"))
-			updateTrackAndTrace(senderDataList);
+		List<SenderdataMaster> consignments = senderDataRepository.fetchAllBySenderFileId(fileSeqId);
+		//if(provider !=null && provider.getProvider().equalsIgnoreCase("PFL"))
+			updateTrackAndTrace(consignments);
 		return fileSeqId;
 	}
 	
@@ -328,27 +330,32 @@ public class D2ZDaoImpl implements ID2ZDao{
 	 * @param senderDataList
 	 */
 	public synchronized String updateTrackAndTrace(List<SenderdataMaster> senderDataList) {
-		List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
-		for(SenderdataMaster senderData:senderDataList) {
-			Trackandtrace trackAndTrace = new Trackandtrace();
-			trackAndTrace.setReference_number(senderData.getReference_number());
-			trackAndTrace.setTrackEventCode("CC");
-			trackAndTrace.setTrackEventDetails("CONSIGNMENT CREATED");
-			trackAndTrace.setTrackEventDateOccured(Timestamp.valueOf(LocalDateTime.now()).toString());
-			trackAndTrace.setCourierEvents(null);
-			trackAndTrace.setTrackSequence(1);
-			trackAndTrace.setBarcodelabelNumber(senderData.getBarcodelabelNumber());
-			trackAndTrace.setFileName("SP");
-			trackAndTrace.setAirwayBill(null);
-			trackAndTrace.setSignerName(null);
-			trackAndTrace.setSignature(null);
-			trackAndTrace.setIsDeleted("N");
-			trackAndTrace.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
-			trackAndTrace.setArticleID(senderData.getArticleId());
-			trackAndTraceList.add(trackAndTrace);
-		}
-		List<Trackandtrace> trackAndTraceInsert = (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackAndTraceList);
-		return "Successfully Inserted Track&Trace data";
+		Runnable r = new Runnable( ) {			
+	        public void run() {
+	        	List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
+	    		for(SenderdataMaster senderData:senderDataList) {
+	    			Trackandtrace trackAndTrace = new Trackandtrace();
+	    			trackAndTrace.setReference_number(senderData.getReference_number());
+	    			trackAndTrace.setTrackEventCode("CC");
+	    			trackAndTrace.setTrackEventDetails("CONSIGNMENT CREATED");
+	    			trackAndTrace.setTrackEventDateOccured(D2ZCommonUtil.getAETCurrentTimestamp());
+	    			trackAndTrace.setCourierEvents(null);
+	    			trackAndTrace.setTrackSequence(1);
+	    			trackAndTrace.setBarcodelabelNumber(senderData.getBarcodelabelNumber());
+	    			trackAndTrace.setFileName("SP");
+	    			trackAndTrace.setAirwayBill(null);
+	    			trackAndTrace.setSignerName(null);
+	    			trackAndTrace.setSignature(null);
+	    			trackAndTrace.setIsDeleted("N");
+	    			trackAndTrace.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
+	    			trackAndTrace.setArticleID(senderData.getArticleId());
+	    			trackAndTraceList.add(trackAndTrace);
+	    		}
+	    		List<Trackandtrace> trackAndTraceInsert = (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackAndTraceList);
+	        }};
+	        new Thread(r).start();
+	        System.out.println("Successfully Inserted Track&Trace data");
+	        return "Successfully Inserted Track&Trace data";
 	}
 	
 	public synchronized void storProcCall(String fileSeqId) {
