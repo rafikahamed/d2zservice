@@ -91,6 +91,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	public String exportParcel(List<SenderData> orderDetailList,Map<String, LabelData> barcodeMap) {
 		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
 		List<String> incomingRefNbr = new ArrayList<String>();
+		LabelData provider = null;
 		User userInfo = userRepository.findByUsername(orderDetailList.get(0).getUserName());
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		String fileSeqId = "D2ZUI"+senderDataRepository.fetchNextSeq().toString();
@@ -140,7 +141,11 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setCarrier(senderDataValue.getCarrier());
 			senderDataObj.setConsignee_addr2(senderDataValue.getConsigneeAddr2());
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
-			if(null!= barcodeMap && !barcodeMap.isEmpty() && barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
+			if(barcodeMap != null)
+				provider = barcodeMap.get(barcodeMap.keySet().toArray()[0]);
+			
+			if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("Etower") 
+					&& barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData labelData= barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setBarcodelabelNumber(labelData.getBarCode());
 				senderDataObj.setIsDeleted("N");
@@ -150,13 +155,25 @@ public class D2ZDaoImpl implements ID2ZDao{
 				senderDataObj.setArticleId(labelData.getArticleId());		        
 				senderDataObj.setDatamatrix(D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
-
+			}else if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PFL") && 
+					barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
+				LabelData pflLabel= barcodeMap.get(senderDataValue.getReferenceNumber());
+				senderDataObj.setStatus("CONSIGNMENT CREATED");
+				senderDataObj.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+				senderDataObj.setIsDeleted("N");
+				senderDataObj.setInjectionType("Direct Injection");
+				senderDataObj.setInjectionState(pflLabel.getHub());
+				senderDataObj.setBarcodelabelNumber(pflLabel.getTrackingNo());
+				senderDataObj.setArticleId(pflLabel.getArticleId());
+				senderDataObj.setDatamatrix(pflLabel.getMatrix());
+				senderDataObj.setCarrier("Fastway");
 			}
 			senderDataList.add(senderDataObj);
 		}
 		senderDataRepository.saveAll(senderDataList);
 		senderDataRepository.inOnlyTest(fileSeqId);
-		
+		if(null != provider && provider.getProvider().equalsIgnoreCase("PFL"))
+			updateTrackAndTrace(senderDataList);
 		return fileSeqId;
 	}
 	
@@ -327,7 +344,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			trackAndTrace.setSignerName(null);
 			trackAndTrace.setSignature(null);
 			trackAndTrace.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
-			trackAndTrace.setArticleID(null);
+			trackAndTrace.setArticleID(senderData.getArticleId());
 			trackAndTraceList.add(trackAndTrace);
 		}
 		List<Trackandtrace> trackAndTraceInsert = (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackAndTraceList);

@@ -45,7 +45,6 @@ public class D2zController {
 	public UserDetails login(@RequestParam("userName") String userName, @RequestParam("passWord") String passWord) {
 		UserDetails userDetails = d2zService.login(userName, passWord);
 		return userDetails;
-
     }
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/consignment-fileUpload")

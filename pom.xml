@@ -4,9 +4,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.d2z</groupId>
-	<artifactId>d2z-prodservice</artifactId>
-	<version>0.1.1-SNAPSHOT</version>
-	<name>d2z-service</name>
+	<artifactId>speedcourier-prodservice</artifactId>
+	<version>0.0.6-SNAPSHOT</version>
+	<name>speedcourier-service</name>
 	<description>Demo project for Spring Boot</description>
 
 	<parent>

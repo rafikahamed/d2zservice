@@ -20,6 +20,4 @@ public class PFLSenderDataRequest {
 		this.nonPflSenderDataApi = nonPflSenderDataApi;
 	}
 	
-	
-
 }
