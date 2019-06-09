@@ -188,7 +188,6 @@ public class D2ZServiceImpl implements ID2ZService {
 		d2zValidator.isServiceValidUI(orderDetailList);
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
-
 		String serviceType = orderDetailList.get(0).getServiceType();
 		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType)){
 			d2zValidator.isPostCodeValidUI(orderDetailList);
@@ -205,7 +204,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			}
 			if(consignmentData.getNonPflSenderDataApi().size() > 0) {
 				d2zValidator.isPostCodeValidUI(orderDetailList);
-				String senderFileID  = d2zDao.exportParcel(orderDetailList,null);
+				String senderFileID  = d2zDao.exportParcel(consignmentData.getNonPflSenderDataApi(),null);
 				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 				Iterator itr = insertedOrder.iterator();
 				while (itr.hasNext()) {
@@ -214,6 +213,7 @@ public class D2ZServiceImpl implements ID2ZService {
 					senderDataResponse.setReferenceNumber(obj[0].toString());
 					String barcode = obj[1].toString();
 					senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+					senderDataResponse.setCarrier(obj[4].toString());
 					senderDataResponseList.add(senderDataResponse);
 				}
 			}
@@ -229,6 +229,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			 senderDataResponse.setReferenceNumber(obj[0].toString());
 			 if(obj[1] != null)
 				 senderDataResponse.setBarcodeLabelNumber("]d2".concat(obj[1].toString().replaceAll("\\[|\\]", "")));
+			 senderDataResponse.setCarrier(obj[4].toString());
 			 senderDataResponseList.add(senderDataResponse);
         }
 		 Runnable r = new Runnable( ) {			
