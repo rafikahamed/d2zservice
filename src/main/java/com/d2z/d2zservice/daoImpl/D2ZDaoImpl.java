@@ -354,7 +354,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	    		List<Trackandtrace> trackAndTraceInsert = (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackAndTraceList);
 	        }};
 	        new Thread(r).start();
-	        System.out.println("Successfully Inserted Track&Trace data");
+	        System.out.println("Successfully Inserted Track & Trace data");
 	        return "Successfully Inserted Track&Trace data";
 	}
 	
