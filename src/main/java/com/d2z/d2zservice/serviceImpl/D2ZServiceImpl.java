@@ -501,7 +501,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderData> fastway_S_Data = new ArrayList<SenderData>();
 		List<SenderData> whiteLabelData = new ArrayList<SenderData>();
 		for (SenderData data : trackingLabelList) {
-			if ("MCM1".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("Fastway")) {
+			if ("MCM1".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				whiteLabelData.add(data);
 			}
 			else if ("MCM2".equalsIgnoreCase(data.getServiceType()) && (data.getCarrier().equalsIgnoreCase("Express") || data.getCarrier().equalsIgnoreCase("eParcel")) ) {
@@ -513,10 +513,9 @@ public class D2ZServiceImpl implements ID2ZService {
 				eParcelData.add(data);
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
 				expressData.add(data);
-			}else if(data.getCarrier().equalsIgnoreCase("Fastway")) {
+			}else if(data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				fastwayData.add(data);
-			}
-			else if(data.getCarrier().equalsIgnoreCase("FastwayS")) {
+			}else if(data.getCarrier().equalsIgnoreCase("FastwayS")) {
 				fastway_S_Data.add(data);
 			}
 		}

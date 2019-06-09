@@ -827,7 +827,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				eParcelData.add(data);
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
 				expressData.add(data);
-			}else if(data.getCarrier().equalsIgnoreCase("Fastway")) {
+			}else if(data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				fastwayData.add(data);
 			}
 			else if(data.getCarrier().equalsIgnoreCase("FastwayS")) {
