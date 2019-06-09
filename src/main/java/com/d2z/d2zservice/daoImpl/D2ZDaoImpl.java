@@ -166,7 +166,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 				senderDataObj.setBarcodelabelNumber(pflLabel.getTrackingNo());
 				senderDataObj.setArticleId(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
-				senderDataObj.setCarrier("Fastway");
+				senderDataObj.setCarrier("FastwayM");
 			}
 			senderDataList.add(senderDataObj);
 		}
@@ -313,7 +313,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 				senderDataObj.setBarcodelabelNumber(pflLabel.getTrackingNo());
 				senderDataObj.setArticleId(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
-				senderDataObj.setCarrier("Fastway");
+				senderDataObj.setCarrier("FastwayM");
 			}
 			senderDataList.add(senderDataObj);
 		}
