@@ -871,7 +871,6 @@ public class D2ZServiceImpl implements ID2ZService {
 
 		String msg = d2zDao.allocateShipment(referenceNumbers, shipmentNumber);
 
-
 		Runnable r = new Runnable( ) {			
 	        public void run() {
 	        	 List<String> articleIDS = d2zDao.fetchDataForEtowerForeCastCall(refNbrs);
@@ -881,7 +880,6 @@ public class D2ZServiceImpl implements ID2ZService {
 	        }
 	        };
 		    new Thread(r).start();
-
 		userMsg.setResponseMessage(msg);
 		return userMsg;
 	}
@@ -1454,7 +1452,7 @@ public class D2ZServiceImpl implements ID2ZService {
 					 ftpUploader.fdmFileCreation(request);
 					 System.out.println("FDM Request ---->");
 					 System.out.println(request);
-					 //ffresponseRepository.saveAll(FFResponseList);
+					 ffresponseRepository.saveAll(FFResponseList);
 					// String response = fdmProxy.makeCallToFDMManifestMapping(request);
 					/* List <FFResponse> FFresponsequery =
 					 ffresponseRepository.findByMessageNoIs(orderRef);
