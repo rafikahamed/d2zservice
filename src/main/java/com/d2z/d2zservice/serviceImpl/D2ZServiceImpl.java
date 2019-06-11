@@ -69,6 +69,7 @@ import com.d2z.d2zservice.model.Ebay_Shipment;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.FDMManifestDetails;
+import com.d2z.d2zservice.model.PFLCreateShippingResponse;
 import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
 import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.ParcelStatus;
@@ -870,16 +871,31 @@ public class D2ZServiceImpl implements ID2ZService {
 		}
 
 		String msg = d2zDao.allocateShipment(referenceNumbers, shipmentNumber);
-
-		Runnable r = new Runnable( ) {			
+		 
+		 Runnable pfl = new Runnable( ) {			
+		        public void run() {
+		        	List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
+		        	 if(!fastwayOrderId.isEmpty()) {
+		        		 try {
+							pflWrapper.createSubmitOrderPFL(fastwayOrderId);
+						} catch (EtowerFailureResponseException e) {
+							e.printStackTrace();
+						}
+		        	 }
+		        }
+		    };
+			new Thread(pfl).start();
+		
+		 Runnable r = new Runnable( ) {			
 	        public void run() {
 	        	 List<String> articleIDS = d2zDao.fetchDataForEtowerForeCastCall(refNbrs);
 	        	 if(!articleIDS.isEmpty()) {
 	        	 eTowerWrapper.makeEtowerForecastCall(articleIDS);
 	        	 }
 	        }
-	        };
-		    new Thread(r).start();
+	     };
+		 new Thread(r).start();
+		 
 		userMsg.setResponseMessage(msg);
 		return userMsg;
 	}

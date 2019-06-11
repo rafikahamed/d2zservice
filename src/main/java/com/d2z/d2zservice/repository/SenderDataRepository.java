@@ -289,7 +289,8 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	
 	@Query("SELECT t.cubic_Weight FROM SenderdataMaster t where  t.articleId = :articleID")
 	BigDecimal fetchcubicweight(String articleID);
-	
- 
+
+	@Query("SELECT s.articleId FROM SenderdataMaster s where s.carrier = 'FastwayM' and s.reference_number in (:refNbrs)")
+	List<String> fetchDataforPFLSubmitOrder(String[] refNbrs);
 
 } 

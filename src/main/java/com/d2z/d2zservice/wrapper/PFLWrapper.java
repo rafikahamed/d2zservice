@@ -10,6 +10,8 @@ import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.model.PFLCreateShippingResponse;
 import com.d2z.d2zservice.model.PFLResponseData;
+import com.d2z.d2zservice.model.PFLSubmitOrderRequest;
+import com.d2z.d2zservice.model.PFLSubmitOrderResponse;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
@@ -86,6 +88,19 @@ public class PFLWrapper {
 					senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
 					senderDataResponseList.add(senderDataresponse);
 				}
+			}
+		}
+	}
+	
+	public void createSubmitOrderPFL(List<String> orderIds) throws EtowerFailureResponseException {
+		PFLSubmitOrderRequest pflSubmitOrder = new PFLSubmitOrderRequest();
+		pflSubmitOrder.setIds(orderIds);
+		PFLSubmitOrderResponse pflResponse = pflProxy.createSubmitOrderPFL(pflSubmitOrder);
+		if(pflResponse==null) {
+			throw new EtowerFailureResponseException("Failed. Please contact D2Z");
+		}else {
+			if(pflResponse.getResult() != null) {
+				
 			}
 		}
 	}

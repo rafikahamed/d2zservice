@@ -886,4 +886,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
     	return postCodeFWZoneList;
 	}
 
+	@Override
+	public List<String> fetchDataforPFLSubmitOrder(String[] refNbrs) {
+		return senderDataRepository.fetchDataforPFLSubmitOrder(refNbrs);
+	}
+
 }

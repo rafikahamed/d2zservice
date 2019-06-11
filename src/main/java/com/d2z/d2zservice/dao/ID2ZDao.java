@@ -124,4 +124,6 @@ public interface ID2ZDao {
 
 	public List<FastwayPostcode> fetchFWPostCodeZone();
 
+	public List<String> fetchDataforPFLSubmitOrder(String[] refNbrs);
+
 }
