@@ -293,7 +293,11 @@ public class D2ZServiceImpl implements ID2ZService {
 			trackingDetails = new TrackingDetails();
 			trackingDetails.setRefrenceNumber(obj[0].toString());
 			trackingDetails.setConsigneeName(obj[1].toString());
-			trackingDetails.setBarCodeLabelNumber(obj[2].toString());
+			if(obj[3].toString().equalsIgnoreCase("FastwayM")  ) {
+				trackingDetails.setBarCodeLabelNumber(obj[2].toString());
+			}else {
+				trackingDetails.setBarCodeLabelNumber(obj[2].toString().substring(18,41));
+			}
 			trackingDetailsList.add(trackingDetails);
 		}
 		return trackingDetailsList;

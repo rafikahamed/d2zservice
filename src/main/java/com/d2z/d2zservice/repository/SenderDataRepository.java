@@ -35,7 +35,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Procedure(name = "consignee_delete")
 	void consigneeDelete(@Param("Reference_number") String Reference_number);
 		 
-	@Query(nativeQuery = true, value="Select reference_number, consignee_name, substring(barcodelabelnumber,19,23) from senderdata_master where filename=:fileName and manifest_number is null and IsDeleted != 'Y'") 
+	@Query(nativeQuery = true, value="Select reference_number, consignee_name, barcodelabelnumber, carrier from senderdata_master where filename=:fileName and manifest_number is null and IsDeleted != 'Y'") 
 	List<String> fetchTrackingDetails(@Param("fileName") String fileName);
 
 	
