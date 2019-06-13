@@ -233,14 +233,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			 senderDataResponse.setCarrier(obj[4].toString());
 			 senderDataResponseList.add(senderDataResponse);
         }
-		 Runnable r = new Runnable( ) {			
-		        public void run() {
-		    		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(incomingRefNbr,"eTower");
-		        	 eTowerWrapper.makeCalltoEtower(eTowerOrders);
-		        }
-		     };
-		    new Thread(r).start();
-
+		
 		return senderDataResponseList;
 	}
 
@@ -793,13 +786,6 @@ public class D2ZServiceImpl implements ID2ZService {
 			senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
 			senderDataResponseList.add(senderDataResponse);
 		}
-		Runnable r = new Runnable( ) {			
-	        public void run() {
-	    		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(incomingRefNbr,"eTower");
-	        	 eTowerWrapper.makeCalltoEtower(eTowerOrders);
-	        }
-	     };
-	    new Thread(r).start();
 		return senderDataResponseList;
 	}
 
@@ -1519,6 +1505,14 @@ public class D2ZServiceImpl implements ID2ZService {
 	@Override
 	public void updateRates() {
 		d2zDao.updateRates();
+	}
+
+	@Override
+	public void makeCallToEtowerBasedonSupplierUI(List<String> incomingRefNbr) {
+		
+		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(incomingRefNbr,"eTower");
+		eTowerWrapper.makeCalltoEtower(eTowerOrders);
+		
 	}
 
 }

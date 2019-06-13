@@ -50,6 +50,18 @@ public class D2zController {
 	@RequestMapping( method = RequestMethod.POST, path = "/consignment-fileUpload")
     public List<SenderDataResponse> consignmentFileUpload( @RequestBody List<@Valid SenderData> orderDetailList) throws ReferenceNumberNotUniqueException, EtowerFailureResponseException{
 		List<SenderDataResponse> successMsg = d2zService.exportParcel(orderDetailList);
+		 Runnable r = new Runnable( ) {			
+		        public void run() {
+		        	
+		        	List<String> incomingRefNbr = orderDetailList.stream().map(obj -> {
+		    			return obj.getReferenceNumber(); })
+		    				.collect(Collectors.toList());
+		        	d2zService.makeCallToEtowerBasedonSupplierUI(incomingRefNbr);
+		    		
+		        }
+		     };
+		    new Thread(r).start();
+
 		return successMsg;
 	}
 

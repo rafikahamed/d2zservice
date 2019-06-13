@@ -52,6 +52,17 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 	@RequestMapping(method = RequestMethod.POST, path = "/consignments-create")
 	 public List<SenderDataResponse> createConsignments(@Valid @RequestBody CreateConsignmentRequest orderDetail) throws ReferenceNumberNotUniqueException, EtowerFailureResponseException {
 		List<SenderDataResponse> senderDataResponse = d2zService.createConsignments(orderDetail);
+		 Runnable r = new Runnable( ) {			
+		        public void run() {
+		        	
+		        	List<String> incomingRefNbr = orderDetail.getConsignmentData().stream().map(obj -> {
+		    			return obj.getReferenceNumber(); })
+		    				.collect(Collectors.toList());
+		        	d2zService.makeCallToEtowerBasedonSupplierUI(incomingRefNbr);
+		    		
+		        }
+		     };
+		    new Thread(r).start();
 		return senderDataResponse;
     }	
 	

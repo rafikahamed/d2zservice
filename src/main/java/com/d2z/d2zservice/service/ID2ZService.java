@@ -92,4 +92,6 @@ public interface ID2ZService {
 	public void makeCalltoAusPost();
 
 	public void updateRates();
+
+	public void makeCallToEtowerBasedonSupplierUI(List<String> refNbr);
 }
