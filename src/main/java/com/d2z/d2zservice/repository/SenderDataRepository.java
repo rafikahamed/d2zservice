@@ -35,7 +35,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Procedure(name = "consignee_delete")
 	void consigneeDelete(@Param("Reference_number") String Reference_number);
 		 
-	@Query(nativeQuery = true, value="Select reference_number, consignee_name, substring(barcodelabelnumber,19,23) from senderdata_master where filename=:fileName and manifest_number is null and IsDeleted != 'Y'") 
+	@Query(nativeQuery = true, value="Select reference_number, consignee_name, barcodelabelnumber, carrier from senderdata_master where filename=:fileName and manifest_number is null and IsDeleted != 'Y'") 
 	List<String> fetchTrackingDetails(@Param("fileName") String fileName);
 
 	
@@ -289,7 +289,8 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	
 	@Query("SELECT t.cubic_Weight FROM SenderdataMaster t where  t.articleId = :articleID")
 	BigDecimal fetchcubicweight(String articleID);
-	
- 
+
+	@Query("SELECT s.articleId FROM SenderdataMaster s where s.carrier = 'FastwayM' and s.reference_number in (:refNbrs)")
+	List<String> fetchDataforPFLSubmitOrder(String[] refNbrs);
 
 } 

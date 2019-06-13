@@ -142,6 +142,11 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setCarrier(senderDataValue.getCarrier());
 			senderDataObj.setConsignee_addr2(senderDataValue.getConsigneeAddr2());
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
+			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType())){
+				senderDataObj.setCarrier("Express");
+			}else{
+				senderDataObj.setCarrier("eParcel");
+			}
 			if(barcodeMap != null && !barcodeMap.isEmpty())
 				provider = barcodeMap.get(barcodeMap.keySet().toArray()[0]);
 			
@@ -879,6 +884,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public List<FastwayPostcode> fetchFWPostCodeZone() {
 		List<FastwayPostcode> postCodeFWZoneList= (List<FastwayPostcode>) fastwayPostcodeRepository.findAll();
     	return postCodeFWZoneList;
+	}
+
+	@Override
+	public List<String> fetchDataforPFLSubmitOrder(String[] refNbrs) {
+		return senderDataRepository.fetchDataforPFLSubmitOrder(refNbrs);
 	}
 
 }
