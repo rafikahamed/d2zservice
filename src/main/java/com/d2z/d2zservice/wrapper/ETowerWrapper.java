@@ -170,7 +170,7 @@ public class ETowerWrapper {
 
 			} else if ("1PS3".equalsIgnoreCase(orderDetail.getServiceType())) {
 				String zoneId = postCodeZoneMap
-						.get(orderDetail.getConsigneeSuburb().trim().concat(orderDetail.getConsigneePostcode().trim()));
+						.get(orderDetail.getConsigneeSuburb().trim().toUpperCase().concat(orderDetail.getConsigneePostcode().trim()));
 				if (weight > 3) {
 					List<String> bneDestination = Stream.of("Q0", "Q1", "Q2", "Q3", "Q4", "Q5")
 							.collect(Collectors.toList());
@@ -200,7 +200,7 @@ public class ETowerWrapper {
 			}
 			else if("1PS5".equalsIgnoreCase(orderDetail.getServiceType())) {
 				String zoneId = postCodeZoneMap
-						.get(orderDetail.getConsigneeSuburb().trim().concat(orderDetail.getConsigneePostcode().trim()));
+						.get(orderDetail.getConsigneeSuburb().trim().toUpperCase().concat(orderDetail.getConsigneePostcode().trim()));
 				List<String> eTowerZoneID = Stream.of("CB", "GF", "N0", "N1", "N3", "N4", "NC", "Q0" , "S0", "V0", "W0", "WG")
 						.collect(Collectors.toList());
 				boolean containsDest = eTowerZoneID.stream().anyMatch(zoneId::equalsIgnoreCase);
@@ -346,7 +346,7 @@ public class ETowerWrapper {
 				orderDetail.setInjectionType("SYD2");
 			} else if ("1PS3".equalsIgnoreCase(orderDetail.getServiceType())) {
 				String zoneId = postCodeZoneMap
-						.get(orderDetail.getConsigneeSuburb().trim().concat(orderDetail.getConsigneePostcode().trim()));
+						.get(orderDetail.getConsigneeSuburb().trim().toUpperCase().concat(orderDetail.getConsigneePostcode().trim()));
 				if (weight > 3) {
 					List<String> bneDestination = Stream.of("Q0", "Q1", "Q2", "Q3", "Q4", "Q5")
 							.collect(Collectors.toList());
