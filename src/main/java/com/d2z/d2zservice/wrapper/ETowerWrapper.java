@@ -103,7 +103,6 @@ public class ETowerWrapper {
 			status = parseCreateShippingOrderResponse(response, senderDataResponseList, barcodeMap,
 					gainLabelTrackingNo);
 		}
-
 		if (gainLabelTrackingNo.size() == data.size()) {
 
 			Runnable r = new Runnable() {
@@ -117,7 +116,7 @@ public class ETowerWrapper {
 			};
 			new Thread(r).start();
 		} else {
-			if (("Partial Success").equalsIgnoreCase(status)) {
+			if (null != status) {
 				GainLabelsResponse gainLabelResponse = eTowerProxy.makeCallToGainLabels(gainLabelTrackingNo);
 				processGainLabelsResponse(gainLabelResponse, barcodeMap);
 			}

@@ -62,11 +62,9 @@ public class D2ZValidator {
 		}
 	}
 	
-	public void isReferenceNumberUnique(List<SenderDataApi> senderData) throws ReferenceNumberNotUniqueException{
+	public void isReferenceNumberUnique(List<String> incomingRefNbr) throws ReferenceNumberNotUniqueException{
 		List<String> referenceNumber_DB = d2zDao.fetchAllReferenceNumbers();
-		List<String> incomingRefNbr = senderData.stream().map(obj -> {
-			return obj.getReferenceNumber(); })
-				.collect(Collectors.toList());
+	
 		referenceNumber_DB.addAll(incomingRefNbr);
 
 		List<String> duplicateRefNbr = referenceNumber_DB.stream().collect(Collectors.groupingBy(Function.identity(),     

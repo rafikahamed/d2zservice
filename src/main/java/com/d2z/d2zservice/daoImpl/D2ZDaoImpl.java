@@ -142,7 +142,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setCarrier(senderDataValue.getCarrier());
 			senderDataObj.setConsignee_addr2(senderDataValue.getConsigneeAddr2());
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
-			if(barcodeMap != null)
+			if(barcodeMap != null && !barcodeMap.isEmpty())
 				provider = barcodeMap.get(barcodeMap.keySet().toArray()[0]);
 			
 			if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("Etower") 

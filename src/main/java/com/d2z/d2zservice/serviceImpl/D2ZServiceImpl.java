@@ -189,7 +189,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 		String serviceType = orderDetailList.get(0).getServiceType();
-		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType)){
+		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType)){
 			d2zValidator.isPostCodeValidUI(orderDetailList);
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(orderDetailList,senderDataResponseList);
 			return senderDataResponseList;
@@ -738,13 +738,16 @@ public class D2ZServiceImpl implements ID2ZService {
 			throw new MaxSizeCountException("We are allowing max 300 records, Your Request contains - "
 					+ orderDetail.getConsignmentData().size() + " Records");
 		}
-		d2zValidator.isReferenceNumberUnique(orderDetail.getConsignmentData());
+		List<String> incomingRefNbr = orderDetail.getConsignmentData().stream().map(obj -> {
+			return obj.getReferenceNumber(); })
+				.collect(Collectors.toList());
+		d2zValidator.isReferenceNumberUnique(incomingRefNbr);
 		d2zValidator.isServiceValid(orderDetail);
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 
 	    String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
-		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType)){
+		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType) ){
 			d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			return senderDataResponseList;
@@ -785,6 +788,13 @@ public class D2ZServiceImpl implements ID2ZService {
 			senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
 			senderDataResponseList.add(senderDataResponse);
 		}
+		Runnable r = new Runnable( ) {			
+	        public void run() {
+	    		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(incomingRefNbr,"eTower");
+	        	 eTowerWrapper.makeCalltoEtower(eTowerOrders);
+	        }
+	     };
+	    new Thread(r).start();
 		return senderDataResponseList;
 	}
 
