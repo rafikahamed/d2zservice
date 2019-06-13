@@ -443,7 +443,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		// TODO Auto-generated method stub
 		Runnable r = new Runnable( ) {			
 	        public void run() {
-	    	//	updateCubicWeight();
+	    	
 	        	String[] refNbrArray = referenceNumbers.split(",");
 	        	List<SenderdataMaster> senderMasterData = senderDataRepository.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
 	        	if(!senderMasterData.isEmpty()) {
