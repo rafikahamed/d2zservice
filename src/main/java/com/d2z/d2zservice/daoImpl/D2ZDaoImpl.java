@@ -436,7 +436,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public String allocateShipment(String referenceNumbers, String shipmentNumber) {
 		senderDataRepository.allocateShipment(referenceNumbers, shipmentNumber);
 		makeFriePostUpdataManifestCall(referenceNumbers);
-		return "Shipment allocation Successful";
+		return "Shipment Allocated Successfully";
 	}
 
 	public void makeFriePostUpdataManifestCall(String referenceNumbers) {

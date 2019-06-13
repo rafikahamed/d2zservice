@@ -289,7 +289,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			if(obj[3].toString().equalsIgnoreCase("FastwayM")  ) {
 				trackingDetails.setBarCodeLabelNumber(obj[2].toString());
 			}else {
-				trackingDetails.setBarCodeLabelNumber(obj[2].toString().substring(18,41));
+				trackingDetails.setBarCodeLabelNumber(obj[2].toString().substring(18));
 			}
 			trackingDetailsList.add(trackingDetails);
 		}
