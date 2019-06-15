@@ -357,16 +357,16 @@ public class ETowerWrapper {
 						request.setFacility("BNE");
 						orderDetail.setInjectionType("BNE");
 					} else {
-						request.setFacility("SYD");
-						orderDetail.setInjectionType("SYD");
+						request.setFacility("SYD2");
+						orderDetail.setInjectionType("SYD2");
 					}
 				} else {
 					List<String> sydDestination = Stream.of("CB", "GF", "N0", "N1", "N2", "N3", "N4", "NC", "WG")
 							.collect(Collectors.toList());
 					boolean containsDest = sydDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
 					if (containsDest) {
-						request.setFacility("SYD");
-						orderDetail.setInjectionType("SYD");
+						request.setFacility("SYD2");
+						orderDetail.setInjectionType("SYD2");
 					} else {
 						updatedOrderDetail.add(orderDetail);
 						continue;
