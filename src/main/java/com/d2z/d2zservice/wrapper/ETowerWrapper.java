@@ -372,7 +372,7 @@ public class ETowerWrapper {
 				}
 			}else if("1PS5".equalsIgnoreCase(orderDetail.getServiceType())) {
 				String zoneId = postCodeZoneMap
-						.get(orderDetail.getConsigneeSuburb().trim().concat(orderDetail.getConsigneePostcode().trim()));
+						.get(orderDetail.getConsigneeSuburb().trim().toUpperCase().concat(orderDetail.getConsigneePostcode().trim()));
 				List<String> eTowerZoneID = Stream.of("CB", "GF", "N0", "N1", "N3", "N4", "NC", "Q0" , "S0", "V0", "W0", "WG")
 						.collect(Collectors.toList());
 				boolean containsDest = eTowerZoneID.stream().anyMatch(zoneId::equalsIgnoreCase);
