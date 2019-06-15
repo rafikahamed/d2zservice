@@ -335,7 +335,7 @@ public class SenderData {
 	}
 
 	public void setReferenceNumber(String referenceNumber) {
-		this.referenceNumber = referenceNumber;
+		this.referenceNumber = referenceNumber.trim();
 	}
 
 	public String getConsigneeName() {
