@@ -110,6 +110,7 @@ import com.d2z.d2zservice.util.FTPUploader;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.wrapper.ETowerWrapper;
 import com.d2z.d2zservice.wrapper.FreipostWrapper;
+import com.d2z.d2zservice.wrapper.PCAWrapper;
 import com.d2z.d2zservice.wrapper.PFLWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
@@ -178,6 +179,9 @@ public class D2ZServiceImpl implements ID2ZService {
 	
 	@Autowired
 	PFLWrapper pflWrapper;
+	
+	@Autowired
+	PCAWrapper pcaWrapper;
 
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) 
@@ -198,10 +202,19 @@ public class D2ZServiceImpl implements ID2ZService {
 			d2zValidator.isFWPostCodeUIValid(orderDetailList);
 			makeCreateShippingOrderFilePFLCall(orderDetailList,senderDataResponseList,null);
 			return senderDataResponseList;
-		}else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) || "MCM3".equalsIgnoreCase(serviceType)){
+		}else if("FWS".equalsIgnoreCase(serviceType)) {
+			d2zValidator.isFWPostCodeUIValid(orderDetailList);
+			pcaWrapper.makeCreateShippingOrderFilePCACall(orderDetailList,senderDataResponseList,null);
+			return senderDataResponseList;
+		}else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) 
+				|| "MCM3".equalsIgnoreCase(serviceType) || "MCS".equalsIgnoreCase(serviceType)){
 			PFLSenderDataFileRequest consignmentData = d2zValidator.isFWSubPostCodeUIValid(orderDetailList);
 			if(consignmentData.getPflSenderDataApi().size() > 0) {
-				makeCreateShippingOrderFilePFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,null);
+				if("MCS".equalsIgnoreCase(serviceType)) {
+					pcaWrapper.makeCreateShippingOrderFilePCACall(orderDetailList,senderDataResponseList,null);
+				}else {
+					makeCreateShippingOrderFilePFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,null);
+				}
 			}
 			if(consignmentData.getNonPflSenderDataApi().size() > 0) {
 				d2zValidator.isPostCodeValidUI(orderDetailList);
@@ -212,8 +225,9 @@ public class D2ZServiceImpl implements ID2ZService {
 					Object[] obj = (Object[]) itr.next();
 					senderDataResponse = new SenderDataResponse();
 					senderDataResponse.setReferenceNumber(obj[0].toString());
-					String barcode = obj[1].toString();
-					senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+//					String barcode = obj[1].toString();
+//						senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+					senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 					senderDataResponse.setCarrier(obj[4].toString());
 					senderDataResponseList.add(senderDataResponse);
 				}
@@ -228,12 +242,10 @@ public class D2ZServiceImpl implements ID2ZService {
 			 Object[] obj = (Object[]) itr.next();
 			 senderDataResponse = new SenderDataResponse();
 			 senderDataResponse.setReferenceNumber(obj[0].toString());
-			 if(obj[1] != null)
-				 senderDataResponse.setBarcodeLabelNumber("]d2".concat(obj[1].toString().replaceAll("\\[|\\]", "")));
+			 senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 			 senderDataResponse.setCarrier(obj[4].toString());
 			 senderDataResponseList.add(senderDataResponse);
         }
-		
 		return senderDataResponseList;
 	}
 
@@ -740,7 +752,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			return obj.getReferenceNumber(); })
 				.collect(Collectors.toList());
 		d2zValidator.isReferenceNumberUnique(incomingRefNbr);
-		d2zValidator.isServiceValid(orderDetail);
+		//d2zValidator.isServiceValid(orderDetail);
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 
@@ -753,11 +765,20 @@ public class D2ZServiceImpl implements ID2ZService {
 			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
 			makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName());
 			return senderDataResponseList;
-		}else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) || "MCM3".equalsIgnoreCase(serviceType)){
+		}else if("FWS".equalsIgnoreCase(serviceType)) {
+			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
+			pcaWrapper.makeCreateShippingOrderPFACall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName());
+			return senderDataResponseList;
+		}else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) 
+					|| "MCM3".equalsIgnoreCase(serviceType) || "MCS".equalsIgnoreCase(serviceType)){
 			PFLSenderDataRequest consignmentData = d2zValidator.isFWSubPostCodeValid(orderDetail);
 			if(consignmentData.getPflSenderDataApi().size() > 0) {
-				makeCreateShippingOrderPFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName());
+				if("MCS".equalsIgnoreCase(serviceType)) 	
+					pcaWrapper.makeCreateShippingOrderPFACall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName());
+				else
+					makeCreateShippingOrderPFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName());
 			}
+			
 			if(consignmentData.getNonPflSenderDataApi().size() > 0) {
 				d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 				String senderFileID = d2zDao.createConsignments(consignmentData.getNonPflSenderDataApi(), userId, orderDetail.getUserName(), null);
