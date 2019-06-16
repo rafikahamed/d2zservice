@@ -46,6 +46,7 @@ public class ETowerWrapper {
 		List<com.d2z.d2zservice.model.etower.CreateShippingRequest> eTowerRequest = constructEtowerRequestWithAPIData(data);
 		String status = null;
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
+		
 		List<String> gainLabelTrackingNo = new ArrayList<String>();
 
 		if (!eTowerRequest.isEmpty()) {
@@ -73,6 +74,7 @@ public class ETowerWrapper {
 				processGainLabelsResponse(gainLabelResponse, barcodeMap);
 			}
 			int userId = d2zDao.fetchUserIdbyUserName(data.getUserName());
+			System.out.println("Barcode Map-->"+barcodeMap.size());
 			String senderFileID = d2zDao.createConsignments(data.getConsignmentData(), userId, data.getUserName(),
 					barcodeMap);
 
@@ -180,8 +182,8 @@ public class ETowerWrapper {
 						orderDetail.setInjectionState("BNE");
 
 					} else {
-						request.setFacility("SYD");
-						orderDetail.setInjectionState("SYD");
+						request.setFacility("SYD2");
+						orderDetail.setInjectionState("SYD2");
 
 					}
 				} else {
@@ -189,8 +191,8 @@ public class ETowerWrapper {
 							.collect(Collectors.toList());
 					boolean containsDest = sydDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
 					if (containsDest) {
-						request.setFacility("SYD");
-						orderDetail.setInjectionState("SYD");
+						request.setFacility("SYD2");
+						orderDetail.setInjectionState("SYD2");
 
 					} else {
 						iterator.set(orderDetail);
@@ -355,16 +357,16 @@ public class ETowerWrapper {
 						request.setFacility("BNE");
 						orderDetail.setInjectionType("BNE");
 					} else {
-						request.setFacility("SYD");
-						orderDetail.setInjectionType("SYD");
+						request.setFacility("SYD2");
+						orderDetail.setInjectionType("SYD2");
 					}
 				} else {
 					List<String> sydDestination = Stream.of("CB", "GF", "N0", "N1", "N2", "N3", "N4", "NC", "WG")
 							.collect(Collectors.toList());
 					boolean containsDest = sydDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
 					if (containsDest) {
-						request.setFacility("SYD");
-						orderDetail.setInjectionType("SYD");
+						request.setFacility("SYD2");
+						orderDetail.setInjectionType("SYD2");
 					} else {
 						updatedOrderDetail.add(orderDetail);
 						continue;
@@ -372,7 +374,7 @@ public class ETowerWrapper {
 				}
 			}else if("1PS5".equalsIgnoreCase(orderDetail.getServiceType())) {
 				String zoneId = postCodeZoneMap
-						.get(orderDetail.getConsigneeSuburb().trim().concat(orderDetail.getConsigneePostcode().trim()));
+						.get(orderDetail.getConsigneeSuburb().trim().toUpperCase().concat(orderDetail.getConsigneePostcode().trim()));
 				List<String> eTowerZoneID = Stream.of("CB", "GF", "N0", "N1", "N3", "N4", "NC", "Q0" , "S0", "V0", "W0", "WG")
 						.collect(Collectors.toList());
 				boolean containsDest = eTowerZoneID.stream().anyMatch(zoneId::equalsIgnoreCase);
