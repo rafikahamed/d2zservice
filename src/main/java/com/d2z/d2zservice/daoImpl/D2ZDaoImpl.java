@@ -142,7 +142,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setCarrier(senderDataValue.getCarrier());
 			senderDataObj.setConsignee_addr2(senderDataValue.getConsigneeAddr2());
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
-			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType())){
+			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType()) || "1PME".equalsIgnoreCase(senderDataValue.getServiceType())){
 				senderDataObj.setCarrier("Express");
 			}else{
 				senderDataObj.setCarrier("eParcel");
