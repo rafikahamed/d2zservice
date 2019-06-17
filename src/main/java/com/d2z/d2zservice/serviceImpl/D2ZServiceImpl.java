@@ -194,7 +194,9 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 		String serviceType = orderDetailList.get(0).getServiceType();
-		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType)){
+		if("1PS".equalsIgnoreCase(serviceType) || "1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) 
+				|| "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType) || "2PSP".equalsIgnoreCase(serviceType) ) {
+		
 			d2zValidator.isPostCodeValidUI(orderDetailList);
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(orderDetailList,senderDataResponseList);
 			return senderDataResponseList;
@@ -757,7 +759,9 @@ public class D2ZServiceImpl implements ID2ZService {
 		SenderDataResponse senderDataResponse = null;
 
 	    String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
-		if("1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType) ){
+	    if("1PS".equalsIgnoreCase(serviceType) || "1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) 
+				|| "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType) || "2PSP".equalsIgnoreCase(serviceType) ) {
+		
 			d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			return senderDataResponseList;

@@ -215,6 +215,41 @@ public class ETowerWrapper {
 					continue;
 				}
 			}
+			else if("2PSP".equalsIgnoreCase(orderDetail.getServiceType())) {
+				String zoneId = postCodeZoneMap
+						.get(orderDetail.getConsigneeSuburb().trim().toUpperCase().concat(orderDetail.getConsigneePostcode().trim()));
+				List<String> eTowerZoneID = Stream.of("N0", "Q0" , "S0", "V0")
+						.collect(Collectors.toList());
+				boolean containsDest = eTowerZoneID.stream().anyMatch(zoneId::equalsIgnoreCase);
+				if (containsDest) {
+					request.setFacility("SYD2");
+					orderDetail.setInjectionState("SYD2");
+
+				} else {
+					iterator.set(orderDetail);
+					continue;
+				}
+			}
+			else if("1PS".equalsIgnoreCase(orderDetail.getServiceType())) {
+				String zoneId = postCodeZoneMap
+						.get(orderDetail.getConsigneeSuburb().trim().toUpperCase().concat(orderDetail.getConsigneePostcode().trim()));
+				if (weight > 3) {
+						request.setFacility("SYD2");
+						orderDetail.setInjectionState("SYD2");
+				} else {
+					List<String> sydDestination = Stream.of("CB", "GF", "N0", "N1", "N2", "N3", "N4", "NC", "WG")
+							.collect(Collectors.toList());
+					boolean containsDest = sydDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					if (containsDest) {
+						request.setFacility("SYD2");
+						orderDetail.setInjectionState("SYD2");
+
+					} else {
+						iterator.set(orderDetail);
+						continue;
+					}
+				}
+			}
 			if (("Express").equalsIgnoreCase(orderDetail.getCarrier())) {
 				request.setServiceOption("Express-Post");
 			} else {
@@ -385,6 +420,41 @@ public class ETowerWrapper {
 				} else {
 					updatedOrderDetail.add(orderDetail);
 					continue;
+				}
+			}
+			else if("2PSP".equalsIgnoreCase(orderDetail.getServiceType())) {
+				String zoneId = postCodeZoneMap
+						.get(orderDetail.getConsigneeSuburb().trim().toUpperCase().concat(orderDetail.getConsigneePostcode().trim()));
+				List<String> eTowerZoneID = Stream.of("N0", "Q0" , "S0", "V0")
+						.collect(Collectors.toList());
+				boolean containsDest = eTowerZoneID.stream().anyMatch(zoneId::equalsIgnoreCase);
+				if (containsDest) {
+					request.setFacility("SYD2");
+					orderDetail.setInjectionState("SYD2");
+
+				} else {
+					updatedOrderDetail.add(orderDetail);
+					continue;
+				}
+			}
+			else if("1PS".equalsIgnoreCase(orderDetail.getServiceType())) {
+				String zoneId = postCodeZoneMap
+						.get(orderDetail.getConsigneeSuburb().trim().toUpperCase().concat(orderDetail.getConsigneePostcode().trim()));
+				if (weight > 3) {
+						request.setFacility("SYD2");
+						orderDetail.setInjectionState("SYD2");
+				} else {
+					List<String> sydDestination = Stream.of("CB", "GF", "N0", "N1", "N2", "N3", "N4", "NC", "WG")
+							.collect(Collectors.toList());
+					boolean containsDest = sydDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					if (containsDest) {
+						request.setFacility("SYD2");
+						orderDetail.setInjectionState("SYD2");
+
+					} else {
+						updatedOrderDetail.add(orderDetail);
+						continue;
+					}
 				}
 			}
 			if (("Express").equalsIgnoreCase(orderDetail.getCarrier())) {
