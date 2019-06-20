@@ -133,8 +133,7 @@ public class ETowerWrapper {
 				Object[] obj = (Object[]) itr.next();
 				SenderDataResponse senderDataresponse = new SenderDataResponse();
 				senderDataresponse.setReferenceNumber(obj[0].toString());
-				String barcode = obj[1].toString();
-				senderDataresponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+				senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 				//senderDataresponse.setBarcodeLabelNumber(obj[2] != null ? obj[2].toString() : "");
 				senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
 				senderDataResponseList.add(senderDataresponse);
