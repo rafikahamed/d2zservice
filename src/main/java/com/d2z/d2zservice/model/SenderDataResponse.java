@@ -5,6 +5,7 @@ public class SenderDataResponse {
 	private String referenceNumber;
 	private String barcodeLabelNumber;
 	private String carrier;
+	private String message;
 
 	public String getReferenceNumber() {
 		return referenceNumber;
@@ -29,7 +30,13 @@ public class SenderDataResponse {
 	public void setCarrier(String carrier) {
 		this.carrier = carrier;
 	}
-	
-	
 
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	
 }

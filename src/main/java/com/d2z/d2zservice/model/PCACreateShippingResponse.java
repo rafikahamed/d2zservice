@@ -7,6 +7,7 @@ public class PCACreateShippingResponse {
 	private String connote;
 	private String ref;
 	private String custref;
+	private String depot;
 	
 	public int getStatus() {
 		return status;
@@ -38,7 +39,11 @@ public class PCACreateShippingResponse {
 	public void setCustref(String custref) {
 		this.custref = custref;
 	}
-	
-	
+	public String getDepot() {
+		return depot;
+	}
+	public void setDepot(String depot) {
+		this.depot = depot;
+	}
 
 }

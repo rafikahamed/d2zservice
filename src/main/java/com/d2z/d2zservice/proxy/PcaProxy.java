@@ -30,6 +30,8 @@ import org.springframework.web.client.RestTemplate;
 import com.d2z.d2zservice.model.PCACreateShipmentRequest;
 import com.d2z.d2zservice.model.PCACreateShippingResponse;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -127,15 +129,21 @@ public class PcaProxy {
 
 	}
 
-	public PCACreateShippingResponse makeCallForCreateShippingOrder(PCACreateShipmentRequest pcaRequest) {
-		System.out.println("PCA Request ------>");
-		System.out.println(pcaRequest.toString());
-		String response = executePost(url, constructParam(pcaRequest.toString()));
-		System.out.println(response);
-		PCACreateShippingResponse pcaResponse = null;
+	public List<PCACreateShippingResponse> makeCallForCreateShippingOrder(PCACreateShipmentRequest pcaRequest) {
 		ObjectMapper mapper = new ObjectMapper();
+		String jsonString = null;
 		try {
-			pcaResponse = mapper.readValue(response, PCACreateShippingResponse.class);
+			jsonString = mapper.writeValueAsString(pcaRequest);
+		} catch (JsonProcessingException e1) {
+			e1.printStackTrace();
+		}
+		System.out.println("PCA Request ------>");
+		System.out.println(jsonString);
+		String response = executePost(url, constructParam(jsonString));
+		System.out.println(response);
+		List<PCACreateShippingResponse> pcaResponse = null;
+		try {
+			pcaResponse = mapper.readValue(response, new TypeReference<List<PCACreateShippingResponse>>(){});
 		} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -152,7 +160,9 @@ public class PcaProxy {
 			requestData = "api_id=" + URLEncoder.encode(apiId, "UTF-8") + "&method="
 					+ URLEncoder.encode(method, "UTF-8") + "&data=" + URLEncoder.encode(pcaRequest.toString(), "UTF-8") + "&sign="
 					+ URLEncoder.encode(getSign(pcaRequest.toString()), "UTF-8");
+			System.out.println(requestData);
 			return requestData;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return requestData;

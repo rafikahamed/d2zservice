@@ -1,6 +1,8 @@
 package com.d2z.d2zservice.wrapper;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -20,11 +22,14 @@ import com.d2z.d2zservice.model.PCAItems;
 import com.d2z.d2zservice.model.PCAPackages;
 import com.d2z.d2zservice.model.PCAReceiver;
 import com.d2z.d2zservice.model.PCAShipper;
+import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
+import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.proxy.PcaProxy;
+import com.d2z.singleton.D2ZSingleton;
 
 @Service
 public class PCAWrapper {
@@ -111,41 +116,64 @@ public class PCAWrapper {
 	private void createShippingOrderPCA(List<SenderDataApi> consignmentData, PCACreateShipmentRequest pcaRequest,
 			String userName, List<SenderDataResponse> senderDataResponseList) throws EtowerFailureResponseException {
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
-		PCACreateShippingResponse pcaResponse = pcaProxy.makeCallForCreateShippingOrder(pcaRequest);
+		List<PCACreateShippingResponse> pcaResponse = pcaProxy.makeCallForCreateShippingOrder(pcaRequest);
 		logPcaCreateResponse(pcaResponse);
-		if (!pcaResponse.getMsg().equalsIgnoreCase("Success")) {
-			throw new EtowerFailureResponseException("Error in file – please contact customer support");
-		} else {
-			if (pcaResponse.getMsg().equalsIgnoreCase("Success")) {
-				processPcaLabelsResponse(pcaResponse, barcodeMap);
-				int userId = d2zDao.fetchUserIdbyUserName(userName);
-				String senderFileID = d2zDao.createConsignments(consignmentData, userId, userName, barcodeMap);
-				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
-				Iterator itr = insertedOrder.iterator();
-				while (itr.hasNext()) {
-					Object[] obj = (Object[]) itr.next();
-					SenderDataResponse senderDataresponse = new SenderDataResponse();
-					senderDataresponse.setReferenceNumber(obj[0].toString());
-					senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
-					senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
-					senderDataResponseList.add(senderDataresponse);
+		List<PCACreateShippingResponse> pcaResponseSuccess  = new ArrayList<PCACreateShippingResponse>();
+		List<String> referenceNumber = new ArrayList<String>();
+		for(PCACreateShippingResponse pcaData: pcaResponse) {
+			if(!pcaData.getMsg().equalsIgnoreCase("Success")) {
+				SenderDataResponse senderDataresponse = new SenderDataResponse();
+				senderDataresponse.setReferenceNumber(pcaData.getMsg().split("-")[1].split(" ")[2]);
+				senderDataresponse.setMessage(pcaData.getMsg());
+				senderDataResponseList.add(senderDataresponse);
+				referenceNumber.add(pcaData.getMsg().split("-")[1].split(" ")[2]);
+			}else {
+				pcaResponseSuccess.add(pcaData);
+			}
+		}
+		List<SenderDataApi> pflSenderData = new ArrayList<SenderDataApi>();
+		PFLSenderDataRequest pflRequest = new PFLSenderDataRequest();
+		if(referenceNumber.size() > 0) {
+			consignmentData.forEach(obj -> {
+				if(!referenceNumber.contains(obj.getReferenceNumber())) {
+					pflSenderData.add(obj);
 				}
+			});
+			pflRequest.setPflSenderDataApi(pflSenderData);
+		}else {
+			pflRequest.setPflSenderDataApi(consignmentData);
+		}
+		
+		if(pcaResponseSuccess.size() > 0) {
+			processPcaLabelsResponse(pcaResponseSuccess, barcodeMap);
+			int userId = d2zDao.fetchUserIdbyUserName(userName);
+			String senderFileID = d2zDao.createConsignments(pflRequest.getPflSenderDataApi(), userId, userName, barcodeMap);
+			List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
+			Iterator itr = insertedOrder.iterator();
+			while (itr.hasNext()) {
+				Object[] obj = (Object[]) itr.next();
+				SenderDataResponse senderDataresponse = new SenderDataResponse();
+				senderDataresponse.setReferenceNumber(obj[0].toString());
+				senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
+				senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
+				senderDataResponseList.add(senderDataresponse);
 			}
 		}
 	}
 
-	private Map<String, LabelData> processPcaLabelsResponse(PCACreateShippingResponse pcaResponse,
-			Map<String, LabelData> barcodeMap) {
-	//		for (PFLResponseData data : pflResponse.getResult()) {
-	//			LabelData labelData = new LabelData();
-	//			labelData.setReferenceNo(data.getReference());
-	//			labelData.setArticleId(data.getId());
-	//			labelData.setTrackingNo(data.getTracking());
-	//			labelData.setHub(data.getHub());
-	//			labelData.setMatrix(data.getMatrix());
-	//			labelData.setProvider("PCA");
-	//			barcodeMap.put(data.getReference(), labelData);
-	//		}
+	private Map<String, LabelData> processPcaLabelsResponse(List<PCACreateShippingResponse> pcaResponse, Map<String, LabelData> barcodeMap) {
+			for (PCACreateShippingResponse data : pcaResponse) {
+				if(data.getMsg().equalsIgnoreCase("Success")) {
+					LabelData labelData = new LabelData();
+					labelData.setReferenceNo(data.getCustref());
+					labelData.setArticleId(data.getRef());
+					labelData.setTrackingNo(data.getRef());
+					labelData.setHub(data.getDepot());
+					labelData.setMatrix(data.getConnote());
+					labelData.setProvider("PCA");
+					barcodeMap.put(data.getCustref(), labelData);
+				}
+			}
 		return barcodeMap;
 	}
 
@@ -222,53 +250,74 @@ public class PCAWrapper {
 	private void createShippingOrderFilePCA(List<SenderData> orderDetailList, PCACreateShipmentRequest pcaRequest,
 			String userName, List<SenderDataResponse> senderDataResponseList) throws EtowerFailureResponseException {
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
-		PCACreateShippingResponse pcaResponse = pcaProxy.makeCallForCreateShippingOrder(pcaRequest);
+		List<PCACreateShippingResponse> pcaResponse = pcaProxy.makeCallForCreateShippingOrder(pcaRequest);
 		logPcaCreateResponse(pcaResponse);
-		if (!pcaResponse.getMsg().equalsIgnoreCase("Success")) {
-			throw new EtowerFailureResponseException("Error in file – please contact customer support");
-		} else {
-			if (pcaResponse != null) {
-				processPcaLabelsResponse(pcaResponse, barcodeMap);
-				String senderFileID = d2zDao.exportParcel(orderDetailList, barcodeMap);
-				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
-				Iterator itr = insertedOrder.iterator();
-				while (itr.hasNext()) {
-					Object[] obj = (Object[]) itr.next();
-					SenderDataResponse senderDataresponse = new SenderDataResponse();
-					senderDataresponse.setReferenceNumber(obj[0].toString());
-					senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
-					senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
-					senderDataResponseList.add(senderDataresponse);
+		List<PCACreateShippingResponse> pcaFileResponseSuccess  = new ArrayList<PCACreateShippingResponse>();
+		List<String> referenceNumber = new ArrayList<String>();
+		for(PCACreateShippingResponse pcaData: pcaResponse) {
+			if(!pcaData.getMsg().equalsIgnoreCase("Success")) {
+				SenderDataResponse senderDataresponse = new SenderDataResponse();
+				senderDataresponse.setReferenceNumber(pcaData.getMsg().split("-")[1].split(" ")[2]);
+				senderDataresponse.setMessage(pcaData.getMsg());
+				senderDataResponseList.add(senderDataresponse);
+				referenceNumber.add(pcaData.getMsg().split("-")[1].split(" ")[2]);
+			}else {
+				pcaFileResponseSuccess.add(pcaData);
+			}
+		}
+		
+		List<SenderData> pflSenderData = new ArrayList<SenderData>();
+		PFLSenderDataFileRequest pflRequest = new PFLSenderDataFileRequest();
+		if(referenceNumber.size() > 0) {
+			orderDetailList.forEach(obj -> {
+				if(!referenceNumber.contains(obj.getReferenceNumber())) {
+					pflSenderData.add(obj);
 				}
+			});
+			pflRequest.setPflSenderDataApi(pflSenderData);
+		}else {
+			pflRequest.setPflSenderDataApi(orderDetailList);
+		}
+		
+		if(pcaFileResponseSuccess.size() > 0) {
+			processPcaLabelsResponse(pcaFileResponseSuccess, barcodeMap);
+			String senderFileID = d2zDao.exportParcel(pflRequest.getPflSenderDataApi(), barcodeMap);
+			List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
+			Iterator itr = insertedOrder.iterator();
+			while (itr.hasNext()) {
+				Object[] obj = (Object[]) itr.next();
+				SenderDataResponse senderDataresponse = new SenderDataResponse();
+				senderDataresponse.setReferenceNumber(obj[0].toString());
+				senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
+				senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
+				senderDataResponseList.add(senderDataresponse);
 			}
 		}
 	}
 	
-	private void logPcaCreateResponse(PCACreateShippingResponse pcaResponse)throws EtowerFailureResponseException {
+	private void logPcaCreateResponse(List<PCACreateShippingResponse> pcaResponse)throws EtowerFailureResponseException {
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 		if(pcaResponse != null) {
-//			for(PFLResponseData pflData: pflResponse.getResult()) {
-//				if(pflData.getCode() != null) {
-//					ETowerResponse errorResponse = new ETowerResponse();
-//					errorResponse.setAPIName("PFL - Create order");
-//					errorResponse.setErrorCode(pflData.getCode());
-//					errorResponse.setErrorMessage(pflData.getError());
-//					errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-//					errorResponse.setStatus("Error");
-//					responseEntity.add(errorResponse);
-//					d2zDao.logEtowerResponse(responseEntity);
-//					throw new EtowerFailureResponseException("Error in file – please contact customer support");
-//				}else {
-//					ETowerResponse errorResponse = new ETowerResponse();
-//					errorResponse.setAPIName("PFL - Create order");
-//					errorResponse.setReferenceNumber(pflData.getReference());
-//					errorResponse.setOrderId(pflData.getId());
-//					errorResponse.setTrackingNo(pflData.getTracking());
-//					errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-//					errorResponse.setStatus("Success");
-//					responseEntity.add(errorResponse);
-//				}
-//			}
+			for(PCACreateShippingResponse pcaData: pcaResponse) {
+				if(!pcaData.getMsg().equalsIgnoreCase("Success")) {
+					ETowerResponse errorResponse = new ETowerResponse();
+					errorResponse.setAPIName("PCA - Create order");
+					errorResponse.setErrorCode(String.valueOf(pcaData.getStatus()));
+					errorResponse.setErrorMessage(pcaData.getMsg());
+					errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+					errorResponse.setStatus("Error");
+					responseEntity.add(errorResponse);
+				}else {
+					ETowerResponse errorResponse = new ETowerResponse();
+					errorResponse.setAPIName("PCA - Create order");
+					errorResponse.setReferenceNumber(pcaData.getCustref());
+					errorResponse.setOrderId(pcaData.getConnote());
+					errorResponse.setTrackingNo(pcaData.getRef());
+					errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+					errorResponse.setStatus("Success");
+					responseEntity.add(errorResponse);
+				}
+			}
 			d2zDao.logEtowerResponse(responseEntity);
 		}
 	}
