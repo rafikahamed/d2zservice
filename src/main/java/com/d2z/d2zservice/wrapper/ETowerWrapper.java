@@ -55,7 +55,7 @@ public class ETowerWrapper {
 					gainLabelTrackingNo);
 		}
 
-		if (gainLabelTrackingNo.size() == data.getConsignmentData().size()) {
+		/*if (gainLabelTrackingNo.size() == data.getConsignmentData().size()) {
 
 			Runnable r = new Runnable() {
 				public void run() {
@@ -68,7 +68,7 @@ public class ETowerWrapper {
 				}
 			};
 			new Thread(r).start();
-		} else {
+		} else {*/
 			if (null != status) {
 				GainLabelsResponse gainLabelResponse = eTowerProxy.makeCallToGainLabels(gainLabelTrackingNo);
 				processGainLabelsResponse(gainLabelResponse, barcodeMap);
@@ -85,10 +85,12 @@ public class ETowerWrapper {
 				Object[] obj = (Object[]) itr.next();
 				SenderDataResponse senderDataresponse = new SenderDataResponse();
 				senderDataresponse.setReferenceNumber(obj[0].toString());
-				senderDataresponse.setBarcodeLabelNumber(obj[2] != null ? obj[2].toString() : "");
+				//senderDataresponse.setBarcodeLabelNumber(obj[2] != null ? obj[2].toString() : "");
+				String barcode = obj[1].toString();
+				senderDataresponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
 				senderDataResponseList.add(senderDataresponse);
 			}
-		}
+		//}
 
 	}
 
@@ -105,7 +107,7 @@ public class ETowerWrapper {
 			status = parseCreateShippingOrderResponse(response, senderDataResponseList, barcodeMap,
 					gainLabelTrackingNo);
 		}
-		if (gainLabelTrackingNo.size() == data.size()) {
+		/*if (gainLabelTrackingNo.size() == data.size()) {
 
 			Runnable r = new Runnable() {
 				public void run() {
@@ -117,7 +119,7 @@ public class ETowerWrapper {
 				}
 			};
 			new Thread(r).start();
-		} else {
+		} else {*/
 			if (null != status) {
 				GainLabelsResponse gainLabelResponse = eTowerProxy.makeCallToGainLabels(gainLabelTrackingNo);
 				processGainLabelsResponse(gainLabelResponse, barcodeMap);
@@ -131,11 +133,12 @@ public class ETowerWrapper {
 				Object[] obj = (Object[]) itr.next();
 				SenderDataResponse senderDataresponse = new SenderDataResponse();
 				senderDataresponse.setReferenceNumber(obj[0].toString());
-				senderDataresponse.setBarcodeLabelNumber(obj[2] != null ? obj[2].toString() : "");
+				senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
+				//senderDataresponse.setBarcodeLabelNumber(obj[2] != null ? obj[2].toString() : "");
 				senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
 				senderDataResponseList.add(senderDataresponse);
 			}
-		}
+		//}
 
 	}
 

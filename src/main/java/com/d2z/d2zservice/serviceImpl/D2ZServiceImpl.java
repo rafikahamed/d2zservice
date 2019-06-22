@@ -753,7 +753,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			return obj.getReferenceNumber(); })
 				.collect(Collectors.toList());
 		d2zValidator.isReferenceNumberUnique(incomingRefNbr);
-		//d2zValidator.isServiceValid(orderDetail);
+		d2zValidator.isServiceValid(orderDetail);
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 

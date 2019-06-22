@@ -306,16 +306,18 @@ public class D2ZDaoImpl implements ID2ZDao{
 				senderDataObj.setCarrier("eParcel");
 			}
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
+			senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
+			senderDataObj.setIsDeleted("N");
 			if(barcodeMap != null && !barcodeMap.isEmpty())
 				provider = barcodeMap.get(barcodeMap.keySet().toArray()[0]);
 			if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("Etower") && 
 						barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData labelData= barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setBarcodelabelNumber(labelData.getBarCode());
-				senderDataObj.setIsDeleted("N");
+				//senderDataObj.setIsDeleted("N");
 				senderDataObj.setStatus("CONSIGNMENT CREATED");
 				senderDataObj.setInjectionType("Direct Injection");
-				senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
+				//senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
 				senderDataObj.setArticleId(labelData.getArticleId());		        
 				senderDataObj.setDatamatrix(D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
@@ -323,8 +325,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 						barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData pflLabel= barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setStatus("CONSIGNMENT CREATED");
-				senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
-				senderDataObj.setIsDeleted("N");
+				//senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
+				//senderDataObj.setIsDeleted("N");
 				senderDataObj.setInjectionType("Direct Injection");
 				senderDataObj.setInjectionState(pflLabel.getHub());
 				senderDataObj.setBarcodelabelNumber(pflLabel.getTrackingNo());
@@ -335,8 +337,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 						barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData pflLabel= barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setStatus("CONSIGNMENT CREATED");
-				senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
-				senderDataObj.setIsDeleted("N");
+				//senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
+				//senderDataObj.setIsDeleted("N");
 				senderDataObj.setInjectionType("Direct Injection");
 				senderDataObj.setInjectionState(pflLabel.getHub());
 				senderDataObj.setBarcodelabelNumber(pflLabel.getTrackingNo());
