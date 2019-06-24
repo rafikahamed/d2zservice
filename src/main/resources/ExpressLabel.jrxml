@@ -343,7 +343,7 @@
 				<textElement>
 					<font fontName="MyArial"/>
 				</textElement>
-				<textFieldExpression><![CDATA[(($F{returnAddress1} == null) || ($F{returnAddress1}.isEmpty()))?"18 Grimes Court":$F{returnAddress1}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[(($F{returnAddress1}== null) || ($F{returnAddress1}.isEmpty()))?"18 Grimes Court":$F{returnAddress1}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="1" y="-50" width="139" height="15" uuid="7fd1e4c2-8511-4e79-bd2c-292dfd3b0b70"/>
