@@ -76,6 +76,12 @@
 	<field name="consigneeSuburb" class="java.lang.String">
 		<fieldDescription><![CDATA[consigneeSuburb]]></fieldDescription>
 	</field>
+	<field name="returnAddress1" class="java.lang.String">
+		<fieldDescription><![CDATA[returnAddress1]]></fieldDescription>
+	</field>
+	<field name="returnAddress2" class="java.lang.String">
+		<fieldDescription><![CDATA[returnAddress2]]></fieldDescription>
+	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -337,14 +343,14 @@
 				<textElement>
 					<font fontName="MyArial"/>
 				</textElement>
-				<textFieldExpression><![CDATA["18 Grimes Court"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[(($F{returnAddress1} == null) || ($F{returnAddress1}.isEmpty()))?"18 Grimes Court":$F{returnAddress1}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="1" y="-50" width="139" height="15" uuid="7fd1e4c2-8511-4e79-bd2c-292dfd3b0b70"/>
 				<textElement>
 					<font fontName="MyArial"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Derrimut VIC 3030"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[(($F{returnAddress2}==null) || ($F{returnAddress2}.isEmpty()))?"Derrimut VIC 3030":$F{returnAddress2}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="141" y="-35" width="218" height="1" uuid="fc0f367d-a0be-4d9b-b0ca-8aecc6f7ee5c"/>
