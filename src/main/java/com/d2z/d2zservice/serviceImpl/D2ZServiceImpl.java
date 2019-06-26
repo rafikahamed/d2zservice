@@ -341,14 +341,33 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderData> eParcelData = new ArrayList<SenderData>();
 
 		List<SenderData> expressData = new ArrayList<SenderData>();
+		List<SenderData> fastwayData = new ArrayList<SenderData>();
+		List<SenderData> fastway_S_Data = new ArrayList<SenderData>();
+		List<SenderData> whiteLabelData = new ArrayList<SenderData>();
+		
+			
+
+		
 		boolean setGS1Type=false;
 		for (SenderData data : senderData) {
-			if (data.getCarrier().equalsIgnoreCase("eParcel")) {
+			if ("MCM1".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
+				whiteLabelData.add(data);
+			}
+			else if ("MCM2".equalsIgnoreCase(data.getServiceType()) && (data.getCarrier().equalsIgnoreCase("Express") || data.getCarrier().equalsIgnoreCase("eParcel")) ) {
+				whiteLabelData.add(data);
+			}
+			else if("MCM3".equalsIgnoreCase(data.getServiceType())) {
+				whiteLabelData.add(data);
+			}else  if(data.getCarrier().equalsIgnoreCase("eParcel")) {
 				eParcelData.add(data);
-				
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
 				expressData.add(data);
+			}else if(data.getCarrier().equalsIgnoreCase("FastwayM")) {
+				fastwayData.add(data);
+			}else if(data.getCarrier().equalsIgnoreCase("FastwayS")) {
+				fastway_S_Data.add(data);
 			}
+		
 			data.setDatamatrixImage(generateDataMatrix(data.getDatamatrix(),setGS1Type));
 		}
 
@@ -358,6 +377,12 @@ public class D2ZServiceImpl implements ID2ZService {
 		JRBeanCollectionDataSource expressDataSource;
 		JasperReport eParcelLabel = null;
 		JasperReport expressLabel = null;
+		JRBeanCollectionDataSource fastwayDataSource;
+		JasperReport fastwayLabel = null;
+		JRBeanCollectionDataSource fastway_S_DataSource;
+		JasperReport fastway_S_Label = null;
+		JRBeanCollectionDataSource whiteLabelDataSource;
+		JasperReport whiteLabel = null;
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 			if (!eParcelData.isEmpty()) {
@@ -377,6 +402,31 @@ public class D2ZServiceImpl implements ID2ZService {
 				JRSaver.saveObject(expressLabel, "express.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(expressLabel, parameters, expressDataSource));
 			}
+			if (!fastwayData.isEmpty()) {
+				System.out.println("Generating Fastway..." + fastwayData.size());
+				fastwayDataSource = new JRBeanCollectionDataSource(fastwayData);
+				fastwayLabel = JasperCompileManager
+						.compileReport(getClass().getResource("/FastWayLabel.jrxml").openStream());
+				JRSaver.saveObject(fastwayLabel, "FastWayLabel.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(fastwayLabel, parameters, fastwayDataSource));
+			}
+			if (!fastway_S_Data.isEmpty()) {
+				System.out.println("Generating FastwayS..." + fastway_S_Data.size());
+				fastway_S_DataSource = new JRBeanCollectionDataSource(fastway_S_Data);
+				fastway_S_Label = JasperCompileManager
+						.compileReport(getClass().getResource("/FastwayPCA.jrxml").openStream());
+				JRSaver.saveObject(fastway_S_Label, "FastwayPCA.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(fastway_S_Label, parameters, fastway_S_DataSource));
+			}
+			if (!whiteLabelData.isEmpty()) {
+				System.out.println("Generating WhiteLabel..." + whiteLabelData.size());
+				whiteLabelDataSource = new JRBeanCollectionDataSource(whiteLabelData);
+				whiteLabel = JasperCompileManager
+						.compileReport(getClass().getResource("/WhiteLabel.jrxml").openStream());
+				JRSaver.saveObject(whiteLabel, "whiteLabel.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(whiteLabel, parameters, whiteLabelDataSource));
+			}
+
 			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
 			JRPdfExporter exporter = new JRPdfExporter();
@@ -553,7 +603,6 @@ public class D2ZServiceImpl implements ID2ZService {
 						.compileReport(getClass().getResource("/eparcelLabel.jrxml").openStream());
 				JRSaver.saveObject(eParcelLabel, "label.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, eParcelDataSource));
-
 			}
 			if (!expressData.isEmpty()) {
 				System.out.println("Generating Express..." + expressData.size());
