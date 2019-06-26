@@ -1015,7 +1015,9 @@ public class D2ZServiceImpl implements ID2ZService {
 				to.setPostcode(data.getConsignee_Postcode());
 				to.setState(data.getConsignee_State());
 				to.setSuburb(data.getConsignee_Suburb());
-				to.getLines().add(data.getConsignee_addr1());
+				to.getLines().add(data.getConsignee_addr1().length() > 39	
+						        ? data.getConsignee_addr1().substring(0, 39)
+								:data.getConsignee_addr1());
 				String regex = "^[0-9]{1,20}$";
 				String phone = "";
 				if (null != data.getConsignee_Phone() && data.getConsignee_Phone().matches(regex)) {
