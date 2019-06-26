@@ -29,7 +29,6 @@ import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.proxy.PcaProxy;
-import com.d2z.singleton.D2ZSingleton;
 
 @Service
 public class PCAWrapper {
@@ -37,14 +36,17 @@ public class PCAWrapper {
 	@Autowired
 	private PcaProxy pcaProxy;
 
-	@Value("${pca.chargeCode}")
-	private String chargeCode;
+	@Value("${pca.chargeCodeFW}")
+	private String chargeCodeFW;
+	
+	@Value("${pca.chargeCodeST}")
+	private String chargeCodeST;
 
 	@Autowired
 	private ID2ZDao d2zDao;
 
 	public void makeCreateShippingOrderPFACall(List<SenderDataApi> consignmentData,
-			List<SenderDataResponse> senderDataResponseList, String userName) throws EtowerFailureResponseException {
+			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
 		PCACreateShipmentRequest pcaRequest = new PCACreateShipmentRequest();
 		List<PCACreateShipmentRequestInfo> pcaOrderInfoRequest = new ArrayList<PCACreateShipmentRequestInfo>();
 		for (SenderDataApi orderDetail : consignmentData) {
@@ -106,7 +108,11 @@ public class PCAWrapper {
 			pcaItems.setSku(orderDetail.getSku());
 			PCAItemList.add(pcaItems);
 			request.setItems(PCAItemList);
-			request.setChargecode(chargeCode);
+			if("STS".equalsIgnoreCase(serviceType)) {
+				request.setChargecode(chargeCodeST);
+			}else {
+				request.setChargecode(chargeCodeFW);
+			}
 			pcaOrderInfoRequest.add(request);
 		}
 		pcaRequest.setShipments(pcaOrderInfoRequest);
@@ -178,7 +184,7 @@ public class PCAWrapper {
 	}
 
 	public void makeCreateShippingOrderFilePCACall(List<SenderData> orderDetailList,
-			List<SenderDataResponse> senderDataResponseList, String userName) throws EtowerFailureResponseException {
+			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
 		PCACreateShipmentRequest pcaRequest = new PCACreateShipmentRequest();
 		List<PCACreateShipmentRequestInfo> pcaOrderInfoRequest = new ArrayList<PCACreateShipmentRequestInfo>();
 		for (SenderData orderDetail : orderDetailList) {
@@ -240,7 +246,11 @@ public class PCAWrapper {
 			pcaItems.setSku(orderDetail.getSku());
 			PCAItemList.add(pcaItems);
 			request.setItems(PCAItemList);
-			request.setChargecode(chargeCode);
+			if("STS".equalsIgnoreCase(serviceType)) {
+				request.setChargecode(chargeCodeST);
+			}else {
+				request.setChargecode(chargeCodeFW);
+			}
 			pcaOrderInfoRequest.add(request);
 		}
 		pcaRequest.setShipments(pcaOrderInfoRequest);
