@@ -529,6 +529,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				downloadInvoice.setTotal(obj[6].toString());
 			if (obj[7] != null)
 				downloadInvoice.setServiceType(obj[7].toString());
+			if (obj[8] != null)
+				downloadInvoice.setAirwaybill(obj[8].toString());
 			downloadInvoiceList.add(downloadInvoice);
 		}
 		return downloadInvoiceList;
