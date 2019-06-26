@@ -1000,7 +1000,7 @@ public class D2ZServiceImpl implements ID2ZService {
 				String email = null;
 				if (data.getConsignee_Email() != null && !data.getConsignee_Email().trim().isEmpty()
 						&& data.getConsignee_Email().contains("@")) {
-					email = data.getConsignee_Email();
+					email = data.getConsignee_Email().trim();
 				}
 				ShipmentRequest shipmentRequest = new ShipmentRequest();
 				shipmentRequest.setSender_references(data.getReference_number());
