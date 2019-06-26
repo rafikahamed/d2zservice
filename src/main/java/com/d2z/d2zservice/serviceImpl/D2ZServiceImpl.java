@@ -1009,7 +1009,7 @@ public class D2ZServiceImpl implements ID2ZService {
 				String email = null;
 				if (data.getConsignee_Email() != null && !data.getConsignee_Email().trim().isEmpty()
 						&& data.getConsignee_Email().contains("@")) {
-					email = data.getConsignee_Email();
+					email = data.getConsignee_Email().trim();
 				}
 				ShipmentRequest shipmentRequest = new ShipmentRequest();
 				shipmentRequest.setSender_references(data.getReference_number());
@@ -1024,7 +1024,9 @@ public class D2ZServiceImpl implements ID2ZService {
 				to.setPostcode(data.getConsignee_Postcode());
 				to.setState(data.getConsignee_State());
 				to.setSuburb(data.getConsignee_Suburb());
-				to.getLines().add(data.getConsignee_addr1());
+				to.getLines().add(data.getConsignee_addr1().length() > 39	
+						        ? data.getConsignee_addr1().substring(0, 39)
+								:data.getConsignee_addr1());
 				String regex = "^[0-9]{1,20}$";
 				String phone = "";
 				if (null != data.getConsignee_Phone() && data.getConsignee_Phone().matches(regex)) {

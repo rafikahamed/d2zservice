@@ -10,7 +10,14 @@ public class DownloadInvice {
 	private String fuelsurcharge;
 	private String total;
 	private String serviceType;
+	private String airwaybill;
 	
+	public String getAirwaybill() {
+		return airwaybill;
+	}
+	public void setAirwaybill(String airwaybill) {
+		this.airwaybill = airwaybill;
+	}
 	public String getTrackingNumber() {
 		return trackingNumber;
 	}
