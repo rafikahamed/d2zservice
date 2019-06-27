@@ -137,6 +137,12 @@ public class PCAWrapper {
 				pcaResponseSuccess.add(pcaData);
 			}
 		}
+		
+		if(referenceNumber.size() > 0) {
+//			String pcaRequestCancel = "{\"no\":[\"ECN1656037889\"],\"ref\":[\"RC0001124440\"],\"cust_ref\": []}";
+//			List<PCACreateShippingResponse> pcaResponseCancel = pcaProxy.makeCallForCancelShipment(pcaRequestCancel);
+		}
+		
 		List<SenderDataApi> pflSenderData = new ArrayList<SenderDataApi>();
 		PFLSenderDataRequest pflRequest = new PFLSenderDataRequest();
 		if(referenceNumber.size() > 0) {

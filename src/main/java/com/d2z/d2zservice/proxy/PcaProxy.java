@@ -234,5 +234,47 @@ public class PcaProxy {
 			}
 		}
 	}
+
+	public List<PCACreateShippingResponse> makeCallForCancelShipment(String pcaRequestCancel) {
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = mapper.writeValueAsString(pcaRequestCancel);
+		} catch (JsonProcessingException e1) {
+			e1.printStackTrace();
+		}
+		System.out.println("PCA Cancel Request ------>");
+		System.out.println(jsonString);
+		String response = executePost(url, constructParamCancel(jsonString));
+		System.out.println(response);
+		List<PCACreateShippingResponse> pcaResponse = null;
+		try {
+			pcaResponse = mapper.readValue(response, new TypeReference<List<PCACreateShippingResponse>>(){});
+		} catch (JsonParseException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return pcaResponse;
+	}
+
+	private String constructParamCancel(String pcaCancelRequest) {
+		String requestData="";
+		try {
+			requestData = "api_id=" + URLEncoder.encode(apiId, "UTF-8") + "&method="
+					+ URLEncoder.encode("cancel", "UTF-8") + "&data=" + URLEncoder.encode(pcaCancelRequest.toString(), "UTF-8") + "&sign="
+					+ URLEncoder.encode(getSign(pcaCancelRequest.toString()), "UTF-8");
+			System.out.println(requestData);
+			return requestData;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return requestData;
+    	}
 	
+	}
+	
+
 }
