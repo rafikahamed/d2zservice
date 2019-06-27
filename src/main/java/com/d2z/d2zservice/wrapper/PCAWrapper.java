@@ -138,10 +138,10 @@ public class PCAWrapper {
 			}
 		}
 		
-		if(referenceNumber.size() > 0) {
-//			String pcaRequestCancel = "{\"no\":[\"ECN1656037889\"],\"ref\":[\"RC0001124440\"],\"cust_ref\": []}";
+//		if(referenceNumber.size() > 0) {
+//			String pcaRequestCancel = " {\"no\":\"ECN1656036385\", \"ref\":\"ML0000731779\", \"cust_ref\":\"2017062600112345\"}";
 //			List<PCACreateShippingResponse> pcaResponseCancel = pcaProxy.makeCallForCancelShipment(pcaRequestCancel);
-		}
+//		}
 		
 		List<SenderDataApi> pflSenderData = new ArrayList<SenderDataApi>();
 		PFLSenderDataRequest pflRequest = new PFLSenderDataRequest();
