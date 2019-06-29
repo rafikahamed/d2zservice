@@ -2,10 +2,14 @@ package com.d2z.d2zservice.repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.d2z.d2zservice.entity.Consignments;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 
@@ -292,5 +296,11 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 
 	@Query("SELECT s.articleId FROM SenderdataMaster s where s.carrier = 'FastwayM' and s.reference_number in (:refNbrs)")
 	List<String> fetchDataforPFLSubmitOrder(String[] refNbrs);
+
+	@Modifying(flushAutomatically = true,clearAutomatically = true)
+	@Transactional
+	@Query("Update SenderdataMaster s set s.airwayBill = :airwayBill, s.status = 'SHIPMENT ALLOCATED', \n"+
+									  "s.timestamp = :timestamp where s.reference_number IN (:referenceNumbers) and airwaybill is null and  isdeleted = 'N'")
+	void updateAirwayBill(@Param("referenceNumbers") String[] referenceNumbers, @Param("airwayBill") String shipmentNumber, @Param("timestamp") String timestamp);
 
 } 

@@ -952,7 +952,18 @@ public class D2ZServiceImpl implements ID2ZService {
 		}
 
 		String msg = d2zDao.allocateShipment(referenceNumbers, shipmentNumber);
-		 
+		
+		Runnable freipost = new Runnable( ) {			
+	        public void run() {
+	    	
+	        	String[] refNbrArray = referenceNumbers.split(",");
+	        	List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
+	        	if(!senderMasterData.isEmpty()) {
+	        		freipostWrapper.uploadManifestService(senderMasterData);
+	        	}
+	        }};
+	        new Thread(freipost).start();
+	        
 		 Runnable pfl = new Runnable( ) {			
 		        public void run() {
 		        	List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
@@ -1455,7 +1466,12 @@ public class D2ZServiceImpl implements ID2ZService {
 
 	@Override
 	public void triggerFreipost(String referenceNumbers) {
-		d2zDao.makeFriePostUpdataManifestCall(referenceNumbers);
+		//d2zDao.makeFriePostUpdataManifestCall(referenceNumbers);
+		String[] refNbrArray = referenceNumbers.split(",");
+    	List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
+    	if(!senderMasterData.isEmpty()) {
+    		freipostWrapper.uploadManifestService(senderMasterData);
+    	}
 		//freipostWrapper.trackingEventService("124538");
 	}
 

@@ -460,25 +460,10 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public String allocateShipment(String referenceNumbers, String shipmentNumber) {
+		senderDataRepository.updateAirwayBill(referenceNumbers.split(","), shipmentNumber,D2ZCommonUtil.getAETCurrentTimestamp());
 		senderDataRepository.allocateShipment(referenceNumbers, shipmentNumber);
-		makeFriePostUpdataManifestCall(referenceNumbers);
 		return "Shipment Allocated Successfully";
 	}
-
-	public void makeFriePostUpdataManifestCall(String referenceNumbers) {
-		// TODO Auto-generated method stub
-		Runnable r = new Runnable( ) {			
-	        public void run() {
-	    	
-	        	String[] refNbrArray = referenceNumbers.split(",");
-	        	List<SenderdataMaster> senderMasterData = senderDataRepository.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
-	        	if(!senderMasterData.isEmpty()) {
-	        		freipostWrapper.uploadManifestService(senderMasterData);
-	        	}
-	        }};
-	        new Thread(r).start();
-	}
-
 
 
 	@Override

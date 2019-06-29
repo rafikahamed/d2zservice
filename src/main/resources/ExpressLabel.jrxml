@@ -336,7 +336,7 @@
 				<textElement>
 					<font fontName="MyArial"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{labelSenderName}.isEmpty()?"SW10":$F{labelSenderName}.length()>3?$F{labelSenderName}.substring( 0, 3 ):$F{labelSenderName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{labelSenderName}.isEmpty()?"SW1":$F{labelSenderName}.length()>3?$F{labelSenderName}.substring( 0, 3 ):$F{labelSenderName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="1" y="-65" width="139" height="15" uuid="74384646-f320-4f97-b252-5446ab2b0273"/>
