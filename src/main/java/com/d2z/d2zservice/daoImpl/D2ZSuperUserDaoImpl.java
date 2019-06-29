@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
@@ -733,20 +734,35 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		// TODO Auto-generated method stub
 		 ObjectMapper oMapper = new ObjectMapper();
 		
+		 System.out.print("inside AUWeight");
 		 List<AUWeight> auweightlist = new ArrayList<AUWeight>();
+		 List<String> articledata = new ArrayList<String>();
 		for(Object articleid : ArticleID )
 		{
 			 Map<String, Object> map = oMapper.convertValue(articleid, Map.class);
-			AUWeight auwei = new AUWeight();
+			//AUWeight auwei = new AUWeight();
 			
 			 String ArticleId = map.get("ArticleID").toString();
-			 BigDecimal weight = senderDataRepository.fetchcubicweight(ArticleId);
+			 articledata.add(ArticleId);
+			// BigDecimal weight = senderDataRepository.fetchcubicweight(ArticleId);
 			
-			 auwei.setArticleID(ArticleId);
+			/* auwei.setArticleID(ArticleId);
 			 auwei.setCubicWeight(weight);
-			 auweightlist.add(auwei);
+			 auweightlist.add(auwei);*/
 			
 		}
+		System.out.print("articleid:"+articledata.size());
+		List<BigDecimal> weight = senderDataRepository.fetchcubicweight(articledata);
+		System.out.print(weight.size());
+		for(int i =0;i<weight.size();i++)
+		{AUWeight auwei = new AUWeight();
+			auwei.setArticleID(articledata.get(i));
+		 auwei.setCubicWeight(weight.get(i));
+		 auweightlist.add(auwei);
+			
+		}
+		
+				
 		return auweightlist;
 	}
 
