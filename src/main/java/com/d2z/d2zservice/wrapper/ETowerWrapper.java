@@ -253,6 +253,35 @@ public class ETowerWrapper {
 					}
 				}
 			}
+			else if("1PM5".equalsIgnoreCase(orderDetail.getServiceType())) {
+				String zoneId = postCodeZoneMap
+						.get(orderDetail.getConsigneeSuburb().trim().toUpperCase().concat(orderDetail.getConsigneePostcode().trim()));
+				if(weight<=0.5) {
+				List<String> destination = Stream.of("BR", "GL", "N0", "Q0", "S0", "V0", "V1", "V3", "W0")
+						.collect(Collectors.toList());
+				boolean containsDest = destination.stream().anyMatch(zoneId::equalsIgnoreCase);
+				if (containsDest) {
+					request.setFacility("MEL3");
+					orderDetail.setInjectionState("MEL3");
+
+				} else {
+					iterator.set(orderDetail);
+					continue;
+				}
+				}else {
+					List<String> destination = Stream.of("N0", "Q0", "S0", "V0", "W0")
+							.collect(Collectors.toList());
+					boolean containsDest = destination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					if (containsDest) {
+						request.setFacility("MEL3");
+						orderDetail.setInjectionState("MEL3");
+
+					} else {
+						iterator.set(orderDetail);
+						continue;
+					}
+				}
+			}
 			if (("Express").equalsIgnoreCase(orderDetail.getCarrier())) {
 				request.setServiceOption("Express-Post");
 			} else {
@@ -453,6 +482,35 @@ public class ETowerWrapper {
 					if (containsDest) {
 						request.setFacility("SYD2");
 						orderDetail.setInjectionState("SYD2");
+
+					} else {
+						updatedOrderDetail.add(orderDetail);
+						continue;
+					}
+				}
+			}
+			else if("1PM5".equalsIgnoreCase(orderDetail.getServiceType())) {
+				String zoneId = postCodeZoneMap
+						.get(orderDetail.getConsigneeSuburb().trim().toUpperCase().concat(orderDetail.getConsigneePostcode().trim()));
+				if(weight<=0.5) {
+				List<String> destination = Stream.of("BR", "GL", "N0", "Q0", "S0", "V0", "V1", "V3", "W0")
+						.collect(Collectors.toList());
+				boolean containsDest = destination.stream().anyMatch(zoneId::equalsIgnoreCase);
+				if (containsDest) {
+					request.setFacility("MEL3");
+					orderDetail.setInjectionState("MEL3");
+
+				} else {
+					updatedOrderDetail.add(orderDetail);
+					continue;
+				}
+				}else {
+					List<String> destination = Stream.of("N0", "Q0", "S0", "V0", "W0")
+							.collect(Collectors.toList());
+					boolean containsDest = destination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					if (containsDest) {
+						request.setFacility("MEL3");
+						orderDetail.setInjectionState("MEL3");
 
 					} else {
 						updatedOrderDetail.add(orderDetail);

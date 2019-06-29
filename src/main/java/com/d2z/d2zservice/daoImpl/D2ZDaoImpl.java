@@ -142,6 +142,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setCarrier(senderDataValue.getCarrier());
 			senderDataObj.setConsignee_addr2(senderDataValue.getConsigneeAddr2());
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
+			senderDataObj.setIsDeleted("N");
+			senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
+
 			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType()) || "1PME".equalsIgnoreCase(senderDataValue.getServiceType())){
 				senderDataObj.setCarrier("Express");
 			}else{
@@ -153,11 +156,11 @@ public class D2ZDaoImpl implements ID2ZDao{
 			if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("Etower") 
 					&& barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData labelData= barcodeMap.get(senderDataValue.getReferenceNumber());
-				senderDataObj.setBarcodelabelNumber(labelData.getBarCode());
+				//senderDataObj.setBarcodelabelNumber(labelData.getBarCode());
 				senderDataObj.setIsDeleted("N");
 				senderDataObj.setStatus("CONSIGNMENT CREATED");
 				senderDataObj.setInjectionType("Direct Injection");
-				senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
+				//senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
 				senderDataObj.setArticleId(labelData.getArticleId());		        
 				senderDataObj.setDatamatrix(D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
@@ -165,8 +168,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 					barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData pflLabel= barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setStatus("CONSIGNMENT CREATED");
-				senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
-				senderDataObj.setIsDeleted("N");
+				//senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
+				//senderDataObj.setIsDeleted("N");
 				senderDataObj.setInjectionType("Direct Injection");
 				senderDataObj.setInjectionState(pflLabel.getHub());
 				senderDataObj.setBarcodelabelNumber(pflLabel.getTrackingNo());
@@ -177,8 +180,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 					barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData pflLabel= barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setStatus("CONSIGNMENT CREATED");
-				senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
-				senderDataObj.setIsDeleted("N");
+				//senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
+				//senderDataObj.setIsDeleted("N");
 				senderDataObj.setInjectionType("Direct Injection");
 				senderDataObj.setInjectionState(pflLabel.getHub());
 				senderDataObj.setBarcodelabelNumber(pflLabel.getTrackingNo());
@@ -460,8 +463,12 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public String allocateShipment(String referenceNumbers, String shipmentNumber) {
-		senderDataRepository.updateAirwayBill(referenceNumbers.split(","), shipmentNumber,D2ZCommonUtil.getAETCurrentTimestamp());
 		senderDataRepository.allocateShipment(referenceNumbers, shipmentNumber);
+		return "Shipment Allocated Successfully";
+	}
+	@Override
+	public String updateAirwayBill(String referenceNumbers, String shipmentNumber) {
+		senderDataRepository.updateAirwayBill(referenceNumbers.split(","), shipmentNumber,D2ZCommonUtil.getAETCurrentTimestamp());
 		return "Shipment Allocated Successfully";
 	}
 
