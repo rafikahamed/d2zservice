@@ -956,11 +956,11 @@ public class D2ZServiceImpl implements ID2ZService {
 			throw new ReferenceNumberNotUniqueException("Request failed", invalidData);
 		}
 
-		String msg = d2zDao.updateAirwayBill(referenceNumbers, shipmentNumber);
+		String msg = d2zDao.allocateShipment(referenceNumbers, shipmentNumber);
+
 		
 		Runnable freipost = new Runnable( ) {			
 	        public void run() {
-	        	d2zDao.allocateShipment(referenceNumbers, shipmentNumber);
 	        	String[] refNbrArray = referenceNumbers.split(",");
 	        	List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
 	        	if(!senderMasterData.isEmpty()) {

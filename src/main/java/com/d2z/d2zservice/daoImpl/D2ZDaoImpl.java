@@ -463,15 +463,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public String allocateShipment(String referenceNumbers, String shipmentNumber) {
+		senderDataRepository.updateAirwayBill(referenceNumbers.split(","), shipmentNumber,D2ZCommonUtil.getAETCurrentTimestamp());
 		senderDataRepository.allocateShipment(referenceNumbers, shipmentNumber);
 		return "Shipment Allocated Successfully";
 	}
-	@Override
-	public String updateAirwayBill(String referenceNumbers, String shipmentNumber) {
-		senderDataRepository.updateAirwayBill(referenceNumbers.split(","), shipmentNumber,D2ZCommonUtil.getAETCurrentTimestamp());
-		return "Shipment Allocated Successfully";
-	}
-
+	
 
 	@Override
 	public User addUser(UserDetails userData) {
