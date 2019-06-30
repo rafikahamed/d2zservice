@@ -198,7 +198,8 @@ public class D2ZServiceImpl implements ID2ZService {
 		SenderDataResponse senderDataResponse = null;
 		String serviceType = orderDetailList.get(0).getServiceType();
 		if("1PS".equalsIgnoreCase(serviceType) || "1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) 
-				|| "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType) || "2PSP".equalsIgnoreCase(serviceType) ) {
+				|| "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType) || "2PSP".equalsIgnoreCase(serviceType)
+				|| "1PM5".equalsIgnoreCase(serviceType)) {
 			d2zValidator.isPostCodeValidUI(orderDetailList);
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(orderDetailList,senderDataResponseList);
 			return senderDataResponseList;
@@ -816,7 +817,8 @@ public class D2ZServiceImpl implements ID2ZService {
 
 	    String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
 	    if("1PS".equalsIgnoreCase(serviceType) || "1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) 
-				|| "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType) || "2PSP".equalsIgnoreCase(serviceType) ) {
+				|| "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType) || "2PSP".equalsIgnoreCase(serviceType)
+				|| "1PM5".equalsIgnoreCase(serviceType)) {
 			d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			return senderDataResponseList;
@@ -955,41 +957,44 @@ public class D2ZServiceImpl implements ID2ZService {
 		}
 
 		String msg = d2zDao.allocateShipment(referenceNumbers, shipmentNumber);
+
 		
 		Runnable freipost = new Runnable( ) {			
 	        public void run() {
-	    	
 	        	String[] refNbrArray = referenceNumbers.split(",");
 	        	List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
 	        	if(!senderMasterData.isEmpty()) {
 	        		freipostWrapper.uploadManifestService(senderMasterData);
 	        	}
+	        	
+	        	List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
+	        	 if(!fastwayOrderId.isEmpty()) {
+	        		 try {
+						pflWrapper.createSubmitOrderPFL(fastwayOrderId);
+					} catch (EtowerFailureResponseException e) {
+						e.printStackTrace();
+					}
+	        	 }
+	        
+	        	 List<String> articleIDS = d2zDao.fetchDataForEtowerForeCastCall(refNbrs);
+	        	 if(!articleIDS.isEmpty()) {
+	        		 eTowerWrapper.makeEtowerForecastCall(articleIDS);
+	        	 }
 	        }};
 	        new Thread(freipost).start();
 	        
-		 Runnable pfl = new Runnable( ) {			
+		/* Runnable pfl = new Runnable( ) {			
 		        public void run() {
-		        	List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
-		        	 if(!fastwayOrderId.isEmpty()) {
-		        		 try {
-							pflWrapper.createSubmitOrderPFL(fastwayOrderId);
-						} catch (EtowerFailureResponseException e) {
-							e.printStackTrace();
-						}
-		        	 }
 		        }
 		    };
 			new Thread(pfl).start();
 		
 		 Runnable r = new Runnable( ) {			
 	        public void run() {
-	        	 List<String> articleIDS = d2zDao.fetchDataForEtowerForeCastCall(refNbrs);
-	        	 if(!articleIDS.isEmpty()) {
-	        	 eTowerWrapper.makeEtowerForecastCall(articleIDS);
-	        	 }
+	        	
 	        }
 	     };
-		 new Thread(r).start();
+		 new Thread(r).start();*/
 		 
 		userMsg.setResponseMessage(msg);
 		return userMsg;
