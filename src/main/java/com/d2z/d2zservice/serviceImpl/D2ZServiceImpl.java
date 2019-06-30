@@ -1585,6 +1585,27 @@ public class D2ZServiceImpl implements ID2ZService {
 					 fdmDetails.setConsignments(consignmentsArray);
 					 request.setManifest(fdmDetails);
 
+					 Gson gson = new Gson();
+						String jsonStr = gson.toJson(request);
+						JSONObject json = new JSONObject(jsonStr);
+						String requestXml = XML.toString(json);
+						byte[] contentInBytes = requestXml.getBytes();
+						InputStream targetStream = new ByteArrayInputStream(contentInBytes);
+					
+				
+					 System.out.println("in:"+targetStream+"request:"+request);
+					
+					// ftpUploader.fdmFileCreation(request);
+					 ftpUploader.ftpUpload(targetStream);
+					 System.out.println("FDM Request ---->");
+					 System.out.println(request);
+					 
+					 //ffresponseRepository.saveAll(FFResponseList);
+					 
+					// ftpUploader.fdmFileCreation(request);
+					
+					// ffresponseRepository.saveAll(FFResponseList);
+
 					// String response = fdmProxy.makeCallToFDMManifestMapping(request);
 					/* List <FFResponse> FFresponsequery =
 					 ffresponseRepository.findByMessageNoIs(orderRef);
