@@ -49,6 +49,7 @@ public class PCAWrapper {
 			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
 		PCACreateShipmentRequest pcaRequest = new PCACreateShipmentRequest();
 		List<PCACreateShipmentRequestInfo> pcaOrderInfoRequest = new ArrayList<PCACreateShipmentRequestInfo>();
+		String chargeType = "FastwayS";
 		for (SenderDataApi orderDetail : consignmentData) {
 			PCACreateShipmentRequestInfo request = new PCACreateShipmentRequestInfo();
 			request.setCust_ref(orderDetail.getReferenceNumber());
@@ -109,18 +110,19 @@ public class PCAWrapper {
 			PCAItemList.add(pcaItems);
 			request.setItems(PCAItemList);
 			if("STS".equalsIgnoreCase(serviceType)) {
-				request.setChargecode(chargeCodeST);
-			}else {
 				request.setChargecode(chargeCodeFW);
+			}else {
+				request.setChargecode(chargeCodeST);
+				chargeType = "StarTrack";
 			}
 			pcaOrderInfoRequest.add(request);
 		}
 		pcaRequest.setShipments(pcaOrderInfoRequest);
-		createShippingOrderPCA(consignmentData, pcaRequest, userName, senderDataResponseList);
+		createShippingOrderPCA(consignmentData, pcaRequest, userName, senderDataResponseList, chargeType);
 	}
 
 	private void createShippingOrderPCA(List<SenderDataApi> consignmentData, PCACreateShipmentRequest pcaRequest,
-			String userName, List<SenderDataResponse> senderDataResponseList) throws EtowerFailureResponseException {
+			String userName, List<SenderDataResponse> senderDataResponseList, String chargeType) throws EtowerFailureResponseException {
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		List<PCACreateShippingResponse> pcaResponse = pcaProxy.makeCallForCreateShippingOrder(pcaRequest);
 		logPcaCreateResponse(pcaResponse);
@@ -157,7 +159,7 @@ public class PCAWrapper {
 		}
 		
 		if(pcaResponseSuccess.size() > 0) {
-			processPcaLabelsResponse(pcaResponseSuccess, barcodeMap);
+			processPcaLabelsResponse(pcaResponseSuccess, barcodeMap, chargeType);
 			int userId = d2zDao.fetchUserIdbyUserName(userName);
 			String senderFileID = d2zDao.createConsignments(pflRequest.getPflSenderDataApi(), userId, userName, barcodeMap);
 			List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
@@ -173,7 +175,8 @@ public class PCAWrapper {
 		}
 	}
 
-	private Map<String, LabelData> processPcaLabelsResponse(List<PCACreateShippingResponse> pcaResponse, Map<String, LabelData> barcodeMap) {
+	private Map<String, LabelData> processPcaLabelsResponse(List<PCACreateShippingResponse> pcaResponse, Map<String, LabelData> barcodeMap, 
+				String chargeType) {
 			for (PCACreateShippingResponse data : pcaResponse) {
 				if(data.getMsg().equalsIgnoreCase("Success")) {
 					LabelData labelData = new LabelData();
@@ -183,6 +186,11 @@ public class PCAWrapper {
 					labelData.setHub(data.getDepot());
 					labelData.setMatrix(data.getConnote());
 					labelData.setProvider("PCA");
+					if("StarTrack".equalsIgnoreCase(chargeType)) {
+						labelData.setCarrier("StarTrack");
+					}else {
+						labelData.setCarrier("FastwayS");
+					}
 					barcodeMap.put(data.getCustref(), labelData);
 				}
 			}
@@ -193,6 +201,7 @@ public class PCAWrapper {
 			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
 		PCACreateShipmentRequest pcaRequest = new PCACreateShipmentRequest();
 		List<PCACreateShipmentRequestInfo> pcaOrderInfoRequest = new ArrayList<PCACreateShipmentRequestInfo>();
+		String chargeType = "FastwayS";
 		for (SenderData orderDetail : orderDetailList) {
 			PCACreateShipmentRequestInfo request = new PCACreateShipmentRequestInfo();
 			request.setCust_ref(orderDetail.getReferenceNumber());
@@ -253,18 +262,19 @@ public class PCAWrapper {
 			PCAItemList.add(pcaItems);
 			request.setItems(PCAItemList);
 			if("STS".equalsIgnoreCase(serviceType)) {
-				request.setChargecode(chargeCodeST);
-			}else {
 				request.setChargecode(chargeCodeFW);
+			}else {
+				request.setChargecode(chargeCodeST);
+				chargeType = "StarTrack";
 			}
 			pcaOrderInfoRequest.add(request);
 		}
 		pcaRequest.setShipments(pcaOrderInfoRequest);
-		createShippingOrderFilePCA(orderDetailList, pcaRequest, userName, senderDataResponseList);
+		createShippingOrderFilePCA(orderDetailList, pcaRequest, userName, senderDataResponseList, chargeType);
 	}
 
 	private void createShippingOrderFilePCA(List<SenderData> orderDetailList, PCACreateShipmentRequest pcaRequest,
-			String userName, List<SenderDataResponse> senderDataResponseList) throws EtowerFailureResponseException {
+			String userName, List<SenderDataResponse> senderDataResponseList, String chargeType) throws EtowerFailureResponseException {
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		List<PCACreateShippingResponse> pcaResponse = pcaProxy.makeCallForCreateShippingOrder(pcaRequest);
 		logPcaCreateResponse(pcaResponse);
@@ -296,7 +306,7 @@ public class PCAWrapper {
 		}
 		
 		if(pcaFileResponseSuccess.size() > 0) {
-			processPcaLabelsResponse(pcaFileResponseSuccess, barcodeMap);
+			processPcaLabelsResponse(pcaFileResponseSuccess, barcodeMap, chargeType);
 			String senderFileID = d2zDao.exportParcel(pflRequest.getPflSenderDataApi(), barcodeMap);
 			List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 			Iterator itr = insertedOrder.iterator();

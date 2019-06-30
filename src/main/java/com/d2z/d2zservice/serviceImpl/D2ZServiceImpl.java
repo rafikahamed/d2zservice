@@ -1490,6 +1490,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<String> refNumbers = d2zDao.fetchArticleIDForFDMCall();
 		System.out.println("Track and trace:" + refNumbers.size());
 		List<List<String>> refNbrList = ListUtils.partition(refNumbers, 2000);
+	//	ftpUploader.deleteFiles(new File("src/main/resources/FDM-Request/"));
 //		ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 //    	try {
 //			Resource[] resources  = resourcePatternResolver.getResources("FDM-Request/**");
@@ -1583,22 +1584,7 @@ public class D2ZServiceImpl implements ID2ZService {
 					 consignmentsArray.setConsignment(consignments);
 					 fdmDetails.setConsignments(consignmentsArray);
 					 request.setManifest(fdmDetails);
-					 Gson gson = new Gson();
-						String jsonStr = gson.toJson(request);
-						JSONObject json = new JSONObject(jsonStr);
-						String requestXml = XML.toString(json);
-						byte[] contentInBytes = requestXml.getBytes();
-						InputStream targetStream = new ByteArrayInputStream(contentInBytes);
-					
-				
-					 System.out.println("in:"+targetStream+"request:"+request);
-					
-					// ftpUploader.fdmFileCreation(request);
-					 ftpUploader.ftpUpload(targetStream);
-					 System.out.println("FDM Request ---->");
-					 System.out.println(request);
-					 
-					 //ffresponseRepository.saveAll(FFResponseList);
+
 					// String response = fdmProxy.makeCallToFDMManifestMapping(request);
 					/* List <FFResponse> FFresponsequery =
 					 ffresponseRepository.findByMessageNoIs(orderRef);

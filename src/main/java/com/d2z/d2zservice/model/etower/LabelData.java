@@ -14,6 +14,7 @@ public class LabelData {
 	private String hub;
 	private String matrix;
 	private String status;
+	private String carrier;
 	private List<EtowerErrorResponse> errors;
 
 	public String getOrderId() {
@@ -81,6 +82,12 @@ public class LabelData {
 	}
 	public void setMatrix(String matrix) {
 		this.matrix = matrix;
+	}
+	public String getCarrier() {
+		return carrier;
+	}
+	public void setCarrier(String carrier) {
+		this.carrier = carrier;
 	}
 	
 }
