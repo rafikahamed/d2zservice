@@ -124,7 +124,7 @@ public class FTPUploader {
 //	}
 	
 	
-	public void ftpUpload(FDMManifestRequest request) {
+	public void ftpUpload(InputStream in) {
 		   String user = "d2zadmin";
 		   String password = "vgy79tfc97";
 		   String host = "www.warehouse.fdm.com.au";
@@ -153,7 +153,8 @@ public class FTPUploader {
 	            channelSftp.cd(SFTPWORKINGDIR);
 	            String fileName = "D2Z_" + getdate() + ".xml";
 	            System.out.println("File Transfer Initiated");
-	            channelSftp.put(new FileInputStream(request.toString()), fileName);
+	           // channelSftp.put(new FileInputStream(request.toString()), fileName);
+	            channelSftp.put(in, fileName);
 	            System.out.println("File Transfer Successfull");
 //		    	ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 //		    	Resource[] resources  = resourcePatternResolver.getResources("FDM-Request/**");

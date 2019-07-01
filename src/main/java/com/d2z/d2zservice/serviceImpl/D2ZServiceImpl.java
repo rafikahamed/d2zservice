@@ -4,9 +4,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -1582,11 +1584,28 @@ public class D2ZServiceImpl implements ID2ZService {
 					 consignmentsArray.setConsignment(consignments);
 					 fdmDetails.setConsignments(consignmentsArray);
 					 request.setManifest(fdmDetails);
+
+					 Gson gson = new Gson();
+						String jsonStr = gson.toJson(request);
+						JSONObject json = new JSONObject(jsonStr);
+						String requestXml = XML.toString(json);
+						byte[] contentInBytes = requestXml.getBytes();
+						InputStream targetStream = new ByteArrayInputStream(contentInBytes);
+					
+				
+					 System.out.println("in:"+targetStream+"request:"+request);
+					
 					// ftpUploader.fdmFileCreation(request);
-					 ftpUploader.ftpUpload(request);
+					 ftpUploader.ftpUpload(targetStream);
 					 System.out.println("FDM Request ---->");
 					 System.out.println(request);
-					 ffresponseRepository.saveAll(FFResponseList);
+					 
+					 //ffresponseRepository.saveAll(FFResponseList);
+					 
+					// ftpUploader.fdmFileCreation(request);
+					
+					// ffresponseRepository.saveAll(FFResponseList);
+
 					// String response = fdmProxy.makeCallToFDMManifestMapping(request);
 					/* List <FFResponse> FFresponsequery =
 					 ffresponseRepository.findByMessageNoIs(orderRef);
