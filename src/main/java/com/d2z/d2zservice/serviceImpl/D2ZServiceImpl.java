@@ -1490,18 +1490,6 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<String> refNumbers = d2zDao.fetchArticleIDForFDMCall();
 		System.out.println("Track and trace:" + refNumbers.size());
 		List<List<String>> refNbrList = ListUtils.partition(refNumbers, 2000);
-	//	ftpUploader.deleteFiles(new File("src/main/resources/FDM-Request/"));
-//		ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-//    	try {
-//			Resource[] resources  = resourcePatternResolver.getResources("FDM-Request/**");
-//			for(Resource resource:resources) {
-//				File delete = new File(resource.getURI());
-//				Boolean del = delete.delete();
-//				System.out.println(resource.getFilename() + " :FDM got deleted ? " + del);
-//			}
-//		} catch (IOException e1) {
-//			e1.printStackTrace();
-//		}
 		for (List<String> referenceNumbers : refNbrList) {
 			List<SenderdataMaster> senderData = d2zDao.fetchDataForAusPost(referenceNumbers);
 			System.out.println("Sender Data:" + senderData.size());
@@ -1510,8 +1498,6 @@ public class D2ZServiceImpl implements ID2ZService {
 					Date dNow = new Date();
 					SimpleDateFormat ft = new SimpleDateFormat("yyMMddhhmm");
 					String orderRef = ft.format(dNow);
-
-	
 					FDMManifestDetails fdmDetails = new FDMManifestDetails();
 					fdmDetails.setMessage_no(orderRef);
 					fdmDetails.setCustomer_id("D2Z");
@@ -1586,26 +1572,19 @@ public class D2ZServiceImpl implements ID2ZService {
 					 request.setManifest(fdmDetails);
 
 					 Gson gson = new Gson();
-						String jsonStr = gson.toJson(request);
-						JSONObject json = new JSONObject(jsonStr);
-						String requestXml = XML.toString(json);
-						byte[] contentInBytes = requestXml.getBytes();
-						InputStream targetStream = new ByteArrayInputStream(contentInBytes);
-					
-				
+					 String jsonStr = gson.toJson(request);
+					 JSONObject json = new JSONObject(jsonStr);
+					 String requestXml = XML.toString(json);
+					 byte[] contentInBytes = requestXml.getBytes();
+					 InputStream targetStream = new ByteArrayInputStream(contentInBytes);
 					 System.out.println("in:"+targetStream+"request:"+request);
-					
 					// ftpUploader.fdmFileCreation(request);
-					 ftpUploader.ftpUpload(targetStream);
 					 System.out.println("FDM Request ---->");
 					 System.out.println(request);
-					 
+					 ftpUploader.ftpUpload(targetStream);
 					 //ffresponseRepository.saveAll(FFResponseList);
-					 
 					// ftpUploader.fdmFileCreation(request);
-					
 					// ffresponseRepository.saveAll(FFResponseList);
-
 					// String response = fdmProxy.makeCallToFDMManifestMapping(request);
 					/* List <FFResponse> FFresponsequery =
 					 ffresponseRepository.findByMessageNoIs(orderRef);
