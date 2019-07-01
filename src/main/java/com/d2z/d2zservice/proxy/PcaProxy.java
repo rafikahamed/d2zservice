@@ -245,7 +245,7 @@ public class PcaProxy {
 		}
 		System.out.println("PCA Cancel Request ------>");
 		System.out.println(jsonString);
-		String response = executePost(url, constructParamCancel(jsonString));
+		String response = executePost(url, constructParamCancel(pcaRequestCancel));
 		System.out.println(response);
 		List<PCACreateShippingResponse> pcaResponse = null;
 		try {
@@ -264,7 +264,7 @@ public class PcaProxy {
 		String requestData="";
 		try {
 			requestData = "api_id=" + URLEncoder.encode(apiId, "UTF-8") + "&method="
-					+ URLEncoder.encode("cancel", "UTF-8") + "&data=" + URLEncoder.encode(pcaCancelRequest.toString(), "UTF-8") + "&sign="
+					+ URLEncoder.encode("label", "UTF-8") + "&data=" + URLEncoder.encode(pcaCancelRequest.toString(), "UTF-8") + "&sign="
 					+ URLEncoder.encode(getSign(pcaCancelRequest.toString()), "UTF-8");
 			System.out.println(requestData);
 			return requestData;
