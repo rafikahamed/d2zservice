@@ -42,9 +42,6 @@ public class PCAWrapper {
 	@Value("${pca.chargeCodeST}")
 	private String chargeCodeST;
 
-	@Value("${pca.cancel}")
-	private String cancel;
-
 	@Autowired
 	private ID2ZDao d2zDao;
 
