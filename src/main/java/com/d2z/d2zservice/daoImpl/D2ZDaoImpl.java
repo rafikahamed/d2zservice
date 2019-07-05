@@ -905,4 +905,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return senderDataRepository.fetchDataforPFLSubmitOrder(refNbrs);
 	}
 
+	@Override
+	public String fetchUserById(int userId) {
+		return userRepository.fetchUserById( userId);
+	}
+
 }

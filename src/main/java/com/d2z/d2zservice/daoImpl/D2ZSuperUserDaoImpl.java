@@ -766,5 +766,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		return auweightlist;
 	}
 
-	
+	@Override
+	public String fetchUserById(int userId) {
+		return userRepository.fetchUserById( userId);
+	}
+
 }

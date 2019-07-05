@@ -800,6 +800,10 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				setGS1DataType = true;
 			}
 					trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix(),setGS1DataType));
+					String user = d2zDao.fetchUserById(Integer.parseInt(trackingArray[27].toString()));
+					if("VELC".equalsIgnoreCase(user)) {
+						trackingLabel.setLabelSenderName("SW4");
+					}
 			trackingLabelList.add(trackingLabel);
 		}
 

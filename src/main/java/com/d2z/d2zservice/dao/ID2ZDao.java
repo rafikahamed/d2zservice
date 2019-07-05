@@ -126,4 +126,6 @@ public interface ID2ZDao {
 
 	public List<String> fetchDataforPFLSubmitOrder(String[] refNbrs);
 
+	public String fetchUserById(int userId);
+
 }
