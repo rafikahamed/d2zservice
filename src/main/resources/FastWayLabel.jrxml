@@ -106,7 +106,7 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="MyArial" size="26" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{injectionState}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{injectionState}.substring( 0, 3 )]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
@@ -251,7 +251,7 @@
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="62" y="407" width="178" height="15" uuid="2be576e5-e0d0-4918-af37-2492ed3039eb"/>
-				<textFieldExpression><![CDATA[$F{productDescription}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{sku}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="1" y="241" width="100" height="15" forecolor="#F5100C" uuid="9fd0487c-026e-423a-8a23-d53707598085"/>

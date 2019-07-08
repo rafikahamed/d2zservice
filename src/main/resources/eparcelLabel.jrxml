@@ -146,7 +146,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{injectionState}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{injectionState}.substring( 0, 3 )]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="1" y="68" width="279" height="15" uuid="b6fe4701-add5-4b2c-9152-307c2c349bc0"/>

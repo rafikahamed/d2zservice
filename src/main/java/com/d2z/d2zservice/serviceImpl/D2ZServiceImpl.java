@@ -379,6 +379,9 @@ public class D2ZServiceImpl implements ID2ZService {
 				fastway_S_Data.add(data);
 			}
 		
+			if("VELC".equalsIgnoreCase(data.getUserName())) {
+				data.setLabelSenderName("SW4");
+			}
 			data.setDatamatrixImage(generateDataMatrix(data.getDatamatrix(),setGS1Type));
 		}
 
@@ -563,6 +566,11 @@ public class D2ZServiceImpl implements ID2ZService {
 				setGS1DataType = true;
 			}
 			trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix(),setGS1DataType));
+			
+			String user = d2zDao.fetchUserById(Integer.parseInt(trackingArray[27].toString()));
+			if("VELC".equalsIgnoreCase(user)) {
+				trackingLabel.setLabelSenderName("SW4");
+			}
 			trackingLabelList.add(trackingLabel);
 		}
 

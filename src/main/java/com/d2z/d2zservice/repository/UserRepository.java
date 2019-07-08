@@ -46,4 +46,7 @@ public interface UserRepository extends CrudRepository<User, Long>{
 	@Query ("Select u.username from User u where u.typeOfClient = 'NonD2Z'")
 	List<String> fetchNonD2zBrokerUserName();
 
+	 @Query ("Select u.username from User u where u.user_Id = :user_Id")
+	String fetchUserById(Integer user_Id);
+
 }

@@ -106,7 +106,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="MyArial" size="14" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{injectionState}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{injectionState}.substring( 0, 3 )]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="-1" y="149" width="358" height="1" uuid="b99efe10-16d7-4cff-9146-b82b1fa39aab"/>

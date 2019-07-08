@@ -133,5 +133,7 @@ UserMessage deleteMlid(String service);
  
 List<AUWeight> downloadAUweight(List<Object> ArticleID);
 
+String fetchUserById(int parseInt);
+
 }
 
