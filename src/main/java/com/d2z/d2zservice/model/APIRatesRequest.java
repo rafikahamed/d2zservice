@@ -11,6 +11,14 @@ public class APIRatesRequest {
 	private String userName;
 	@NotEmpty(message = "Password cannot be empty")
 	private String password;
+	@NotEmpty(message="Service type cannot be empty")
+	private String servicetype;
+	public String getServicetype() {
+		return servicetype;
+	}
+	public void setServicetype(String servicetype) {
+		this.servicetype = servicetype;
+	}
 	@Valid
 	private List<PostCodeWeight> consignmentDetails;
 	
