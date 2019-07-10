@@ -27,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import com.d2z.d2zservice.model.PCACancelRequest;
 import com.d2z.d2zservice.model.PCACreateShipmentRequest;
 import com.d2z.d2zservice.model.PCACreateShippingResponse;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -46,9 +48,6 @@ public class PcaProxy {
 	
 	@Value("${pca.apiId}")
 	private String apiId;
-	
-	@Value("${pca.apiMethod}")
-	private String method;
 
 	public void trackingEvent(List<String> articleIds) {
 		String url = "https://s1.pcaex.com/api/tracking";
@@ -139,7 +138,7 @@ public class PcaProxy {
 		}
 		System.out.println("PCA Request ------>");
 		System.out.println(jsonString);
-		String response = executePost(url, constructParam(jsonString));
+		String response = executePost(url, constructParam(jsonString, "create"));
 		System.out.println(response);
 		List<PCACreateShippingResponse> pcaResponse = null;
 		try {
@@ -154,12 +153,12 @@ public class PcaProxy {
 		return pcaResponse;
 	}
 
-	public String constructParam(String pcaRequest) {
+	public String constructParam(String pcaRequest, String method) {
 		String requestData="";
 		try {
 			requestData = "api_id=" + URLEncoder.encode(apiId, "UTF-8") + "&method="
 					+ URLEncoder.encode(method, "UTF-8") + "&data=" + URLEncoder.encode(pcaRequest.toString(), "UTF-8") + "&sign="
-					+ URLEncoder.encode(getSign(pcaRequest.toString()), "UTF-8");
+					+ URLEncoder.encode(getSign(pcaRequest.toString(),method), "UTF-8");
 			System.out.println(requestData);
 			return requestData;
 			
@@ -169,7 +168,7 @@ public class PcaProxy {
     	}
 	}
 
-	private String getSign(String data) {
+	private String getSign(String data, String method) {
 		Map<String, String> collect = new TreeMap<>();
 		collect.put("api_id", apiId);
 		collect.put("method", method);
@@ -235,21 +234,21 @@ public class PcaProxy {
 		}
 	}
 
-	public List<PCACreateShippingResponse> makeCallForCancelShipment(String pcaRequestCancel) {
+	public PCACreateShippingResponse makeCallForCancelShipment(PCACancelRequest pcaReq) {
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = null;
 		try {
-			jsonString = mapper.writeValueAsString(pcaRequestCancel);
+			jsonString = mapper.writeValueAsString(pcaReq);
 		} catch (JsonProcessingException e1) {
 			e1.printStackTrace();
 		}
 		System.out.println("PCA Cancel Request ------>");
 		System.out.println(jsonString);
-		String response = executePost(url, constructParamCancel(pcaRequestCancel));
+		String response = executePost(url, constructParam(jsonString, "cancel"));
 		System.out.println(response);
-		List<PCACreateShippingResponse> pcaResponse = null;
+		PCACreateShippingResponse pcaResponse = null;
 		try {
-			pcaResponse = mapper.readValue(response, new TypeReference<List<PCACreateShippingResponse>>(){});
+			pcaResponse = mapper.readValue(response, new TypeReference<PCACreateShippingResponse>(){});
 		} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -260,21 +259,8 @@ public class PcaProxy {
 		return pcaResponse;
 	}
 
-	private String constructParamCancel(String pcaCancelRequest) {
-		String requestData="";
-		try {
-			requestData = "api_id=" + URLEncoder.encode(apiId, "UTF-8") + "&method="
-					+ URLEncoder.encode("label", "UTF-8") + "&data=" + URLEncoder.encode(pcaCancelRequest.toString(), "UTF-8") + "&sign="
-					+ URLEncoder.encode(getSign(pcaCancelRequest.toString()), "UTF-8");
-			System.out.println(requestData);
-			return requestData;
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			return requestData;
-    	}
-	
+	private String constructParamCancel(PCACancelRequest pcaReq, String string) {
+		return null;
 	}
 	
-
 }

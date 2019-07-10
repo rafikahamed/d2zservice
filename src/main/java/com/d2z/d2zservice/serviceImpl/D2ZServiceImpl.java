@@ -224,7 +224,7 @@ public class D2ZServiceImpl implements ID2ZService {
 				}
 			}
 			
-			if(consignmentData.getNonPflSenderDataApi().size() > 0 && "STS".equalsIgnoreCase(serviceType)) {
+			if("STS".equalsIgnoreCase(serviceType) && consignmentData.getNonPflSenderDataApi().size() > 0) {
 				pcaWrapper.makeCreateShippingOrderFilePCACall(consignmentData.getNonPflSenderDataApi(),senderDataResponseList,null,"STS-Sub");
 			}
 			
@@ -237,8 +237,6 @@ public class D2ZServiceImpl implements ID2ZService {
 					Object[] obj = (Object[]) itr.next();
 					senderDataResponse = new SenderDataResponse();
 					senderDataResponse.setReferenceNumber(obj[0].toString());
-//					String barcode = obj[1].toString();
-//						senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
 					senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 					senderDataResponse.setCarrier(obj[4].toString());
 					senderDataResponseList.add(senderDataResponse);
@@ -269,7 +267,6 @@ public class D2ZServiceImpl implements ID2ZService {
 		return userMsg;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public List<DropDownModel> fileList(Integer userId) {
 		List<String> listOfFileNames = d2zDao.fileList(userId);
 		List<DropDownModel> dropDownList = new ArrayList<DropDownModel>();

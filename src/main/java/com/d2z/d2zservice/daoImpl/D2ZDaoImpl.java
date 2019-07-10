@@ -192,8 +192,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataList.add(senderDataObj);
 		}
 		senderDataRepository.saveAll(senderDataList);
-		senderDataRepository.inOnlyTest(fileSeqId);
-		//if(null != provider && provider.getProvider().equalsIgnoreCase("PFL"))
+		System.out.println("create consignment UI object construction Done data got inserted--->"+senderDataList.size());
+		storProcCall(fileSeqId);
 		updateTrackAndTrace(fileSeqId);
 		return fileSeqId;
 	}
