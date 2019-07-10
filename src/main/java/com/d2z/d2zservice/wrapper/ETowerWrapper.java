@@ -282,6 +282,41 @@ public class ETowerWrapper {
 					}
 				}
 			}
+			else if ("TST1".equalsIgnoreCase(orderDetail.getServiceType())) {
+				String zoneId = postCodeZoneMap
+						.get(orderDetail.getConsigneeSuburb().trim().toUpperCase().concat(orderDetail.getConsigneePostcode().trim()));
+				if (weight <= 0.5){
+					List<String> bneDestination = Stream.of("Q0", "Q1", "Q5", "SC", "GC", "IP")
+							.collect(Collectors.toList());
+					boolean containsBneDest = bneDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					List<String> melDestination = Stream.of("V0", "V1", "V3", "BR", "GL")
+							.collect(Collectors.toList());
+					boolean containsMelDest = melDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					List<String> perthDestination = Stream.of("W0","W1")
+							.collect(Collectors.toList());
+					boolean containsPerthDest = perthDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					if (containsBneDest) {
+						request.setFacility("BNE");
+						orderDetail.setInjectionState("BNE");
+
+					} else if(containsMelDest) {
+						request.setFacility("MEL3");
+						orderDetail.setInjectionState("MEL");
+
+					}
+					 else if(containsPerthDest) {
+						 iterator.set(orderDetail);
+						 continue;
+						}
+					 else {
+						 request.setFacility("SYD2");
+						 orderDetail.setInjectionState("SYD");
+					 }
+				} else {
+					 request.setFacility("SYD2");
+					 orderDetail.setInjectionState("SYD");
+				}
+			}
 			if (("Express").equalsIgnoreCase(orderDetail.getCarrier())) {
 				request.setServiceOption("Express-Post");
 			} else {
@@ -516,6 +551,41 @@ public class ETowerWrapper {
 						updatedOrderDetail.add(orderDetail);
 						continue;
 					}
+				}
+			}
+			else if ("TST1".equalsIgnoreCase(orderDetail.getServiceType())) {
+				String zoneId = postCodeZoneMap
+						.get(orderDetail.getConsigneeSuburb().trim().toUpperCase().concat(orderDetail.getConsigneePostcode().trim()));
+				if (weight <= 0.5){
+					List<String> bneDestination = Stream.of("Q0", "Q1", "Q5", "SC", "GC", "IP")
+							.collect(Collectors.toList());
+					boolean containsBneDest = bneDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					List<String> melDestination = Stream.of("V0", "V1", "V3", "BR", "GL")
+							.collect(Collectors.toList());
+					boolean containsMelDest = melDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					List<String> perthDestination = Stream.of("W0","W1")
+							.collect(Collectors.toList());
+					boolean containsPerthDest = perthDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					if (containsBneDest) {
+						request.setFacility("BNE");
+						orderDetail.setInjectionState("BNE");
+
+					} else if(containsMelDest) {
+						request.setFacility("MEL3");
+						orderDetail.setInjectionState("MEL");
+
+					}
+					 else if(containsPerthDest) {
+     					 updatedOrderDetail.add(orderDetail);
+						 continue;
+						}
+					 else {
+						 request.setFacility("SYD2");
+						 orderDetail.setInjectionState("SYD");
+					 }
+				} else {
+					 request.setFacility("SYD2");
+					 orderDetail.setInjectionState("SYD");
 				}
 			}
 			if (("Express").equalsIgnoreCase(orderDetail.getCarrier())) {
