@@ -194,7 +194,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 		senderDataRepository.saveAll(senderDataList);
 		System.out.println("create consignment UI object construction Done data got inserted--->"+senderDataList.size());
 		storProcCall(fileSeqId);
-		updateTrackAndTrace(fileSeqId);
+		updateTrackAndTrace(fileSeqId,userInfo.getUser_Id());
 		return fileSeqId;
 	}
 
@@ -354,7 +354,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
 		System.out.println("create consignment API object construction Done data got inserted--->"+insertedOrder.size());
 		storProcCall(fileSeqId);
-		updateTrackAndTrace(fileSeqId);
+		updateTrackAndTrace(fileSeqId,userId);
 		return fileSeqId;
 	}
 	
@@ -362,7 +362,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	 * @param senderDataList
 	 */
 
-	public synchronized void updateTrackAndTrace(String fileSeqId) {
+	public synchronized void updateTrackAndTrace(String fileSeqId,int userId) {
 		Runnable r = new Runnable( ) {			
 	        public void run() {
 	        	List<String> insertedOrder = fetchBySenderFileID(fileSeqId);
@@ -371,6 +371,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 				while (itr.hasNext()) {
 					Object[] obj = (Object[]) itr.next();
 	    			Trackandtrace trackAndTrace = new Trackandtrace();
+	    			trackAndTrace.setUser_Id(String.valueOf(userId));
 	    			trackAndTrace.setReference_number(obj[0].toString());
 	    			trackAndTrace.setTrackEventCode("CC");
 	    			trackAndTrace.setTrackEventDetails("CONSIGNMENT CREATED");

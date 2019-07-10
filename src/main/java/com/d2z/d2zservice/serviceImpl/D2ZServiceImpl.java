@@ -201,7 +201,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		String serviceType = orderDetailList.get(0).getServiceType();
 		if("1PS".equalsIgnoreCase(serviceType) || "1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) 
 				|| "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType) || "2PSP".equalsIgnoreCase(serviceType)
-				|| "1PM5".equalsIgnoreCase(serviceType)) {
+				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
 			d2zValidator.isPostCodeValidUI(orderDetailList);
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(orderDetailList,senderDataResponseList);
 			return senderDataResponseList;
@@ -825,7 +825,7 @@ public class D2ZServiceImpl implements ID2ZService {
 	    String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
 	    if("1PS".equalsIgnoreCase(serviceType) || "1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) 
 				|| "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType) || "2PSP".equalsIgnoreCase(serviceType)
-				|| "1PM5".equalsIgnoreCase(serviceType)) {
+				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
 			d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			return senderDataResponseList;
@@ -1404,12 +1404,13 @@ public class D2ZServiceImpl implements ID2ZService {
 
 	@Override
 	public List<PostCodeWeight> getRates(@Valid APIRatesRequest request) {
+		System.out.println("name:"+request.getUserName());
 		User user = d2zDao.login(request.getUserName(), request.getPassword());
 
 		if (null == user) {
 			throw new InvalidUserException("Invalid Username or Password", null);
 		}
-
+String ServiceType = request.getServicetype();
 		Map<String, Double> postcodeWeightMap = D2ZSingleton.getInstance().getPostCodeWeightMap();
 		request.getConsignmentDetails().forEach(obj -> {
 			double weight = obj.getWeight();
@@ -1442,7 +1443,7 @@ public class D2ZServiceImpl implements ID2ZService {
 
 				maxWeight = 22;
 			}
-			double rate = postcodeWeightMap.get(obj.getPostcode() + maxWeight + user.getUser_Id());
+			double rate = postcodeWeightMap.get(obj.getPostcode() + maxWeight + user.getUser_Id()+ServiceType);
 			obj.setRate(rate);
 		});
 		return request.getConsignmentDetails();

@@ -60,8 +60,11 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		" WHERE articleId IN (:refBarNum) and isDeleted != 'Y'") 
 	List<String> fetchTrackingLabel(@Param("refBarNum") List<String> refBarNum);
 	 
-	@Procedure(name = "manifest_creation")
-	void manifestCreation(@Param("ManifestNumber") String ManifestNumber, @Param("Reference_number") String Reference_number);
+//	@Procedure(name = "manifest_creation")
+	@Modifying(flushAutomatically = true,clearAutomatically = true)
+	@Transactional
+	@Query("Update SenderdataMaster s set s.manifest_number = :ManifestNumber where s.reference_number IN (:Reference_number) and  isdeleted = 'N'")
+		void manifestCreation(@Param("ManifestNumber") String ManifestNumber, @Param("Reference_number") String Reference_number);
 
 	@Query("Select t from SenderdataMaster t where t.reference_number = :reference_number") 
 	SenderdataMaster fetchByReferenceNumbers(@Param("reference_number") String referenceNumber);
