@@ -307,7 +307,7 @@ public class ETowerWrapper {
 					 else if(containsPerthDest) {
 						 iterator.set(orderDetail);
 						 continue;
-						}
+					 }
 					 else {
 						 request.setFacility("SYD2");
 						 orderDetail.setInjectionState("SYD2");
