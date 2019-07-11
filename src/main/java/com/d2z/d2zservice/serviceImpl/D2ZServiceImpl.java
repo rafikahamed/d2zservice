@@ -1410,7 +1410,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		if (null == user) {
 			throw new InvalidUserException("Invalid Username or Password", null);
 		}
-String ServiceType = request.getServicetype();
+//String ServiceType = request.getServicetype();
 		Map<String, Double> postcodeWeightMap = D2ZSingleton.getInstance().getPostCodeWeightMap();
 		request.getConsignmentDetails().forEach(obj -> {
 			double weight = obj.getWeight();
@@ -1443,7 +1443,8 @@ String ServiceType = request.getServicetype();
 
 				maxWeight = 22;
 			}
-			double rate = postcodeWeightMap.get(obj.getPostcode() + maxWeight + user.getUser_Id()+ServiceType);
+			//double rate = postcodeWeightMap.get(obj.getPostcode() + maxWeight + user.getUser_Id()+ServiceType);
+			double rate = postcodeWeightMap.get(obj.getPostcode() + maxWeight + user.getUser_Id());
 			obj.setRate(rate);
 		});
 		return request.getConsignmentDetails();
