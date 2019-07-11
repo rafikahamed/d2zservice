@@ -81,7 +81,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y' and t.manifest_number is null") 
 	List<SenderdataMaster> fetchManifestData(@Param("fileName") String fileName);
 
-	@Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.airwayBill = :shipmentNumber and t.isDeleted != 'Y'") 
+	@Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.airwayBill = :shipmentNumber and t.isDeleted = 'N'") 
 	List<SenderdataMaster> fetchShipmentData(@Param("shipmentNumber") String shipmentNumber,@Param("userId") List<Integer> userId);
 
 	@Query(nativeQuery = true, value="SELECT DISTINCT t.manifest_number FROM senderdata_master t where t.user_ID IN (:userId) and t.AirwayBill is null and t.isDeleted = 'N'") 
@@ -93,7 +93,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 @Query("SELECT t FROM SenderdataMaster t where t.reference_number in :referenceNumbers and (t.airwayBill is not null or t.isDeleted = 'Y')") 
 	 List<SenderdataMaster> findRefNbrByShipmentNbr(@Param("referenceNumbers") String[] referenceNumbers);
 	 
-	 @Query("SELECT DISTINCT(t.airwayBill), t.timestamp FROM SenderdataMaster t where t.user_ID IN (:userId) and t.sender_Files_ID like '%D2ZUI%' order by t.timestamp desc") 
+	 @Query("SELECT DISTINCT(t.airwayBill), t.timestamp FROM SenderdataMaster t where t.user_ID IN (:userId) and t.isDeleted = 'N' order by t.timestamp desc") 
 	 List<String> fetchShipmentList(@Param("userId") List<Integer> userId);
 	 
 	 @Query("SELECT DISTINCT t.airwayBill FROM SenderdataMaster t where t.sender_Files_ID like '%D2ZAPI%' ") 
