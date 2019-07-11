@@ -81,51 +81,47 @@
 	<field name="productDescription" class="java.lang.String">
 		<fieldDescription><![CDATA[productDescription]]></fieldDescription>
 	</field>
-	<title>
-		<band height="60" splitType="Stretch">
-			<rectangle>
-				<reportElement x="0" y="0" width="179" height="30" backcolor="#000000" uuid="c4d678b9-38f1-4a4f-ad80-ead20172d6e0"/>
-			</rectangle>
-			<rectangle>
-				<reportElement x="185" y="0" width="152" height="50" backcolor="#000000" uuid="750052f3-e616-4e32-b0b2-40a36db82f90"/>
-			</rectangle>
-			<staticText>
-				<reportElement x="0" y="0" width="100" height="30" forecolor="#FFFFFF" uuid="7b871fc7-159a-4a16-a4eb-b3701dd8100d"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="MyArial" size="18" isBold="true"/>
-				</textElement>
-				<text><![CDATA[PFL]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="111" y="4" width="24" height="20" forecolor="#FFFFFF" uuid="a2f23420-9c08-47d6-8e65-f8cc3b263560"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<text><![CDATA[B]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="197" y="0" width="100" height="50" forecolor="#FFFFFF" uuid="55cff46a-ed16-45e3-9cbe-23c9a06e699a"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="MyArial" size="26" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{injectionState}.substring( 0, 3 )]]></textFieldExpression>
-			</textField>
-		</band>
-	</title>
 	<pageHeader>
-		<band height="35" splitType="Stretch">
+		<band height="95" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="200" height="15" uuid="1f72d52d-5c84-4b14-930c-e4bb13bebfe5"/>
+				<reportElement x="0" y="60" width="200" height="15" uuid="1f72d52d-5c84-4b14-930c-e4bb13bebfe5"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="MyArial" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Attempt signature then ATL + 2 photos]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="20" width="37" height="15" forecolor="#FF0C08" uuid="7a76f710-0dee-4445-85ae-931e42d3fd32"/>
+				<reportElement x="1" y="75" width="37" height="15" forecolor="#FF0C08" uuid="7a76f710-0dee-4445-85ae-931e42d3fd32"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="MyArial" isBold="true"/>
 				</textElement>
 				<text><![CDATA[To:]]></text>
 			</staticText>
+			<rectangle>
+				<reportElement x="0" y="2" width="179" height="30" backcolor="#000000" uuid="c4d678b9-38f1-4a4f-ad80-ead20172d6e0"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="1" y="0" width="100" height="30" forecolor="#FFFFFF" uuid="7b871fc7-159a-4a16-a4eb-b3701dd8100d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="MyArial" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PFL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="111" y="5" width="24" height="20" forecolor="#FFFFFF" uuid="a2f23420-9c08-47d6-8e65-f8cc3b263560"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[B]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="184" y="2" width="152" height="50" backcolor="#000000" uuid="750052f3-e616-4e32-b0b2-40a36db82f90"/>
+			</rectangle>
+			<textField>
+				<reportElement x="187" y="0" width="100" height="50" forecolor="#FFFFFF" uuid="55cff46a-ed16-45e3-9cbe-23c9a06e699a"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="MyArial" size="26" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{injectionState}.substring( 0, 3 )]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageHeader>
 	<detail>
