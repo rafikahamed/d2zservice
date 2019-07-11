@@ -156,8 +156,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 			if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("Etower") 
 					&& barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData labelData= barcodeMap.get(senderDataValue.getReferenceNumber());
-				//senderDataObj.setBarcodelabelNumber(labelData.getBarCode());
-				senderDataObj.setIsDeleted("N");
+				senderDataObj.setBarcodelabelNumber(labelData.getBarCode());
+				//senderDataObj.setIsDeleted("N");
 				senderDataObj.setStatus("CONSIGNMENT CREATED");
 				senderDataObj.setInjectionType("Direct Injection");
 				//senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
