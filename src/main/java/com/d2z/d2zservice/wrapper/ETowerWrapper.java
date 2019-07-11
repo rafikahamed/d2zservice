@@ -301,7 +301,7 @@ public class ETowerWrapper {
 
 					} else if(containsMelDest) {
 						request.setFacility("MEL3");
-						orderDetail.setInjectionState("MEL");
+						orderDetail.setInjectionState("MEL3");
 
 					}
 					 else if(containsPerthDest) {
@@ -310,11 +310,11 @@ public class ETowerWrapper {
 						}
 					 else {
 						 request.setFacility("SYD2");
-						 orderDetail.setInjectionState("SYD");
+						 orderDetail.setInjectionState("SYD2");
 					 }
 				} else {
 					 request.setFacility("SYD2");
-					 orderDetail.setInjectionState("SYD");
+					 orderDetail.setInjectionState("SYD2");
 				}
 			}
 			if (("Express").equalsIgnoreCase(orderDetail.getCarrier())) {
@@ -572,7 +572,7 @@ public class ETowerWrapper {
 
 					} else if(containsMelDest) {
 						request.setFacility("MEL3");
-						orderDetail.setInjectionState("MEL");
+						orderDetail.setInjectionState("MEL3");
 
 					}
 					 else if(containsPerthDest) {
@@ -581,11 +581,11 @@ public class ETowerWrapper {
 						}
 					 else {
 						 request.setFacility("SYD2");
-						 orderDetail.setInjectionState("SYD");
+						 orderDetail.setInjectionState("SYD2");
 					 }
 				} else {
 					 request.setFacility("SYD2");
-					 orderDetail.setInjectionState("SYD");
+					 orderDetail.setInjectionState("SYD2");
 				}
 			}
 			if (("Express").equalsIgnoreCase(orderDetail.getCarrier())) {
