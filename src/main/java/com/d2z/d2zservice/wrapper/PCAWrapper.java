@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.exception.EtowerFailureResponseException;
+import com.d2z.d2zservice.model.PCACancelRequest;
 import com.d2z.d2zservice.model.PCAConsignee;
 import com.d2z.d2zservice.model.PCACreateShipmentRequest;
 import com.d2z.d2zservice.model.PCACreateShipmentRequestInfo;
@@ -41,9 +42,6 @@ public class PCAWrapper {
 	
 	@Value("${pca.chargeCodeST}")
 	private String chargeCodeST;
-
-	@Value("${pca.cancel}")
-	private String cancel;
 
 	@Autowired
 	private ID2ZDao d2zDao;
@@ -112,11 +110,11 @@ public class PCAWrapper {
 			pcaItems.setSku(orderDetail.getSku());
 			PCAItemList.add(pcaItems);
 			request.setItems(PCAItemList);
-			if("STS".equalsIgnoreCase(serviceType)) {
-				request.setChargecode(chargeCodeFW);
-			}else {
+			if("STS-Sub".equalsIgnoreCase(serviceType)) {
 				request.setChargecode(chargeCodeST);
 				chargeType = "StarTrack";
+			}else {
+				request.setChargecode(chargeCodeFW);
 			}
 			pcaOrderInfoRequest.add(request);
 		}
@@ -134,7 +132,7 @@ public class PCAWrapper {
 		for(PCACreateShippingResponse pcaData: pcaResponse) {
 			if(!pcaData.getMsg().equalsIgnoreCase("Success")) {
 				SenderDataResponse senderDataresponse = new SenderDataResponse();
-				senderDataresponse.setReferenceNumber(pcaData.getMsg().split("-")[1].split(" ")[2]);
+				//senderDataresponse.setReferenceNumber(pcaData.getMsg().split("-")[1].split(" ")[2]);
 				senderDataresponse.setMessage(pcaData.getMsg());
 				senderDataResponseList.add(senderDataresponse);
 				referenceNumber.add(pcaData.getMsg().split("-")[1].split(" ")[2]);
@@ -143,28 +141,32 @@ public class PCAWrapper {
 			}
 		}
 		
-//		if(referenceNumber.size() > 0) {
-//			String pcaRequestCancel = " {\"no\":\"ECN1656036385\", \"ref\":\"ML0000731779\", \"cust_ref\":\"2017062600112345\"}";
-//			List<PCACreateShippingResponse> pcaResponseCancel = pcaProxy.makeCallForCancelShipment(pcaRequestCancel);
-//		}
-		
-		List<SenderDataApi> pflSenderData = new ArrayList<SenderDataApi>();
-		PFLSenderDataRequest pflRequest = new PFLSenderDataRequest();
 		if(referenceNumber.size() > 0) {
-			consignmentData.forEach(obj -> {
-				if(!referenceNumber.contains(obj.getReferenceNumber())) {
-					pflSenderData.add(obj);
-				}
-			});
-			pflRequest.setPflSenderDataApi(pflSenderData);
-		}else {
-			pflRequest.setPflSenderDataApi(consignmentData);
+			for(PCACreateShipmentRequestInfo pcaRequestData: pcaRequest.getShipments()) {
+				PCACancelRequest pcaReq = new PCACancelRequest();
+				pcaReq.setCustref(pcaRequestData.getCust_ref());
+				pcaProxy.makeCallForCancelShipment(pcaReq);
+			}
+			return;
 		}
+		
+//		List<SenderDataApi> pflSenderData = new ArrayList<SenderDataApi>();
+//		PFLSenderDataRequest pflRequest = new PFLSenderDataRequest();
+//		if(referenceNumber.size() > 0) {
+//			consignmentData.forEach(obj -> {
+//				if(!referenceNumber.contains(obj.getReferenceNumber())) {
+//					pflSenderData.add(obj);
+//				}
+//			});
+//			pflRequest.setPflSenderDataApi(pflSenderData);
+//		}else {
+//			pflRequest.setPflSenderDataApi(consignmentData);
+//		}
 		
 		if(pcaResponseSuccess.size() > 0) {
 			processPcaLabelsResponse(pcaResponseSuccess, barcodeMap, chargeType);
 			int userId = d2zDao.fetchUserIdbyUserName(userName);
-			String senderFileID = d2zDao.createConsignments(pflRequest.getPflSenderDataApi(), userId, userName, barcodeMap);
+			String senderFileID = d2zDao.createConsignments(consignmentData, userId, userName, barcodeMap);
 			List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 			Iterator itr = insertedOrder.iterator();
 			while (itr.hasNext()) {
@@ -264,11 +266,11 @@ public class PCAWrapper {
 			pcaItems.setSku(orderDetail.getSku());
 			PCAItemList.add(pcaItems);
 			request.setItems(PCAItemList);
-			if("STS".equalsIgnoreCase(serviceType)) {
-				request.setChargecode(chargeCodeFW);
-			}else {
+			if("STS-Sub".equalsIgnoreCase(serviceType)) {
 				request.setChargecode(chargeCodeST);
 				chargeType = "StarTrack";
+			}else {
+				request.setChargecode(chargeCodeFW);
 			}
 			pcaOrderInfoRequest.add(request);
 		}
@@ -286,7 +288,7 @@ public class PCAWrapper {
 		for(PCACreateShippingResponse pcaData: pcaResponse) {
 			if(!pcaData.getMsg().equalsIgnoreCase("Success")) {
 				SenderDataResponse senderDataresponse = new SenderDataResponse();
-				senderDataresponse.setReferenceNumber(pcaData.getMsg().split("-")[1].split(" ")[2]);
+				//senderDataresponse.setReferenceNumber(pcaData.getMsg().split("-")[1].split(" ")[2]);
 				senderDataresponse.setMessage(pcaData.getMsg());
 				senderDataResponseList.add(senderDataresponse);
 				referenceNumber.add(pcaData.getMsg().split("-")[1].split(" ")[2]);
@@ -295,22 +297,31 @@ public class PCAWrapper {
 			}
 		}
 		
-		List<SenderData> pflSenderData = new ArrayList<SenderData>();
-		PFLSenderDataFileRequest pflRequest = new PFLSenderDataFileRequest();
 		if(referenceNumber.size() > 0) {
-			orderDetailList.forEach(obj -> {
-				if(!referenceNumber.contains(obj.getReferenceNumber())) {
-					pflSenderData.add(obj);
-				}
-			});
-			pflRequest.setPflSenderDataApi(pflSenderData);
-		}else {
-			pflRequest.setPflSenderDataApi(orderDetailList);
+			for(PCACreateShipmentRequestInfo pcaRequestData: pcaRequest.getShipments()) {
+				PCACancelRequest pcaReq = new PCACancelRequest();
+				pcaReq.setCustref(pcaRequestData.getCust_ref());
+				pcaProxy.makeCallForCancelShipment(pcaReq);
+			}
+			return;
 		}
 		
+//		List<SenderData> pflSenderData = new ArrayList<SenderData>();
+//		PFLSenderDataFileRequest pflRequest = new PFLSenderDataFileRequest();
+//		if(referenceNumber.size() > 0) {
+//			orderDetailList.forEach(obj -> {
+//				if(!referenceNumber.contains(obj.getReferenceNumber())) {
+//					pflSenderData.add(obj);
+//				}
+//			});
+//			pflRequest.setPflSenderDataApi(pflSenderData);
+//		}else {
+//			pflRequest.setPflSenderDataApi(orderDetailList);
+//		}
+//		
 		if(pcaFileResponseSuccess.size() > 0) {
 			processPcaLabelsResponse(pcaFileResponseSuccess, barcodeMap, chargeType);
-			String senderFileID = d2zDao.exportParcel(pflRequest.getPflSenderDataApi(), barcodeMap);
+			String senderFileID = d2zDao.exportParcel(orderDetailList, barcodeMap);
 			List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 			Iterator itr = insertedOrder.iterator();
 			while (itr.hasNext()) {

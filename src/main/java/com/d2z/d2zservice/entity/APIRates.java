@@ -38,8 +38,8 @@ public class APIRates implements Serializable {
 	@Column(name="Rate")
 	private Double rate;
 	
-	@Column(name="ServiceType")
-	private String serviceType;
+	/*@Column(name="ServiceType")
+	private String serviceType;*/
 
 	public int getRowId() {
 		return rowId;
@@ -62,13 +62,13 @@ public class APIRates implements Serializable {
 		return postCode;
 	}
 
-	public String getServiceType() {
+	/*public String getServiceType() {
 		return serviceType;
 	}
 
 	public void setServiceType(String serviceType) {
 		this.serviceType = serviceType;
-	}
+	}*/
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;

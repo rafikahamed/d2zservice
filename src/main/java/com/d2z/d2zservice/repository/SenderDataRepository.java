@@ -33,7 +33,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query(value="SELECT DISTINCT(t.filename), t.timestamp FROM SenderdataMaster t where t.user_ID = :userId and t.isDeleted != 'Y' and t.manifest_number is null and t.sender_Files_ID like '%D2ZUI%' order by t.timestamp desc") 
 	List<String> fetchLabelFileName(@Param("userId") Integer userId);
 
-	@Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y'") 
+	@Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y' order by rowId asc") 
 	List<SenderdataMaster> fetchConsignmentData(@Param("fileName") String fileName);
 	 
 	@Procedure(name = "consignee_delete")

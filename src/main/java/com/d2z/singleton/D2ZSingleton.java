@@ -39,7 +39,8 @@ public class D2ZSingleton {
 	private void getRates_PostCodeWeight() {
 	List<APIRates> apiRates = d2zDao.fetchAllAPIRates();
 		apiRates.forEach(obj -> {
-			String key = obj.getPostCode()+obj.getMaxWeight()+obj.getUserId()+obj.getServiceType();
+			//String key = obj.getPostCode()+obj.getMaxWeight()+obj.getUserId()+obj.getServiceType();
+			String key = obj.getPostCode()+obj.getMaxWeight()+obj.getUserId();
 			postCodeWeightMap.put(key, obj.getRate());
 		});
 	}
