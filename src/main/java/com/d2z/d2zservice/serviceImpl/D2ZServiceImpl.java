@@ -55,6 +55,7 @@ import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
+import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.FFResponse;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
@@ -68,6 +69,7 @@ import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
+import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_Shipment;
@@ -1635,6 +1637,12 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(incomingRefNbr,"eTower");
 		eTowerWrapper.makeCalltoEtower(eTowerOrders);
 		
+	}
+
+	@Override
+	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry) {
+		String enquiryInfo = d2zDao.createEnquiry(createEnquiry);
+		return enquiryInfo;
 	}
 
 }
