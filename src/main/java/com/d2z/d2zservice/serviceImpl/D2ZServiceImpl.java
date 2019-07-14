@@ -65,6 +65,7 @@ import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.MaxSizeCountException;
+import com.d2z.d2zservice.exception.PCAlabelException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.ClientDashbaord;
@@ -107,6 +108,7 @@ import com.d2z.d2zservice.model.fdm.Line;
 import com.d2z.d2zservice.proxy.AusPostProxy;
 import com.d2z.d2zservice.proxy.EbayProxy;
 import com.d2z.d2zservice.proxy.FDMProxy;
+import com.d2z.d2zservice.proxy.PcaProxy;
 import com.d2z.d2zservice.repository.FFResponseRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
@@ -499,9 +501,11 @@ public class D2ZServiceImpl implements ID2ZService {
 	}
 
 	@Override
-	public byte[] trackingLabel(List<String> refBarNum) {
+	public byte[] trackingLabel(List<String> refBarNum) throws PCAlabelException {
 		List<SenderData> trackingLabelList = new ArrayList<SenderData>();
+		System.out.println("size:"+refBarNum.size());
 		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNum);
+		boolean pcalabel = false;
 		Iterator itr = trackingLabelData.iterator();
 		while (itr.hasNext()) {
 			SenderData trackingLabel = new SenderData();
@@ -564,6 +568,17 @@ public class D2ZServiceImpl implements ID2ZService {
 			if(trackingLabel.getCarrier().equalsIgnoreCase("Express") || trackingLabel.getCarrier().equalsIgnoreCase("eParcel")) {
 				setGS1DataType = true;
 			}
+			if(trackingLabel.getCarrier().equalsIgnoreCase("StarTrack"))
+			{if(trackingLabelData.size() > 1)
+			{
+				throw new PCAlabelException("Starttradk Label request can contain only one reference number", refBarNum);
+			}
+			else
+			{
+				pcalabel = true;
+			}
+				
+			}
 			trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix(),setGS1DataType));
 			
 			String user = d2zDao.fetchUserById(Integer.parseInt(trackingArray[27].toString()));
@@ -572,7 +587,9 @@ public class D2ZServiceImpl implements ID2ZService {
 			}
 			trackingLabelList.add(trackingLabel);
 		}
-
+		byte[] bytes = null;
+if(!pcalabel)
+{
 		List<SenderData> eParcelData = new ArrayList<SenderData>();
 
 		List<SenderData> expressData = new ArrayList<SenderData>();
@@ -600,7 +617,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		}
 
 		Map<String, Object> parameters = new HashMap<>();
-		byte[] bytes = null;
+		
 		// Blob blob = null;
 		JRBeanCollectionDataSource eParcelDataSource;
 		JRBeanCollectionDataSource expressDataSource;
@@ -666,6 +683,11 @@ public class D2ZServiceImpl implements ID2ZService {
 		} catch (JRException | IOException e) {
 			e.printStackTrace();
 		}
+}
+else
+{
+	bytes = pcaWrapper.pcalabel(trackingLabelList.get(0).getReferenceNumber());
+}
 		return bytes;
 	}
 
@@ -1621,6 +1643,17 @@ public class D2ZServiceImpl implements ID2ZService {
 			System.out.println("AU Track Response");
 			System.out.println(auTrackingDetails.toString());
 			respMsg = d2zDao.insertAUTrackingDetails(auTrackingDetails);
+			System.out.print("timestamp:"+LocalDateTime.now());
+			try {
+				if(count > 10)
+				{
+				Thread.sleep(60000);
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.print("After thread timestamp:"+LocalDateTime.now());
 		}
 		return respMsg;
 	}
@@ -1633,10 +1666,8 @@ public class D2ZServiceImpl implements ID2ZService {
 
 	@Override
 	public void makeCallToEtowerBasedonSupplierUI(List<String> incomingRefNbr) {
-		
 		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(incomingRefNbr,"eTower");
 		eTowerWrapper.makeCalltoEtower(eTowerOrders);
-		
 	}
 
 	@Override

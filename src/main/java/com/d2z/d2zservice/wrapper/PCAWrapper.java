@@ -361,5 +361,12 @@ public class PCAWrapper {
 			d2zDao.logEtowerResponse(responseEntity);
 		}
 	}
+	
+	public byte[] pcalabel(String refnum)
+	{
+		PCACancelRequest pcaReq = new PCACancelRequest();
+		pcaReq.setCustref(refnum);
+		return pcaProxy.makeCallForLabelShipment(pcaReq);
+	}
 
 }

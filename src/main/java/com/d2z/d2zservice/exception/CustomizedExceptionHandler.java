@@ -102,5 +102,13 @@ public class CustomizedExceptionHandler extends ResponseEntityExceptionHandler {
 			    return new ResponseEntity<Object>(
 			    		errorResponse, new HttpHeaders(), errorResponse.getStatus());
 	  }
+	 
+	 @ExceptionHandler(PCAlabelException.class)
+	  public final ResponseEntity<Object> handleMoreReferenceNumberException(PCAlabelException ex, WebRequest request) {
+		 ErrorResponse errorResponse = 
+			      new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), ex.getReferenceNumbers());
+			    return new ResponseEntity<Object>(
+			    		errorResponse, new HttpHeaders(), errorResponse.getStatus());
+	  }
 }
 

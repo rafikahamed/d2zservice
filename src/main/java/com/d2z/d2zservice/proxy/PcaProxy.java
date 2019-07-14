@@ -10,12 +10,15 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.net.URLEncoder;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.HttpURLConnection;
+
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -216,6 +219,7 @@ public class PcaProxy {
 			wr.close();
 			InputStream is = connection.getInputStream();
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+			
 			String line;
 			StringBuffer reponse = new StringBuffer();
 			while ((line = rd.readLine()) != null) {
@@ -224,6 +228,47 @@ public class PcaProxy {
 			}
 			rd.close();
 			return reponse.toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			if (connection != null) {
+				connection.disconnect();
+			}
+		}
+	}
+	private byte[] executeLabel(String targetUrl, String UrlParameters) {
+		URL url;
+		HttpURLConnection connection = null;
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+		try {
+			url = new URL(targetUrl);
+			connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("POST");
+			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			connection.setRequestProperty("Content-Length", Integer.toString(UrlParameters.getBytes().length));
+			connection.setRequestProperty("Content-Language", "en-US");
+
+			connection.setUseCaches(false);
+			connection.setDoInput(true);
+			connection.setDoOutput(true);
+			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+			wr.writeBytes(UrlParameters);
+			wr.flush();
+			wr.close();
+			InputStream is = connection.getInputStream();
+			
+			 byte[] chunk = new byte[4096];
+		        int bytesRead;
+		      
+		        while ((bytesRead = is.read(chunk)) > 0) {
+		        	
+		        	outputStream.write(chunk, 0, bytesRead);
+		        }
+		            
+			
+			return outputStream.toByteArray();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -258,7 +303,21 @@ public class PcaProxy {
 		}
 		return pcaResponse;
 	}
-
+	public byte[] makeCallForLabelShipment(PCACancelRequest pcaReq) {
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonString = null;
+		try {
+			jsonString = mapper.writeValueAsString(pcaReq);
+		} catch (JsonProcessingException e1) {
+			e1.printStackTrace();
+		}
+		System.out.println("PCA Label Request ------>");
+		System.out.println(jsonString);
+		byte output[] = executeLabel(url,constructParam(jsonString, "label"));
+		
+		
+		return output;
+	}
 	private String constructParamCancel(PCACancelRequest pcaReq, String string) {
 		return null;
 	}

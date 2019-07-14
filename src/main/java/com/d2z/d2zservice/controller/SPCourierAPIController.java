@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.d2z.d2zservice.exception.EtowerFailureResponseException;
+import com.d2z.d2zservice.exception.PCAlabelException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
@@ -83,7 +84,7 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
     }
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/tracking-label")
-    public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum) {
+    public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum) throws PCAlabelException{
     	List<String> refBarNumArray =
     			  Stream.of(refBarNum.split(","))
     			  .collect(Collectors.toList());

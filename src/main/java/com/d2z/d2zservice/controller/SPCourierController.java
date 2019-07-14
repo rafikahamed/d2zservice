@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.EtowerFailureResponseException;
+import com.d2z.d2zservice.exception.PCAlabelException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.DropDownModel;
@@ -111,7 +112,7 @@ public class SPCourierController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST, path = "/tracking-label")
-	public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum) {
+	public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum) throws PCAlabelException{
 		System.out.println("Incoming refBarNum :: " + refBarNum);
 		List<String> refBarNumArray = Stream.of(refBarNum.split(",")).collect(Collectors.toList());
 		byte[] bytes = d2zService.trackingLabel(refBarNumArray);
