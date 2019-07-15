@@ -25,24 +25,32 @@ public class Scheduler {
 			System.out.println(e.getLocalizedMessage());
 		}
 
-		try {
-			System.out.println("Calling AUPost Proxy");
-			d2zService.makeCalltoAusPost();
-		} catch (Exception e) {
-			System.out.println(e.getLocalizedMessage());
-		}
-
-		/*
-		 * try { System.out.println("Calling PCA Proxy");
-		 * superUserD2zService.scheduledPCATrackingEvent(); } catch(Exception e) {
-		 * System.out.println(e.getLocalizedMessage()); }
-		 */
-
-		/*
-		 * try { System.out.println("Calling AUPost Tracking Proxy");
-		 * d2zService.auTrackingEvent(); } catch(Exception e) {
-		 * System.out.println(e.getLocalizedMessage()); }
-		 */
+		
+		 try { 
+			 System.out.println("Calling PCA Proxy");
+			 superUserD2zService.scheduledPCATrackingEvent(); 
+		 } 
+		 catch(Exception e) {
+		 System.out.println(e.getLocalizedMessage());
+		 }
+		
+		
+		 try { 
+			 System.out.println("Calling AUPost Tracking Proxy");
+			 d2zService.auTrackingEvent();
+			 }
+		 catch(Exception e){
+		 System.out.println(e.getLocalizedMessage()); 
+		 }
+		 
+		/* try { 
+			 System.out.println("Freipost Tracking");
+			 d2zService.freipostTrackingEvent();
+			 }
+		 catch(Exception e){
+		 System.out.println(e.getLocalizedMessage()); 
+		 }*/
+		
 	}
 
 	@Scheduled(cron = "0 0 12 * * ?", zone = "GMT")
@@ -64,4 +72,11 @@ public class Scheduler {
 			System.out.println(e.getLocalizedMessage());
 		}
 	}
+	@Scheduled(cron = "0 0 0/1 * * ?")
+	public void triggerAuPostCreateShipping() {try {
+		System.out.println("Calling AUPost - Create order");
+		d2zService.makeCalltoAusPost();
+	} catch (Exception e) {
+		System.out.println(e.getLocalizedMessage());
+	}}
 }

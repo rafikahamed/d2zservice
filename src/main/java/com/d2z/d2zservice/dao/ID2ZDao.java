@@ -128,4 +128,6 @@ public interface ID2ZDao {
 
 	public String fetchUserById(int userId);
 
+	public List<String> getArticleIDForFreiPostTracking();
+
 }

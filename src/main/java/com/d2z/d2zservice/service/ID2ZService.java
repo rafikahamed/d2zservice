@@ -98,4 +98,6 @@ public interface ID2ZService {
 	public void updateRates();
 
 	public void makeCallToEtowerBasedonSupplierUI(List<String> refNbr);
+
+	public void freipostTrackingEvent();
 }

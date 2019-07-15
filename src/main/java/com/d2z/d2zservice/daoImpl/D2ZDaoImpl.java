@@ -911,4 +911,10 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return userRepository.fetchUserById( userId);
 	}
 
+	@Override
+	public List<String> getArticleIDForFreiPostTracking() {
+		// TODO Auto-generated method stub
+		return trackAndTraceRepository.getArticleIDForFreiPostTracking();
+	}
+
 }

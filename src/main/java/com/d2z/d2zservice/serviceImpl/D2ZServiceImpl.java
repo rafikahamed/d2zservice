@@ -241,6 +241,7 @@ public class D2ZServiceImpl implements ID2ZService {
 					senderDataResponse.setReferenceNumber(obj[0].toString());
 					senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 					senderDataResponse.setCarrier(obj[4].toString());
+					senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 					senderDataResponseList.add(senderDataResponse);
 				}
 			}
@@ -256,6 +257,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			 senderDataResponse.setReferenceNumber(obj[0].toString());
 			 senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 			 senderDataResponse.setCarrier(obj[4].toString());
+			 senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 			 senderDataResponseList.add(senderDataResponse);
         }
 		return senderDataResponseList;
@@ -884,6 +886,7 @@ else
 					senderDataResponse.setReferenceNumber(obj[0].toString());
 					senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 					senderDataResponse.setCarrier(obj[4].toString());
+					senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 					senderDataResponseList.add(senderDataResponse);
 				}
 			}
@@ -899,6 +902,7 @@ else
 			senderDataResponse.setReferenceNumber(obj[0].toString());
 			String barcode = obj[1].toString();
 			senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+			senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 			senderDataResponseList.add(senderDataResponse);
 		}
 		return senderDataResponseList;
@@ -1669,6 +1673,14 @@ else
 		eTowerWrapper.makeCalltoEtower(eTowerOrders);
 		
 	}
-
+	@Override
+	public void freipostTrackingEvent() {
+		// TODO Auto-generated method stub
+		List<String> articleIds = d2zDao.getArticleIDForFreiPostTracking();
+		for(String articleId : articleIds) {
+			freipostWrapper.trackingEventService(articleId);
+		}
+		
+	}
 
 }
