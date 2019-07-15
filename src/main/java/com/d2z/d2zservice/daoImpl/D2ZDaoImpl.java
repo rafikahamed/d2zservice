@@ -923,9 +923,21 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 			CSTickets tickets = new CSTickets();
 			String incSeqId = "INC"+D2ZCommonUtil.getday()+csticketsRepository.fetchNextSeq().toString();
 			if(enquiryRequest.getType().equalsIgnoreCase("Article Id")) {
-				tickets.setArticleID(enquiryRequest.getIdentifier());
+				SenderdataMaster senderArticleId = senderDataRepository.fetchDataArticleId(enquiryRequest.getIdentifier());
+				if(null != senderArticleId) {
+					tickets.setArticleID(senderArticleId.getArticleId());
+					tickets.setReferenceNumber(senderArticleId.getReference_number());
+					tickets.setConsigneeName(senderArticleId.getConsignee_name());
+					tickets.setCarrier(senderArticleId.getCarrier());
+				}
 			}else if(enquiryRequest.getType().equalsIgnoreCase("Reference Number")) {
-				tickets.setReferenceNumber(enquiryRequest.getIdentifier());
+				SenderdataMaster senderRefId = senderDataRepository.fetchDataReferenceNum(enquiryRequest.getIdentifier());
+				if(null != senderRefId) {
+					tickets.setArticleID(senderRefId.getArticleId());
+					tickets.setReferenceNumber(senderRefId.getReference_number());
+					tickets.setConsigneeName(senderRefId.getConsignee_name());
+					tickets.setCarrier(senderRefId.getCarrier());
+				}
 			}
 			tickets.setTicketID(incSeqId);
 			tickets.setComments(enquiryRequest.getComments());

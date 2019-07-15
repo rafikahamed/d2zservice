@@ -50,6 +50,12 @@ public class CSTickets implements Serializable {
 	
 	@Column(name="userId")
 	private int userId;
+	
+	@Column(name = "Consignee_name")
+	private String consigneeName;
+	
+	@Column(name = "Carrier")
+	private String carrier;
 
 	public String getTicketID() {
 		return ticketID;
@@ -137,6 +143,22 @@ public class CSTickets implements Serializable {
 
 	public void setUserId(int userId) {
 		this.userId = userId;
+	}
+	
+	public String getConsigneeName() {
+		return consigneeName;
+	}
+
+	public void setConsigneeName(String consigneeName) {
+		this.consigneeName = consigneeName;
+	}
+
+	public String getCarrier() {
+		return carrier;
+	}
+
+	public void setCarrier(String carrier) {
+		this.carrier = carrier;
 	}
 
 	public static long getSerialversionuid() {
