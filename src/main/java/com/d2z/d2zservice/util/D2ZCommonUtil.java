@@ -40,6 +40,14 @@ public class D2ZCommonUtil {
 	    String parsedDate = format.format(dt);
 		return parsedDate;
 	}
+
+	public static String getday() {
+		Date dt = new Date();
+	    DateFormat format = new SimpleDateFormat("yyyyMMdd");
+	    format.setTimeZone(TimeZone.getTimeZone("Australia/Sydney"));
+	    String parsedDate = format.format(dt);
+		return parsedDate;
+	}
 	
 	  
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.AUPostResponse;
+import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FastwayPostcode;
 import com.d2z.d2zservice.entity.PostcodeZone;
@@ -12,6 +13,7 @@ import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.model.ClientDashbaord;
+import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
@@ -128,6 +130,9 @@ public interface ID2ZDao {
 
 	public String fetchUserById(int userId);
 
+
 	public List<String> getArticleIDForFreiPostTracking();
+
+	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry);
 
 }

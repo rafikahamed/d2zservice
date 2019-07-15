@@ -95,7 +95,7 @@
 			<componentElement>
 				<reportElement x="25" y="50" width="310" height="80" uuid="59d0a8fc-b56d-4bf1-b304-0f08862723c5"/>
 				<c:Code128 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" moduleWidth="2.0" textPosition="bottom">
-					<c:codeExpression><![CDATA[$F{referenceNumber}]]></c:codeExpression>
+					<c:codeExpression><![CDATA[$F{barcodeLabelNumber}]]></c:codeExpression>
 				</c:Code128>
 			</componentElement>
 			<rectangle>

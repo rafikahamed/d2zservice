@@ -11,6 +11,7 @@ import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
+import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
@@ -99,5 +100,10 @@ public interface ID2ZService {
 
 	public void makeCallToEtowerBasedonSupplierUI(List<String> refNbr);
 
+
 	public void freipostTrackingEvent();
+
+	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry);
+
+
 }

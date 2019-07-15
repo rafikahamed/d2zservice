@@ -20,6 +20,7 @@ import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.PCAlabelException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
+import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -70,6 +71,12 @@ public class D2zController {
 	public List<DropDownModel> fileList(@RequestParam("userId") Integer userId) {
 		List<DropDownModel> fileList = d2zService.fileList(userId);
 		return fileList;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, path = "/create-enquiry")
+	public String createEnquiry(@RequestBody List<CreateEnquiryRequest> createEnquiry) {
+		String enquiryInfo = d2zService.createEnquiry(createEnquiry);
+		return enquiryInfo;
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "/label-fileList")

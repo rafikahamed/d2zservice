@@ -3,7 +3,6 @@ package com.d2z.d2zservice.daoImpl;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.AUPostResponse;
+import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.EbayResponse;
 import com.d2z.d2zservice.entity.FastwayPostcode;
@@ -22,6 +22,7 @@ import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.model.ClientDashbaord;
+import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
@@ -39,6 +40,7 @@ import com.d2z.d2zservice.model.etower.TrackEventResponseData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.repository.APIRatesRepository;
 import com.d2z.d2zservice.repository.AUPostResponseRepository;
+import com.d2z.d2zservice.repository.CSTicketsRepository;
 import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
 import com.d2z.d2zservice.repository.FastwayPostcodeRepository;
@@ -57,6 +59,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	SenderDataRepository senderDataRepository;
+	
+	@Autowired
+	CSTicketsRepository csticketsRepository;
 
 	@Autowired
 	TrackAndTraceRepository trackAndTraceRepository;
@@ -912,9 +917,32 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
+
 	public List<String> getArticleIDForFreiPostTracking() {
 		// TODO Auto-generated method stub
 		return trackAndTraceRepository.getArticleIDForFreiPostTracking();
+	}
+	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry) {
+		List<CSTickets> csTctList = new ArrayList<CSTickets>();
+		for(CreateEnquiryRequest enquiryRequest:createEnquiry) {
+			CSTickets tickets = new CSTickets();
+			String incSeqId = "INC"+D2ZCommonUtil.getday()+csticketsRepository.fetchNextSeq().toString();
+			if(enquiryRequest.getType().equalsIgnoreCase("Article Id")) {
+				tickets.setArticleID(enquiryRequest.getIdentifier());
+			}else if(enquiryRequest.getType().equalsIgnoreCase("Reference Number")) {
+				tickets.setReferenceNumber(enquiryRequest.getIdentifier());
+			}
+			tickets.setTicketID(incSeqId);
+			tickets.setComments(enquiryRequest.getComments());
+			tickets.setDeliveryEnquiry(enquiryRequest.getEnquiry());
+			tickets.setPod(enquiryRequest.getPod());
+			tickets.setStatus("open");
+			tickets.setUserId(enquiryRequest.getUserId());
+			tickets.setTrackingEventDateOccured(Timestamp.valueOf(LocalDateTime.now()));
+			csTctList.add(tickets);
+		}
+		csticketsRepository.saveAll(csTctList);
+		return "Enquiry created Successfully";
 	}
 
 }
