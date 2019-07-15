@@ -110,4 +110,10 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 	 
 	 List<String> getArticleId();
 	 
+	 @Query(nativeQuery = true,value="SELECT DISTINCT t.articleID FROM Trackandtrace t where t.fileName = 'freipost' and t.articleID NOT IN \n"+
+			 "(SELECT DISTINCT t.articleID FROM Trackandtrace t where (t.trackEventDetails = 'DELIVERED' and t.fileName = 'freipost') OR\n"+
+			 "(t.trackEventDetails = 'SHIPMENT ALLOCATED' AND  t.fileName = 'freipost' and t.trackEventDateOccured <= Dateadd(day,-21,Getdate())))")
+	 List<String> getArticleIDForFreiPostTracking();
+
+	 
 }

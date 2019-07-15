@@ -130,6 +130,9 @@ public interface ID2ZDao {
 
 	public String fetchUserById(int userId);
 
+
+	public List<String> getArticleIDForFreiPostTracking();
+
 	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry);
 
 }

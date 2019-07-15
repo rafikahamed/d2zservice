@@ -88,6 +88,7 @@ public class ETowerWrapper {
 				//senderDataresponse.setBarcodeLabelNumber(obj[2] != null ? obj[2].toString() : "");
 				String barcode = obj[1].toString();
 				senderDataresponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+				senderDataresponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 				senderDataResponseList.add(senderDataresponse);
 			}
 		//}
@@ -136,6 +137,7 @@ public class ETowerWrapper {
 				senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 				//senderDataresponse.setBarcodeLabelNumber(obj[2] != null ? obj[2].toString() : "");
 				senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
+				senderDataresponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 				senderDataResponseList.add(senderDataresponse);
 			}
 		//}
@@ -295,6 +297,10 @@ public class ETowerWrapper {
 					List<String> perthDestination = Stream.of("W0","W1")
 							.collect(Collectors.toList());
 					boolean containsPerthDest = perthDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					List<String> sydDestination = Stream.of("N4","NC","WG","CB","GF","N0","N1","N3")
+							.collect(Collectors.toList());
+					boolean containSydDest = sydDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					
 					if (containsBneDest) {
 						request.setFacility("BNE");
 						orderDetail.setInjectionState("BNE");
@@ -308,13 +314,27 @@ public class ETowerWrapper {
 						 iterator.set(orderDetail);
 						 continue;
 					 }
-					 else {
+					 else if(containSydDest){
 						 request.setFacility("SYD2");
 						 orderDetail.setInjectionState("SYD2");
 					 }
+					 else {
+						 iterator.set(orderDetail);
+						 continue;
+					 }
 				} else {
-					 request.setFacility("SYD2");
-					 orderDetail.setInjectionState("SYD2");
+					List<String> sydDestination = Stream.of("N0","Q0","S0","V0","W0")
+							.collect(Collectors.toList());
+					boolean containSydDest = sydDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					
+					 if(containSydDest){
+						 request.setFacility("SYD2");
+						 orderDetail.setInjectionState("SYD2");
+					 }
+					 else {
+						 iterator.set(orderDetail);
+						 continue;
+					 }
 				}
 			}
 			if (("Express").equalsIgnoreCase(orderDetail.getCarrier())) {
@@ -566,6 +586,10 @@ public class ETowerWrapper {
 					List<String> perthDestination = Stream.of("W0","W1")
 							.collect(Collectors.toList());
 					boolean containsPerthDest = perthDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					List<String> sydDestination = Stream.of("N4","NC","WG","CB","GF","N0","N1","N3")
+							.collect(Collectors.toList());
+					boolean containSydDest = sydDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					
 					if (containsBneDest) {
 						request.setFacility("BNE");
 						orderDetail.setInjectionState("BNE");
@@ -576,16 +600,30 @@ public class ETowerWrapper {
 
 					}
 					 else if(containsPerthDest) {
-     					 updatedOrderDetail.add(orderDetail);
-						 continue;
-						}
-					 else {
+						 updatedOrderDetail.add(orderDetail);
+							continue;
+					 }
+					 else if(containSydDest){
 						 request.setFacility("SYD2");
 						 orderDetail.setInjectionState("SYD2");
 					 }
+					 else {
+						 updatedOrderDetail.add(orderDetail);
+							continue;
+					 }
 				} else {
-					 request.setFacility("SYD2");
-					 orderDetail.setInjectionState("SYD2");
+					List<String> sydDestination = Stream.of("N0","Q0","S0","V0","W0")
+							.collect(Collectors.toList());
+					boolean containSydDest = sydDestination.stream().anyMatch(zoneId::equalsIgnoreCase);
+					
+					 if(containSydDest){
+						 request.setFacility("SYD2");
+						 orderDetail.setInjectionState("SYD2");
+					 }
+					 else {
+						 updatedOrderDetail.add(orderDetail);
+						 continue;
+					 }
 				}
 			}
 			if (("Express").equalsIgnoreCase(orderDetail.getCarrier())) {

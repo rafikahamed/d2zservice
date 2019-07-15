@@ -6,6 +6,15 @@ public class SenderDataResponse {
 	private String barcodeLabelNumber;
 	private String carrier;
 	private String message;
+	public String getInjectionPort() {
+		return injectionPort;
+	}
+
+	public void setInjectionPort(String injectionPort) {
+		this.injectionPort = injectionPort!=null?injectionPort.substring(0,3):"";
+	}
+
+	private String injectionPort;
 
 	public String getReferenceNumber() {
 		return referenceNumber;

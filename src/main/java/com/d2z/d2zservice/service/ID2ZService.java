@@ -100,6 +100,10 @@ public interface ID2ZService {
 
 	public void makeCallToEtowerBasedonSupplierUI(List<String> refNbr);
 
+
+	public void freipostTrackingEvent();
+
 	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry);
+
 
 }

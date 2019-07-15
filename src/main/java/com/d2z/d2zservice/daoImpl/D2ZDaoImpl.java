@@ -917,6 +917,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
+
+	public List<String> getArticleIDForFreiPostTracking() {
+		// TODO Auto-generated method stub
+		return trackAndTraceRepository.getArticleIDForFreiPostTracking();
+	}
 	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry) {
 		List<CSTickets> csTctList = new ArrayList<CSTickets>();
 		for(CreateEnquiryRequest enquiryRequest:createEnquiry) {

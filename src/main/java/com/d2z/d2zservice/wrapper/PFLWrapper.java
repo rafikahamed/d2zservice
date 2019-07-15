@@ -53,6 +53,7 @@ public class PFLWrapper {
 					senderDataresponse.setReferenceNumber(obj[0].toString());
 					senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 					senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
+					senderDataresponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 					senderDataResponseList.add(senderDataresponse);
 				}
 			}
@@ -79,6 +80,7 @@ public class PFLWrapper {
 					senderDataresponse.setReferenceNumber(obj[0].toString());
 					senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 					senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
+					senderDataresponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 					senderDataResponseList.add(senderDataresponse);
 				}
 			}
