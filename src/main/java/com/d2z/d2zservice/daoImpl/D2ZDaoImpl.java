@@ -308,6 +308,14 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setSku(senderDataValue.getSku());
 			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
 			senderDataObj.setDeliveryInstructions(senderDataValue.getDeliveryInstructions());
+			if(senderDataValue.getBarcodeLabelNumber()!=null)
+			{
+				senderDataObj.setBarcodelabelNumber(senderDataValue.getBarcodeLabelNumber());
+			}
+			if(senderDataValue.getDatamatrix()!=null)
+			{
+				senderDataObj.setDatamatrix(senderDataValue.getBarcodeLabelNumber());
+			}
 			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType())){
 				senderDataObj.setCarrier("Express");
 			}else {
