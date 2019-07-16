@@ -311,10 +311,18 @@ public class D2ZDaoImpl implements ID2ZDao{
 			if(senderDataValue.getBarcodeLabelNumber()!=null)
 			{
 				senderDataObj.setBarcodelabelNumber(senderDataValue.getBarcodeLabelNumber());
+				senderDataObj.setArticleId(senderDataValue.getBarcodeLabelNumber().substring(18));
+				senderDataObj.setMlid(senderDataValue.getBarcodeLabelNumber().substring(18,23));
+				senderDataObj.setStatus("CONSIGNMENT CREATED");
+				senderDataObj.setInjectionType("Direct Injection");
 			}
 			if(senderDataValue.getDatamatrix()!=null)
 			{
 				senderDataObj.setDatamatrix(senderDataValue.getDatamatrix());
+			}
+			if(senderDataValue.getInjectionState()!=null)
+			{
+				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
 			}
 			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType())){
 				senderDataObj.setCarrier("Express");
