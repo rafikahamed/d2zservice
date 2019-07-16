@@ -695,8 +695,8 @@ else
 
 	@Override
 	public UserMessage manifestCreation(String manifestNumber, String referenceNumber) {
-		String fileUploadData = d2zDao.manifestCreation(manifestNumber, referenceNumber);
 		String[] refNbrs = referenceNumber.split(",");
+		String fileUploadData = d2zDao.manifestCreation(manifestNumber, refNbrs);
 		int userId = d2zDao.fetchUserIdByReferenceNumber(refNbrs[0]);
 		String autoShipment = userRepository.fetchAutoShipmentIndicator(userId);
 

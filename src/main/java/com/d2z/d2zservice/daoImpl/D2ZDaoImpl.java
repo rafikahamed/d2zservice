@@ -249,7 +249,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	}
 
 	@Override
-	public String manifestCreation(String manifestNumber, String refrenceNumber) {
+	public String manifestCreation(String manifestNumber, String[] refrenceNumber) {
 		//Calling Delete Store Procedure
 		senderDataRepository.manifestCreation(manifestNumber, refrenceNumber);
 		return "Manifest Updated Successfully";
@@ -314,7 +314,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			}
 			if(senderDataValue.getDatamatrix()!=null)
 			{
-				senderDataObj.setDatamatrix(senderDataValue.getBarcodeLabelNumber());
+				senderDataObj.setDatamatrix(senderDataValue.getDatamatrix());
 			}
 			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType())){
 				senderDataObj.setCarrier("Express");
