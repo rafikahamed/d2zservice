@@ -1296,7 +1296,8 @@ else
 		for (SenderdataMaster senderData : senderDataList) {
 			ShipmentDetails shipmentData = new ShipmentDetails();
 			shipmentData.setReferenceNumber(senderData.getReference_number());
-			shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
+			//shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
+			shipmentData.setCon_no(senderData.getArticleId().substring(0, 12));
 			shipmentData.setConsigneeName(senderData.getConsignee_name());
 			shipmentData.setConsigneeAddress(senderData.getConsignee_addr1());
 			shipmentData.setWeight(senderData.getWeight());
