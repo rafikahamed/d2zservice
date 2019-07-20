@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.PCAlabelException;
@@ -45,9 +46,6 @@ public interface ID2ZService {
 	public List<TrackingDetails> trackingDetails(String fileName);
 
 	public byte[] trackingLabel(List<String> refBarNum) throws PCAlabelException;
-	
-	
-	
 
 	public UserMessage manifestCreation(String manifestNumber, String refrenceNumber);
 
@@ -100,10 +98,12 @@ public interface ID2ZService {
 
 	public void makeCallToEtowerBasedonSupplierUI(List<String> refNbr);
 
-
 	public void freipostTrackingEvent();
 
 	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry);
 
+	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, int userId);
+
+	public List<CSTickets> fetchCompletedEnquiry(int userId);
 
 }

@@ -922,6 +922,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		// TODO Auto-generated method stub
 		return trackAndTraceRepository.getArticleIDForFreiPostTracking();
 	}
+	
 	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry) {
 		List<CSTickets> csTctList = new ArrayList<CSTickets>();
 		for(CreateEnquiryRequest enquiryRequest:createEnquiry) {
@@ -955,6 +956,18 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		}
 		csticketsRepository.saveAll(csTctList);
 		return "Enquiry created Successfully";
+	}
+
+	@Override
+	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, int userId) {
+		List<CSTickets> enquiryDetails = csticketsRepository.fetchEnquiry(status, fromDate, toDate, userId);
+		return enquiryDetails;
+	}
+
+	@Override
+	public List<CSTickets> fetchCompletedEnquiry(int userId) {
+		List<CSTickets> enquiryDetails = csticketsRepository.fetchCompletedEnquiry(userId);
+		return enquiryDetails;
 	}
 
 }

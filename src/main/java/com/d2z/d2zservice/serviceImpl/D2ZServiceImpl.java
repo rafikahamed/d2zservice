@@ -1689,4 +1689,16 @@ else
 		return enquiryInfo;
 	}
 
+	@Override
+	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, int userId) {
+		List<CSTickets> enquiryDetails = d2zDao.fetchEnquiry(status,fromDate,toDate,userId);
+		return enquiryDetails;
+	}
+
+	@Override
+	public List<CSTickets> fetchCompletedEnquiry(int userId) {
+		List<CSTickets> enquiryDetails = d2zDao.fetchCompletedEnquiry(userId);
+		return enquiryDetails;
+	}
+
 }

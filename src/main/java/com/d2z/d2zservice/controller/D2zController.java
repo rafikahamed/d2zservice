@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.PCAlabelException;
@@ -77,6 +79,19 @@ public class D2zController {
 	public String createEnquiry(@RequestBody List<CreateEnquiryRequest> createEnquiry) {
 		String enquiryInfo = d2zService.createEnquiry(createEnquiry);
 		return enquiryInfo;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/enquiry")
+	public List<CSTickets> fetchEnquiry(@RequestParam("status") String status, @RequestParam("fromDate") String fromDate, 
+			@RequestParam("toDate") String toDate, @RequestParam("userId") int userId) {
+		List<CSTickets> enquiryInfo = d2zService.fetchEnquiry(status, fromDate, toDate, userId);
+		return enquiryInfo;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/completed-Enquiry")
+	public List<CSTickets> fetchCompletedEnquiry(@RequestParam("userId") int userId) {
+		List<CSTickets> completedEnquiry = d2zService.fetchCompletedEnquiry(userId);
+		return completedEnquiry;
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "/label-fileList")
