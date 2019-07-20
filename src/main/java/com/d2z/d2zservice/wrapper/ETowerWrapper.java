@@ -26,6 +26,7 @@ import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.etower.CreateShippingRequest;
 import com.d2z.d2zservice.model.etower.CreateShippingResponse;
 import com.d2z.d2zservice.model.etower.EtowerErrorResponse;
+import com.d2z.d2zservice.model.etower.Facility;
 import com.d2z.d2zservice.model.etower.GainLabelsResponse;
 import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.model.etower.ResponseData;
@@ -720,7 +721,7 @@ public class ETowerWrapper {
 					request.setServiceOption("E-Parcel");
 
 				}
-				request.setFacility(orderDetail.getInjectionState());
+				request.setFacility(Facility.get(orderDetail.getMlid()).toString());
 				request.setWeight(Double.valueOf(orderDetail.getWeight()));
 				request.setInvoiceValue(orderDetail.getValue());
 				request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());

@@ -40,7 +40,7 @@ public interface ID2ZDao {
 
 	public List<String> trackingLabel(List<String> refBarNum);
 
-	public String manifestCreation(String manifestNumber, String refrenceNumber);
+	public String manifestCreation(String manifestNumber, String[] refrenceNumber);
 
 	List<Trackandtrace> trackParcel(String refNbr);
 

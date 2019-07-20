@@ -249,7 +249,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	}
 
 	@Override
-	public String manifestCreation(String manifestNumber, String refrenceNumber) {
+	public String manifestCreation(String manifestNumber, String[] refrenceNumber) {
 		//Calling Delete Store Procedure
 		senderDataRepository.manifestCreation(manifestNumber, refrenceNumber);
 		return "Manifest Updated Successfully";
@@ -308,6 +308,22 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setSku(senderDataValue.getSku());
 			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
 			senderDataObj.setDeliveryInstructions(senderDataValue.getDeliveryInstructions());
+			if(senderDataValue.getBarcodeLabelNumber()!=null)
+			{
+				senderDataObj.setBarcodelabelNumber(senderDataValue.getBarcodeLabelNumber());
+				senderDataObj.setArticleId(senderDataValue.getBarcodeLabelNumber().substring(18));
+				senderDataObj.setMlid(senderDataValue.getBarcodeLabelNumber().substring(18,23));
+				senderDataObj.setStatus("CONSIGNMENT CREATED");
+				senderDataObj.setInjectionType("Direct Injection");
+			}
+			if(senderDataValue.getDatamatrix()!=null)
+			{
+				senderDataObj.setDatamatrix(senderDataValue.getDatamatrix());
+			}
+			if(senderDataValue.getInjectionState()!=null)
+			{
+				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
+			}
 			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType())){
 				senderDataObj.setCarrier("Express");
 			}else {

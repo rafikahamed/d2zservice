@@ -64,7 +64,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Modifying(flushAutomatically = true,clearAutomatically = true)
 	@Transactional
 	@Query("Update SenderdataMaster s set s.manifest_number = :ManifestNumber where s.reference_number IN (:Reference_number) and  isdeleted = 'N'")
-		void manifestCreation(@Param("ManifestNumber") String ManifestNumber, @Param("Reference_number") String Reference_number);
+		void manifestCreation(@Param("ManifestNumber") String ManifestNumber, @Param("Reference_number") String[] Reference_number);
 
 	@Query("Select t from SenderdataMaster t where t.reference_number = :reference_number") 
 	SenderdataMaster fetchByReferenceNumbers(@Param("reference_number") String referenceNumber);

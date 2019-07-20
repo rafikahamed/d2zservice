@@ -16,10 +16,10 @@ public class FFResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@Id
+	/*@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "RoWID")
-	private int rowId;
+	private int rowId;*/
 	
 	@Column(name = "Reference_number")
 	private String referencenumber;
@@ -33,6 +33,7 @@ public class FFResponse implements Serializable {
 	@Column(name = "message_no")
 	private String message;
 	
+	@Id
 	@Column(name = "ArticleId")
 	private String articleid;
 	
@@ -47,14 +48,6 @@ public class FFResponse implements Serializable {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
-	}
-
-	public int getRowId() {
-		return rowId;
-	}
-
-	public void setRowId(int rowId) {
-		this.rowId = rowId;
 	}
 
 	public String getReferencenumber() {

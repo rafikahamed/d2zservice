@@ -11,7 +11,7 @@ public class SenderDataResponse {
 	}
 
 	public void setInjectionPort(String injectionPort) {
-		this.injectionPort = injectionPort!=null?injectionPort.substring(0,3):"";
+		this.injectionPort = injectionPort.length()>3?injectionPort.substring(0,3):injectionPort;
 	}
 
 	private String injectionPort;

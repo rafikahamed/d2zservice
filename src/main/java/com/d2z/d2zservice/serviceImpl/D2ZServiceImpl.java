@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -695,8 +696,8 @@ else
 
 	@Override
 	public UserMessage manifestCreation(String manifestNumber, String referenceNumber) {
-		String fileUploadData = d2zDao.manifestCreation(manifestNumber, referenceNumber);
 		String[] refNbrs = referenceNumber.split(",");
+		String fileUploadData = d2zDao.manifestCreation(manifestNumber, refNbrs);
 		int userId = d2zDao.fetchUserIdByReferenceNumber(refNbrs[0]);
 		String autoShipment = userRepository.fetchAutoShipmentIndicator(userId);
 
@@ -1166,6 +1167,7 @@ else
 					auresponse.setName((String) error.get("name"));
 					auresponse.setMessage((String) error.get("message"));
 					auresponse.setField((String) error.get("field"));
+					auresponse.setArticleId(UUID.randomUUID().toString());
 
 					/*
 					 * String Field = error.get("context").toString().split("=")[1];
@@ -1296,7 +1298,8 @@ else
 		for (SenderdataMaster senderData : senderDataList) {
 			ShipmentDetails shipmentData = new ShipmentDetails();
 			shipmentData.setReferenceNumber(senderData.getReference_number());
-			shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
+			//shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
+			shipmentData.setCon_no(senderData.getArticleId().substring(0, 12));
 			shipmentData.setConsigneeName(senderData.getConsignee_name());
 			shipmentData.setConsigneeAddress(senderData.getConsignee_addr1());
 			shipmentData.setWeight(senderData.getWeight());

@@ -15,10 +15,10 @@ public class AUPostResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@Id
+	/*@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "RoWID")
-	private int rowId;
+	private int rowId;*/
 	
 	@Column(name = "APIName")
 	private String apiname;
@@ -38,6 +38,7 @@ public class AUPostResponse implements Serializable {
 	@Column(name = "ItemId")
 	private String ItemId;
 	
+	@Id
 	@Column(name = "ArticleId")
 	private String ArticleId;
 	
@@ -65,13 +66,7 @@ public class AUPostResponse implements Serializable {
 	@Column(name = "Timestamp")
 	private Timestamp timestamp;
 
-	public int getRowId() {
-		return rowId;
-	}
-
-	public void setRowId(int rowId) {
-		this.rowId = rowId;
-	}
+	
 
 	public String getApiname() {
 		return apiname;
