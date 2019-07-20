@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -1166,6 +1167,7 @@ else
 					auresponse.setName((String) error.get("name"));
 					auresponse.setMessage((String) error.get("message"));
 					auresponse.setField((String) error.get("field"));
+					auresponse.setArticleId(UUID.randomUUID().toString());
 
 					/*
 					 * String Field = error.get("context").toString().split("=")[1];
