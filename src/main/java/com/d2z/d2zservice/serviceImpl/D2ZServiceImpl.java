@@ -1676,6 +1676,7 @@ else
 		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(incomingRefNbr,"eTower");
 		eTowerWrapper.makeCalltoEtower(eTowerOrders);
 	}
+	
 	@Override
 	public void freipostTrackingEvent() {
 		// TODO Auto-generated method stub
@@ -1683,8 +1684,7 @@ else
 		for(String articleId : articleIds) {
 			freipostWrapper.trackingEventService(articleId);
 		}
-		
-}
+	}
 
 	@Override
 	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry) {
