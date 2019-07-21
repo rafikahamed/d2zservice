@@ -1679,7 +1679,6 @@ else
 	
 	@Override
 	public void freipostTrackingEvent() {
-		// TODO Auto-generated method stub
 		List<String> articleIds = d2zDao.getArticleIDForFreiPostTracking();
 		for(String articleId : articleIds) {
 			freipostWrapper.trackingEventService(articleId);
@@ -1693,15 +1692,21 @@ else
 	}
 
 	@Override
-	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, int userId) {
+	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, String userId) {
 		List<CSTickets> enquiryDetails = d2zDao.fetchEnquiry(status,fromDate,toDate,userId);
 		return enquiryDetails;
 	}
 
 	@Override
-	public List<CSTickets> fetchCompletedEnquiry(int userId) {
+	public List<CSTickets> fetchCompletedEnquiry(String userId) {
 		List<CSTickets> enquiryDetails = d2zDao.fetchCompletedEnquiry(userId);
 		return enquiryDetails;
+	}
+
+	@Override
+	public List<Integer> fetchUserId(String userId) {
+		List<Integer> userIds = d2zDao.fetchUserId(userId);
+		return userIds;
 	}
 
 }

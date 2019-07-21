@@ -3,10 +3,14 @@ package com.d2z.d2zservice.daoImpl;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZDao;
@@ -975,15 +979,29 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, int userId) {
-		List<CSTickets> enquiryDetails = csticketsRepository.fetchEnquiry(status, fromDate, toDate, userId);
+	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, String userId) {
+		Integer[] userIds = Arrays.stream(userId.split(","))
+		        .map(String::trim)
+		        .map(Integer::valueOf)
+		        .toArray(Integer[]::new);
+		List<CSTickets> enquiryDetails = csticketsRepository.fetchEnquiry(status, fromDate, toDate, userIds);
 		return enquiryDetails;
 	}
 
 	@Override
-	public List<CSTickets> fetchCompletedEnquiry(int userId) {
-		List<CSTickets> enquiryDetails = csticketsRepository.fetchCompletedEnquiry(userId);
+	public List<CSTickets> fetchCompletedEnquiry(String userId) {
+		Integer[] userIds = Arrays.stream(userId.split(","))
+		        .map(String::trim)
+		        .map(Integer::valueOf)
+		        .toArray(Integer[]::new);
+		List<CSTickets> enquiryDetails = csticketsRepository.fetchCompletedEnquiry(userIds);
 		return enquiryDetails;
+	}
+
+	@Override
+	public List<Integer> fetchUserId(String userId) {
+		List<Integer> userIds = userRepository.getClientId(userId);
+		return userIds;
 	}
 
 }

@@ -102,8 +102,10 @@ public interface ID2ZService {
 
 	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry);
 
-	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, int userId);
+	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, String userId);
 
-	public List<CSTickets> fetchCompletedEnquiry(int userId);
+	public List<CSTickets> fetchCompletedEnquiry(String userId);
+
+	public List<Integer> fetchUserId(String userId);
 
 }

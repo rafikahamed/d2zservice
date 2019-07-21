@@ -83,15 +83,21 @@ public class D2zController {
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/enquiry")
 	public List<CSTickets> fetchEnquiry(@RequestParam("status") String status, @RequestParam("fromDate") String fromDate, 
-			@RequestParam("toDate") String toDate, @RequestParam("userId") int userId) {
+			@RequestParam("toDate") String toDate, @RequestParam("userId") String userId) {
 		List<CSTickets> enquiryInfo = d2zService.fetchEnquiry(status, fromDate, toDate, userId);
 		return enquiryInfo;
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/completed-Enquiry")
-	public List<CSTickets> fetchCompletedEnquiry(@RequestParam("userId") int userId) {
+	public List<CSTickets> fetchCompletedEnquiry(@RequestParam("userId") String userId) {
 		List<CSTickets> completedEnquiry = d2zService.fetchCompletedEnquiry(userId);
 		return completedEnquiry;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/userId")
+	public List<Integer> fetchUserId(@RequestParam("userId") String userId) {
+		List<Integer> userIds = d2zService.fetchUserId(userId);
+		return userIds;
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "/label-fileList")

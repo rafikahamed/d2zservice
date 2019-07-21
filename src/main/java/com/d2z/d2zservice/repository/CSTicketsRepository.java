@@ -14,12 +14,12 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>, Jp
 	Integer fetchNextSeq();
 	
 	@Query( nativeQuery = true, value="SELECT * FROM CSTickets where status = :status and "
-			+ "trackingEventDateOccured between :fromDate and :toDate and userId = :userId ") 
+			+ "trackingEventDateOccured between :fromDate and :toDate and userId in (:userId)") 
 	List<CSTickets> fetchEnquiry(@Param("status") String status, @Param("fromDate") String fromDate, @Param("toDate") String toDate,
-									@Param("userId") int userId);
+									@Param("userId") Integer[] userIds);
 	
-	@Query( nativeQuery = true, value="SELECT * FROM CSTickets where userId = :userId and status = 'closed' and trackingEventDateOccured >= getdate() -14") 
-	List<CSTickets> fetchCompletedEnquiry(@Param("userId") int userId);
+	@Query( nativeQuery = true, value="SELECT * FROM CSTickets where userId in (:userId) and status = 'closed' and trackingEventDateOccured >= getdate() -14") 
+	List<CSTickets> fetchCompletedEnquiry(@Param("userId") Integer[] userIds);
 	
 //	public List<Employee> findByCriteria(String employeeName){
 //        return employeeDAO.findAll(new Specification<Employee>() {
