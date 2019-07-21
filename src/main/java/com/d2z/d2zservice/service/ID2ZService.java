@@ -108,4 +108,6 @@ public interface ID2ZService {
 
 	public List<Integer> fetchUserId(String userId);
 
+	public void makeCalltoAusPost(List<String> referenceNumbers);
+
 }

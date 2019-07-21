@@ -849,6 +849,9 @@ else
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 
+		String barcodeLabelNumber = orderDetail.getConsignmentData().get(0).getBarcodeLabelNumber();
+		String datamatrix = orderDetail.getConsignmentData().get(0).getDatamatrix();
+	    if(null==barcodeLabelNumber || barcodeLabelNumber.trim().isEmpty() || null==datamatrix || datamatrix.trim().isEmpty()) {
 	    String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
 	    if("1PS".equalsIgnoreCase(serviceType) || "1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) 
 				|| "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType) || "2PSP".equalsIgnoreCase(serviceType)
@@ -894,7 +897,7 @@ else
 				}
 			}
 			return senderDataResponseList;
-		}
+		}}
 		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(), userId, orderDetail.getUserName(), null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
@@ -1045,6 +1048,10 @@ else
 			System.out.println("Less than 10 records for AUPost call");
 			return;
 		}
+		makeCalltoAusPost(referenceNumbers);
+	}
+	public void makeCalltoAusPost(List<String> referenceNumbers) {
+	
 		List<SenderdataMaster> senderMasterData = d2zDao.fetchDataForAusPost(referenceNumbers);
 		System.out.println("Sender Data:" + senderMasterData.size());
 

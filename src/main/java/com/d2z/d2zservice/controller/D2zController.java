@@ -248,4 +248,8 @@ public class D2zController {
 		return d2zService.auTrackingEvent();
 	}
 
+	@RequestMapping(method = RequestMethod.PUT, path = "/auPost")
+	public void triggerAuPost(@RequestBody List<String> referenceNumbers) {
+		d2zService.makeCalltoAusPost(referenceNumbers);
+	}
 }

@@ -1,16 +1,17 @@
 package com.d2z.d2zservice.daoImpl;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZDao;
@@ -203,7 +204,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 		senderDataRepository.saveAll(senderDataList);
 		System.out.println("create consignment UI object construction Done data got inserted--->"+senderDataList.size());
 		storProcCall(fileSeqId);
-		updateTrackAndTrace(fileSeqId,userInfo.getUser_Id());
+		updateTrackAndTrace(fileSeqId,userInfo.getUser_Id(),null);
 		return fileSeqId;
 	}
 
@@ -269,7 +270,10 @@ public class D2ZDaoImpl implements ID2ZDao{
 		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		LabelData provider = null;
+		List<String> autoShipRefNbrs = new ArrayList<String>();
+		
 		User userInfo = userRepository.findByUsername(userName);
+		boolean autoShipment = userInfo.getAutoShipment().equals("Y");
 		String fileSeqId = "D2ZAPI"+senderDataRepository.fetchNextSeq();
 		System.out.println("create consignment API object construction --->"+orderDetailList.size());
 		for(SenderDataApi senderDataValue: orderDetailList) {
@@ -312,17 +316,21 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setSku(senderDataValue.getSku());
 			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
 			senderDataObj.setDeliveryInstructions(senderDataValue.getDeliveryInstructions());
-			if(senderDataValue.getBarcodeLabelNumber()!=null)
+			if(senderDataValue.getBarcodeLabelNumber()!=null && !senderDataValue.getBarcodeLabelNumber().trim().isEmpty()
+					&& senderDataValue.getDatamatrix()!=null && !senderDataValue.getDatamatrix().trim().isEmpty())
 			{
 				senderDataObj.setBarcodelabelNumber(senderDataValue.getBarcodeLabelNumber());
 				senderDataObj.setArticleId(senderDataValue.getBarcodeLabelNumber().substring(18));
+				if(senderDataValue.getBarcodeLabelNumber().length() == 41)
 				senderDataObj.setMlid(senderDataValue.getBarcodeLabelNumber().substring(18,23));
+				else if(senderDataValue.getBarcodeLabelNumber().length() == 39)
+				senderDataObj.setMlid(senderDataValue.getBarcodeLabelNumber().substring(18,21));
+
 				senderDataObj.setStatus("CONSIGNMENT CREATED");
 				senderDataObj.setInjectionType("Direct Injection");
-			}
-			if(senderDataValue.getDatamatrix()!=null)
-			{
 				senderDataObj.setDatamatrix(senderDataValue.getDatamatrix());
+				if(autoShipment)
+					autoShipRefNbrs.add(senderDataValue.getReferenceNumber());
 			}
 			if(senderDataValue.getInjectionState()!=null)
 			{
@@ -379,7 +387,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
 		System.out.println("create consignment API object construction Done data got inserted--->"+insertedOrder.size());
 		storProcCall(fileSeqId);
-		updateTrackAndTrace(fileSeqId,userId);
+		updateTrackAndTrace(fileSeqId,userId,autoShipRefNbrs);
 		return fileSeqId;
 	}
 	
@@ -387,9 +395,10 @@ public class D2ZDaoImpl implements ID2ZDao{
 	 * @param senderDataList
 	 */
 
-	public synchronized void updateTrackAndTrace(String fileSeqId,int userId) {
-		Runnable r = new Runnable( ) {			
+	public synchronized void updateTrackAndTrace(String fileSeqId,int userId,List<String> autoShipRefNbrs) {
+		Runnable r = new Runnable() {			
 	        public void run() {
+	        	senderDataRepository.updateCubicWeight();
 	        	List<String> insertedOrder = fetchBySenderFileID(fileSeqId);
 	        	List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
 	        	Iterator itr = insertedOrder.iterator();
@@ -414,6 +423,12 @@ public class D2ZDaoImpl implements ID2ZDao{
 	    			trackAndTraceList.add(trackAndTrace);
 	    		}
 	    		List<Trackandtrace> trackAndTraceInsert = (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackAndTraceList);
+	    		if(null!=autoShipRefNbrs && !autoShipRefNbrs.isEmpty()) {
+	    			System.out.println("Auto-Shipment Allocation");
+	    			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+	    			String shipmentNumber = userId+simpleDateFormat.format(new Date());
+	    			allocateShipment(String.join(",", autoShipRefNbrs), shipmentNumber);
+	    		}
 	        }};
 	        new Thread(r).start();
 	}
