@@ -386,6 +386,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	public synchronized void updateTrackAndTrace(String fileSeqId,int userId) {
 		Runnable r = new Runnable( ) {			
 	        public void run() {
+	        	senderDataRepository.updateCubicWeight();
 	        	List<String> insertedOrder = fetchBySenderFileID(fileSeqId);
 	        	List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
 	        	Iterator itr = insertedOrder.iterator();

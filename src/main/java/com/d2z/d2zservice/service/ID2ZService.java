@@ -106,4 +106,6 @@ public interface ID2ZService {
 
 	public List<CSTickets> fetchCompletedEnquiry(int userId);
 
+	public void makeCalltoAusPost(List<String> referenceNumbers);
+
 }
