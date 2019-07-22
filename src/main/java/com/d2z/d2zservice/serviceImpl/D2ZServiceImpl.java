@@ -1693,9 +1693,11 @@ else
 	}
 
 	@Override
-	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry) {
+	public UserMessage createEnquiry(List<CreateEnquiryRequest> createEnquiry) {
 		String enquiryInfo = d2zDao.createEnquiry(createEnquiry);
-		return enquiryInfo;
+		UserMessage usrMsg = new UserMessage();
+		usrMsg.setMessage(enquiryInfo);
+		return usrMsg;
 	}
 
 	@Override

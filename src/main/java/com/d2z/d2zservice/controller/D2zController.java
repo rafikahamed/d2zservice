@@ -76,8 +76,8 @@ public class D2zController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/create-enquiry")
-	public String createEnquiry(@RequestBody List<CreateEnquiryRequest> createEnquiry) {
-		String enquiryInfo = d2zService.createEnquiry(createEnquiry);
+	public UserMessage createEnquiry(@RequestBody List<CreateEnquiryRequest> createEnquiry) {
+		UserMessage enquiryInfo = d2zService.createEnquiry(createEnquiry);
 		return enquiryInfo;
 	}
 	

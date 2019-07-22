@@ -100,7 +100,7 @@ public interface ID2ZService {
 
 	public void freipostTrackingEvent();
 
-	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry);
+	public UserMessage createEnquiry(List<CreateEnquiryRequest> createEnquiry);
 
 	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, String userId);
 
