@@ -273,7 +273,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 		List<String> autoShipRefNbrs = new ArrayList<String>();
 		
 		User userInfo = userRepository.findByUsername(userName);
-		boolean autoShipment = userInfo.getAutoShipment().equals("Y");
+		boolean autoShipment =("Y").equals( userInfo.getAutoShipment());
 		String fileSeqId = "D2ZAPI"+senderDataRepository.fetchNextSeq();
 		System.out.println("create consignment API object construction --->"+orderDetailList.size());
 		for(SenderDataApi senderDataValue: orderDetailList) {
