@@ -386,7 +386,11 @@ public class D2ZDaoImpl implements ID2ZDao{
 		}
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
 		System.out.println("create consignment API object construction Done data got inserted--->"+insertedOrder.size());
+		if(orderDetailList.get(0).getBarcodeLabelNumber()==null || orderDetailList.get(0).getBarcodeLabelNumber().trim().isEmpty()
+				|| orderDetailList.get(0).getDatamatrix()==null || orderDetailList.get(0).getDatamatrix().trim().isEmpty())
+		{
 		storProcCall(fileSeqId);
+		}
 		updateTrackAndTrace(fileSeqId,userId,autoShipRefNbrs);
 		return fileSeqId;
 	}
@@ -428,6 +432,10 @@ public class D2ZDaoImpl implements ID2ZDao{
 	    			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 	    			String shipmentNumber = userId+simpleDateFormat.format(new Date());
 	    			allocateShipment(String.join(",", autoShipRefNbrs), shipmentNumber);
+	    			List<SenderdataMaster> senderMasterData = fetchDataBasedonSupplier(autoShipRefNbrs,"Freipost");
+		        	if(!senderMasterData.isEmpty()) {
+		        		freipostWrapper.uploadManifestService(senderMasterData);
+		        	}
 	    		}
 	        }};
 	        new Thread(r).start();
