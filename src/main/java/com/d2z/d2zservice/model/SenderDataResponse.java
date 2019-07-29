@@ -6,6 +6,15 @@ public class SenderDataResponse {
 	private String barcodeLabelNumber;
 	private String carrier;
 	private String message;
+	private String datamatrix;
+	public String getDatamatrix() {
+		return datamatrix;
+	}
+
+	public void setDatamatrix(String datamatrix) {
+		this.datamatrix = datamatrix;
+	}
+
 	public String getInjectionPort() {
 		return injectionPort;
 	}
