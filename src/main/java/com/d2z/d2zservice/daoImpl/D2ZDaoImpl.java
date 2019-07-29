@@ -399,7 +399,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	 * @param senderDataList
 	 */
 
-	public synchronized void updateTrackAndTrace(String fileSeqId,int userId,List<String> autoShipRefNbrs) {
+	public void updateTrackAndTrace(String fileSeqId,int userId,List<String> autoShipRefNbrs) {
 		Runnable r = new Runnable() {			
 	        public void run() {
 	        	senderDataRepository.updateCubicWeight();
@@ -441,7 +441,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	        new Thread(r).start();
 	}
 	
-	public synchronized void storProcCall(String fileSeqId) {
+	public synchronized  void storProcCall(String fileSeqId) {
 		System.out.println("Before calling the store procedure, Sequence Id --->"+fileSeqId);
 		System.out.println("Before the store procedure call, Timing --->"+java.time.LocalDateTime.now());
 		senderDataRepository.inOnlyTest(fileSeqId);
