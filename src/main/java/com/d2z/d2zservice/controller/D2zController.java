@@ -252,4 +252,9 @@ public class D2zController {
 	public void triggerAuPost(@RequestBody List<String> referenceNumbers) {
 		d2zService.makeCalltoAusPost(referenceNumbers);
 	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/etowercall")
+	public void triggeretower(@RequestBody List<String> referenceNumbers) {
+		d2zService.makeCallToEtowerBasedonSupplierUI(referenceNumbers);
+	}
 }
