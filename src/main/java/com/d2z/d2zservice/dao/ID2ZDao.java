@@ -139,5 +139,7 @@ public interface ID2ZDao {
 	public List<CSTickets> fetchCompletedEnquiry(String userId);
 
 	public List<Integer> fetchUserId(String userId);
+	
+	public List<String> fetchReferencenumberByArticleid(List<String>ArticleID);
 
 }

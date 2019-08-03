@@ -59,7 +59,8 @@ public interface ID2ZService {
 	public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList);
 
 	public ResponseMessage allocateShipment(String referenceNumbers, String shipmentNumber) throws ReferenceNumberNotUniqueException;
-
+	
+	public ResponseMessage allocateShipmentArticleid(String referenceNumbers,String shipmentNumber) throws ReferenceNumberNotUniqueException;
 	public UserMessage addUser(UserDetails userDetails);
 
 	public UserMessage updateUser(UserDetails userDetails);

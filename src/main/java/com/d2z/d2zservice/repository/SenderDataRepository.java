@@ -294,6 +294,9 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT t FROM SenderdataMaster t where t.reference_number in (:refNbrs) and t.isDeleted = 'N'")
 	List<SenderdataMaster> fetchDataForAusPost(List<String>  refNbrs);
 	
+	@Query("SELECT t.reference_number FROM SenderdataMaster t where t.articleId in (:article) ")
+	List<String> fetchreferencenumberforArticleid(@Param("article") List<String>  article);
+	 
 	@Query("SELECT t.cubic_Weight FROM SenderdataMaster t where  t.articleId in (:articleID)")
 	List<BigDecimal> fetchcubicweight(List<String> articleID);
 

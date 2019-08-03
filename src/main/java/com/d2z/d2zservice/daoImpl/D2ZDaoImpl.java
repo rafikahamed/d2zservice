@@ -1027,4 +1027,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return userIds;
 	}
 
+	@Override
+	public List<String> fetchReferencenumberByArticleid(List<String> ArticleID) {
+		// TODO Auto-generated method stub
+		List<String> refnbrs = senderDataRepository.fetchreferencenumberforArticleid(ArticleID);
+		return refnbrs;
+	}
+
 }

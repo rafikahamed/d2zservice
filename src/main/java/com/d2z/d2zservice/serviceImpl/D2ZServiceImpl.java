@@ -1718,4 +1718,18 @@ else
 		return userIds;
 	}
 
+	@Override
+	public ResponseMessage allocateShipmentArticleid(String ArticleId, String shipmentNumber)
+			throws ReferenceNumberNotUniqueException {
+		// TODO Auto-generated method stub
+		String[] articleNbrs = ArticleId.split(",");
+		
+		
+		List<String>refnbrs = d2zDao.fetchReferencenumberByArticleid(Arrays.asList(articleNbrs));
+		String referenceNumbers =refnbrs.stream()
+                .collect(Collectors.joining(","));
+		ResponseMessage userMsg= allocateShipment(referenceNumbers, shipmentNumber);
+		return userMsg;
+	}
+
 }
