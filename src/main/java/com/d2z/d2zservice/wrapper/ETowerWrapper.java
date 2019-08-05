@@ -469,7 +469,8 @@ public class ETowerWrapper {
 				request.setFacility("MEL3");
 				orderDetail.setInjectionType("MEL3");
 				orderDetail.setCarrier("Express");
-			} /*else if ("1PS2".equalsIgnoreCase(orderDetail.getServiceType())) {
+			} 
+			/*else if ("1PS2".equalsIgnoreCase(orderDetail.getServiceType())) {
 				request.setFacility("SYD2");
 				orderDetail.setInjectionType("SYD2");
 			} */else if ("1PS3".equalsIgnoreCase(orderDetail.getServiceType())) {
