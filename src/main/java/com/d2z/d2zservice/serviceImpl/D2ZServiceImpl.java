@@ -307,6 +307,7 @@ public class D2ZServiceImpl implements ID2ZService {
 	public List<TrackingDetails> trackingDetails(String fileName) {
 		List<TrackingDetails> trackingDetailsList = new ArrayList<TrackingDetails>();
 		TrackingDetails trackingDetails = null;
+		
 		List<String> trackingService = d2zDao.trackingDetails(fileName);
 		Iterator itr = trackingService.iterator();
 		while (itr.hasNext()) {
@@ -314,7 +315,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			trackingDetails = new TrackingDetails();
 			trackingDetails.setRefrenceNumber(obj[0].toString());
 			trackingDetails.setConsigneeName(obj[1].toString());
-			if(obj[3].toString().equalsIgnoreCase("FastwayM")  ) {
+			if((obj[3].toString().equalsIgnoreCase("FastwayM")  )||(obj[3].toString().equalsIgnoreCase("FastwayS")  )) {
 				trackingDetails.setBarCodeLabelNumber(obj[2].toString());
 			}else {
 				trackingDetails.setBarCodeLabelNumber(obj[2].toString().substring(18));
