@@ -163,7 +163,7 @@
 				<textElement>
 					<font fontName="MyArial"/>
 				</textElement>
-				<textFieldExpression><![CDATA[($F{deliveryInstructions} ==null)?"SIGNATURE ON DELIVERY REQUIRED":$F{deliveryInstructions}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{deliveryInstructions} ==null && $F{deliveryInstructions}=="")?"SIGNATURE ON DELIVERY REQUIRED":$F{deliveryInstructions}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="211" y="95" width="100" height="15" uuid="4bb6d24a-2f8a-4118-9765-eb5ff6869b0d"/>
@@ -228,7 +228,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="MyArial" size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new SimpleDateFormat("yy-MM-dd").format(new Date())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("yyyy-MM-dd").format(new Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="300" y="2" width="47" height="24" forecolor="#FFFFFF" uuid="9fab41cd-2aab-4dd5-a23d-e4b477bbb72d"/>
@@ -237,6 +237,20 @@
 				</textElement>
 				<text><![CDATA[1 / 1]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="212" y="-194" width="139" height="15" uuid="a80d6af5-6fd8-4832-b524-7ded22244ca3"/>
+				<textElement>
+					<font fontName="MyArial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["SW4"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="212" y="-112" width="139" height="15" uuid="e8b89e56-f654-45cc-9224-f1929d40a169"/>
+				<textElement>
+					<font fontName="MyArial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["04-16843474"]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageFooter>
 </jasperReport>
