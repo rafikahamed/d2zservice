@@ -59,7 +59,7 @@ public class D2ZSingleton {
 	private void getPostCodeZone() {
 			List<PostcodeZone> postCodeZoneDaoObj = d2zDao.fetchAllPostCodeZone();
 			postCodeZoneList = postCodeZoneDaoObj.stream().map(daoObj -> {
-				return daoObj.getPostcodeId().getSuburb().concat(daoObj.getPostcodeId().getPostcode());
+				return daoObj.getState().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
 			}).collect(Collectors.toList());
 			System.out.println(postCodeZoneList.size());
 			postCodeStateMap = new HashMap<String,String>();

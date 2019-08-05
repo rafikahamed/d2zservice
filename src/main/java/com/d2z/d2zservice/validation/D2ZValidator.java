@@ -38,13 +38,13 @@ public class D2ZValidator {
 
 		List<String> incorrectPostcode_Suburb = new ArrayList<String>();
 		senderData.forEach(obj -> {
-			if(!postCodeZoneList.contains(obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim()))) {
-				incorrectPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim());
+			if(!postCodeZoneList.contains(obj.getConsigneeState().trim().toUpperCase().concat(obj.getConsigneeSuburb().trim().toUpperCase()).concat(obj.getConsigneePostcode().trim()))) {
+				incorrectPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim());
 				
 			}
 		});
 		if(!incorrectPostcode_Suburb.isEmpty()) {
-			throw new InvalidSuburbPostcodeException("Invalid Consignee Postcode or Consignee Suburb",incorrectPostcode_Suburb);
+			throw new InvalidSuburbPostcodeException("Invalid Combination of Consignee State, Postcode and Suburb",incorrectPostcode_Suburb);
 		}
 		
 	}
@@ -53,12 +53,12 @@ public class D2ZValidator {
 		List<String> postCodeZoneList = D2ZSingleton.getInstance().getPostCodeZoneList();
 		List<String> incorrectPostcode_Suburb = new ArrayList<String>();
 		senderData.forEach(obj -> {
-			if(!postCodeZoneList.contains(obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim()))) {
-				incorrectPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim());
+			if(!postCodeZoneList.contains(obj.getConsigneeState().trim().toUpperCase().concat(obj.getConsigneeSuburb().trim().toUpperCase()).concat(obj.getConsigneePostcode().trim()))) {
+				incorrectPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim());
 			}
 		});
 		if(!incorrectPostcode_Suburb.isEmpty()) {
-			throw new InvalidSuburbPostcodeException("Invalid Consignee Postcode or Consignee Suburb or Consiggnee State",incorrectPostcode_Suburb);
+			throw new InvalidSuburbPostcodeException("Invalid Combination of Consignee State, Postcode and Suburb",incorrectPostcode_Suburb);
 		}
 	}
 	
