@@ -51,6 +51,7 @@ public class PCAWrapper {
 		PCACreateShipmentRequest pcaRequest = new PCACreateShipmentRequest();
 		List<PCACreateShipmentRequestInfo> pcaOrderInfoRequest = new ArrayList<PCACreateShipmentRequestInfo>();
 		String chargeType = "FastwayS";
+		Map<String, String> matrixMap = new HashMap<String, String>();
 		for (SenderDataApi orderDetail : consignmentData) {
 			PCACreateShipmentRequestInfo request = new PCACreateShipmentRequestInfo();
 			request.setCust_ref(orderDetail.getReferenceNumber());
@@ -117,13 +118,16 @@ public class PCAWrapper {
 				request.setChargecode(chargeCodeFW);
 			}
 			pcaOrderInfoRequest.add(request);
+			matrixMap.put(orderDetail.getReferenceNumber(), orderDetail.getReferenceNumber()+"||"+orderDetail.getConsigneeAddr1()+"||"+
+					orderDetail.getConsigneeSuburb()+"||"+orderDetail.getConsigneePostcode()+"||"+orderDetail.getConsigneePhone()+"||"+
+					orderDetail.getConsigneeName());
 		}
 		pcaRequest.setShipments(pcaOrderInfoRequest);
-		createShippingOrderPCA(consignmentData, pcaRequest, userName, senderDataResponseList, chargeType);
+		createShippingOrderPCA(consignmentData, pcaRequest, userName, senderDataResponseList, chargeType, matrixMap);
 	}
 
 	private void createShippingOrderPCA(List<SenderDataApi> consignmentData, PCACreateShipmentRequest pcaRequest,
-			String userName, List<SenderDataResponse> senderDataResponseList, String chargeType) throws EtowerFailureResponseException {
+			String userName, List<SenderDataResponse> senderDataResponseList, String chargeType, Map<String, String> matrixMap) throws EtowerFailureResponseException {
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		List<PCACreateShippingResponse> pcaResponse = pcaProxy.makeCallForCreateShippingOrder(pcaRequest);
 		logPcaCreateResponse(pcaResponse);
@@ -164,7 +168,7 @@ public class PCAWrapper {
 //		}
 		
 		if(pcaResponseSuccess.size() > 0) {
-			processPcaLabelsResponse(pcaResponseSuccess, barcodeMap, chargeType);
+			processPcaLabelsResponse(pcaResponseSuccess, barcodeMap, chargeType, matrixMap);
 			int userId = d2zDao.fetchUserIdbyUserName(userName);
 			String senderFileID = d2zDao.createConsignments(consignmentData, userId, userName, barcodeMap);
 			List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
@@ -173,6 +177,7 @@ public class PCAWrapper {
 				Object[] obj = (Object[]) itr.next();
 				SenderDataResponse senderDataresponse = new SenderDataResponse();
 				senderDataresponse.setReferenceNumber(obj[0].toString());
+				senderDataresponse.setDatamatrix(obj[1].toString());
 				senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 				senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
 				senderDataresponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
@@ -182,15 +187,15 @@ public class PCAWrapper {
 	}
 
 	private Map<String, LabelData> processPcaLabelsResponse(List<PCACreateShippingResponse> pcaResponse, Map<String, LabelData> barcodeMap, 
-				String chargeType) {
+				String chargeType, Map<String, String> matrixMap) {
 			for (PCACreateShippingResponse data : pcaResponse) {
 				if(data.getMsg().equalsIgnoreCase("Success")) {
 					LabelData labelData = new LabelData();
 					labelData.setReferenceNo(data.getCustref());
-					labelData.setArticleId(data.getRef());
+					labelData.setArticleId(data.getConnote());
 					labelData.setTrackingNo(data.getRef());
 					labelData.setHub(data.getDepot());
-					labelData.setMatrix(data.getConnote());
+					labelData.setMatrix(matrixMap.get(data.getCustref()));
 					labelData.setProvider("PCA");
 					if("StarTrack".equalsIgnoreCase(chargeType)) {
 						labelData.setCarrier("StarTrack");
@@ -208,6 +213,7 @@ public class PCAWrapper {
 		PCACreateShipmentRequest pcaRequest = new PCACreateShipmentRequest();
 		List<PCACreateShipmentRequestInfo> pcaOrderInfoRequest = new ArrayList<PCACreateShipmentRequestInfo>();
 		String chargeType = "FastwayS";
+		Map<String, String> matrixMap = new HashMap<String, String>();
 		for (SenderData orderDetail : orderDetailList) {
 			PCACreateShipmentRequestInfo request = new PCACreateShipmentRequestInfo();
 			request.setCust_ref(orderDetail.getReferenceNumber());
@@ -274,13 +280,16 @@ public class PCAWrapper {
 				request.setChargecode(chargeCodeFW);
 			}
 			pcaOrderInfoRequest.add(request);
+			matrixMap.put(orderDetail.getReferenceNumber(), orderDetail.getReferenceNumber()+"||"+orderDetail.getConsigneeAddr1()+"||"+
+					orderDetail.getConsigneeSuburb()+"||"+orderDetail.getConsigneePostcode()+"||"+orderDetail.getConsigneePhone()+"||"+
+					orderDetail.getConsigneeName());
 		}
 		pcaRequest.setShipments(pcaOrderInfoRequest);
-		createShippingOrderFilePCA(orderDetailList, pcaRequest, userName, senderDataResponseList, chargeType);
+		createShippingOrderFilePCA(orderDetailList, pcaRequest, userName, senderDataResponseList, chargeType, matrixMap);
 	}
 
 	private void createShippingOrderFilePCA(List<SenderData> orderDetailList, PCACreateShipmentRequest pcaRequest,
-			String userName, List<SenderDataResponse> senderDataResponseList, String chargeType) throws EtowerFailureResponseException {
+			String userName, List<SenderDataResponse> senderDataResponseList, String chargeType, Map<String, String> matrixMap) throws EtowerFailureResponseException {
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		List<PCACreateShippingResponse> pcaResponse = pcaProxy.makeCallForCreateShippingOrder(pcaRequest);
 		logPcaCreateResponse(pcaResponse);
@@ -321,7 +330,7 @@ public class PCAWrapper {
 //		}
 //		
 		if(pcaFileResponseSuccess.size() > 0) {
-			processPcaLabelsResponse(pcaFileResponseSuccess, barcodeMap, chargeType);
+			processPcaLabelsResponse(pcaFileResponseSuccess, barcodeMap, chargeType, matrixMap);
 			String senderFileID = d2zDao.exportParcel(orderDetailList, barcodeMap);
 			List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 			Iterator itr = insertedOrder.iterator();
@@ -329,6 +338,7 @@ public class PCAWrapper {
 				Object[] obj = (Object[]) itr.next();
 				SenderDataResponse senderDataresponse = new SenderDataResponse();
 				senderDataresponse.setReferenceNumber(obj[0].toString());
+				senderDataresponse.setDatamatrix(obj[1].toString());
 				senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 				senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
 				senderDataresponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");

@@ -72,6 +72,7 @@ public class Scheduler {
 			System.out.println(e.getLocalizedMessage());
 		}
 	}
+	
 	@Scheduled(cron = "0 0 0/1 * * ?")
 	public void triggerAuPostCreateShipping() {try {
 		System.out.println("Calling AUPost - Create order");
