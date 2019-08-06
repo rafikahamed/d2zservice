@@ -929,7 +929,7 @@ else
 			request.setRecipientName(recpName);
 			request.setAddressLine1(orderDetail.getConsigneeAddr1());
 			request.setAddressLine2(orderDetail.getConsigneeAddr2());
-			request.setEmail(orderDetail.getConsigneeEmail());
+			//request.setEmail(orderDetail.getConsigneeEmail());
 			request.setPhone(orderDetail.getConsigneePhone());
 			request.setCity(orderDetail.getConsigneeSuburb());
 			request.setState(orderDetail.getConsigneeState());
@@ -956,7 +956,7 @@ else
 			request.setRecipientName(recpName);
 			request.setAddressLine1(orderDetail.getConsigneeAddr1());
 			request.setAddressLine2(orderDetail.getConsigneeAddr2());
-			request.setEmail(orderDetail.getConsigneeEmail());
+			//request.setEmail(orderDetail.getConsigneeEmail());
 			request.setPhone(orderDetail.getConsigneePhone());
 			request.setCity(orderDetail.getConsigneeSuburb());
 			request.setState(orderDetail.getConsigneeState());
