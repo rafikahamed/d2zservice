@@ -118,8 +118,8 @@ public class PCAWrapper {
 				request.setChargecode(chargeCodeFW);
 			}
 			pcaOrderInfoRequest.add(request);
-			matrixMap.put(orderDetail.getReferenceNumber(), orderDetail.getReferenceNumber()+"||"+orderDetail.getConsigneeAddr1()+"||"+
-					orderDetail.getConsigneeSuburb()+"||"+orderDetail.getConsigneePostcode()+"||"+orderDetail.getConsigneePhone()+"||"+
+			matrixMap.put(orderDetail.getReferenceNumber(), orderDetail.getConsigneeName()+"||"+orderDetail.getConsigneeAddr1()+"||"+
+					orderDetail.getConsigneeSuburb()+"||"+orderDetail.getConsigneePostcode()+"|"+orderDetail.getConsigneePhone()+"||"+
 					orderDetail.getConsigneeName());
 		}
 		pcaRequest.setShipments(pcaOrderInfoRequest);
@@ -280,8 +280,8 @@ public class PCAWrapper {
 				request.setChargecode(chargeCodeFW);
 			}
 			pcaOrderInfoRequest.add(request);
-			matrixMap.put(orderDetail.getReferenceNumber(), orderDetail.getReferenceNumber()+"||"+orderDetail.getConsigneeAddr1()+"||"+
-					orderDetail.getConsigneeSuburb()+"||"+orderDetail.getConsigneePostcode()+"||"+orderDetail.getConsigneePhone()+"||"+
+			matrixMap.put(orderDetail.getReferenceNumber(), orderDetail.getConsigneeName()+"||"+orderDetail.getConsigneeAddr1()+"||"+
+					orderDetail.getConsigneeSuburb()+"||"+orderDetail.getConsigneePostcode()+"|"+orderDetail.getConsigneePhone()+"||"+
 					orderDetail.getConsigneeName());
 		}
 		pcaRequest.setShipments(pcaOrderInfoRequest);
