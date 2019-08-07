@@ -64,6 +64,8 @@ public interface ID2ZService {
 	public UserMessage addUser(UserDetails userDetails);
 
 	public UserMessage updateUser(UserDetails userDetails);
+	
+	public UserMessage addUserService(String userName ,String ServiceType );
 
 	public UserMessage deleteUser(String companyName, String roleId);
 

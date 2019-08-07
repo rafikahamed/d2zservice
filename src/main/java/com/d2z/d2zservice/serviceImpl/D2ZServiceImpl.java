@@ -1733,4 +1733,34 @@ else
 		return userMsg;
 	}
 
+	@Override
+	public UserMessage addUserService(String username,String serviceType) {
+		// TODO Auto-generated method stub
+		UserMessage userMsg = new UserMessage();
+		User usr = userRepository.findByUsername(username);
+		if(usr!=null)
+		{
+		 List<String> serviceTypeList = Arrays.asList(serviceType.split("\\s*,\\s*"));
+			List<UserService> savedUserService = d2zDao.addUserService(usr, serviceTypeList);
+		
+			
+				if (savedUserService.size() != 0) {
+					userMsg.setMessage("User Service Added Successfully");
+					userMsg.setUserName(username);
+				}
+			 else {
+				userMsg.setMessage("Unable to Add User Service");
+				userMsg.setUserName(username);
+			}
+		}
+		else
+		{
+			userMsg.setMessage("UserName doesnot Exist");
+			userMsg.setUserName(username);
+		}
+	
+		return userMsg;
+	
+	}
+
 }

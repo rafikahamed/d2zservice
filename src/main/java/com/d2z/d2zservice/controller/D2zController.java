@@ -178,6 +178,10 @@ public class D2zController {
 		return d2zService.addUser(userDetails);
 	}
 
+	@RequestMapping(method = RequestMethod.GET, path = "/userservice")
+	public UserMessage addUserservice( @RequestParam("userName")String userName, @RequestParam ("serviceType")String serviceType ) {
+		return d2zService.addUserService(userName,serviceType);
+	}
 	@RequestMapping(method = RequestMethod.PUT, path = "/user")
 	public UserMessage updateUser(@Valid @RequestBody UserDetails userDetails) {
 		UserMessage userMsg = d2zService.updateUser(userDetails);
