@@ -107,6 +107,10 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 	      .body(bytes);
 	}
     
-   
+    @RequestMapping(method = RequestMethod.PUT, path = "/consignments/shipmentarticleid/{shipmentNumber}")
+	public ResponseMessage allocateShipmentbyArticleID(@RequestBody String articleid,@PathVariable String shipmentNumber)
+			throws ReferenceNumberNotUniqueException {
+		return d2zService.allocateShipmentArticleid(articleid.toString(), shipmentNumber);
+	}
 
 }
