@@ -48,6 +48,7 @@ public class PCAWrapper {
 
 	public void makeCreateShippingOrderPFACall(List<SenderDataApi> consignmentData,
 			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
+		System.out.println("comes in pfa call");
 		PCACreateShipmentRequest pcaRequest = new PCACreateShipmentRequest();
 		List<PCACreateShipmentRequestInfo> pcaOrderInfoRequest = new ArrayList<PCACreateShipmentRequestInfo>();
 		String chargeType = "FastwayS";
@@ -128,6 +129,7 @@ public class PCAWrapper {
 
 	private void createShippingOrderPCA(List<SenderDataApi> consignmentData, PCACreateShipmentRequest pcaRequest,
 			String userName, List<SenderDataResponse> senderDataResponseList, String chargeType, Map<String, String> matrixMap) throws EtowerFailureResponseException {
+		System.out.print("comes in pcs");
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		List<PCACreateShippingResponse> pcaResponse = pcaProxy.makeCallForCreateShippingOrder(pcaRequest);
 		logPcaCreateResponse(pcaResponse);
@@ -171,6 +173,7 @@ public class PCAWrapper {
 			processPcaLabelsResponse(pcaResponseSuccess, barcodeMap, chargeType, matrixMap);
 			int userId = d2zDao.fetchUserIdbyUserName(userName);
 			String senderFileID = d2zDao.createConsignments(consignmentData, userId, userName, barcodeMap);
+			
 			List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 			Iterator itr = insertedOrder.iterator();
 			while (itr.hasNext()) {
@@ -185,11 +188,11 @@ public class PCAWrapper {
 				senderDataresponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 				if(senderDataresponse.getInjectionPort().equals("SYD") ||senderDataresponse.getInjectionPort().equals("MEL")||senderDataresponse.getInjectionPort().equals("BNE")||senderDataresponse.getInjectionPort().equals("ADL") ||senderDataresponse.getInjectionPort().equals("PER"))
 				{
-					senderDataresponse.setSoccode(senderDataresponse.getInjectionPort());
+					senderDataresponse.setSortcode(senderDataresponse.getInjectionPort());
 				}
 				else
 				{
-					senderDataresponse.setSoccode("OTH");
+					senderDataresponse.setSortcode("OTH");
 				}
 				senderDataResponseList.add(senderDataresponse);
 			}

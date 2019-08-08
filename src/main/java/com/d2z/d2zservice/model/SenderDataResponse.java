@@ -7,13 +7,13 @@ public class SenderDataResponse {
 	private String carrier;
 	private String message;
 	private String datamatrix;
-	private String soccode;
-	public String getSoccode() {
-		return soccode;
+	private String sortcode;
+	public String getSortcode() {
+		return sortcode;
 	}
 
-	public void setSoccode(String soccode) {
-		this.soccode = soccode;
+	public void setSortcode(String soccode) {
+		this.sortcode = soccode;
 	}
 
 	public String getDatamatrix() {

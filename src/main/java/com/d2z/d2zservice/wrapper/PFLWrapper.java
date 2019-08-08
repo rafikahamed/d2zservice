@@ -57,11 +57,11 @@ public class PFLWrapper {
 					senderDataresponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 					if(senderDataresponse.getInjectionPort().equals("SYD") ||senderDataresponse.getInjectionPort().equals("MEL")||senderDataresponse.getInjectionPort().equals("BNE")||senderDataresponse.getInjectionPort().equals("ADL") ||senderDataresponse.getInjectionPort().equals("PER"))
 					{
-						senderDataresponse.setSoccode(senderDataresponse.getInjectionPort());
+						senderDataresponse.setSortcode(senderDataresponse.getInjectionPort());
 					}
 					else
 					{
-						senderDataresponse.setSoccode("OTH");
+						senderDataresponse.setSortcode("OTH");
 					}
 					senderDataResponseList.add(senderDataresponse);
 				}

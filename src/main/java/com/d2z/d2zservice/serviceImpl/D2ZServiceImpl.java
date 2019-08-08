@@ -870,11 +870,16 @@ else
 			return senderDataResponseList;
 		}else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) 
 					|| "MCM3".equalsIgnoreCase(serviceType) || "MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)){
+			
 			PFLSenderDataRequest consignmentData = d2zValidator.isFWSubPostCodeValid(orderDetail);
+			System.out.println("service type:"+serviceType+":"+consignmentData.getPflSenderDataApi().size());
 			if(consignmentData.getPflSenderDataApi().size() > 0) {
 				if("MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)) 	
+				{System.out.println("inside MCS");
+				
 					pcaWrapper.makeCreateShippingOrderPFACall(consignmentData.getPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName(),serviceType);
-				else
+				}
+					else
 					makeCreateShippingOrderPFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName());
 			}
 			
@@ -891,9 +896,27 @@ else
 					Object[] obj = (Object[]) itr.next();
 					senderDataResponse = new SenderDataResponse();
 					senderDataResponse.setReferenceNumber(obj[0].toString());
-					senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
-					senderDataResponse.setCarrier(obj[4].toString());
 					senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
+					if("MCS".equalsIgnoreCase(serviceType))
+							{
+						String barcode = obj[1].toString();
+						senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+						
+						if(senderDataResponse.getInjectionPort().equals("SYD") ||senderDataResponse.getInjectionPort().equals("MEL")||senderDataResponse.getInjectionPort().equals("BNE")||senderDataResponse.getInjectionPort().equals("ADL") ||senderDataResponse.getInjectionPort().equals("PER"))
+						{
+							senderDataResponse.setSortcode(senderDataResponse.getInjectionPort());
+						}
+						else
+						{
+							senderDataResponse.setSortcode("OTH");
+						}
+							}
+					else
+					{
+					senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
+					}
+					senderDataResponse.setCarrier(obj[4].toString());
+					
 					senderDataResponseList.add(senderDataResponse);
 				}
 			}
