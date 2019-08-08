@@ -55,6 +55,14 @@ public class PFLWrapper {
 					senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 					senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
 					senderDataresponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
+					if(senderDataresponse.getInjectionPort().equals("SYD") ||senderDataresponse.getInjectionPort().equals("MEL")||senderDataresponse.getInjectionPort().equals("BNE")||senderDataresponse.getInjectionPort().equals("ADL") ||senderDataresponse.getInjectionPort().equals("PER"))
+					{
+						senderDataresponse.setSoccode(senderDataresponse.getInjectionPort());
+					}
+					else
+					{
+						senderDataresponse.setSoccode("OTH");
+					}
 					senderDataResponseList.add(senderDataresponse);
 				}
 			}

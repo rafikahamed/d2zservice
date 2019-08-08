@@ -7,6 +7,15 @@ public class SenderDataResponse {
 	private String carrier;
 	private String message;
 	private String datamatrix;
+	private String soccode;
+	public String getSoccode() {
+		return soccode;
+	}
+
+	public void setSoccode(String soccode) {
+		this.soccode = soccode;
+	}
+
 	public String getDatamatrix() {
 		return datamatrix;
 	}

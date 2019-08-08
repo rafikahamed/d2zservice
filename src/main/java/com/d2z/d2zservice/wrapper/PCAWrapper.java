@@ -178,9 +178,19 @@ public class PCAWrapper {
 				SenderDataResponse senderDataresponse = new SenderDataResponse();
 				senderDataresponse.setReferenceNumber(obj[0].toString());
 				senderDataresponse.setDatamatrix(obj[1].toString());
-				senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
+				String barcode = obj[1].toString();
+				senderDataresponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+				//senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 				senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
 				senderDataresponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
+				if(senderDataresponse.getInjectionPort().equals("SYD") ||senderDataresponse.getInjectionPort().equals("MEL")||senderDataresponse.getInjectionPort().equals("BNE")||senderDataresponse.getInjectionPort().equals("ADL") ||senderDataresponse.getInjectionPort().equals("PER"))
+				{
+					senderDataresponse.setSoccode(senderDataresponse.getInjectionPort());
+				}
+				else
+				{
+					senderDataresponse.setSoccode("OTH");
+				}
 				senderDataResponseList.add(senderDataresponse);
 			}
 		}
