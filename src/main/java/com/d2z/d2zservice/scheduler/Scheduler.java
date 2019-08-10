@@ -87,7 +87,7 @@ public class Scheduler {
 	
 	
 	//@Scheduled(cron = "0 0 9 1/1 * ?")
-	@Scheduled(cron = "0 0 9 * * ?")
+	@Scheduled(cron = "0 0 7 * * ?",zone="GMT")
 	public void currencyRate() {
 		System.out.println("Calling  - Currency order");
 		 d2zService.currencyRate();
