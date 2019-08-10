@@ -266,4 +266,9 @@ public class D2zController {
 			throws ReferenceNumberNotUniqueException {
 		return d2zService.allocateShipmentArticleid(articleid.toString(), shipmentNumber);
 	}
+	@RequestMapping(method = RequestMethod.GET, path = "/currency")
+	public void getcurrency() {
+		d2zService.currencyRate();
+	}
+	 
 }

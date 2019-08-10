@@ -141,5 +141,9 @@ public interface ID2ZDao {
 	public List<Integer> fetchUserId(String userId);
 	
 	public List<String> fetchReferencenumberByArticleid(List<String>ArticleID);
+	
+	public void logcurrencyRate();
+	
+	public Double getAudcurrency(String country);
 
 }

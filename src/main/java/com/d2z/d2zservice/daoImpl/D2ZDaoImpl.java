@@ -18,6 +18,7 @@ import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
+import com.d2z.d2zservice.entity.Currency;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.EbayResponse;
 import com.d2z.d2zservice.entity.FastwayPostcode;
@@ -28,6 +29,7 @@ import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateEnquiryRequest;
+import com.d2z.d2zservice.model.CurrencyDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
@@ -43,9 +45,11 @@ import com.d2z.d2zservice.model.etower.GainLabelsResponse;
 import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.model.etower.TrackEventResponseData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
+import com.d2z.d2zservice.proxy.CurrencyProxy;
 import com.d2z.d2zservice.repository.APIRatesRepository;
 import com.d2z.d2zservice.repository.AUPostResponseRepository;
 import com.d2z.d2zservice.repository.CSTicketsRepository;
+import com.d2z.d2zservice.repository.CurrencyRepository;
 import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
 import com.d2z.d2zservice.repository.FastwayPostcodeRepository;
@@ -97,6 +101,12 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	FastwayPostcodeRepository fastwayPostcodeRepository;
+	
+	@Autowired
+	CurrencyRepository currencyRepository;
+	
+	@Autowired
+	CurrencyProxy currencyproxy;
 
 	@Override
 	public String exportParcel(List<SenderData> orderDetailList,Map<String, LabelData> barcodeMap) {
@@ -1032,6 +1042,31 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		// TODO Auto-generated method stub
 		List<String> refnbrs = senderDataRepository.fetchreferencenumberforArticleid(ArticleID);
 		return refnbrs;
+	}
+
+	@Override
+	public void logcurrencyRate() {
+		// TODO Auto-generated method stub
+		List<CurrencyDetails> currencyList =currencyproxy.currencyRate();
+		currencyRepository.deleteAll();
+		List<Currency> currencyObjList = new ArrayList<Currency>();
+		for(CurrencyDetails currencyValue: currencyList) {
+		Currency currencyObj = new Currency();
+		currencyObj.setAudCurrencyRate(currencyValue.getAudCurrencyRate().doubleValue());
+		currencyObj.setCountry(currencyValue.getCountry());
+		currencyObj.setCurrencyCode(currencyValue.getCurrencyCode());
+		currencyObj.setLastUpdated(new Date());
+		currencyObjList.add(currencyObj);
+		}
+
+		currencyRepository.saveAll(currencyObjList);
+		
+	}
+
+	@Override
+	public Double getAudcurrency(String country) {
+		// TODO Auto-generated method stub
+		return currencyRepository.getaud(country);
 	}
 
 }

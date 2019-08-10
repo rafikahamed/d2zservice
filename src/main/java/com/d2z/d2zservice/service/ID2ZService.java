@@ -13,6 +13,7 @@ import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.CreateEnquiryRequest;
+import com.d2z.d2zservice.model.CurrencyDetails;
 import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
@@ -112,5 +113,7 @@ public interface ID2ZService {
 	public List<Integer> fetchUserId(String userId);
 
 	public void makeCalltoAusPost(List<String> referenceNumbers);
+	
+	public void currencyRate();
 
 }

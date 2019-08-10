@@ -72,6 +72,7 @@ import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.CreateEnquiryRequest;
+import com.d2z.d2zservice.model.CurrencyDetails;
 import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_Shipment;
@@ -1325,6 +1326,7 @@ else
 		List<Integer> listOfClientId = d2zBrokerDao.getClientId(userId);
 		List<SenderdataMaster> senderDataList = d2zDao.fetchShipmentData(shipmentNumber, listOfClientId);
 		System.out.println(senderDataList.size() + " records");
+		Double audcurrency = d2zDao.getAudcurrency("USD");
 		List<ShipmentDetails> shipmentDetails = new ArrayList<ShipmentDetails>();
 		for (SenderdataMaster senderData : senderDataList) {
 			ShipmentDetails shipmentData = new ShipmentDetails();
@@ -1341,7 +1343,8 @@ else
 			shipmentData.setDestination("AUSTRALIA");
 			shipmentData.setQuantity(senderData.getShippedQuantity());
 			shipmentData.setCommodity(senderData.getProduct_Description());
-			shipmentData.setValue(senderData.getValue());
+			Double uscurrency = senderData.getValue()*audcurrency;
+			shipmentData.setValue(uscurrency);
 			shipmentData.setShipperName(senderData.getShipper_Name());
 			shipmentData.setShipperAddress(senderData.getShipper_Addr1());
 			shipmentData.setShipperCity(senderData.getShipper_City());
@@ -1784,6 +1787,13 @@ else
 	
 		return userMsg;
 	
+	}
+
+	@Override
+	public void currencyRate() {
+		// TODO Auto-generated method stub
+		d2zDao.logcurrencyRate();
+		
 	}
 
 }
