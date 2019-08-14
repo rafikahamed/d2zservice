@@ -6,14 +6,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.BrokerRates;
+import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.D2ZRates;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
@@ -39,6 +38,7 @@ import com.d2z.d2zservice.model.etower.TrackEventResponseData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.repository.AUPostResponseRepository;
 import com.d2z.d2zservice.repository.BrokerRatesRepository;
+import com.d2z.d2zservice.repository.CSTicketsRepository;
 import com.d2z.d2zservice.repository.ConsigneeCountRepository;
 import com.d2z.d2zservice.repository.D2ZRatesRepository;
 import com.d2z.d2zservice.repository.ETowerResponseRepository;
@@ -105,6 +105,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	
 	@Autowired
 	FFResponseRepository ffResponseRepository;
+	
+	@Autowired
+	CSTicketsRepository csticketsRepository;
 
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -769,6 +772,12 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	@Override
 	public String fetchUserById(int userId) {
 		return userRepository.fetchUserById( userId);
+	}
+
+	@Override
+	public List<CSTickets> fetchOpenEnquiryDetails() {
+		List<CSTickets> ticketList = csticketsRepository.fetchOpenEnquiryDetails();
+		return ticketList;
 	}
 
 }

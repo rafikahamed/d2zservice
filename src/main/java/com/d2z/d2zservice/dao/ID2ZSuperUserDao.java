@@ -2,6 +2,7 @@ package com.d2z.d2zservice.dao;
 
 import java.util.List;
 import com.d2z.d2zservice.entity.AUPostResponse;
+import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
 import com.d2z.d2zservice.entity.Mlid;
@@ -123,17 +124,19 @@ public interface ID2ZSuperUserDao {
 
 	List<String> trackingLabel(List<String> refBarNumArray);
 
-UserMessage deleteMlid(String service);
+	UserMessage deleteMlid(String service);
 	
 	List<Mlid> downloadMlid(String service);
 	
- UserMessage addMlid(List<Object> MlidData);
+	UserMessage addMlid(List<Object> MlidData);
  
- List<String> fetchMlidDeleteList();
+	List<String> fetchMlidDeleteList();
  
-List<AUWeight> downloadAUweight(List<Object> ArticleID);
+	List<AUWeight> downloadAUweight(List<Object> ArticleID);
 
-String fetchUserById(int parseInt);
+	String fetchUserById(int parseInt);
+
+	List<CSTickets> fetchOpenEnquiryDetails();
 
 }
 
