@@ -21,11 +21,11 @@ public class CreateShippingRequest {
 	private Double invoiceValue;
 	private String invoiceCurrency = "AUD";
 	private String description = "bags";
-	private String shipperName = "Shipper";
-	private String shipperAddressLine1 = "PO Box 1177";
-	private String shipperCity = "Clayton";
-	private String shipperState = "VIC";
-	private String shipperCountry = "AU";
+	private String shipperName = "Test company";
+	private String shipperAddressLine1 = "1 fake st";
+	private String shipperCity = "Petaling Jaya";
+	private String shipperState = "Selangor";
+	private String shipperCountry = "MY";
 	private String email;
 	
 	public String getEmail() {

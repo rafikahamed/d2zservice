@@ -11,47 +11,49 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import com.d2z.d2zservice.validation.ValidConsignment;
+@ValidConsignment
 public class SenderDataApi {
 	
 	private int userID;
 	private String senderFilesID;
-	@NotEmpty(message = "Reference Number is mandatory")
+	//@NotEmpty(message = "Reference Number is mandatory")
 	//@Pattern(regexp="^[a-zA-Z0-9]+$", message = "Invalid reference number")
 	private String referenceNumber;
 	//@NotEmpty(message = "Consignee Name is mandatory")
 	//@Pattern(regexp="^[a-zA-Z0-9]+$", message = "Consignee Name must contain only alphabets")
-	@Size(max=40)
+	//@Size(max=40)
 	private String consigneeName;
 	private String consigneeCompany;
-	@NotEmpty(message = "Consignee Address is mandatory")
-	@Size(max=50,message = "Consignee Address1 must not exceed 50 characters")	
+	//@NotEmpty(message = "Consignee Address is mandatory")
+	//@Size(max=50,message = "Consignee Address1 must not exceed 50 characters")	
 	private String consigneeAddr1;
-	@Size(max=50,message = "Consignee Address2 must not exceed 50 characters")
+	//@Size(max=50,message = "Consignee Address2 must not exceed 50 characters")
 	private String consigneeAddr2;
-	@NotEmpty(message = "Consignee Suburb is mandatory")
+	//@NotEmpty(message = "Consignee Suburb is mandatory")
 	private String consigneeSuburb;
-	@NotEmpty(message = "Consignee State is mandatory")
+	//@NotEmpty(message = "Consignee State is mandatory")
 	private String consigneeState;
-	@NotEmpty(message = "Consignee Postcode is mandatory")
+	//@NotEmpty(message = "Consignee Postcode is mandatory")
 	private String consigneePostcode;
 	private String consigneePhone;
 	private String consigneeEmail;
 
-	@NotEmpty(message = "Product Description is mandatory")
+	//@NotEmpty(message = "Product Description is mandatory")
 	private String productDescription;
-	@NotNull(message = "Value is mandatory")
-	@Min(value = 1, message = "Value should be grater than 1")
-	@Digits( fraction =2, message = "Invalid Value", integer = 10)
+	//@NotNull(message = "Value is mandatory")
+	//@Min(value = 1, message = "Value should be grater than 1")
+	//@Digits( fraction =2, message = "Invalid Value", integer = 10)
 	private double value;
 	//@NotEmpty(message = "Currency is mandatory")
 	private String currency;
 	//@Min(value = 1, message = "Shipped Quantity is mandatory")
 	private int shippedQuantity;
 	
-	@Digits( fraction =2, message = "Invalid Weight", integer = 10)
-	@NotEmpty(message = "Weight is mandatory")
-	@Min(value = 0, message = "Weight is mandatory")
-	@Max(value = 22, message = "Weight should not be greater than 22")
+//	@Digits( fraction =2, message = "Invalid Weight", integer = 10)
+	//@NotEmpty(message = "Weight is mandatory")
+	//@Min(value = 0, message = "Weight is mandatory")
+	//@Max(value = 22, message = "Weight should not be greater than 22")
 	private String weight;
 	
 	private BigDecimal cubicWeight;
@@ -61,7 +63,7 @@ public class SenderDataApi {
 	private BigDecimal dimensionsHeight;
 //	@Digits( fraction =2, message = "Invalid Dimensions Width", integer = 10)
 	private BigDecimal dimensionsWidth;
-	@NotEmpty(message = "Service Type is mandatory")
+	//@NotEmpty(message = "Service Type is mandatory")
 	//@Pattern(regexp="^[1-5][pP][a-zA-Z]*$", message = "Invalid Service Type")
 	private String serviceType;
 	private String deliverytype;
