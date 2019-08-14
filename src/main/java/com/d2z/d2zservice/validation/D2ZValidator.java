@@ -22,6 +22,8 @@ import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
+import com.d2z.d2zservice.util.ValidationUtils;
+import com.d2z.d2zservice.model.ErrorDetails;
 import com.d2z.singleton.D2ZSingleton;
 
 @Service
@@ -247,6 +249,66 @@ public class D2ZValidator {
 		pflRequest.setPflSenderDataApi(pflSenderData);
 		pflRequest.setNonPflSenderDataApi(nonPflSenderData);
 		return pflRequest;
+	}
+
+
+	public void isReferenceNumberUnique(CreateConsignmentRequest orderDetail,
+			Map<String, List<ErrorDetails>> errorMap) {
+		List<String> incomingRefNbr = orderDetail.getConsignmentData().stream().map(obj -> {
+			return obj.getReferenceNumber(); })
+				.collect(Collectors.toList());
+		List<String> referenceNumber_DB = d2zDao.fetchAllReferenceNumbers();
+		referenceNumber_DB.addAll(incomingRefNbr);
+
+		List<String> duplicateRefNbr = referenceNumber_DB.stream().collect(Collectors.groupingBy(Function.identity(),     
+	              Collectors.counting()))                                             
+	          .entrySet().stream()
+	          .filter(e -> e.getValue() > 1)                                      
+	          .map(e -> e.getKey())                                                  
+	          .collect(Collectors.toList());
+		duplicateRefNbr.forEach(obj -> {
+			
+				 ValidationUtils.populateErrorDetails(obj,obj,
+						 "Reference Number must be unique",errorMap) ;
+		
+			});  
+	}
+
+	public void isServiceValid(CreateConsignmentRequest orderDetail,
+			Map<String, List<ErrorDetails>> errorMap) {
+		
+		List<String> serviceType_DB = d2zDao.fetchServiceTypeByUserName(orderDetail.getUserName().trim());
+		
+		List<SenderDataApi> senderData = orderDetail.getConsignmentData();
+		for(SenderDataApi data : senderData) {
+			if(null!=data.getServiceType()) {
+			if(!serviceType_DB.contains(data.getServiceType().trim())) {
+				ValidationUtils.populateErrorDetails(data.getReferenceNumber(),data.getServiceType().trim(),
+						 "Invalid Service Type",errorMap) ;
+			}
+		} 
+		}
+			
+	}
+
+	public void isPostCodeValid(CreateConsignmentRequest orderDetail,
+			Map<String, List<ErrorDetails>> errorMap) {
+		List<SenderDataApi> senderData = orderDetail.getConsignmentData();
+
+		List<String> postCodeZoneList = D2ZSingleton.getInstance().getPostCodeZoneList();
+
+		senderData.forEach(obj -> {
+			if(null!=obj.getConsigneeState() && null!=obj.getConsigneeSuburb() && null!=obj.getConsigneePostcode()) {
+			if(!postCodeZoneList.contains(obj.getConsigneeState().trim().toUpperCase().concat(obj.getConsigneeSuburb().trim().toUpperCase()).concat(obj.getConsigneePostcode().trim()))) {
+				 ValidationUtils.populateErrorDetails(obj.getReferenceNumber(),obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim(),
+						 "Invalid combination of Consignee State or Postcode or Suburb",errorMap) ;
+		
+			}
+			}
+		});
+		
+	
+		
 	}
 
 }

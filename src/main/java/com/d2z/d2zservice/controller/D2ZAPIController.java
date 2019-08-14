@@ -33,7 +33,7 @@ import com.d2z.d2zservice.service.ID2ZService;
 @Validated
 @RequestMapping(value = "/v1/d2z/api")
 public class D2ZAPIController {
-Logger logger = LoggerFactory.getLogger(D2zController.class);
+Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 	
 	@Autowired
     private  ID2ZService d2zService;
