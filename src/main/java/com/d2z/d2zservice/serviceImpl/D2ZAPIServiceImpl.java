@@ -85,11 +85,11 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			}
 			return;
 			
-		}else if ("FWM".equalsIgnoreCase(serviceType)) {
+		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType)) {
 			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
 			ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 			if(orderDetail.getConsignmentData().size()>0) {
-			makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName());
+			makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(), serviceType);
 			}
 			return;// senderDataResponseList;
 		}else if("FWS".equalsIgnoreCase(serviceType)) {
@@ -108,7 +108,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 				if("MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)) 	
 					pcaWrapper.makeCreateShippingOrderPFACall(consignmentData.getPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName(),serviceType);
 				else
-					makeCreateShippingOrderPFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName());
+					makeCreateShippingOrderPFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName(), serviceType);
 			}
 			
 			if(consignmentData.getNonPflSenderDataApi().size() > 0 && "STS".equalsIgnoreCase(serviceType)) {
@@ -157,7 +157,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 	
 
 	private void makeCreateShippingOrderPFLCall (List<SenderDataApi> data,
-			List<SenderDataResponse> senderDataResponseList, String userName) throws EtowerFailureResponseException {
+			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
 		PflCreateShippingRequest pflRequest = new PflCreateShippingRequest();
 		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
 		for (SenderDataApi orderDetail : data) {
@@ -180,7 +180,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			pflOrderInfoRequest.add(request);
 		}
 		pflRequest.setOrderinfo(pflOrderInfoRequest);
-		pflWrapper.createShippingOrderPFL(data, pflRequest, userName, senderDataResponseList);
+		pflWrapper.createShippingOrderPFL(data, pflRequest, userName, senderDataResponseList, serviceType);
 	}
 
 	@Override
