@@ -985,11 +985,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setArticleID(senderArticleId.getArticleId());
 					tickets.setReferenceNumber(senderArticleId.getReference_number());
 					tickets.setConsigneeName(senderArticleId.getConsignee_name());
-					tickets.setConsignee_addr1(senderArticleId.getConsignee_addr1());
-					tickets.setConsignee_Suburb(senderArticleId.getConsignee_Suburb());
-					tickets.setConsignee_State(senderArticleId.getConsignee_State());
-					tickets.setConsignee_Postcode(senderArticleId.getConsignee_Postcode());
-					tickets.setProduct_Description(senderArticleId.getProduct_Description());
+					tickets.setConsigneeaddr1(senderArticleId.getConsignee_addr1());
+					tickets.setConsigneeSuburb(senderArticleId.getConsignee_Suburb());
+					tickets.setConsigneeState(senderArticleId.getConsignee_State());
+					tickets.setConsigneePostcode(senderArticleId.getConsignee_Postcode());
+					tickets.setProductDescription(senderArticleId.getProduct_Description());
 					tickets.setCarrier(senderArticleId.getCarrier());
 				}
 			}else if(enquiryRequest.getType().equalsIgnoreCase("Reference Number")) {
@@ -998,11 +998,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setArticleID(senderRefId.getArticleId());
 					tickets.setReferenceNumber(senderRefId.getReference_number());
 					tickets.setConsigneeName(senderRefId.getConsignee_name());
-					tickets.setConsignee_addr1(senderRefId.getConsignee_addr1());
-					tickets.setConsignee_Suburb(senderRefId.getConsignee_Suburb());
-					tickets.setConsignee_State(senderRefId.getConsignee_State());
-					tickets.setConsignee_Postcode(senderRefId.getConsignee_Postcode());
-					tickets.setProduct_Description(senderRefId.getProduct_Description());
+					tickets.setConsigneeaddr1(senderRefId.getConsignee_addr1());
+					tickets.setConsigneeSuburb(senderRefId.getConsignee_Suburb());
+					tickets.setConsigneeState(senderRefId.getConsignee_State());
+					tickets.setConsigneePostcode(senderRefId.getConsignee_Postcode());
+					tickets.setProductDescription(senderRefId.getProduct_Description());
 					tickets.setCarrier(senderRefId.getCarrier());
 				}
 			}

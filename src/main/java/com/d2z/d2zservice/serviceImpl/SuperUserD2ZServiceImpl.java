@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
-import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
 import com.d2z.d2zservice.entity.Mlid;
@@ -45,6 +44,7 @@ import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
+import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
@@ -983,8 +983,16 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	}
 	
 	@Override
-	public List<CSTickets> fetchOpenEnquiryDetails() {
+	public List<OpenEnquiryResponse> fetchOpenEnquiryDetails() {
 		return d2zDao.fetchOpenEnquiryDetails();
+	}
+
+	@Override
+	public UserMessage updateEnquiryDetails(List<OpenEnquiryResponse> openEnquiryDetails) {
+		UserMessage usrMsg = new UserMessage();
+		String message = d2zDao.updateEnquiryDetails(openEnquiryDetails);
+		usrMsg.setMessage("Enquiry Updated Successfully");
+		return usrMsg;
 	}
 
 }

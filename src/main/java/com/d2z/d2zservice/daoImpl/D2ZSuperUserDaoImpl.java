@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.BrokerRates;
-import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.D2ZRates;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
@@ -22,12 +22,14 @@ import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
+import com.d2z.d2zservice.entity.TransitTime;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.D2ZRatesData;
+import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
@@ -51,8 +53,10 @@ import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.Senderdata_InvoicingRepository;
 import com.d2z.d2zservice.repository.ServiceTypeListRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
+import com.d2z.d2zservice.repository.TransitTimeRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
+import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Repository
@@ -108,6 +112,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	
 	@Autowired
 	CSTicketsRepository csticketsRepository;
+	
+	@Autowired
+	TransitTimeRepository transitTimeRepository;
 
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -775,9 +782,48 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
-	public List<CSTickets> fetchOpenEnquiryDetails() {
-		List<CSTickets> ticketList = csticketsRepository.fetchOpenEnquiryDetails();
-		return ticketList;
+	public List<OpenEnquiryResponse> fetchOpenEnquiryDetails() {
+		List<OpenEnquiryResponse> openEnquiryList = new ArrayList<OpenEnquiryResponse>();
+		OpenEnquiryResponse openEnquiryResponse = null;
+		List<String> openEnquiry = csticketsRepository.fetchOpenEnquiryDetails();
+		if(openEnquiry.size() > 0) {
+			Iterator itr = openEnquiry.iterator();
+			while (itr.hasNext()) {
+				Object[] obj = (Object[]) itr.next();
+				String deliveryDate = null;
+				openEnquiryResponse = new OpenEnquiryResponse();
+				openEnquiryResponse.setUserName(obj[0] != null ? obj[0].toString() : "");
+				openEnquiryResponse.setTicketNumber(obj[1] != null ? obj[1].toString() : "");
+				openEnquiryResponse.setUserId(Integer.parseInt(obj[2].toString()));
+				openEnquiryResponse.setClient_broker_id(Integer.parseInt(obj[3].toString()));
+				openEnquiryResponse.setArticleID(obj[4] != null ? obj[4].toString() : "");
+				openEnquiryResponse.setTrackingEventDateOccured(obj[5] != null ? obj[5].toString() : "");
+				openEnquiryResponse.setConsigneeName(obj[6] != null ? obj[6].toString() : "");
+				openEnquiryResponse.setStatus(obj[7] != null ? obj[7].toString() : "");
+				openEnquiryResponse.setComments(obj[8] != null ? obj[8].toString() : "");
+				openEnquiryResponse.setAttachment(obj[9] != null ? obj[9].toString() : "");
+				openEnquiryResponse.setConsigneeaddr1(obj[10] != null ? obj[10].toString() : "");
+				openEnquiryResponse.setConsigneeSuburb(obj[11] != null ? obj[11].toString() : "");
+				openEnquiryResponse.setConsigneeState(obj[12] != null ? obj[12].toString() : "");
+				openEnquiryResponse.setConsigneePostcode(obj[13] != null ? obj[13].toString() : "");
+				openEnquiryResponse.setProductDescription(obj[14] != null ? obj[14].toString() : "");
+				TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(openEnquiryResponse.getConsigneePostcode());
+				deliveryDate = D2ZCommonUtil.getIncreasedTime(openEnquiryResponse.getTrackingEventDateOccured(),transitTimeResponse.getTransitTime());
+				openEnquiryResponse.setTrackingDeliveryDate(deliveryDate);
+				openEnquiryList.add(openEnquiryResponse);
+			  }
+		}
+		return openEnquiryList;
+	}
+
+	@Override
+	public String updateEnquiryDetails(List<OpenEnquiryResponse> openEnquiryDetails) {
+		for(OpenEnquiryResponse enquiryDetails:openEnquiryDetails) {
+			if(enquiryDetails.getD2zComments() != null) {
+				csticketsRepository.updateTicketInfo(enquiryDetails.getD2zComments(), enquiryDetails.getStatus(), enquiryDetails.getSendUpdate(), enquiryDetails.getArticleID());
+			}
+		}
+		return "Enquiry Updated Successfully";
 	}
 
 }

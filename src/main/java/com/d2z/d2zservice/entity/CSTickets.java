@@ -66,24 +66,24 @@ public class CSTickets implements Serializable {
 	private String sendUpdate;
 	
 	@Column(name = "Consignee_addr1")
-	private String consignee_addr1;
+	private String consigneeaddr1;
 	
 	@Column(name = "Consignee_Suburb")
-	private String consignee_Suburb;
+	private String consigneeSuburb;
 	
 	@Column(name = "Consignee_State")
-	private String consignee_State;
+	private String consigneeState;
 	
 	@Column(name = "Consignee_Postcode")
-	private String consignee_Postcode;
+	private String consigneePostcode;
 	
 	@Column(name = "Product_Description")
-	private String product_Description;
+	private String productDescription;
 	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
+
 	public String getTicketID() {
 		return ticketID;
 	}
@@ -132,6 +132,14 @@ public class CSTickets implements Serializable {
 		this.comments = comments;
 	}
 
+	public String getD2zComments() {
+		return d2zComments;
+	}
+
+	public void setD2zComments(String d2zComments) {
+		this.d2zComments = d2zComments;
+	}
+
 	public String getTrackingStatus() {
 		return trackingStatus;
 	}
@@ -156,6 +164,14 @@ public class CSTickets implements Serializable {
 		this.trackingEventDateOccured = trackingEventDateOccured;
 	}
 
+	public Timestamp getExpectedDeliveryDate() {
+		return expectedDeliveryDate;
+	}
+
+	public void setExpectedDeliveryDate(Timestamp expectedDeliveryDate) {
+		this.expectedDeliveryDate = expectedDeliveryDate;
+	}
+
 	public String getStatus() {
 		return status;
 	}
@@ -163,7 +179,7 @@ public class CSTickets implements Serializable {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	
+
 	public int getUserId() {
 		return userId;
 	}
@@ -171,7 +187,7 @@ public class CSTickets implements Serializable {
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
-	
+
 	public String getConsigneeName() {
 		return consigneeName;
 	}
@@ -187,22 +203,6 @@ public class CSTickets implements Serializable {
 	public void setCarrier(String carrier) {
 		this.carrier = carrier;
 	}
-	
-	public String getD2zComments() {
-		return d2zComments;
-	}
-
-	public void setD2zComments(String d2zComments) {
-		this.d2zComments = d2zComments;
-	}
-
-	public Timestamp getExpectedDeliveryDate() {
-		return expectedDeliveryDate;
-	}
-
-	public void setExpectedDeliveryDate(Timestamp expectedDeliveryDate) {
-		this.expectedDeliveryDate = expectedDeliveryDate;
-	}
 
 	public byte[] getAttachment() {
 		return attachment;
@@ -210,10 +210,6 @@ public class CSTickets implements Serializable {
 
 	public void setAttachment(byte[] attachment) {
 		this.attachment = attachment;
-	}
-
-	public String getConsignee_addr1() {
-		return consignee_addr1;
 	}
 
 	public String getSendUpdate() {
@@ -224,40 +220,44 @@ public class CSTickets implements Serializable {
 		this.sendUpdate = sendUpdate;
 	}
 
-	public void setConsignee_addr1(String consignee_addr1) {
-		this.consignee_addr1 = consignee_addr1;
+	public String getConsigneeaddr1() {
+		return consigneeaddr1;
 	}
 
-	public String getConsignee_Suburb() {
-		return consignee_Suburb;
+	public void setConsigneeaddr1(String consigneeaddr1) {
+		this.consigneeaddr1 = consigneeaddr1;
 	}
 
-	public void setConsignee_Suburb(String consignee_Suburb) {
-		this.consignee_Suburb = consignee_Suburb;
+	public String getConsigneeSuburb() {
+		return consigneeSuburb;
 	}
 
-	public String getConsignee_State() {
-		return consignee_State;
+	public void setConsigneeSuburb(String consigneeSuburb) {
+		this.consigneeSuburb = consigneeSuburb;
 	}
 
-	public void setConsignee_State(String consignee_State) {
-		this.consignee_State = consignee_State;
+	public String getConsigneeState() {
+		return consigneeState;
 	}
 
-	public String getConsignee_Postcode() {
-		return consignee_Postcode;
+	public void setConsigneeState(String consigneeState) {
+		this.consigneeState = consigneeState;
 	}
 
-	public void setConsignee_Postcode(String consignee_Postcode) {
-		this.consignee_Postcode = consignee_Postcode;
+	public String getConsigneePostcode() {
+		return consigneePostcode;
 	}
 
-	public String getProduct_Description() {
-		return product_Description;
+	public void setConsigneePostcode(String consigneePostcode) {
+		this.consigneePostcode = consigneePostcode;
 	}
 
-	public void setProduct_Description(String product_Description) {
-		this.product_Description = product_Description;
+	public String getProductDescription() {
+		return productDescription;
 	}
 
+	public void setProductDescription(String productDescription) {
+		this.productDescription = productDescription;
+	}
+	
 }

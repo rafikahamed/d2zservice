@@ -4,8 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.d2z</groupId>
-	<artifactId>d2z-prodservice</artifactId>
-	<version>0.1.26-SNAPSHOT</version>
+	<artifactId>d2z-testservice</artifactId>
+	<version>0.1.37-SNAPSHOT</version>
 	<name>d2z-service</name>
 	<description>Demo project for Spring Boot</description>
 

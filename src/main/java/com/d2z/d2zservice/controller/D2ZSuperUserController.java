@@ -3,9 +3,7 @@ package com.d2z.d2zservice.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.ws.rs.core.MediaType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -35,6 +31,7 @@ import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
+import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -267,8 +264,13 @@ public class D2ZSuperUserController {
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/open-enquiry")
-    public List<CSTickets> fetchOpenEnquiryDetails() {
+    public List<OpenEnquiryResponse> fetchOpenEnquiryDetails() {
 		return superUserD2zService.fetchOpenEnquiryDetails();
+    }
+	
+	@RequestMapping( method = RequestMethod.PUT, path = "/Update-enquiry", consumes=MediaType.APPLICATION_JSON)
+    public UserMessage updateEnquiryDetails(@RequestBody List<OpenEnquiryResponse> openEnquiryDetails) {
+		return superUserD2zService.updateEnquiryDetails(openEnquiryDetails);
     }
 	
 }
