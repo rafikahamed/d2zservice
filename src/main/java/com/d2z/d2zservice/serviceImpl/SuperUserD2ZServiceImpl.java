@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
+import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
 import com.d2z.d2zservice.entity.Mlid;
@@ -51,13 +52,11 @@ import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.ExportDelete;
-import com.d2z.d2zservice.model.etower.EtowerErrorResponse;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.proxy.PcaProxy;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 import com.d2z.d2zservice.validation.D2ZValidator;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -74,7 +73,6 @@ import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.backend.DataMatrix.ForceMode;
 import uk.org.okapibarcode.backend.Symbol.DataType;
 import uk.org.okapibarcode.output.Java2DRenderer;
-
 import com.d2z.d2zservice.model.ExportShipment;
 
 @Service
@@ -952,44 +950,41 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	
 	@Override
 	public List<Mlid> downloadMlid(String service) {
-		// TODO Auto-generated method stub
-		
 		return d2zDao.downloadMlid(service);
-		
 	}
 
 	@Override
 	public UserMessage uploadMlid(List<Object> MlidData) {
-		// TODO Auto-generated method stub
-		
 		return d2zDao.addMlid(MlidData);
-		}
+	}
 
-@Override
-	public UserMessage deleteMLID(String service)
-	{
+	@Override
+	public UserMessage deleteMLID(String service){
 		UserMessage approvedInvoiceMsg = d2zDao.deleteMlid(service);
 		return approvedInvoiceMsg;
 	}
-
-@Override
-public List<DropDownModel> fetchMlidDeleteList() {
-	List<String> listOfMlid = d2zDao.fetchMlidDeleteList();
-	List<DropDownModel> mlidList = new ArrayList<DropDownModel>();
-	for (String mlid : listOfMlid) {
-		DropDownModel dropDownVaL = new DropDownModel();
-		dropDownVaL.setName(mlid);
-		dropDownVaL.setValue(mlid);
-		mlidList.add(dropDownVaL);
+	
+	@Override
+	public List<DropDownModel> fetchMlidDeleteList() {
+		List<String> listOfMlid = d2zDao.fetchMlidDeleteList();
+		List<DropDownModel> mlidList = new ArrayList<DropDownModel>();
+		for (String mlid : listOfMlid) {
+			DropDownModel dropDownVaL = new DropDownModel();
+			dropDownVaL.setName(mlid);
+			dropDownVaL.setValue(mlid);
+			mlidList.add(dropDownVaL);
+		}
+		return mlidList;
 	}
-	return mlidList;
-}
-
-@Override
-public List<AUWeight> downloadAUWeight(List<Object> AUWeight) {
-	// TODO Auto-generated method stub
-	return d2zDao.downloadAUweight(AUWeight);
-}
-
+	
+	@Override
+	public List<AUWeight> downloadAUWeight(List<Object> AUWeight) {
+		return d2zDao.downloadAUweight(AUWeight);
+	}
+	
+	@Override
+	public List<CSTickets> fetchOpenEnquiryDetails() {
+		return d2zDao.fetchOpenEnquiryDetails();
+	}
 
 }

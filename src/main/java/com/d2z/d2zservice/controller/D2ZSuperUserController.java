@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -260,12 +261,14 @@ public class D2ZSuperUserController {
 		return superUserD2zService.fetchMlidDeleteList();
     }
 	
-	
 	@RequestMapping( method = RequestMethod.POST, path = "/downloadAUweight", consumes=MediaType.APPLICATION_JSON)
     public List<AUWeight> downloadAU(@RequestBody List<Object> ArticleID) {
-		
 		return superUserD2zService.downloadAUWeight(ArticleID);
     }
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/open-enquiry")
+    public List<CSTickets> fetchOpenEnquiryDetails() {
+		return superUserD2zService.fetchOpenEnquiryDetails();
+    }
 	
 }

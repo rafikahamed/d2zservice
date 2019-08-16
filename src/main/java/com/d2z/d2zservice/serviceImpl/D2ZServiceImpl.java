@@ -211,9 +211,9 @@ public class D2ZServiceImpl implements ID2ZService {
 			d2zValidator.isPostCodeValidUI(orderDetailList);
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(orderDetailList,senderDataResponseList);
 			return senderDataResponseList;
-		}else if ("FWM".equalsIgnoreCase(serviceType)) {
+		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType)) {
 			d2zValidator.isFWPostCodeUIValid(orderDetailList);
-			makeCreateShippingOrderFilePFLCall(orderDetailList,senderDataResponseList,null);
+			makeCreateShippingOrderFilePFLCall(orderDetailList,senderDataResponseList,null,serviceType);
 			return senderDataResponseList;
 		}else if("FWS".equalsIgnoreCase(serviceType)) {
 			d2zValidator.isFWPostCodeUIValid(orderDetailList);
@@ -226,7 +226,7 @@ public class D2ZServiceImpl implements ID2ZService {
 				if("MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)) {
 					pcaWrapper.makeCreateShippingOrderFilePCACall(consignmentData.getPflSenderDataApi(),senderDataResponseList,null,serviceType);
 				}else {
-					makeCreateShippingOrderFilePFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,null);
+					makeCreateShippingOrderFilePFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,null, serviceType);
 				}
 			}
 			
@@ -861,9 +861,9 @@ else
 			d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			return senderDataResponseList;
-		}else if ("FWM".equalsIgnoreCase(serviceType)) {
+		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType)) {
 			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
-			makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName());
+			makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(),serviceType);
 			return senderDataResponseList;
 		}else if("FWS".equalsIgnoreCase(serviceType)) {
 			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
@@ -881,7 +881,7 @@ else
 					pcaWrapper.makeCreateShippingOrderPFACall(consignmentData.getPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName(),serviceType);
 				}
 					else
-					makeCreateShippingOrderPFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName());
+					makeCreateShippingOrderPFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName(), serviceType);
 			}
 			
 			if(consignmentData.getNonPflSenderDataApi().size() > 0 && "STS".equalsIgnoreCase(serviceType)) {
@@ -940,7 +940,7 @@ else
 	}
 
 	private void makeCreateShippingOrderPFLCall (List<SenderDataApi> data,
-			List<SenderDataResponse> senderDataResponseList, String userName) throws EtowerFailureResponseException {
+			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
 		PflCreateShippingRequest pflRequest = new PflCreateShippingRequest();
 		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
 		for (SenderDataApi orderDetail : data) {
@@ -963,11 +963,11 @@ else
 			pflOrderInfoRequest.add(request);
 		}
 		pflRequest.setOrderinfo(pflOrderInfoRequest);
-		pflWrapper.createShippingOrderPFL(data, pflRequest, userName, senderDataResponseList);
+		pflWrapper.createShippingOrderPFL(data, pflRequest, userName, senderDataResponseList, serviceType);
 	}
 	
 	private void makeCreateShippingOrderFilePFLCall (List<SenderData> data,
-			List<SenderDataResponse> senderDataResponseList, String userName) throws EtowerFailureResponseException {
+			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
 		PflCreateShippingRequest pflRequest = new PflCreateShippingRequest();
 		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
 		for (SenderData orderDetail : data) {
@@ -990,7 +990,7 @@ else
 			pflOrderInfoRequest.add(request);
 		}
 		pflRequest.setOrderinfo(pflOrderInfoRequest);
-		pflWrapper.createShippingOrderPFLUI(data, pflRequest, userName, senderDataResponseList);
+		pflWrapper.createShippingOrderPFLUI(data, pflRequest, userName, senderDataResponseList, serviceType);
 	}
 
 	@Override

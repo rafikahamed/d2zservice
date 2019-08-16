@@ -4,15 +4,11 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="CSTickets")
-@NamedQuery(name="CSTickets.findAll", query="SELECT a FROM CSTickets a")
 public class CSTickets implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -36,6 +32,9 @@ public class CSTickets implements Serializable {
 	@Column(name = "Comments")
 	private String comments;
 	
+	@Column(name = "D2ZComments")
+	private String d2zComments;
+	
 	@Column(name = "TrackingStatus")
 	private String trackingStatus;
 	
@@ -44,6 +43,9 @@ public class CSTickets implements Serializable {
 	
 	@Column(name = "TrackingEventDateOccured")
 	private Timestamp trackingEventDateOccured;
+	
+	@Column(name = "ExpectedDeliveryDate")
+	private Timestamp expectedDeliveryDate;
 	
 	@Column(name = "Status")
 	private String status;
@@ -56,7 +58,32 @@ public class CSTickets implements Serializable {
 	
 	@Column(name = "Carrier")
 	private String carrier;
-
+	
+	@Column(name = "Attachment")
+	private byte[] attachment;
+	
+	@Column(name = "SendUpdate")
+	private String sendUpdate;
+	
+	@Column(name = "Consignee_addr1")
+	private String consignee_addr1;
+	
+	@Column(name = "Consignee_Suburb")
+	private String consignee_Suburb;
+	
+	@Column(name = "Consignee_State")
+	private String consignee_State;
+	
+	@Column(name = "Consignee_Postcode")
+	private String consignee_Postcode;
+	
+	@Column(name = "Product_Description")
+	private String product_Description;
+	
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	
 	public String getTicketID() {
 		return ticketID;
 	}
@@ -160,9 +187,77 @@ public class CSTickets implements Serializable {
 	public void setCarrier(String carrier) {
 		this.carrier = carrier;
 	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
 	
+	public String getD2zComments() {
+		return d2zComments;
+	}
+
+	public void setD2zComments(String d2zComments) {
+		this.d2zComments = d2zComments;
+	}
+
+	public Timestamp getExpectedDeliveryDate() {
+		return expectedDeliveryDate;
+	}
+
+	public void setExpectedDeliveryDate(Timestamp expectedDeliveryDate) {
+		this.expectedDeliveryDate = expectedDeliveryDate;
+	}
+
+	public byte[] getAttachment() {
+		return attachment;
+	}
+
+	public void setAttachment(byte[] attachment) {
+		this.attachment = attachment;
+	}
+
+	public String getConsignee_addr1() {
+		return consignee_addr1;
+	}
+
+	public String getSendUpdate() {
+		return sendUpdate;
+	}
+
+	public void setSendUpdate(String sendUpdate) {
+		this.sendUpdate = sendUpdate;
+	}
+
+	public void setConsignee_addr1(String consignee_addr1) {
+		this.consignee_addr1 = consignee_addr1;
+	}
+
+	public String getConsignee_Suburb() {
+		return consignee_Suburb;
+	}
+
+	public void setConsignee_Suburb(String consignee_Suburb) {
+		this.consignee_Suburb = consignee_Suburb;
+	}
+
+	public String getConsignee_State() {
+		return consignee_State;
+	}
+
+	public void setConsignee_State(String consignee_State) {
+		this.consignee_State = consignee_State;
+	}
+
+	public String getConsignee_Postcode() {
+		return consignee_Postcode;
+	}
+
+	public void setConsignee_Postcode(String consignee_Postcode) {
+		this.consignee_Postcode = consignee_Postcode;
+	}
+
+	public String getProduct_Description() {
+		return product_Description;
+	}
+
+	public void setProduct_Description(String product_Description) {
+		this.product_Description = product_Description;
+	}
+
 }

@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZDao;
@@ -987,6 +985,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setArticleID(senderArticleId.getArticleId());
 					tickets.setReferenceNumber(senderArticleId.getReference_number());
 					tickets.setConsigneeName(senderArticleId.getConsignee_name());
+					tickets.setConsignee_addr1(senderArticleId.getConsignee_addr1());
+					tickets.setConsignee_Suburb(senderArticleId.getConsignee_Suburb());
+					tickets.setConsignee_State(senderArticleId.getConsignee_State());
+					tickets.setConsignee_Postcode(senderArticleId.getConsignee_Postcode());
+					tickets.setProduct_Description(senderArticleId.getProduct_Description());
 					tickets.setCarrier(senderArticleId.getCarrier());
 				}
 			}else if(enquiryRequest.getType().equalsIgnoreCase("Reference Number")) {
@@ -995,6 +998,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setArticleID(senderRefId.getArticleId());
 					tickets.setReferenceNumber(senderRefId.getReference_number());
 					tickets.setConsigneeName(senderRefId.getConsignee_name());
+					tickets.setConsignee_addr1(senderRefId.getConsignee_addr1());
+					tickets.setConsignee_Suburb(senderRefId.getConsignee_Suburb());
+					tickets.setConsignee_State(senderRefId.getConsignee_State());
+					tickets.setConsignee_Postcode(senderRefId.getConsignee_Postcode());
+					tickets.setProduct_Description(senderRefId.getProduct_Description());
 					tickets.setCarrier(senderRefId.getCarrier());
 				}
 			}
