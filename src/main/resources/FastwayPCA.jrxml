@@ -201,7 +201,7 @@
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Kingsgrove NSW 2022"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Kingsgrove NSW 2208"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="211" y="-145" width="139" height="33" uuid="7fd1e4c2-8511-4e79-bd2c-292dfd3b0b70"/>
