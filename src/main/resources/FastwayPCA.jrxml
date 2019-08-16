@@ -221,7 +221,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="MyArial" size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{weight}.concat("kg")]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{weight}.concat(" kg")]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="140" y="3" width="100" height="20" forecolor="#FFFFFF" uuid="6c4162db-de22-4696-9901-7c631d31a7ee"/>
