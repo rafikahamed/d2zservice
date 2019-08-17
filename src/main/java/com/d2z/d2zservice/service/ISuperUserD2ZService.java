@@ -110,4 +110,6 @@ public interface ISuperUserD2ZService{
 	public List<OpenEnquiryResponse> fetchOpenEnquiryDetails();
 
 	public UserMessage updateEnquiryDetails(List<OpenEnquiryResponse> openEnquiryDetails);
+
+	public List<OpenEnquiryResponse> completedEnquiryDetails();
 }

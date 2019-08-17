@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.BrokerRates;
+import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.D2ZRates;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
@@ -824,6 +825,12 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			}
 		}
 		return "Enquiry Updated Successfully";
+	}
+
+	@Override
+	public List<CSTickets> completedEnquiryDetails() {
+		List<CSTickets> completedTicketDetails = csticketsRepository.completedEnquiryDetails();
+		return completedTicketDetails;
 	}
 
 }

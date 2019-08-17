@@ -45,11 +45,11 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 	 @Query(nativeQuery = true,value="SELECT t.reference_number FROM Trackandtrace t where substring(t.articleID, 1, 5) in ('33PE9','33PEN','33PET','33PEH') \n" + 
 		 		"AND t.trackeventdetails = 'Shipment Allocated' \n" + 
 		 		"AND t.trackeventdateoccured BETWEEN Dateadd(day, -2, Getdate()) AND Dateadd(day, -1, Getdate())")
-		 List<String> fetchArticleIDForFDMCall();
+	 List<String> fetchArticleIDForFDMCall();
 	 
 	
 	 @Query(nativeQuery = true, value="SELECT top 2000 * FROM Trackandtrace t where t.trackEventCode = 'SA' AND t.fileName = 'AUPostCreate'")
-	List<Trackandtrace> fetchArticleIDForAUPost();
+	 List<Trackandtrace> fetchArticleIDForAUPost();
 
     
 //	 @Query(nativeQuery = true, value="SELECT ArticleId\r\n" + 

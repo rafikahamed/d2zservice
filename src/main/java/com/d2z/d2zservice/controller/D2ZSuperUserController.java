@@ -273,4 +273,9 @@ public class D2ZSuperUserController {
 		return superUserD2zService.updateEnquiryDetails(openEnquiryDetails);
     }
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/completed-enquiry")
+    public List<OpenEnquiryResponse> completedEnquiryDetails() {
+		return superUserD2zService.completedEnquiryDetails();
+    }
+	
 }

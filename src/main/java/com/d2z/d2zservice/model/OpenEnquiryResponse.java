@@ -7,6 +7,11 @@ public class OpenEnquiryResponse {
 	private int userId;
 	private int client_broker_id;
 	private String articleID;
+	private String referenceNumber;
+	private String deliveryEnquiry;
+	private String pod;
+	private String trackingStatus;
+	private String trackingEvent;
 	private String trackingEventDateOccured;
 	private String trackingDeliveryDate;
 	private String consigneeName;
@@ -128,6 +133,36 @@ public class OpenEnquiryResponse {
 	}
 	public void setProductDescription(String productDescription) {
 		this.productDescription = productDescription;
+	}
+	public String getReferenceNumber() {
+		return referenceNumber;
+	}
+	public void setReferenceNumber(String referenceNumber) {
+		this.referenceNumber = referenceNumber;
+	}
+	public String getDeliveryEnquiry() {
+		return deliveryEnquiry;
+	}
+	public void setDeliveryEnquiry(String deliveryEnquiry) {
+		this.deliveryEnquiry = deliveryEnquiry;
+	}
+	public String getPod() {
+		return pod;
+	}
+	public void setPod(String pod) {
+		this.pod = pod;
+	}
+	public String getTrackingStatus() {
+		return trackingStatus;
+	}
+	public void setTrackingStatus(String trackingStatus) {
+		this.trackingStatus = trackingStatus;
+	}
+	public String getTrackingEvent() {
+		return trackingEvent;
+	}
+	public void setTrackingEvent(String trackingEvent) {
+		this.trackingEvent = trackingEvent;
 	}
 	
 }

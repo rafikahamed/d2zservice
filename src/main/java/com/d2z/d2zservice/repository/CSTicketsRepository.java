@@ -87,5 +87,8 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 	@Query("update CSTickets c set c.d2zComments = :d2zComments, c.status = :status, c.sendUpdate = :sendUpdate where c.articleID = :articleID")
 	int updateTicketInfo(@Param("d2zComments") String d2zComments, @Param("status") String status, 
 				@Param("sendUpdate") String sendUpdate, @Param("articleID") String articleID);
+	
+	@Query(value="SELECT t FROM CSTickets t where status = 'closed' and trackingEventDateOccured >= getdate() -14") 
+	List<CSTickets> completedEnquiryDetails();
 
 }

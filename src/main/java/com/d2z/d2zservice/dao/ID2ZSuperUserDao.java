@@ -2,6 +2,7 @@ package com.d2z.d2zservice.dao;
 
 import java.util.List;
 import com.d2z.d2zservice.entity.AUPostResponse;
+import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
 import com.d2z.d2zservice.entity.Mlid;
@@ -139,6 +140,8 @@ public interface ID2ZSuperUserDao {
 	List<OpenEnquiryResponse> fetchOpenEnquiryDetails();
 
 	String updateEnquiryDetails(List<OpenEnquiryResponse> openEnquiryDetails);
+
+	List<CSTickets> completedEnquiryDetails();
 
 }
 

@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
+import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
 import com.d2z.d2zservice.entity.Mlid;
@@ -993,6 +995,28 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		String message = d2zDao.updateEnquiryDetails(openEnquiryDetails);
 		usrMsg.setMessage("Enquiry Updated Successfully");
 		return usrMsg;
+	}
+
+	@Override
+	public List<OpenEnquiryResponse> completedEnquiryDetails() {
+		List<OpenEnquiryResponse> enquiryListDetails = new ArrayList<OpenEnquiryResponse>();
+		List<CSTickets> csTickets = d2zDao.completedEnquiryDetails();
+		for(CSTickets csTicketDetails:csTickets) {
+			OpenEnquiryResponse enquiryData = new OpenEnquiryResponse();
+			enquiryData.setTicketNumber(csTicketDetails.getTicketID());
+			enquiryData.setArticleID(csTicketDetails.getArticleID());
+			enquiryData.setReferenceNumber(csTicketDetails.getReferenceNumber());
+			enquiryData.setDeliveryEnquiry(csTicketDetails.getDeliveryEnquiry());
+			enquiryData.setPod(csTicketDetails.getPod());
+			enquiryData.setComments(csTicketDetails.getComments());
+			enquiryData.setConsigneeName(csTicketDetails.getConsigneeName());
+			enquiryData.setD2zComments(csTicketDetails.getD2zComments());
+			enquiryData.setTrackingStatus(csTicketDetails.getTrackingStatus());
+			enquiryData.setTrackingEvent(csTicketDetails.getTrackingEvent());
+			enquiryData.setTrackingEventDateOccured(csTicketDetails.getTrackingEventDateOccured().toString());
+			enquiryListDetails.add(enquiryData);
+		}
+		return enquiryListDetails;
 	}
 
 }
