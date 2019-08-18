@@ -276,6 +276,17 @@ public class D2ZServiceImpl implements ID2ZService {
 		String fileUploadData = d2zDao.consignmentDelete(refrenceNumlist);
 		UserMessage userMsg = new UserMessage();
 		userMsg.setMessage(fileUploadData);
+		
+		 List<String> incomingRefNbr = Arrays.asList(refrenceNumlist.split("\\s*,\\s*"));
+				 
+				 Runnable r = new Runnable( ) {			
+		        public void run() {
+		        System.out.println("in Thread for Delete pfl etower");
+		        	deleteEtowerPflPca(incomingRefNbr);
+		    		
+		        }
+		     };
+		    new Thread(r).start();
 		return userMsg;
 	}
 
