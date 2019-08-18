@@ -1083,4 +1083,10 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return senderDataRepository.fetchConsignmentsByRefNbr(incomingRefNbr);
 	}
 
+
+	@Override
+	public List<SenderdataMaster> fetchConsignmentsByRefNbr(List<String> refNbrs) {
+		// TODO Auto-generated method stub
+		return senderDataRepository.fetchConsignmentsByRefNbr(refNbrs);
+	}
 }
