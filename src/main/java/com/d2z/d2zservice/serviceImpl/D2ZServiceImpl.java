@@ -1752,7 +1752,11 @@ else
 	public void updateRates() {
 		d2zDao.updateRates();
 	}
-
+	
+	@Override
+	public void updateCubicWeight() {
+		d2zDao.updateCubicWeight();
+	}
 	@Override
 	public void makeCallToEtowerBasedonSupplierUI(List<String> incomingRefNbr) {
 		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(incomingRefNbr,"eTower");
