@@ -121,6 +121,8 @@ public interface ID2ZDao {
 	public int fetchUserIdbyUserName(String userName);
 
 	public List<SenderdataMaster> fetchDataBasedonSupplier(List<String> incomingRefNbr, String string);
+	
+	public List<SenderdataMaster> fetchDataBasedonrefnbr(List<String> incomingRefNbr);
 
 	public List<String> fetchDataForEtowerForeCastCall(String[] refNbrs);
 

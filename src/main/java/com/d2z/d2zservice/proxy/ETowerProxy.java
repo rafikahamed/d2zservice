@@ -14,6 +14,8 @@ import org.springframework.web.client.RestTemplate;
 import com.d2z.d2zservice.interceptor.ETowerHeaderRequestInterceptor;
 import com.d2z.d2zservice.model.etower.CreateShippingRequest;
 import com.d2z.d2zservice.model.etower.CreateShippingResponse;
+
+import com.d2z.d2zservice.model.etower.DeleteShippingResponse;
 import com.d2z.d2zservice.model.etower.GainLabelsResponse;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -170,5 +172,33 @@ public class ETowerProxy {
 		}
         System.out.println("Response :: " + jsonResponse);
         return responseList;
+	}
+	
+	public DeleteShippingResponse makeCallToDelete(String referenceNumber) {
+
+
+		String url = baseURL+"services/shipper/order/"+referenceNumber;
+		//Prod URL
+		//SSL cert issue fix
+		//String url = "http://au.etowertech.com/services/shipper/labelSpecs/";
+			//"https://au.etowertech.com/services/integration/shipper/trackingEvents/";
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		requestFactory.setOutputStreaming(false);
+        RestTemplate restTemplate = new RestTemplate(requestFactory);
+        restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(key,token)));
+    	HttpEntity<String> httpEntity = new HttpEntity<String>(referenceNumber);
+        System.out.println("Making call to etower");
+        ResponseEntity<DeleteShippingResponse> response = restTemplate.exchange(url,HttpMethod.DELETE,httpEntity,DeleteShippingResponse.class);
+        DeleteShippingResponse deleteshippingResponse = response.getBody();
+        ObjectWriter ow = new ObjectMapper().writer();
+        String jsonResponse = null;
+		try {
+			jsonResponse = ow.writeValueAsString(deleteshippingResponse);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        System.out.println("Response :: " + jsonResponse);
+        return deleteshippingResponse;
 	}
 }

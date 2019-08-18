@@ -25,6 +25,7 @@ import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.etower.CreateShippingRequest;
 import com.d2z.d2zservice.model.etower.CreateShippingResponse;
+import com.d2z.d2zservice.model.etower.DeleteShippingResponse;
 import com.d2z.d2zservice.model.etower.EtowerErrorResponse;
 import com.d2z.d2zservice.model.etower.Facility;
 import com.d2z.d2zservice.model.etower.GainLabelsResponse;
@@ -49,8 +50,9 @@ public class ETowerWrapper {
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		
 		List<String> gainLabelTrackingNo = new ArrayList<String>();
-
+System.out.println("ttt"+eTowerRequest.isEmpty());
 		if (!eTowerRequest.isEmpty()) {
+			
 			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest);
 			status = parseCreateShippingOrderResponse(response, senderDataResponseList, barcodeMap,
 					gainLabelTrackingNo);
@@ -159,8 +161,10 @@ public class ETowerWrapper {
 			String recpName = orderDetail.getConsigneeName().length() > 34
 					? orderDetail.getConsigneeName().substring(0, 34)
 					: orderDetail.getConsigneeName();
-			request.setRecipientName(recpName);
-			request.setAddressLine1(orderDetail.getConsigneeAddr1());
+					recpName = recpName.replaceAll("[^a-zA-Z0-9]", "");
+					request.setRecipientName(recpName);
+					String address = (orderDetail.getConsigneeAddr1()).replaceAll("[^a-zA-Z0-9]", "");
+					request.setAddressLine1(address);
 			request.setAddressLine2(orderDetail.getConsigneeAddr2());
 			request.setEmail(orderDetail.getConsigneeEmail());
 			request.setCity(orderDetail.getConsigneeSuburb());
@@ -357,6 +361,26 @@ public class ETowerWrapper {
 		return eTowerRequest;
 
 	}
+	public void DeleteShipingResponse(List<String> referencenumber)
+	{
+	
+		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
+		for(String s : referencenumber)
+		{
+						DeleteShippingResponse data = eTowerProxy.makeCallToDelete("SW10" +
+s);
+			ETowerResponse errorResponse = new ETowerResponse();
+			errorResponse.setAPIName("Delete Shipping Order");
+			errorResponse.setStatus(data.getStatus());
+			errorResponse.setOrderId(data.getOrderId());
+			errorResponse.setReferenceNumber(s);
+			//errorResponse.setTrackingNo(data.getTrackingNo());
+			errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+			responseEntity.add(errorResponse);
+		}
+		
+		d2zDao.logEtowerResponse(responseEntity);
+	}
 
 	private String parseCreateShippingOrderResponse(CreateShippingResponse response,
 			List<SenderDataResponse> senderDataResponseList, Map<String, LabelData> barcodeMap,
@@ -457,8 +481,11 @@ public class ETowerWrapper {
 			String recpName = orderDetail.getConsigneeName().length() > 34
 					? orderDetail.getConsigneeName().substring(0, 34)
 					: orderDetail.getConsigneeName();
-			request.setRecipientName(recpName);
-			request.setAddressLine1(orderDetail.getConsigneeAddr1());
+					recpName = recpName.replaceAll("[^a-zA-Z0-9]", "");
+					request.setRecipientName(recpName);
+					String address = (orderDetail.getConsigneeAddr1()).replaceAll("[^a-zA-Z0-9]", "");
+					request.setAddressLine1(address);
+		
 			request.setAddressLine2(orderDetail.getConsigneeAddr2());
 			request.setEmail(orderDetail.getConsigneeEmail());
 			request.setCity(orderDetail.getConsigneeSuburb());
@@ -715,8 +742,10 @@ public class ETowerWrapper {
 				String recpName = orderDetail.getConsignee_name().length() > 34
 						? orderDetail.getConsignee_name().substring(0, 34)
 						: orderDetail.getConsignee_name();
+						recpName = recpName.replaceAll("[^a-zA-Z0-9]", "");
 				request.setRecipientName(recpName);
-				request.setAddressLine1(orderDetail.getConsignee_addr1());
+				String address = (orderDetail.getConsignee_addr1()).replaceAll("[^a-zA-Z0-9]", "");
+				request.setAddressLine1(address);
 				request.setAddressLine2(orderDetail.getConsignee_addr2());
 				request.setEmail(orderDetail.getConsignee_Email());
 				request.setCity(orderDetail.getConsignee_Suburb());
