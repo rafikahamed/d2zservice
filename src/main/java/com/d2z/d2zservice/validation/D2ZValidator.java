@@ -37,10 +37,14 @@ public class D2ZValidator {
 
 	public void isPostCodeValid(List<SenderDataApi> senderData) {
 		List<String> postCodeZoneList = D2ZSingleton.getInstance().getPostCodeZoneList();
-
+		List<String> postCodeStateNameList = D2ZSingleton.getInstance().getPostCodeStateNameList();
 		List<String> incorrectPostcode_Suburb = new ArrayList<String>();
 		senderData.forEach(obj -> {
-			if(!postCodeZoneList.contains(obj.getConsigneeState().trim().toUpperCase().concat(obj.getConsigneeSuburb().trim().toUpperCase()).concat(obj.getConsigneePostcode().trim()))) {
+			String state = obj.getConsigneeState().trim().toUpperCase();
+			String suburb = obj.getConsigneeSuburb().trim().toUpperCase();
+			String postcode = obj.getConsigneePostcode().trim();
+			String combination = state.concat(suburb).concat(postcode);
+			if(!postCodeZoneList.contains(combination) && !postCodeStateNameList.contains(combination)) {
 				incorrectPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim());
 				
 			}
@@ -53,9 +57,14 @@ public class D2ZValidator {
 	
 	public void isPostCodeValidUI(List<SenderData> senderData) {
 		List<String> postCodeZoneList = D2ZSingleton.getInstance().getPostCodeZoneList();
+		List<String> postCodeStateNameList = D2ZSingleton.getInstance().getPostCodeStateNameList();
 		List<String> incorrectPostcode_Suburb = new ArrayList<String>();
 		senderData.forEach(obj -> {
-			if(!postCodeZoneList.contains(obj.getConsigneeState().trim().toUpperCase().concat(obj.getConsigneeSuburb().trim().toUpperCase()).concat(obj.getConsigneePostcode().trim()))) {
+			String state = obj.getConsigneeState().trim().toUpperCase();
+			String suburb = obj.getConsigneeSuburb().trim().toUpperCase();
+			String postcode = obj.getConsigneePostcode().trim();
+			String combination = state.concat(suburb).concat(postcode);
+			if(!postCodeZoneList.contains(combination) && !postCodeStateNameList.contains(combination)) {
 				incorrectPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim());
 			}
 		});
@@ -294,13 +303,17 @@ public class D2ZValidator {
 	public void isPostCodeValid(CreateConsignmentRequest orderDetail,
 			Map<String, List<ErrorDetails>> errorMap) {
 		List<SenderDataApi> senderData = orderDetail.getConsignmentData();
-
+		List<String> postCodeStateNameList = D2ZSingleton.getInstance().getPostCodeStateNameList();
 		List<String> postCodeZoneList = D2ZSingleton.getInstance().getPostCodeZoneList();
 
 		senderData.forEach(obj -> {
 			if(null!=obj.getConsigneeState() && null!=obj.getConsigneeSuburb() && null!=obj.getConsigneePostcode()) {
-			if(!postCodeZoneList.contains(obj.getConsigneeState().trim().toUpperCase().concat(obj.getConsigneeSuburb().trim().toUpperCase()).concat(obj.getConsigneePostcode().trim()))) {
-				 ValidationUtils.populateErrorDetails(obj.getReferenceNumber(),obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim(),
+			String state = obj.getConsigneeState().trim().toUpperCase();
+			String suburb = obj.getConsigneeSuburb().trim().toUpperCase();
+			String postcode = obj.getConsigneePostcode().trim();
+			String combination = state.concat(suburb).concat(postcode);
+			if(!postCodeZoneList.contains(combination) && !postCodeStateNameList.contains(combination)) {
+		   				 ValidationUtils.populateErrorDetails(obj.getReferenceNumber(),obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim(),
 						 "Invalid combination of Consignee State or Postcode or Suburb",errorMap) ;
 		
 			}

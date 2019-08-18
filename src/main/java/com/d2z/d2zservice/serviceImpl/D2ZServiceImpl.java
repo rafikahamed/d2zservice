@@ -369,8 +369,10 @@ public class D2ZServiceImpl implements ID2ZService {
 			else if("MCM3".equalsIgnoreCase(data.getServiceType())) {
 				whiteLabelData.add(data);
 			}else  if(data.getCarrier().equalsIgnoreCase("eParcel")) {
+				setGS1Type= true;
 				eParcelData.add(data);
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
+				setGS1Type = true;
 				expressData.add(data);
 			}else if(data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				fastwayData.add(data);
@@ -1002,28 +1004,40 @@ else
 	@Override
 	public ResponseMessage allocateShipment(String referenceNumbers, String shipmentNumber)
 			throws ReferenceNumberNotUniqueException {
+	
 		ResponseMessage userMsg = new ResponseMessage();
 		String[] refNbrs = referenceNumbers.split(",");
-		List<SenderdataMaster> incorrectRefNbr = d2zDao.findRefNbrByShipmentNbr(refNbrs);
-		List<String> invalidData = incorrectRefNbr.stream().map(a -> {
-			StringBuffer msg = new StringBuffer(a.getReference_number());
-
-			if (null != a.getAirwayBill()) {
-				msg.append(" : Shippment is already allocated");
-			}
-			if (a.getIsDeleted().equalsIgnoreCase("Y")) {
+		List<String> refNumbers = Arrays.asList(refNbrs);
+	
+		List<SenderdataMaster> consignments = d2zDao.fetchConsignmentsByRefNbr(refNumbers);
+		if(consignments.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Failure - Invalid Reference Numbers", refNumbers);
+		}
+		List<String> invalidData = consignments.stream().filter(obj -> null!=obj.getAirwayBill())
+				.map(a -> {
+			
+				String msg = a.getReference_number()+" : Shippment is already allocated";
+			
+			/*if (a.getIsDeleted().equalsIgnoreCase("Y")) {
 				msg = new StringBuffer(a.getReference_number());
 				msg.append(" : Consignment already deleted");
-			}
-			return msg.toString();
+			}*/
+			return msg;
 		}).collect(Collectors.toList());
 		if (!invalidData.isEmpty()) {
 			throw new ReferenceNumberNotUniqueException("Request failed", invalidData);
 		}
-
+      
 		String msg = d2zDao.allocateShipment(referenceNumbers, shipmentNumber);
-
-		
+		userMsg.setResponseMessage(msg);
+		  if(consignments.size() < refNumbers.size()) {
+	        	List<String> refNbr_DB = consignments.stream().map(obj->{
+	        		return obj.getReference_number();
+	        	}).collect(Collectors.toList());
+	        	List<String> invalidRefNbrs = new ArrayList<String>(refNumbers);
+	        	invalidRefNbrs.removeAll(refNbr_DB);
+	        	userMsg.setResponseMessage("Partial Success - Invalid Reference Numbers : "+String.join(",",invalidRefNbrs));
+	        }
 		Runnable freipost = new Runnable( ) {			
 	        public void run() {
 	        	String[] refNbrArray = referenceNumbers.split(",");
@@ -1061,9 +1075,9 @@ else
 	     };
 		 new Thread(r).start();*/
 		 
-		userMsg.setResponseMessage(msg);
+		
 		return userMsg;
-	}
+	 }
 
 	// @Scheduled(cron = "0 0 0/2 * * ?")
 	// @Scheduled(cron = "0 0/10 * * * ?")
@@ -1713,7 +1727,11 @@ else
 	public void updateRates() {
 		d2zDao.updateRates();
 	}
-
+	
+	@Override
+	public void updateCubicWeight() {
+		d2zDao.updateCubicWeight();
+	}
 	@Override
 	public void makeCallToEtowerBasedonSupplierUI(List<String> incomingRefNbr) {
 		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(incomingRefNbr,"eTower");

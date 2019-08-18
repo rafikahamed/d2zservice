@@ -410,7 +410,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	public void updateTrackAndTrace(String fileSeqId,int userId,List<String> autoShipRefNbrs) {
 		Runnable r = new Runnable() {			
 	        public void run() {
-	        	senderDataRepository.updateCubicWeight();
+	        	
 	        	List<String> insertedOrder = fetchBySenderFileID(fileSeqId);
 	        	List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
 	        	Iterator itr = insertedOrder.iterator();
@@ -1083,4 +1083,10 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return senderDataRepository.fetchConsignmentsByRefNbr(incomingRefNbr);
 	}
 
+
+	@Override
+	public List<SenderdataMaster> fetchConsignmentsByRefNbr(List<String> refNbrs) {
+		// TODO Auto-generated method stub
+		return senderDataRepository.fetchConsignmentsByRefNbr(refNbrs);
+	}
 }
