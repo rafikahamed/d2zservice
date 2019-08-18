@@ -1,7 +1,6 @@
 package com.d2z.d2zservice.service;
 
 import java.util.List;
-
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -19,6 +18,7 @@ import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
+import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -97,7 +97,7 @@ public interface ISuperUserD2ZService{
 
 	public byte[] trackingLabel(List<String> refBarNumArray);
 
-public UserMessage deleteMLID(String service);
+	public UserMessage deleteMLID(String service);
 	
 	public List<Mlid> downloadMlid(String service);
 	
@@ -106,4 +106,10 @@ public UserMessage deleteMLID(String service);
 	public List<DropDownModel> fetchMlidDeleteList();
 	
 	public List<AUWeight> downloadAUWeight(List<Object> AUWeight);
+
+	public List<OpenEnquiryResponse> fetchOpenEnquiryDetails();
+
+	public UserMessage updateEnquiryDetails(List<OpenEnquiryResponse> openEnquiryDetails);
+
+	public List<OpenEnquiryResponse> completedEnquiryDetails();
 }

@@ -193,6 +193,7 @@ public class D2zController {
 		UserMessage userMsg = d2zService.deleteUser(companyName, roleId);
 		return userMsg;
 	}
+	
 //	@RequestMapping( method = RequestMethod.GET, path = "/consignments/shipment")
 //    public ResponseEntity<byte[]> downloadShipmentData(@RequestParam("shipmentNumber") String shipmentNumber) {
 //    	byte[] bytes = d2zService.downloadShipmentData(shipmentNumber);
@@ -261,11 +262,13 @@ public class D2zController {
 	public void triggeretower(@RequestBody List<String> referenceNumbers) {
 		d2zService.makeCallToEtowerBasedonSupplierUI(referenceNumbers);
 	}
+	
 	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/shipmentarticleid/{shipmentNumber}")
 	public ResponseMessage allocateShipmentbyArticleID(@RequestBody String articleid,@PathVariable String shipmentNumber)
 			throws ReferenceNumberNotUniqueException {
 		return d2zService.allocateShipmentArticleid(articleid.toString(), shipmentNumber);
 	}
+	
 	@RequestMapping(method = RequestMethod.GET, path = "/currency")
 	public void getcurrency() {
 		d2zService.currencyRate();

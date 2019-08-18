@@ -28,20 +28,26 @@ public class PFLProxy {
 	String baseURL = "http://103.225.160.46";
 	HMACGenerator hmacGenerator = new HMACGenerator();
 
-	public PFLCreateShippingResponse makeCallForCreateShippingOrder(PflCreateShippingRequest request) {
-		String url = baseURL + "/app/services/multicourier/createorder";
+	public PFLCreateShippingResponse makeCallForCreateShippingOrder(PflCreateShippingRequest request,String serviceType) {
 		RestTemplate template = new RestTemplate();
 		String jsonResponse = null;
+		String SECRET_KEY = null;
+		String Token = null;
 		PFLCreateShippingResponse response = null;
 		String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
+		String url = baseURL + "/app/services/multicourier/createorder";
 		SimpleDateFormat currentDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
 		currentDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String currentDate = currentDateFormat.format(new Date());
 		System.out.println("US: " + currentDateFormat.format(new Date()));
-		String SECRET_KEY = "3VXSOS7WUSF4DS6V5LXS8ER14KR2TMP6";
-		String Token = "QT6P9I85LHETLYP43G7J440GD6W77TFX";
-		String authorizationHeader = hmacGenerator.calculatePFLHMAC(SECRET_KEY,
-				"/app/services/multicourier/createorder");
+		if("FW".equalsIgnoreCase(serviceType)) {
+			SECRET_KEY = "U00T659VKM1YBHJGFE9SC326EHFKWE7B";
+			Token = "FVJMJGYLC74QIAGRPJREJBAHOQZ3H0LM";
+		}else {
+			SECRET_KEY = "3VXSOS7WUSF4DS6V5LXS8ER14KR2TMP6";
+			Token = "QT6P9I85LHETLYP43G7J440GD6W77TFX";
+		}
+		String authorizationHeader = hmacGenerator.calculatePFLHMAC(SECRET_KEY,"/app/services/multicourier/createorder");
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(MediaType.APPLICATION_JSON);

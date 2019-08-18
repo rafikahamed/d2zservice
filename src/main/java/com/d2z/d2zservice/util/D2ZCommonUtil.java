@@ -2,7 +2,9 @@ package com.d2z.d2zservice.util;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -48,6 +50,20 @@ public class D2ZCommonUtil {
 	    String parsedDate = format.format(dt);
 		return parsedDate;
 	}
-	
+
+	public static String getIncreasedTime(String trackingEventDateOccured, String transitTime) {
+		String[] timeStampSplitArray = trackingEventDateOccured.split(" ");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar c = Calendar.getInstance();
+		try{
+		   c.setTime(sdf.parse(trackingEventDateOccured));
+		}catch(ParseException e){
+			e.printStackTrace();
+		 }
+		c.add(Calendar.DAY_OF_MONTH, Integer.parseInt(transitTime));  
+		String newDate = sdf.format(c.getTime());  
+		System.out.println("Date after Addition: "+newDate);
+		return newDate+" "+timeStampSplitArray[1];
+	}
 	  
 }

@@ -33,10 +33,10 @@ public class PFLWrapper {
 	private ID2ZDao d2zDao;
 	
 	public void createShippingOrderPFL(List<SenderDataApi> incomingRequest,
-			PflCreateShippingRequest PFLRequest, String userName, List<SenderDataResponse> senderDataResponseList) 
+			PflCreateShippingRequest PFLRequest, String userName, List<SenderDataResponse> senderDataResponseList, String serviceType) 
 						throws EtowerFailureResponseException {
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
-		PFLCreateShippingResponse pflResponse = pflProxy.makeCallForCreateShippingOrder(PFLRequest);
+		PFLCreateShippingResponse pflResponse = pflProxy.makeCallForCreateShippingOrder(PFLRequest, serviceType);
 		logPflCreateResponse(pflResponse);
 		if(pflResponse==null) {
 			throw new EtowerFailureResponseException("Error in file – please contact customer support");
@@ -70,10 +70,10 @@ public class PFLWrapper {
 	}
 	
 	public void createShippingOrderPFLUI(List<SenderData> incomingRequest,
-			PflCreateShippingRequest PFLRequest, String userName, List<SenderDataResponse> senderDataResponseList) 
+			PflCreateShippingRequest PFLRequest, String userName, List<SenderDataResponse> senderDataResponseList, String serviceType) 
 					throws EtowerFailureResponseException{
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
-		PFLCreateShippingResponse pflResponse = pflProxy.makeCallForCreateShippingOrder(PFLRequest);
+		PFLCreateShippingResponse pflResponse = pflProxy.makeCallForCreateShippingOrder(PFLRequest, serviceType);
 		logPflCreateResponse(pflResponse);
 		if(pflResponse==null) {
 			throw new EtowerFailureResponseException("Error in file – please contact customer support");

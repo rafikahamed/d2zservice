@@ -2,6 +2,7 @@ package com.d2z.d2zservice.dao;
 
 import java.util.List;
 import com.d2z.d2zservice.entity.AUPostResponse;
+import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
 import com.d2z.d2zservice.entity.Mlid;
@@ -16,6 +17,7 @@ import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.D2ZRatesData;
+import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
@@ -123,17 +125,23 @@ public interface ID2ZSuperUserDao {
 
 	List<String> trackingLabel(List<String> refBarNumArray);
 
-UserMessage deleteMlid(String service);
+	UserMessage deleteMlid(String service);
 	
 	List<Mlid> downloadMlid(String service);
 	
- UserMessage addMlid(List<Object> MlidData);
+	UserMessage addMlid(List<Object> MlidData);
  
- List<String> fetchMlidDeleteList();
+	List<String> fetchMlidDeleteList();
  
-List<AUWeight> downloadAUweight(List<Object> ArticleID);
+	List<AUWeight> downloadAUweight(List<Object> ArticleID);
 
-String fetchUserById(int parseInt);
+	String fetchUserById(int parseInt);
+
+	List<OpenEnquiryResponse> fetchOpenEnquiryDetails();
+
+	String updateEnquiryDetails(List<OpenEnquiryResponse> openEnquiryDetails);
+
+	List<CSTickets> completedEnquiryDetails();
 
 }
 

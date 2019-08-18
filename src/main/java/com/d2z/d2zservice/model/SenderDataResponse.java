@@ -1,5 +1,8 @@
 package com.d2z.d2zservice.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SenderDataResponse {
 
 	private String referenceNumber;
@@ -8,6 +11,18 @@ public class SenderDataResponse {
 	private String message;
 	private String datamatrix;
 	private String sortcode;
+	private List<ErrorDetails> errorDetails;
+	public List<ErrorDetails> getErrorDetails() {
+		if(null == errorDetails) {
+			return new ArrayList<ErrorDetails>();
+		}
+		return errorDetails;
+	}
+
+	public void setErrorDetails(List<ErrorDetails> errorDetails) {
+		this.errorDetails = errorDetails;
+	}
+
 	public String getSortcode() {
 		return sortcode;
 	}
