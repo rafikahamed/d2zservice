@@ -1650,7 +1650,7 @@ else
 					 byte[] contentInBytes = requestXml.getBytes();
 					 InputStream targetStream = new ByteArrayInputStream(contentInBytes);
 					 System.out.println("in:"+targetStream+"request:"+request);
-					// ftpUploader.fdmFileCreation(request);
+					 //ftpUploader.fdmFileCreation(request);
 					 System.out.println("FDM Request ---->");
 					 System.out.println(request);
 					 ftpUploader.ftpUpload(targetStream);
