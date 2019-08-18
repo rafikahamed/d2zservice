@@ -1069,4 +1069,10 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return currencyRepository.getaud(country);
 	}
 
+	@Override
+	public List<SenderdataMaster> fetchDataBasedonrefnbr(List<String> incomingRefNbr) {
+		// TODO Auto-generated method stub
+		return senderDataRepository.fetchConsignmentsByRefNbr(incomingRefNbr);
+	}
+
 }

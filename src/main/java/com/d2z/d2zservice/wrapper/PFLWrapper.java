@@ -151,6 +151,19 @@ public class PFLWrapper {
 			}
 		}
 	}
+	
+	public void DeleteOrderPFL(List<String> orderIds) throws EtowerFailureResponseException {
+		PFLSubmitOrderRequest pflSubmitOrder = new PFLSubmitOrderRequest();
+		pflSubmitOrder.setIds(orderIds);
+		PFLSubmitOrderResponse pflSubmitResponse = pflProxy.DeleteOrderPFL(pflSubmitOrder);
+		logPflDeleteResponse(pflSubmitResponse, orderIds);
+		if(pflSubmitResponse==null) {
+			throw new EtowerFailureResponseException("Error in file – please contact customer support");
+		}else {
+			if(pflSubmitResponse.getResult() != null) {
+			}
+		}
+	}
 
 	private void logPflSubmitResponse(PFLSubmitOrderResponse pflSubmitResponse, List<String> orderIds) throws EtowerFailureResponseException{
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
@@ -181,5 +194,36 @@ public class PFLWrapper {
 				}
 			}
 	}
+	
+	private void logPflDeleteResponse(PFLSubmitOrderResponse pflSubmitResponse, List<String> orderIds) throws EtowerFailureResponseException{
+		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
+			if(pflSubmitResponse != null) {
+				if(pflSubmitResponse.getError() != null) {
+					for(String orderIdVal:pflSubmitResponse.getError_ids()) {
+						ETowerResponse errorResponse = new ETowerResponse();
+						errorResponse.setAPIName("PFL - Delete order");
+						errorResponse.setOrderId(orderIdVal);
+						errorResponse.setErrorCode(pflSubmitResponse.getCode());
+						errorResponse.setErrorMessage(pflSubmitResponse.getError());
+						errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+						errorResponse.setStatus("Error");
+						responseEntity.add(errorResponse);
+					}
+					d2zDao.logEtowerResponse(responseEntity);
+					throw new EtowerFailureResponseException("Error in file – please contact customer support");
+				}else {
+					for(String successOrder:orderIds) {
+						ETowerResponse errorResponse = new ETowerResponse();
+						errorResponse.setAPIName("PFL - Delete order");
+						errorResponse.setOrderId(successOrder);
+						errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+						errorResponse.setStatus("Success");
+						responseEntity.add(errorResponse);
+					}
+					d2zDao.logEtowerResponse(responseEntity);
+				}
+			}
+	}
+	
 	
 }

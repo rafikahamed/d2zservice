@@ -108,10 +108,12 @@ import com.d2z.d2zservice.model.fdm.Consignment;
 import com.d2z.d2zservice.model.fdm.FDMManifestRequest;
 import com.d2z.d2zservice.model.fdm.Line;
 import com.d2z.d2zservice.proxy.AusPostProxy;
+import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.proxy.EbayProxy;
 import com.d2z.d2zservice.proxy.FDMProxy;
 import com.d2z.d2zservice.proxy.PcaProxy;
 import com.d2z.d2zservice.repository.FFResponseRepository;
+import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
@@ -157,6 +159,8 @@ public class D2ZServiceImpl implements ID2ZService {
 
 	@Autowired
 	FFResponseRepository ffresponseRepository;
+	
+	
 
 	@Autowired
 	ShipmentDetailsWriter shipmentWriter;
@@ -408,10 +412,14 @@ public class D2ZServiceImpl implements ID2ZService {
 			if (!eParcelData.isEmpty()) {
 				System.out.println("Generating eParcel..." + eParcelData.size());
 				eParcelDataSource = new JRBeanCollectionDataSource(eParcelData);
+				System.out.println("Generating eParcel..." + eParcelData.size());
 				eParcelLabel = JasperCompileManager
 						.compileReport(getClass().getResource("/eparcelLabel.jrxml").openStream());
+				System.out.println("Generating eParcel..." + eParcelData.size());
 				JRSaver.saveObject(eParcelLabel, "label.jasper");
+				System.out.println("Generating eParcel..." + eParcelData.size());
 				jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, eParcelDataSource));
+				System.out.println("Generating eParcel..." + eParcelData.size());
 
 			}
 			if (!expressData.isEmpty()) {
@@ -455,6 +463,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			exporter.exportReport();
 			// return the PDF in bytes
 			bytes = outputStream.toByteArray();
+			System.out.println("Generating eParcel..." + eParcelData.size());
 			// bytes = JasperExportManager.exportReportToPdf(jasperPrint);
 			// blob = new javax.sql.rowset.serial.SerialBlob(bytes);
 		} catch (JRException | IOException e) {
@@ -855,10 +864,12 @@ else
 		String datamatrix = orderDetail.getConsignmentData().get(0).getDatamatrix();
 	    if(null==barcodeLabelNumber || barcodeLabelNumber.trim().isEmpty() || null==datamatrix || datamatrix.trim().isEmpty()) {
 	    String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
+	    System.out.print("servicetype:"+serviceType);
 	    if( "1PM3E".equalsIgnoreCase(serviceType) 
 				|| "1PS3".equalsIgnoreCase(serviceType) 
 				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
 			d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+			 System.out.print("servicetype:"+serviceType);
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			return senderDataResponseList;
 		}else if ("FWM".equalsIgnoreCase(serviceType)) {
@@ -932,6 +943,7 @@ else
 			senderDataResponse = new SenderDataResponse();
 			senderDataResponse.setReferenceNumber(obj[0].toString());
 			String barcode = obj[1].toString();
+			
 			senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
 			senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 			senderDataResponseList.add(senderDataResponse);
@@ -1463,6 +1475,17 @@ else
 		String referenceNumbers = String.join(",", incomingRefNbr);
 
 		d2zDao.deleteConsignment(referenceNumbers);
+	
+		
+		
+		 Runnable r = new Runnable( ) {			
+		        public void run() {
+		        System.out.println("in Thread for Delete pfl etower");
+		        	deleteEtowerPflPca(incomingRefNbr);
+		    		
+		        }
+		     };
+		    new Thread(r).start();
 		userMsg.setMessage("Deleted Successfully");
 		return userMsg;
 	}
@@ -1794,6 +1817,43 @@ else
 		// TODO Auto-generated method stub
 		d2zDao.logcurrencyRate();
 		
+	}
+	
+	public void deleteEtowerPflPca(List<String> refnbr)
+	{
+		List<String> pflarticleid = new ArrayList<String>();
+		
+		List<SenderdataMaster> senderdata = d2zDao.fetchDataBasedonrefnbr(refnbr);
+		
+		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(refnbr,"eTower");
+		List<String> etowerreference = eTowerOrders.stream().map(obj -> {
+			return obj.getReference_number(); })
+				.collect(Collectors.toList());
+		for(SenderdataMaster data : senderdata)
+		{
+			
+			
+			if(data.getCarrier().equals("FastwayM"))
+			{
+				pflarticleid.add(data.getArticleId());
+			}
+			
+		}
+		
+		try {
+			System.out.println("etower size:"+etowerreference.size()+":::"+"Pfl Size:"+pflarticleid.size());
+			if(etowerreference.size()>0)
+			{
+				eTowerWrapper.DeleteShipingResponse(etowerreference);
+			}
+			if(pflarticleid.size()>0)
+			{
+			pflWrapper.DeleteOrderPFL(pflarticleid);
+			}
+		} catch (EtowerFailureResponseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
