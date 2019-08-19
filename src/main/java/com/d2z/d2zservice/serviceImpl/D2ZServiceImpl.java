@@ -260,7 +260,10 @@ public class D2ZServiceImpl implements ID2ZService {
 				 Runnable r = new Runnable( ) {			
 		        public void run() {
 		        System.out.println("in Thread for Delete pfl etower");
-		        	deleteEtowerPflPca(incomingRefNbr);
+		        List<String> inc = incomingRefNbr.stream().map(obj ->obj+"Delete").collect(Collectors.toList());
+		        System.out.println("in Thread for Delete pfl etower");
+		        	deleteEtowerPflPca(inc);
+		        	
 		    		
 		        }
 		     };
@@ -1482,8 +1485,9 @@ else
 		d2zDao.deleteConsignment(referenceNumbers);
 		Runnable r = new Runnable( ) {			
 		        public void run() {
+		        	List<String> inc = incomingRefNbr.stream().map(obj ->obj+"Delete").collect(Collectors.toList());
 		        System.out.println("in Thread for Delete pfl etower");
-		        	deleteEtowerPflPca(incomingRefNbr);
+		        	deleteEtowerPflPca(inc);
 		        }
 		     };
 		    new Thread(r).start();
@@ -1825,12 +1829,17 @@ else
 	}
 	
 	public void deleteEtowerPflPca(List<String> refnbr){
+		
 		List<String> pflarticleid = new ArrayList<String>();
 		List<String> pcaArticleid = new ArrayList<String>();
+		System.out.println(refnbr);
 		List<SenderdataMaster> senderdata = d2zDao.fetchDataBasedonrefnbr(refnbr);
+		System.out.println(senderdata.size());
 		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(refnbr,"eTower");
+		System.out.println(eTowerOrders.size());
 		List<String> etowerreference = eTowerOrders.stream().map(obj -> {
-			return obj.getReference_number(); })
+			String s = obj.getReference_number().replace("Delete", ""); 
+			return s;})
 				.collect(Collectors.toList());
 		for(SenderdataMaster data : senderdata){
 			if(data.getCarrier().equals("FastwayM")){
