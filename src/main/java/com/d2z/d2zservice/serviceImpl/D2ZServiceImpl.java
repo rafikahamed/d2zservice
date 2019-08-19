@@ -1488,6 +1488,7 @@ else
 		        	List<String> inc = incomingRefNbr.stream().map(obj ->obj+"Delete").collect(Collectors.toList());
 		        System.out.println("in Thread for Delete pfl etower");
 		        	deleteEtowerPflPca(inc);
+		        	
 		        }
 		     };
 		    new Thread(r).start();
@@ -1830,6 +1831,7 @@ else
 	
 	public void deleteEtowerPflPca(List<String> refnbr){
 		
+		List<String> pflfwarticleid = new ArrayList<String>();
 		List<String> pflarticleid = new ArrayList<String>();
 		List<String> pcaArticleid = new ArrayList<String>();
 		System.out.println(refnbr);
@@ -1842,8 +1844,15 @@ else
 			return s;})
 				.collect(Collectors.toList());
 		for(SenderdataMaster data : senderdata){
-			if(data.getCarrier().equals("FastwayM")){
+			if(data.getCarrier().equals("FastwayM") ){
+				if(data.getServicetype().equalsIgnoreCase("FW"))
+				{
+					pflfwarticleid.add(data.getArticleId());
+				}
+				else
+				{
 				pflarticleid.add(data.getArticleId());
+				}
 			}
 			if(data.getCarrier().equals("FastwayS"))
 				pcaArticleid.add(data.getArticleId());
@@ -1855,7 +1864,10 @@ else
 				eTowerWrapper.DeleteShipingResponse(etowerreference);
 			}
 			if(pflarticleid.size() > 0){
-				pflWrapper.DeleteOrderPFL(pflarticleid);
+				pflWrapper.DeleteOrderPFL(pflarticleid,"");
+			}
+			if(pflfwarticleid.size() > 0){
+				pflWrapper.DeleteOrderPFL(pflfwarticleid,"FW");
 			}
 			if(pcaArticleid.size() > 0) {
 				pcaWrapper.deletePcaOrder(pcaArticleid);
