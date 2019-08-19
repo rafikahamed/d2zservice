@@ -27,12 +27,24 @@ public class FastwayPostcode implements Serializable{
 	@Column(name="State")
 	private String state;
 	
+	@Column(name="StateName")
+	private String stateName;
+	
 	public int getRowId() {
 		return rowId;
 	}
 
 	public void setRowId(int rowId) {
 		this.rowId = rowId;
+	}
+
+	
+	public String getStateName() {
+		return stateName;
+	}
+
+	public void setStateName(String stateName) {
+		this.stateName = stateName;
 	}
 
 	public String getState() {

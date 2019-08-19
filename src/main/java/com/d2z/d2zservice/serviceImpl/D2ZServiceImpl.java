@@ -936,6 +936,7 @@ else
 			String barcode = obj[1].toString();
 			
 			senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+			senderDataResponse.setCarrier(obj[4].toString());
 			senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 			senderDataResponseList.add(senderDataResponse);
 		}

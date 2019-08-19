@@ -78,8 +78,10 @@ public ResponseEntity<Object> createConsignments(@Valid @RequestBody CreateConsi
 				.collect(Collectors.toList());
     	if(null!=incomingRefNbr && incomingRefNbr.size()>0) {
     		status = HttpStatus.OK;
+    		response.setStatus("Success");
     	d2zApiService.makeCallToEtowerBasedonSupplierUI(incomingRefNbr);
     	}else {
+    		response.setStatus("Failure");
     		status = HttpStatus.BAD_REQUEST;
     	}
 		}
