@@ -147,5 +147,7 @@ public interface ID2ZDao {
 	public void logcurrencyRate();
 	
 	public Double getAudcurrency(String country);
+	
+	public List<SenderdataMaster> fetchConsignmentsByRefNbr(List<String> refNbrs);
 
 }

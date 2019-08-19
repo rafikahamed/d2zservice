@@ -116,4 +116,6 @@ public interface ID2ZService {
 	
 	public void currencyRate();
 
+	void updateCubicWeight();
+
 }

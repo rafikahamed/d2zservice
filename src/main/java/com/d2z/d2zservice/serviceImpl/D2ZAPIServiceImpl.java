@@ -86,14 +86,14 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			return;
 			
 		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType)) {
-			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
+			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData(),errorMap);
 			ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 			if(orderDetail.getConsignmentData().size()>0) {
 			makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(), serviceType);
 			}
 			return;// senderDataResponseList;
 		}else if("FWS".equalsIgnoreCase(serviceType)) {
-			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
+			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData(),errorMap);
 			ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 			if(orderDetail.getConsignmentData().size()>0) {
 			pcaWrapper.makeCreateShippingOrderPFACall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(),serviceType);
@@ -126,9 +126,27 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 					Object[] obj = (Object[]) itr.next();
 					SenderDataResponse senderDataResponse = new SenderDataResponse();
 					senderDataResponse.setReferenceNumber(obj[0].toString());
-					senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
+					//senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 					senderDataResponse.setCarrier(obj[4].toString());
 					senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
+					if("MCS".equalsIgnoreCase(serviceType))
+					{
+				String barcode = obj[1].toString();
+				senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+				
+				if(senderDataResponse.getInjectionPort().equals("SYD") ||senderDataResponse.getInjectionPort().equals("MEL")||senderDataResponse.getInjectionPort().equals("BNE")||senderDataResponse.getInjectionPort().equals("ADL") ||senderDataResponse.getInjectionPort().equals("PER"))
+				{
+					senderDataResponse.setSortcode(senderDataResponse.getInjectionPort());
+				}
+				else
+				{
+					senderDataResponse.setSortcode("OTH");
+				}
+					}
+			else
+			{
+			senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
+			}
 					senderDataResponseList.add(senderDataResponse);
 				}
 				}
@@ -148,6 +166,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			senderDataResponse.setReferenceNumber(obj[0].toString());
 			String barcode = obj[1].toString();
 			senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+			senderDataResponse.setCarrier(obj[4].toString());
 			senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 			senderDataResponseList.add(senderDataResponse);
 		}

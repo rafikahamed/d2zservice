@@ -80,6 +80,7 @@ public class Scheduler {
 	@Scheduled(cron = "0 0 0/1 * * ?")
 	public void triggerAuPostCreateShipping() {try {
 		System.out.println("Calling AUPost - Create order");
+		d2zService.updateCubicWeight();
 		d2zService.makeCalltoAusPost();
 	} catch (Exception e) {
 		System.out.println(e.getLocalizedMessage());

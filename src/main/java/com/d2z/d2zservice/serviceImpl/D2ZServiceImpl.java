@@ -6,18 +6,11 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -29,29 +22,16 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.validation.Valid;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.net.PrintCommandListener;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPReply;
-import org.jfree.chart.util.TextUtils;
 import org.json.JSONObject;
 import org.json.XML;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.boot.json.JacksonJsonParser;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZDao;
@@ -72,14 +52,13 @@ import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.CreateEnquiryRequest;
-import com.d2z.d2zservice.model.CurrencyDetails;
 import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_Shipment;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.FDMManifestDetails;
-import com.d2z.d2zservice.model.PFLCreateShippingResponse;
+import com.d2z.d2zservice.model.PCACancelRequest;
 import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
 import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.ParcelStatus;
@@ -108,12 +87,10 @@ import com.d2z.d2zservice.model.fdm.Consignment;
 import com.d2z.d2zservice.model.fdm.FDMManifestRequest;
 import com.d2z.d2zservice.model.fdm.Line;
 import com.d2z.d2zservice.proxy.AusPostProxy;
-import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.proxy.EbayProxy;
 import com.d2z.d2zservice.proxy.FDMProxy;
 import com.d2z.d2zservice.proxy.PcaProxy;
 import com.d2z.d2zservice.repository.FFResponseRepository;
-import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
@@ -159,8 +136,6 @@ public class D2ZServiceImpl implements ID2ZService {
 
 	@Autowired
 	FFResponseRepository ffresponseRepository;
-	
-	
 
 	@Autowired
 	ShipmentDetailsWriter shipmentWriter;
@@ -197,6 +172,9 @@ public class D2ZServiceImpl implements ID2ZService {
 	
 	@Autowired
 	PCAWrapper pcaWrapper;
+	
+	@Autowired
+	PcaProxy pcaProxy;
 
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) 
@@ -391,8 +369,10 @@ public class D2ZServiceImpl implements ID2ZService {
 			else if("MCM3".equalsIgnoreCase(data.getServiceType())) {
 				whiteLabelData.add(data);
 			}else  if(data.getCarrier().equalsIgnoreCase("eParcel")) {
+				setGS1Type= true;
 				eParcelData.add(data);
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
+				setGS1Type = true;
 				expressData.add(data);
 			}else if(data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				fastwayData.add(data);
@@ -956,6 +936,7 @@ else
 			String barcode = obj[1].toString();
 			
 			senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+			senderDataResponse.setCarrier(obj[4].toString());
 			senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 			senderDataResponseList.add(senderDataResponse);
 		}
@@ -1024,28 +1005,40 @@ else
 	@Override
 	public ResponseMessage allocateShipment(String referenceNumbers, String shipmentNumber)
 			throws ReferenceNumberNotUniqueException {
+	
 		ResponseMessage userMsg = new ResponseMessage();
 		String[] refNbrs = referenceNumbers.split(",");
-		List<SenderdataMaster> incorrectRefNbr = d2zDao.findRefNbrByShipmentNbr(refNbrs);
-		List<String> invalidData = incorrectRefNbr.stream().map(a -> {
-			StringBuffer msg = new StringBuffer(a.getReference_number());
-
-			if (null != a.getAirwayBill()) {
-				msg.append(" : Shippment is already allocated");
-			}
-			if (a.getIsDeleted().equalsIgnoreCase("Y")) {
+		List<String> refNumbers = Arrays.asList(refNbrs);
+	
+		List<SenderdataMaster> consignments = d2zDao.fetchConsignmentsByRefNbr(refNumbers);
+		if(consignments.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Failure - Invalid Reference Numbers", refNumbers);
+		}
+		List<String> invalidData = consignments.stream().filter(obj -> null!=obj.getAirwayBill())
+				.map(a -> {
+			
+				String msg = a.getReference_number()+" : Shippment is already allocated";
+			
+			/*if (a.getIsDeleted().equalsIgnoreCase("Y")) {
 				msg = new StringBuffer(a.getReference_number());
 				msg.append(" : Consignment already deleted");
-			}
-			return msg.toString();
+			}*/
+			return msg;
 		}).collect(Collectors.toList());
 		if (!invalidData.isEmpty()) {
 			throw new ReferenceNumberNotUniqueException("Request failed", invalidData);
 		}
-
+      
 		String msg = d2zDao.allocateShipment(referenceNumbers, shipmentNumber);
-
-		
+		userMsg.setResponseMessage(msg);
+		  if(consignments.size() < refNumbers.size()) {
+	        	List<String> refNbr_DB = consignments.stream().map(obj->{
+	        		return obj.getReference_number();
+	        	}).collect(Collectors.toList());
+	        	List<String> invalidRefNbrs = new ArrayList<String>(refNumbers);
+	        	invalidRefNbrs.removeAll(refNbr_DB);
+	        	userMsg.setResponseMessage("Partial Success - Invalid Reference Numbers : "+String.join(",",invalidRefNbrs));
+	        }
 		Runnable freipost = new Runnable( ) {			
 	        public void run() {
 	        	String[] refNbrArray = referenceNumbers.split(",");
@@ -1083,9 +1076,9 @@ else
 	     };
 		 new Thread(r).start();*/
 		 
-		userMsg.setResponseMessage(msg);
+		
 		return userMsg;
-	}
+	 }
 
 	// @Scheduled(cron = "0 0 0/2 * * ?")
 	// @Scheduled(cron = "0 0/10 * * * ?")
@@ -1098,6 +1091,7 @@ else
 		}
 		makeCalltoAusPost(referenceNumbers);
 	}
+	
 	public void makeCalltoAusPost(List<String> referenceNumbers) {
 	
 		List<SenderdataMaster> senderMasterData = d2zDao.fetchDataForAusPost(referenceNumbers);
@@ -1486,14 +1480,10 @@ else
 		String referenceNumbers = String.join(",", incomingRefNbr);
 
 		d2zDao.deleteConsignment(referenceNumbers);
-	
-		
-		
-		 Runnable r = new Runnable( ) {			
+		Runnable r = new Runnable( ) {			
 		        public void run() {
 		        System.out.println("in Thread for Delete pfl etower");
 		        	deleteEtowerPflPca(incomingRefNbr);
-		    		
 		        }
 		     };
 		    new Thread(r).start();
@@ -1684,7 +1674,7 @@ else
 					 byte[] contentInBytes = requestXml.getBytes();
 					 InputStream targetStream = new ByteArrayInputStream(contentInBytes);
 					 System.out.println("in:"+targetStream+"request:"+request);
-					// ftpUploader.fdmFileCreation(request);
+					 //ftpUploader.fdmFileCreation(request);
 					 System.out.println("FDM Request ---->");
 					 System.out.println(request);
 					 ftpUploader.ftpUpload(targetStream);
@@ -1738,7 +1728,11 @@ else
 	public void updateRates() {
 		d2zDao.updateRates();
 	}
-
+	
+	@Override
+	public void updateCubicWeight() {
+		d2zDao.updateCubicWeight();
+	}
 	@Override
 	public void makeCallToEtowerBasedonSupplierUI(List<String> incomingRefNbr) {
 		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(incomingRefNbr,"eTower");
@@ -1830,39 +1824,34 @@ else
 		
 	}
 	
-	public void deleteEtowerPflPca(List<String> refnbr)
-	{
+	public void deleteEtowerPflPca(List<String> refnbr){
 		List<String> pflarticleid = new ArrayList<String>();
-		
+		List<String> pcaArticleid = new ArrayList<String>();
 		List<SenderdataMaster> senderdata = d2zDao.fetchDataBasedonrefnbr(refnbr);
-		
 		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(refnbr,"eTower");
 		List<String> etowerreference = eTowerOrders.stream().map(obj -> {
 			return obj.getReference_number(); })
 				.collect(Collectors.toList());
-		for(SenderdataMaster data : senderdata)
-		{
-			
-			
-			if(data.getCarrier().equals("FastwayM"))
-			{
+		for(SenderdataMaster data : senderdata){
+			if(data.getCarrier().equals("FastwayM")){
 				pflarticleid.add(data.getArticleId());
 			}
-			
+			if(data.getCarrier().equals("FastwayS"))
+				pcaArticleid.add(data.getArticleId());
 		}
 		
 		try {
-			System.out.println("etower size:"+etowerreference.size()+":::"+"Pfl Size:"+pflarticleid.size());
-			if(etowerreference.size()>0)
-			{
+			System.out.println("etower size:"+etowerreference.size()+":::"+"Pfl Size:"+pflarticleid.size()+":::"+"Pfl Size:"+pcaArticleid.size());
+			if(etowerreference.size() > 0){
 				eTowerWrapper.DeleteShipingResponse(etowerreference);
 			}
-			if(pflarticleid.size()>0)
-			{
-			pflWrapper.DeleteOrderPFL(pflarticleid);
+			if(pflarticleid.size() > 0){
+				pflWrapper.DeleteOrderPFL(pflarticleid);
+			}
+			if(pcaArticleid.size() > 0) {
+				pcaWrapper.deletePcaOrder(pcaArticleid);
 			}
 		} catch (EtowerFailureResponseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

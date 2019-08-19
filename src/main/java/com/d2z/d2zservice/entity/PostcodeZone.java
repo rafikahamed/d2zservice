@@ -25,6 +25,18 @@ public class PostcodeZone implements Serializable {
 	@Column(name="State")
 	private String state;
 
+	public String getStateName() {
+		return stateName;
+	}
+
+	public void setStateName(String stateName) {
+		this.stateName = stateName;
+	}
+
+	@Column(name="StateName")
+	private String stateName;
+
+
 	@Column(name="Zone")
 	private String zone;
 

@@ -23,8 +23,6 @@ import com.d2z.d2zservice.model.PCAItems;
 import com.d2z.d2zservice.model.PCAPackages;
 import com.d2z.d2zservice.model.PCAReceiver;
 import com.d2z.d2zservice.model.PCAShipper;
-import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
-import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
@@ -394,11 +392,19 @@ public class PCAWrapper {
 		}
 	}
 	
-	public byte[] pcalabel(String refnum)
-	{
+	public byte[] pcalabel(String refnum){
 		PCACancelRequest pcaReq = new PCACancelRequest();
 		pcaReq.setCustref(refnum);
 		return pcaProxy.makeCallForLabelShipment(pcaReq);
+	}
+
+	public void deletePcaOrder(List<String> pcaArticleid) {
+		pcaArticleid.stream().forEach((refrenceNumber) -> {
+			System.out.println(refrenceNumber);
+			PCACancelRequest pcaReq = new PCACancelRequest();
+			pcaReq.setCustref(refrenceNumber);
+			PCACreateShippingResponse pcaDeleteResponse = pcaProxy.makeCallForCancelShipment(pcaReq);
+		});
 	}
 
 }

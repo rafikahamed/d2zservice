@@ -15,11 +15,22 @@ public class D2ZSingleton {
 	
 	private static D2ZSingleton instance;
 	private static List<String> postCodeZoneList;
+	private static List<String> postCodeStateNameList;
 	private static List<String> FWPostCodeZoneList;
+	private static List<String> FWPostCodeStateNameList;
 	private static Map<String,String> postCodeStateMap;
 	private static Map<String,Double> postCodeWeightMap = new HashMap<String,Double>(); ;
 	private static Map<String,String> postCodeZoneMap;
 	
+	
+	public static List<String> getFWPostCodeStateNameList() {
+		return FWPostCodeStateNameList;
+	}
+
+	public static List<String> getPostCodeStateNameList() {
+		return postCodeStateNameList;
+	}
+
     public static List<String> getPostCodeZoneList() {
 		return postCodeZoneList;
 	}
@@ -61,6 +72,9 @@ public class D2ZSingleton {
 			postCodeZoneList = postCodeZoneDaoObj.stream().map(daoObj -> {
 				return daoObj.getState().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
 			}).collect(Collectors.toList());
+			postCodeStateNameList = postCodeZoneDaoObj.stream().map(daoObj -> {
+				return daoObj.getStateName().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
+			}).collect(Collectors.toList());
 			System.out.println(postCodeZoneList.size());
 			postCodeStateMap = new HashMap<String,String>();
 			postCodeZoneDaoObj.forEach(obj -> {
@@ -75,7 +89,11 @@ public class D2ZSingleton {
 	private void getFWPostCodeZone(){
 		List<FastwayPostcode> postCodeFWZoneDaoObj = d2zDao.fetchFWPostCodeZone();
 		FWPostCodeZoneList = postCodeFWZoneDaoObj.stream().map(daoObj -> {
-			return daoObj.getFwPostCodeId().getSuburb().concat(daoObj.getFwPostCodeId().getPostcode());
+			return daoObj.getState().concat(daoObj.getFwPostCodeId().getSuburb().concat(daoObj.getFwPostCodeId().getPostcode()));
+		}).collect(Collectors.toList());
+		
+		FWPostCodeStateNameList = postCodeFWZoneDaoObj.stream().map(daoObj -> {
+			return daoObj.getStateName().concat(daoObj.getFwPostCodeId().getSuburb().concat(daoObj.getFwPostCodeId().getPostcode()));
 		}).collect(Collectors.toList());
 		System.out.println(FWPostCodeZoneList.size());
 	}
