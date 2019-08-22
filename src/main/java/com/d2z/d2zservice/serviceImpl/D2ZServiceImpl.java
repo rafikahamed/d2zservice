@@ -260,7 +260,10 @@ public class D2ZServiceImpl implements ID2ZService {
 				 Runnable r = new Runnable( ) {			
 		        public void run() {
 		        System.out.println("in Thread for Delete pfl etower");
-		        	deleteEtowerPflPca(incomingRefNbr);
+		        List<String> inc = incomingRefNbr.stream().map(obj ->obj+"Delete").collect(Collectors.toList());
+		        System.out.println("in Thread for Delete pfl etower");
+		        	deleteEtowerPflPca(inc);
+		        	
 		    		
 		        }
 		     };
@@ -936,6 +939,7 @@ else
 			String barcode = obj[1].toString();
 			
 			senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+			senderDataResponse.setCarrier(obj[4].toString());
 			senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 			senderDataResponseList.add(senderDataResponse);
 		}
@@ -1481,8 +1485,10 @@ else
 		d2zDao.deleteConsignment(referenceNumbers);
 		Runnable r = new Runnable( ) {			
 		        public void run() {
+		        	List<String> inc = incomingRefNbr.stream().map(obj ->obj+"Delete").collect(Collectors.toList());
 		        System.out.println("in Thread for Delete pfl etower");
-		        	deleteEtowerPflPca(incomingRefNbr);
+		        	deleteEtowerPflPca(inc);
+		        	
 		        }
 		     };
 		    new Thread(r).start();
@@ -1824,16 +1830,29 @@ else
 	}
 	
 	public void deleteEtowerPflPca(List<String> refnbr){
+		
+		List<String> pflfwarticleid = new ArrayList<String>();
 		List<String> pflarticleid = new ArrayList<String>();
 		List<String> pcaArticleid = new ArrayList<String>();
+		System.out.println(refnbr);
 		List<SenderdataMaster> senderdata = d2zDao.fetchDataBasedonrefnbr(refnbr);
+		System.out.println(senderdata.size());
 		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(refnbr,"eTower");
+		System.out.println(eTowerOrders.size());
 		List<String> etowerreference = eTowerOrders.stream().map(obj -> {
-			return obj.getReference_number(); })
+			String s = obj.getReference_number().replace("Delete", ""); 
+			return s;})
 				.collect(Collectors.toList());
 		for(SenderdataMaster data : senderdata){
-			if(data.getCarrier().equals("FastwayM")){
+			if(data.getCarrier().equals("FastwayM") ){
+				if(data.getServicetype().equalsIgnoreCase("FW"))
+				{
+					pflfwarticleid.add(data.getArticleId());
+				}
+				else
+				{
 				pflarticleid.add(data.getArticleId());
+				}
 			}
 			if(data.getCarrier().equals("FastwayS"))
 				pcaArticleid.add(data.getArticleId());
@@ -1845,7 +1864,10 @@ else
 				eTowerWrapper.DeleteShipingResponse(etowerreference);
 			}
 			if(pflarticleid.size() > 0){
-				pflWrapper.DeleteOrderPFL(pflarticleid);
+				pflWrapper.DeleteOrderPFL(pflarticleid,"");
+			}
+			if(pflfwarticleid.size() > 0){
+				pflWrapper.DeleteOrderPFL(pflfwarticleid,"FW");
 			}
 			if(pcaArticleid.size() > 0) {
 				pcaWrapper.deletePcaOrder(pcaArticleid);

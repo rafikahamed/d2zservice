@@ -158,13 +158,14 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 
 			request.setReferenceNo(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
-			String recpName = orderDetail.getConsigneeName().length() > 34
-					? orderDetail.getConsigneeName().substring(0, 34)
-					: orderDetail.getConsigneeName();
-					recpName = recpName.replaceAll("[^a-zA-Z0-9]", "");
-					request.setRecipientName(recpName);
-					String address = (orderDetail.getConsigneeAddr1()).replaceAll("[^a-zA-Z0-9]", "");
-					request.setAddressLine1(address);
+			
+					String recpName = orderDetail.getConsigneeName().length() > 34
+							? orderDetail.getConsigneeName().substring(0, 34)
+							: orderDetail.getConsigneeName();
+							recpName = recpName.replaceAll("[^a-zA-Z0-9\\s+]", "");
+							request.setRecipientName(recpName);
+							String address = (orderDetail.getConsigneeAddr1()).replaceAll("[^a-zA-Z0-9\\s+]", "");
+							address = address.length()>39 ? address.substring(0, 39):address ;
 			request.setAddressLine2(orderDetail.getConsigneeAddr2());
 			request.setEmail(orderDetail.getConsigneeEmail());
 			request.setCity(orderDetail.getConsigneeSuburb());
@@ -481,9 +482,10 @@ s);
 			String recpName = orderDetail.getConsigneeName().length() > 34
 					? orderDetail.getConsigneeName().substring(0, 34)
 					: orderDetail.getConsigneeName();
-					recpName = recpName.replaceAll("[^a-zA-Z0-9]", "");
+					recpName = recpName.replaceAll("[^a-zA-Z0-9\\s+]", "");
 					request.setRecipientName(recpName);
-					String address = (orderDetail.getConsigneeAddr1()).replaceAll("[^a-zA-Z0-9]", "");
+					String address = (orderDetail.getConsigneeAddr1()).replaceAll("[^a-zA-Z0-9\\s+]", "");
+					address = address.length()>39 ? address.substring(0, 39):address ;
 					request.setAddressLine1(address);
 		
 			request.setAddressLine2(orderDetail.getConsigneeAddr2());
@@ -742,9 +744,10 @@ s);
 				String recpName = orderDetail.getConsignee_name().length() > 34
 						? orderDetail.getConsignee_name().substring(0, 34)
 						: orderDetail.getConsignee_name();
-						recpName = recpName.replaceAll("[^a-zA-Z0-9]", "");
+						recpName = recpName.replaceAll("[^a-zA-Z0-9\\s+]", "");
 				request.setRecipientName(recpName);
-				String address = (orderDetail.getConsignee_addr1()).replaceAll("[^a-zA-Z0-9]", "");
+				String address = (orderDetail.getConsignee_addr1()).replaceAll("[^a-zA-Z0-9\\s+]", "");
+				address = address.length()>39 ? address.substring(0, 39):address ;
 				request.setAddressLine1(address);
 				request.setAddressLine2(orderDetail.getConsignee_addr2());
 				request.setEmail(orderDetail.getConsignee_Email());

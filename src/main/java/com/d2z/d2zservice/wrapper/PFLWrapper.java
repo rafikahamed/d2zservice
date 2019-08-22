@@ -152,10 +152,10 @@ public class PFLWrapper {
 		}
 	}
 	
-	public void DeleteOrderPFL(List<String> orderIds) throws EtowerFailureResponseException {
+	public void DeleteOrderPFL(List<String> orderIds, String ServiceType) throws EtowerFailureResponseException {
 		PFLSubmitOrderRequest pflSubmitOrder = new PFLSubmitOrderRequest();
 		pflSubmitOrder.setIds(orderIds);
-		PFLSubmitOrderResponse pflSubmitResponse = pflProxy.DeleteOrderPFL(pflSubmitOrder);
+		PFLSubmitOrderResponse pflSubmitResponse = pflProxy.DeleteOrderPFL(pflSubmitOrder,ServiceType);
 		logPflDeleteResponse(pflSubmitResponse, orderIds);
 		if(pflSubmitResponse==null) {
 			throw new EtowerFailureResponseException("Error in file – please contact customer support");
