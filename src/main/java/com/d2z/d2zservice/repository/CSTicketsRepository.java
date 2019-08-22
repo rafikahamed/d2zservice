@@ -52,8 +52,8 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 			"						S.Consignee_State,\r\n" + 
 			"						S.Consignee_Postcode,\r\n" + 
 			"						S.Product_Description\r\n" + 
-			"        FROM [TestD2Z].[dbo].[cstickets] S \r\n" + 
-			"               INNER JOIN [TestD2Z].[dbo].[users] U \r\n" + 
+			"        FROM CSTickets S \r\n" + 
+			"               INNER JOIN users U \r\n" + 
 			"                       ON U.role_id IN ( '3' ) \r\n" + 
 			"                          AND S.userid = U.user_id \r\n" + 
 			"                          AND S.status = 'Open' \r\n" + 
@@ -71,12 +71,12 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 			"						S.Consignee_State,\r\n" + 
 			"						S.Consignee_Postcode,\r\n" + 
 			"						S.Product_Description\r\n" + 
-			"        FROM   [TestD2Z].[dbo].[cstickets] S \r\n" + 
-			"               INNER JOIN [TestD2Z].[dbo].[users] U \r\n" + 
+			"        FROM   CSTickets S \r\n" + 
+			"               INNER JOIN users U \r\n" + 
 			"                       ON U.role_id IN ( '2' ) \r\n" + 
 			"                          AND S.userid = U.user_id \r\n" + 
 			"                          AND S.status = 'Open') B \r\n" + 
-			"       INNER JOIN [TestD2Z].[dbo].[users] A \r\n" + 
+			"       INNER JOIN users A \r\n" + 
 			"               ON A.user_id = B.client_broker_id \r\n" + 
 			"ORDER  BY A.user_name ;")
 	List<String> fetchOpenEnquiryDetails();
