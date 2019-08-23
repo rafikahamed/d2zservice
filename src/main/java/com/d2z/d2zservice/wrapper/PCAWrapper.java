@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.ETowerResponse;
+import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.model.PCACancelRequest;
 import com.d2z.d2zservice.model.PCAConsignee;
@@ -124,7 +125,87 @@ public class PCAWrapper {
 		pcaRequest.setShipments(pcaOrderInfoRequest);
 		createShippingOrderPCA(consignmentData, pcaRequest, userName, senderDataResponseList, chargeType, matrixMap);
 	}
+	public void makeCreateShippingOrderPCACall(List<SenderdataMaster> consignmentData) throws EtowerFailureResponseException {
+		System.out.println("comes in pfa call");
+		PCACreateShipmentRequest pcaRequest = new PCACreateShipmentRequest();
+		List<PCACreateShipmentRequestInfo> pcaOrderInfoRequest = new ArrayList<PCACreateShipmentRequestInfo>();
+		//String chargeType = "FastwayS";
+	
+		for (SenderdataMaster orderDetail : consignmentData) {
+			PCACreateShipmentRequestInfo request = new PCACreateShipmentRequestInfo();
+			request.setNo(orderDetail.getArticleId().substring(0, 10));
+			request.setDirect("1");
+			request.setCust_ref(orderDetail.getReference_number());
+			request.setType("10");
+			request.setPacks("1");
 
+			List<PCAPackages> pcaPackageList = new ArrayList<PCAPackages>();
+			PCAPackages pcaPackages = new PCAPackages();
+			pcaPackages.setWeight(new BigDecimal(orderDetail.getWeight()));
+			pcaPackages.setHeight(orderDetail.getDimensions_Height());
+			pcaPackages.setWidth(orderDetail.getDimensions_Width());
+			pcaPackages.setLength(orderDetail.getDimensions_Length());
+			pcaPackageList.add(pcaPackages);
+			request.setPackages(pcaPackageList);
+
+			request.setWeight(String.valueOf(orderDetail.getWeight()));
+			request.setCbm(new BigDecimal(orderDetail.getWeight()));
+			request.setCurrency(orderDetail.getCurrency());
+
+			PCAShipper pcaShipper = new PCAShipper();
+			pcaShipper.setName(orderDetail.getShipper_Name());
+			pcaShipper.setAddress(orderDetail.getShipper_Addr1());
+			pcaShipper.setState(orderDetail.getStatus());
+			pcaShipper.setCity(orderDetail.getShipper_City());
+			pcaShipper.setSuburb(orderDetail.getShipper_City());
+			pcaShipper.setPostcode(orderDetail.getShipper_Postcode());
+			request.setShipper(pcaShipper);
+
+			PCAReceiver pcaReceiver = new PCAReceiver();
+			pcaReceiver.setName(orderDetail.getConsignee_name());
+			pcaReceiver.setAddress(orderDetail.getConsignee_addr1());
+			pcaReceiver.setState(orderDetail.getConsignee_State());
+			pcaReceiver.setCity(orderDetail.getConsignee_Suburb());
+			pcaReceiver.setSuburb(orderDetail.getConsignee_Suburb());
+			pcaReceiver.setPostcode(orderDetail.getConsignee_Postcode());
+			pcaReceiver.setPhone(orderDetail.getConsignee_Phone());
+			pcaReceiver.setEmail(orderDetail.getConsignee_Email());
+			request.setReceiver(pcaReceiver);
+
+			PCAConsignee pcaConsignee = new PCAConsignee();
+			pcaConsignee.setName(orderDetail.getConsignee_name());
+			pcaConsignee.setAddress(orderDetail.getConsignee_addr1());
+			pcaConsignee.setState(orderDetail.getConsignee_State());
+			pcaConsignee.setCity(orderDetail.getConsignee_Suburb());
+			pcaConsignee.setSuburb(orderDetail.getConsignee_Suburb());
+			pcaConsignee.setPostcode(orderDetail.getConsignee_Postcode());
+			pcaConsignee.setPhone(orderDetail.getConsignee_Phone());
+			pcaConsignee.setEmail(orderDetail.getConsignee_Email());
+			request.setConsignee(pcaConsignee);
+
+			List<PCAItems> PCAItemList = new ArrayList<PCAItems>();
+			PCAItems pcaItems = new PCAItems();
+			pcaItems.setType("O");
+			pcaItems.setName(orderDetail.getProduct_Description());
+			pcaItems.setQty("1");
+			pcaItems.setPrice(String.valueOf(orderDetail.getValue()));
+			pcaItems.setSku(orderDetail.getSku());
+			PCAItemList.add(pcaItems);
+			request.setItems(PCAItemList);
+			request.setChargecode("2816");
+			
+			pcaOrderInfoRequest.add(request);
+		
+		}
+		pcaRequest.setShipments(pcaOrderInfoRequest);
+		createShippingOrderPCA( pcaRequest);
+	}
+
+	private void createShippingOrderPCA(PCACreateShipmentRequest pcaRequest) throws EtowerFailureResponseException {
+		List<PCACreateShippingResponse> pcaResponse = pcaProxy.makeCallForCreateShippingOrder(pcaRequest);
+		logPcaCreateResponse(pcaResponse);
+		
+	}
 	private void createShippingOrderPCA(List<SenderDataApi> consignmentData, PCACreateShipmentRequest pcaRequest,
 			String userName, List<SenderDataResponse> senderDataResponseList, String chargeType, Map<String, String> matrixMap) throws EtowerFailureResponseException {
 		System.out.print("comes in pcs");
