@@ -21,6 +21,7 @@ import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.TransitTime;
@@ -50,6 +51,7 @@ import com.d2z.d2zservice.repository.MlidRepository;
 import com.d2z.d2zservice.repository.NonD2ZDataRepository;
 import com.d2z.d2zservice.repository.ReconcileNDRepository;
 import com.d2z.d2zservice.repository.ReconcileRepository;
+import com.d2z.d2zservice.repository.ReturnsRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.Senderdata_InvoicingRepository;
 import com.d2z.d2zservice.repository.ServiceTypeListRepository;
@@ -116,6 +118,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	
 	@Autowired
 	TransitTimeRepository transitTimeRepository;
+	
+	@Autowired
+	ReturnsRepository returnsRepository; 
 
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -832,6 +837,18 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	public List<CSTickets> completedEnquiryDetails() {
 		List<CSTickets> completedTicketDetails = csticketsRepository.completedEnquiryDetails();
 		return completedTicketDetails;
+	}
+
+	@Override
+	public List<String> fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId) {
+		List<String> clientDetails = returnsRepository.fetchClientDetails(referenceNumber,barcodeLabel,articleId);
+		return clientDetails;
+	}
+
+	@Override
+	public String createReturns(List<Returns> returnsList) {
+		returnsRepository.saveAll(returnsList);
+		return "Returns Updated Successfully";
 	}
 
 }

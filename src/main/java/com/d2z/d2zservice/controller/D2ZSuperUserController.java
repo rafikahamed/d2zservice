@@ -18,6 +18,7 @@ import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.AUWeight;
@@ -34,6 +35,7 @@ import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
@@ -276,6 +278,17 @@ public class D2ZSuperUserController {
 	@RequestMapping( method = RequestMethod.GET, path = "/completed-enquiry")
     public List<OpenEnquiryResponse> completedEnquiryDetails() {
 		return superUserD2zService.completedEnquiryDetails();
+    }
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/clientDetails")
+    public ReturnsClientResponse fetchClientDetails(@RequestParam("referenceNumber") String referenceNumber,
+    	@RequestParam("barcodeLabel") String barcodeLabel, @RequestParam("articleId") String articleId) {
+		return superUserD2zService.fetchClientDetails(referenceNumber,barcodeLabel,articleId);
+    }
+	
+	@RequestMapping( method = RequestMethod.POST, path = "/create-returns")
+    public UserMessage createReturns(@RequestBody List<Returns> returns) {
+		return superUserD2zService.createReturns(returns);
     }
 	
 }

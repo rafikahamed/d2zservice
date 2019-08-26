@@ -5,6 +5,7 @@ import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.AUWeight;
@@ -21,6 +22,7 @@ import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
@@ -112,4 +114,8 @@ public interface ISuperUserD2ZService{
 	public UserMessage updateEnquiryDetails(List<OpenEnquiryResponse> openEnquiryDetails);
 
 	public List<OpenEnquiryResponse> completedEnquiryDetails();
+
+	public ReturnsClientResponse fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId);
+
+	public UserMessage createReturns(List<Returns> returns);
 }

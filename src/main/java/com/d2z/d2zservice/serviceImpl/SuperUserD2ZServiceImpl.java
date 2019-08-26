@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,6 +30,7 @@ import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
@@ -49,6 +51,7 @@ import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
@@ -58,6 +61,7 @@ import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.proxy.PcaProxy;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
+import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -1017,6 +1021,55 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			enquiryListDetails.add(enquiryData);
 		}
 		return enquiryListDetails;
+	}
+
+	@Override
+	public ReturnsClientResponse fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId) {
+		List<String> clientDetails = d2zDao.fetchClientDetails(referenceNumber,barcodeLabel,articleId);
+		ReturnsClientResponse clientResponse = new ReturnsClientResponse();
+		if( null != clientDetails ) {
+			Iterator itr = clientDetails.iterator();
+			while (itr.hasNext()) {
+				Object[] obj = (Object[]) itr.next();
+				clientResponse.setClientName(obj[0].toString());
+				clientResponse.setBrokerName(obj[1].toString());
+				clientResponse.setConsigneeName(obj[2].toString());
+				clientResponse.setRoleId(Integer.parseInt(obj[3].toString()));
+				clientResponse.setUserId(Integer.parseInt(obj[4].toString()));
+				clientResponse.setClientBrokerId(Integer.parseInt(obj[5].toString()));
+				clientResponse.setCarrier(obj[6].toString());
+				clientResponse.setReferenceNumber(obj[7].toString());
+				clientResponse.setBarcodelabelNumber(obj[8].toString());
+				clientResponse.setArticleId(obj[9].toString());
+			}
+		}
+		return clientResponse;
+	}
+
+	@Override
+	public UserMessage createReturns(List<Returns> returns) {
+		List<Returns> returnsList = new ArrayList<Returns>();
+		for(Returns returnVal: returns) {
+			Returns returnData = new Returns();
+			returnData.setScanType(returnVal.getScanType());
+			returnData.setArticleId(returnVal.getArticleId());
+			returnData.setBarcodelabelNumber(returnVal.getBarcodelabelNumber());
+			returnData.setReferenceNumber(returnVal.getReferenceNumber());
+			returnData.setReturnReason(returnVal.getReturnReason());
+			returnData.setBrokerName(returnVal.getBrokerName());
+			returnData.setClientName(returnVal.getClientName());
+			returnData.setConsigneeName(returnVal.getConsigneeName());
+			returnData.setRate(12.0);
+			returnData.setReturnsCreatedDate(Timestamp.valueOf(LocalDateTime.now()));
+			returnData.setUserId(returnVal.getUserId());
+			returnData.setClientBrokerId(returnVal.getClientBrokerId());
+			returnData.setCarrier(returnVal.getCarrier());
+			returnsList.add(returnData);
+		}
+		String clientDetails = d2zDao.createReturns(returnsList);
+		UserMessage usrMsg = new UserMessage();
+		usrMsg.setMessage(clientDetails);
+		return usrMsg;
 	}
 
 }
