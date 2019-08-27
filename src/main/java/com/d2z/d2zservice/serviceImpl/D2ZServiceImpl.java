@@ -184,6 +184,7 @@ public class D2ZServiceImpl implements ID2ZService {
 				.collect(Collectors.toList());
 		d2zValidator.isReferenceNumberUniqueUI(incomingRefNbr);
 		d2zValidator.isServiceValidUI(orderDetailList);
+		d2zValidator.isPostCodeValidUI(orderDetailList);
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 		String serviceType = orderDetailList.get(0).getServiceType();
@@ -233,7 +234,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			}
 			return senderDataResponseList;
 		}
-		d2zValidator.isPostCodeValidUI(orderDetailList);
+		//d2zValidator.isPostCodeValidUI(orderDetailList);
 		String senderFileID  = d2zDao.exportParcel(orderDetailList,null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		Iterator itr = insertedOrder.iterator();
