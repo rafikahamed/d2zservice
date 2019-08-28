@@ -2,10 +2,15 @@ package com.d2z.d2zservice.daoImpl;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +22,8 @@ import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.D2ZRates;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
+import com.d2z.d2zservice.entity.IncomingJobs;
+import com.d2z.d2zservice.entity.IncomingJobsLogic;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -29,7 +36,10 @@ import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
+import com.d2z.d2zservice.model.CreateEnquiryRequest;
+import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
+import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -46,6 +56,8 @@ import com.d2z.d2zservice.repository.ConsigneeCountRepository;
 import com.d2z.d2zservice.repository.D2ZRatesRepository;
 import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.FFResponseRepository;
+import com.d2z.d2zservice.repository.IncomingJobsLogicRepository;
+import com.d2z.d2zservice.repository.IncomingJobsRepository;
 import com.d2z.d2zservice.repository.MlidRepository;
 import com.d2z.d2zservice.repository.NonD2ZDataRepository;
 import com.d2z.d2zservice.repository.ReconcileNDRepository;
@@ -116,6 +128,13 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	
 	@Autowired
 	TransitTimeRepository transitTimeRepository;
+	
+	@Autowired
+	IncomingJobsLogicRepository incomingJobRepository;
+	
+	
+	@Autowired
+	IncomingJobsRepository incomingRepository;
 
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -833,4 +852,51 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		return completedTicketDetails;
 	}
 
-}
+	@Override
+	public List<IncomingJobsLogic> getBrokerMlidDetails() {
+		// TODO Auto-generated method stub
+		List<IncomingJobsLogic> jobs = (List<IncomingJobsLogic>) incomingJobRepository.findAll();
+		return jobs;
+	}
+
+	@Override
+	public String createEnquiry(List<CreateJobRequest> createJob) {
+		
+		List<IncomingJobs> joblist = new ArrayList<IncomingJobs>();
+		
+		for(CreateJobRequest jobRequest :createJob)
+		{
+			for(DropDownModel model : jobRequest.getMlid())
+			{
+				IncomingJobs jobs = new IncomingJobs();
+				jobs.setBroker(jobRequest.getType());
+				jobs.setMLID(model.getName());
+				jobs.setConsignee(jobRequest.getConsignee());
+				jobs.setDestination(jobRequest.getDest());
+				jobs.setHawb(jobRequest.getHawb());
+				jobs.setMawb(jobRequest.getMawb());
+				jobs.setFlight(jobRequest.getFlight());
+				jobs.setPiece(jobRequest.getPrice());
+				jobs.setWeight(jobRequest.getWeight());
+				
+				System.out.println("Date:"+jobRequest.getEta());
+				
+				Date date = Date.from(Instant.parse(jobRequest.getEta()));
+				
+				jobs.setEta(date);
+				joblist.add(jobs);
+			}
+
+		}
+		incomingRepository.saveAll(joblist);
+					return "Job created Successfully";
+		
+	}
+
+	@Override
+	public List<IncomingJobs> getJobList() {
+		// TODO Auto-generated method stub
+		return (List<IncomingJobs>) incomingRepository.findAll();
+	}
+	}
+

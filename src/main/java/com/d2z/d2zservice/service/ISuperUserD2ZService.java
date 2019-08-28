@@ -1,6 +1,8 @@
 package com.d2z.d2zservice.service;
 
 import java.util.List;
+
+import com.d2z.d2zservice.entity.IncomingJobs;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -8,11 +10,13 @@ import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.AUWeight;
+import com.d2z.d2zservice.model.AddShipmentModel;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.BrokerShipmentList;
+import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
@@ -112,4 +116,10 @@ public interface ISuperUserD2ZService{
 	public UserMessage updateEnquiryDetails(List<OpenEnquiryResponse> openEnquiryDetails);
 
 	public List<OpenEnquiryResponse> completedEnquiryDetails();
+	
+	public List<AddShipmentModel> incomingjobList();
+	
+	public UserMessage createJob(List<CreateJobRequest> createJob);
+	
+	public List<IncomingJobs> getJobList();
 }

@@ -5,6 +5,8 @@ import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
+import com.d2z.d2zservice.entity.IncomingJobs;
+import com.d2z.d2zservice.entity.IncomingJobsLogic;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -16,6 +18,7 @@ import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
+import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -142,6 +145,12 @@ public interface ID2ZSuperUserDao {
 	String updateEnquiryDetails(List<OpenEnquiryResponse> openEnquiryDetails);
 
 	List<CSTickets> completedEnquiryDetails();
+	
+	List<IncomingJobsLogic> getBrokerMlidDetails();
+	
+	List<IncomingJobs> getJobList();
+
+	String createEnquiry(List<CreateJobRequest> createJob);
 
 }
 

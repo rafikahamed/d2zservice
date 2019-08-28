@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.d2z.d2zservice.entity.IncomingJobs;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -21,11 +23,13 @@ import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.AUWeight;
+import com.d2z.d2zservice.model.AddShipmentModel;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.BrokerShipmentList;
+import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
@@ -115,6 +119,13 @@ public class D2ZSuperUserController {
     public List<BrokerList> brokerList() {
 		List<BrokerList> brokerList = superUserD2zService.brokerList();
 		return brokerList;
+    }
+	
+
+	@RequestMapping( method = RequestMethod.GET, path = "/incomingList",  produces = "application/json")
+    public List<AddShipmentModel> incomingjobList() {
+		List<AddShipmentModel> jobList = superUserD2zService.incomingjobList();
+		return jobList;
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/broker-shipmentList")
@@ -277,5 +288,17 @@ public class D2ZSuperUserController {
     public List<OpenEnquiryResponse> completedEnquiryDetails() {
 		return superUserD2zService.completedEnquiryDetails();
     }
+	
+	@RequestMapping(method = RequestMethod.POST, path = "/create-job")
+	public UserMessage createJob(@RequestBody List<CreateJobRequest> createJob) {
+		UserMessage jobInfo = superUserD2zService.createJob(createJob);
+		return jobInfo;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/incoming-job-list")
+	public List<IncomingJobs> createJobList() {
+		List<IncomingJobs> jobInfo = superUserD2zService.getJobList();
+		return jobInfo;
+	}
 	
 }

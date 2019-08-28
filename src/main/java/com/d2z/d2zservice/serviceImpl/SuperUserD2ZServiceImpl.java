@@ -25,6 +25,8 @@ import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
+import com.d2z.d2zservice.entity.IncomingJobs;
+import com.d2z.d2zservice.entity.IncomingJobsLogic;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -36,11 +38,14 @@ import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.AUWeight;
+import com.d2z.d2zservice.model.AddShipmentModel;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.BrokerShipmentList;
+import com.d2z.d2zservice.model.CreateEnquiryRequest;
+import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
@@ -1018,5 +1023,137 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		}
 		return enquiryListDetails;
 	}
+
+	@Override
+	public List<AddShipmentModel> incomingjobList() {
+		// TODO Auto-generated method stub
+		List<IncomingJobsLogic> job = d2zDao.getBrokerMlidDetails();
+		
+		List<AddShipmentModel> incomingjob = new ArrayList<AddShipmentModel>();
+	 	Set<String> BrokerName = job.stream().map(obj -> {
+			return obj.getBroker(); })
+				.collect(Collectors.toSet());
+	 	Set<String> consignee ;
+		for(String s:BrokerName)
+		{AddShipmentModel data1 = new AddShipmentModel();
+			DropDownModel DropDownBroker = new DropDownModel();
+			DropDownBroker.setName(s);
+			DropDownBroker.setValue(s);
+			List<DropDownModel> incomingmlid = new ArrayList<DropDownModel>();
+			List<DropDownModel> incomingconsign = new ArrayList<DropDownModel>();
+			for(IncomingJobsLogic j :job)
+			{
+				if(j.getBroker().equals(s))
+				{
+				DropDownModel DropDownMlid = new DropDownModel();
+				DropDownMlid.setName(j.getMLID());
+				DropDownMlid.setValue(j.getMLID());
+				DropDownModel DropDownCon = new DropDownModel();
+				DropDownCon.setName(j.getConsignee());
+				DropDownCon.setValue(j.getConsignee());
+				incomingmlid.add(DropDownMlid);
+				incomingconsign.add(DropDownCon);
+				}
+				
+			}
+			data1.setBrokerName(DropDownBroker);
+			data1.setConsignee(incomingconsign);
+			data1.setMlid(incomingmlid);
+			incomingjob.add(data1);
+		}
+		
+		
+		/*AddShipmentModel data1 = new AddShipmentModel();
+		DropDownModel DropDownBroker = new DropDownModel();
+		DropDownBroker.setName("Test1");
+		DropDownBroker.setValue("Test1");
+		DropDownModel DropDownMlid = new DropDownModel();
+		DropDownMlid.setName("Testvalue1");
+		DropDownMlid.setValue("Testvalue1");
+		DropDownModel DropDownMlid1 = new DropDownModel();
+		DropDownMlid1.setName("TestValue2");
+		DropDownMlid1.setValue("TestValue2");
+		DropDownModel DropDownMlid2 = new DropDownModel();
+		DropDownMlid.setName("TestValue3");
+		DropDownMlid.setValue("TestValue3");
+		DropDownModel DropDownCon = new DropDownModel();
+		DropDownCon.setName("Testvalue1");
+		DropDownCon.setValue("Testvalue1");
+		DropDownModel DropDownCon1 = new DropDownModel();
+		DropDownCon1.setName("TestValue2");
+		DropDownCon1.setValue("TestValue2");
+		DropDownModel DropDownCon2 = new DropDownModel();
+		DropDownCon2.setName("TestValue3");
+		DropDownCon2.setValue("TestValue3");
+		List<DropDownModel> incomingmlid = new ArrayList<DropDownModel>();
+		incomingmlid.add(DropDownMlid);
+		incomingmlid.add(DropDownMlid1);
+		
+		incomingmlid.add(DropDownMlid2);
+		
+		
+		List<DropDownModel> incomingconsign = new ArrayList<DropDownModel>();
+		incomingconsign.add(DropDownCon);
+		incomingconsign.add(DropDownCon1);
+		incomingconsign.add(DropDownCon2);
+		data1.setBrokerName(DropDownBroker);
+		data1.setConsignee(incomingconsign);
+		data1.setMlid(incomingmlid);
+		AddShipmentModel data2 = new AddShipmentModel();
+		DropDownModel DropDownBroker2 = new DropDownModel();
+		DropDownBroker2.setName("Test12");
+		DropDownBroker2.setValue("Test12");
+		DropDownModel DropDownMlid21 = new DropDownModel();
+		DropDownMlid21.setName("Testvalue11");
+		DropDownMlid21.setValue("Testvalue11");
+		DropDownModel DropDownMlid22 = new DropDownModel();
+		DropDownMlid22.setName("TestValue22");
+		DropDownMlid22.setValue("TestValue22");
+		DropDownModel DropDownMlid23 = new DropDownModel();
+		DropDownMlid23.setName("TestValue33");
+		DropDownMlid23.setValue("TestValue33");
+		DropDownModel DropDownCon21 = new DropDownModel();
+		DropDownCon21.setName("Testvaluea1");
+		DropDownCon21.setValue("Testvaluea1");
+		DropDownModel DropDownCon22 = new DropDownModel();
+		DropDownCon22.setName("TestValuea2");
+		DropDownCon22.setValue("TestValuea2");
+		DropDownModel DropDownCon23 = new DropDownModel();
+		DropDownCon23.setName("TestValuea3");
+		DropDownCon23.setValue("TestValuea3");
+		List<DropDownModel> incomingmlid1 = new ArrayList<DropDownModel>();
+		incomingmlid1.add(DropDownMlid21);
+		incomingmlid1.add(DropDownMlid22);
+		
+		incomingmlid1.add(DropDownMlid23);
+		
+		
+		List<DropDownModel> incomingconsign1 = new ArrayList<DropDownModel>();
+		incomingconsign1.add(DropDownCon21);
+		incomingconsign1.add(DropDownCon22);
+		incomingconsign1.add(DropDownCon23);
+		data2.setBrokerName(DropDownBroker2);
+		data2.setConsignee(incomingconsign1);
+		data2.setMlid(incomingmlid1);
+		incomingjob.add(data1);
+		incomingjob.add(data2);*/
+		return incomingjob;
+	}
+
+	@Override
+	public UserMessage createJob(List<CreateJobRequest> createJob) {
+		
+			String jobInfo = d2zDao.createEnquiry(createJob);
+			UserMessage usrMsg = new UserMessage();
+			usrMsg.setMessage(jobInfo);
+			return usrMsg;
+		}
+
+	@Override
+	public List<IncomingJobs> getJobList() {
+		// TODO Auto-generated method stub
+	return d2zDao.getJobList();
+	}
+	
 
 }
