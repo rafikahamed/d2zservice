@@ -70,7 +70,8 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 		d2zValidator.isReferenceNumberUnique(orderDetail,errorMap);
 		d2zValidator.isServiceValid(orderDetail,errorMap);
 		d2zValidator.isPostCodeValid(orderDetail,errorMap);
-		
+		ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
+				
 		String barcodeLabelNumber = orderDetail.getConsignmentData().get(0).getBarcodeLabelNumber();
 		String datamatrix = orderDetail.getConsignmentData().get(0).getDatamatrix();
 		if(null==barcodeLabelNumber || barcodeLabelNumber.trim().isEmpty() || null==datamatrix || datamatrix.trim().isEmpty()) {
@@ -78,8 +79,8 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 	    if("1PS".equalsIgnoreCase(serviceType) || "1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) 
 				|| "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType) || "2PSP".equalsIgnoreCase(serviceType)
 				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
-			d2zValidator.isPostCodeValid(orderDetail,errorMap);
-			ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
+			//d2zValidator.isPostCodeValid(orderDetail,errorMap);
+			//ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 			if(orderDetail.getConsignmentData().size()>0) {
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			}
@@ -101,7 +102,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			return;// senderDataResponseList;
 		}else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) 
 					|| "MCM3".equalsIgnoreCase(serviceType) || "MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)){
-			ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
+			//ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 			if(orderDetail.getConsignmentData().size()>0) {
 			PFLSenderDataRequest consignmentData = d2zValidator.isFWSubPostCodeValid(orderDetail);
 			if(consignmentData.getPflSenderDataApi().size() > 0) {
@@ -116,8 +117,8 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			}
 			
 			if(consignmentData.getNonPflSenderDataApi().size() > 0 && !"STS".equalsIgnoreCase(serviceType)) {
-				d2zValidator.isPostCodeValid(orderDetail,errorMap);
-				ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
+				//d2zValidator.isPostCodeValid(orderDetail,errorMap);
+				//ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 				if(orderDetail.getConsignmentData().size()>0) {
 				String senderFileID = d2zDao.createConsignments(consignmentData.getNonPflSenderDataApi(), userId, orderDetail.getUserName(), null);
 				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
@@ -154,8 +155,6 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			}
 			return;
 		}}
-		d2zValidator.isPostCodeValid(orderDetail,errorMap);
-		ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 		if(orderDetail.getConsignmentData().size()>0) {
 		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(), userId, orderDetail.getUserName(), null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);

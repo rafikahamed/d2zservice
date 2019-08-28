@@ -5,6 +5,7 @@ import java.util.List;
 
 public class PCACreateShipmentRequestInfo {
 
+	private String no;
 	private String cust_ref;
 	private String cust_ref1;
 	private String type;
@@ -19,7 +20,20 @@ public class PCACreateShipmentRequestInfo {
 	private PCAConsignee consignee;
 	private List<PCAItems> items;
 	private String chargecode;
+	private String direct;
 	
+	public String getDirect() {
+		return direct;
+	}
+	public void setDirect(String direct) {
+		this.direct = direct;
+	}
+	public String getNo() {
+		return no;
+	}
+	public void setNo(String no) {
+		this.no = no;
+	}
 	public String getCust_ref() {
 		return cust_ref;
 	}

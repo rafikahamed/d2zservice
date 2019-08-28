@@ -28,6 +28,7 @@ import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
+import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -229,5 +230,20 @@ public class SPCourierSuperUserController {
 			@RequestParam("toDate") String toDate) {
 		return superUserD2zService.fetchApiLogs(vendor, fromDate, toDate);
 	}
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/open-enquiry")
+    public List<OpenEnquiryResponse> fetchOpenEnquiryDetails() {
+		return superUserD2zService.fetchOpenEnquiryDetails();
+    }
+	
+	@RequestMapping( method = RequestMethod.PUT, path = "/Update-enquiry", consumes=MediaType.APPLICATION_JSON)
+    public UserMessage updateEnquiryDetails(@RequestBody List<OpenEnquiryResponse> openEnquiryDetails) {
+		return superUserD2zService.updateEnquiryDetails(openEnquiryDetails);
+    }
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/completed-enquiry")
+    public List<OpenEnquiryResponse> completedEnquiryDetails() {
+		return superUserD2zService.completedEnquiryDetails();
+    }
 
 }

@@ -184,6 +184,7 @@ public class D2ZServiceImpl implements ID2ZService {
 				.collect(Collectors.toList());
 		d2zValidator.isReferenceNumberUniqueUI(incomingRefNbr);
 		d2zValidator.isServiceValidUI(orderDetailList);
+		d2zValidator.isPostCodeValidUI(orderDetailList);
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 		String serviceType = orderDetailList.get(0).getServiceType();
@@ -233,7 +234,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			}
 			return senderDataResponseList;
 		}
-		d2zValidator.isPostCodeValidUI(orderDetailList);
+		//d2zValidator.isPostCodeValidUI(orderDetailList);
 		String senderFileID  = d2zDao.exportParcel(orderDetailList,null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		Iterator itr = insertedOrder.iterator();
@@ -851,6 +852,7 @@ else
 				.collect(Collectors.toList());
 		d2zValidator.isReferenceNumberUnique(incomingRefNbr);
 		d2zValidator.isServiceValid(orderDetail);
+		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 
@@ -862,7 +864,7 @@ else
 	    if( "1PM3E".equalsIgnoreCase(serviceType) 
 				|| "1PS3".equalsIgnoreCase(serviceType) 
 				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
-			d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+		//	d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 			 System.out.print("servicetype:"+serviceType);
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			return senderDataResponseList;
@@ -894,7 +896,7 @@ else
 			}
 			
 			if(consignmentData.getNonPflSenderDataApi().size() > 0 && !"STS".equalsIgnoreCase(serviceType)) {
-				d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+			//	d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 				String senderFileID = d2zDao.createConsignments(consignmentData.getNonPflSenderDataApi(), userId, orderDetail.getUserName(), null);
 				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 				Iterator itr = insertedOrder.iterator();
@@ -928,7 +930,7 @@ else
 			}
 			return senderDataResponseList;
 		}}
-		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+		
 		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(), userId, orderDetail.getUserName(), null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		Iterator itr = insertedOrder.iterator();
@@ -1048,6 +1050,16 @@ else
 	        	List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
 	        	if(!senderMasterData.isEmpty()) {
 	        		freipostWrapper.uploadManifestService(senderMasterData);
+	        	}
+	        	
+	        	List<SenderdataMaster> pcaData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"PCA");
+	        	if(!pcaData.isEmpty()) {
+	        		try {
+						pcaWrapper.makeCreateShippingOrderPCACall(pcaData);
+					} catch (EtowerFailureResponseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 	        	}
 	        	
 	        	List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);

@@ -28,6 +28,7 @@ import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.TransitTime;
@@ -62,6 +63,7 @@ import com.d2z.d2zservice.repository.MlidRepository;
 import com.d2z.d2zservice.repository.NonD2ZDataRepository;
 import com.d2z.d2zservice.repository.ReconcileNDRepository;
 import com.d2z.d2zservice.repository.ReconcileRepository;
+import com.d2z.d2zservice.repository.ReturnsRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.Senderdata_InvoicingRepository;
 import com.d2z.d2zservice.repository.ServiceTypeListRepository;
@@ -130,11 +132,15 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	TransitTimeRepository transitTimeRepository;
 	
 	@Autowired
+<<<<<<< HEAD
 	IncomingJobsLogicRepository incomingJobRepository;
 	
 	
 	@Autowired
 	IncomingJobsRepository incomingRepository;
+=======
+	ReturnsRepository returnsRepository; 
+>>>>>>> 565773254b98600089406eae920f418b97530312
 
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -828,7 +834,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				openEnquiryResponse.setConsigneePostcode(obj[13] != null ? obj[13].toString() : "");
 				openEnquiryResponse.setProductDescription(obj[14] != null ? obj[14].toString() : "");
 				TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(openEnquiryResponse.getConsigneePostcode());
-				deliveryDate = D2ZCommonUtil.getIncreasedTime(openEnquiryResponse.getTrackingEventDateOccured(),transitTimeResponse.getTransitTime());
+				if(null != transitTimeResponse)
+					deliveryDate = D2ZCommonUtil.getIncreasedTime(openEnquiryResponse.getTrackingEventDateOccured(),transitTimeResponse.getTransitTime());
 				openEnquiryResponse.setTrackingDeliveryDate(deliveryDate);
 				openEnquiryList.add(openEnquiryResponse);
 			  }
@@ -853,6 +860,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
+<<<<<<< HEAD
 	public List<IncomingJobsLogic> getBrokerMlidDetails() {
 		// TODO Auto-generated method stub
 		List<IncomingJobsLogic> jobs = (List<IncomingJobsLogic>) incomingJobRepository.findAll();
@@ -898,5 +906,18 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		// TODO Auto-generated method stub
 		return (List<IncomingJobs>) incomingRepository.findAll();
 	}
+	
+
+	@Override
+	public List<String> fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId) {
+		List<String> clientDetails = returnsRepository.fetchClientDetails(referenceNumber,barcodeLabel,articleId);
+		return clientDetails;
 	}
 
+	@Override
+	public String createReturns(List<Returns> returnsList) {
+		returnsRepository.saveAll(returnsList);
+		return "Returns Updated Successfully";
+	}
+
+}

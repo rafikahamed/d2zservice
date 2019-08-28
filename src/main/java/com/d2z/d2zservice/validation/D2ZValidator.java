@@ -243,7 +243,7 @@ public class D2ZValidator {
 		PFLSenderDataRequest pflRequest = new PFLSenderDataRequest();
 		List<String> postCodeFWSubList = D2ZSingleton.getInstance().getFWPostCodeZoneList();
 		consignmentData.getConsignmentData().forEach(obj -> {
-			if(postCodeFWSubList.contains(obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim()))) {
+			if(postCodeFWSubList.contains(obj.getConsigneeState().trim().toUpperCase().concat(obj.getConsigneeSuburb().trim().toUpperCase()).concat(obj.getConsigneePostcode().trim()))) {
 				pflSenderData.add(obj);
 			}else {
 				nonPflSenderData.add(obj);
@@ -260,7 +260,7 @@ public class D2ZValidator {
 		PFLSenderDataFileRequest pflRequest = new PFLSenderDataFileRequest();
 		List<String> postCodeFWSubList = D2ZSingleton.getInstance().getFWPostCodeZoneList();
 		consignmentData.forEach(obj -> {
-			if(postCodeFWSubList.contains(obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim()))) {
+			if(postCodeFWSubList.contains(obj.getConsigneeState().trim().toUpperCase().concat(obj.getConsigneeSuburb().trim().toUpperCase()).concat(obj.getConsigneePostcode().trim()))) {
 				pflSenderData.add(obj);
 			}else {
 				nonPflSenderData.add(obj);

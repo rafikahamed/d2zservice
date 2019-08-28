@@ -11,6 +11,7 @@ import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
@@ -151,6 +152,10 @@ public interface ID2ZSuperUserDao {
 	List<IncomingJobs> getJobList();
 
 	String createEnquiry(List<CreateJobRequest> createJob);
+
+	List<String> fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId);
+
+	String createReturns(List<Returns> returnsList);
 
 }
 
