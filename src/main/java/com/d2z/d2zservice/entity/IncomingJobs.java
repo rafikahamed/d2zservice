@@ -1,6 +1,7 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -48,7 +49,7 @@ public class IncomingJobs implements Serializable{
 	private String Weight;
 	
 	@Column(name = "ETA")
-	private Date Eta;
+	private LocalDate Eta;
 	
 	public String getID() {
 		return ID;
@@ -130,20 +131,21 @@ public class IncomingJobs implements Serializable{
 		Weight = weight;
 	}
 
-	public Date getEta() {
+
+	public LocalDate getEta() {
 		return Eta;
 	}
 
-	public void setEta(Date eta) {
+	public void setEta(LocalDate eta) {
 		Eta = eta;
 	}
 
-	public Date getAta() {
+	public LocalDate getAta() {
 		return Ata;
 	}
 
-	public void setAta(Date ata) {
-		Ata = ata;
+	public void setAta(LocalDate date1) {
+		Ata = date1;
 	}
 
 	public String getClear() {
@@ -179,7 +181,7 @@ public class IncomingJobs implements Serializable{
 	}
 
 	@Column(name = "ATA")
-	private Date Ata;
+	private LocalDate Ata;
 	
 
 	

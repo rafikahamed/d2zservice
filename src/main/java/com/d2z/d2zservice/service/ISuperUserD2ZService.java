@@ -32,6 +32,7 @@ import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
+import com.d2z.d2zservice.model.IncomingJobResponse;
 
 public interface ISuperUserD2ZService{
 
@@ -124,11 +125,13 @@ public interface ISuperUserD2ZService{
 	
 	public UserMessage createJob(List<CreateJobRequest> createJob);
 	
-	public List<IncomingJobs> getJobList();
+	public List<IncomingJobResponse> getJobList();
 
 
 	public ReturnsClientResponse fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId);
 
 	public UserMessage createReturns(List<Returns> returns);
+
+	public UserMessage updateJob(List<IncomingJobResponse> job);
 
 }

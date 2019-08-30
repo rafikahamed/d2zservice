@@ -21,6 +21,7 @@ import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
+import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -149,13 +150,15 @@ public interface ID2ZSuperUserDao {
 	
 	List<IncomingJobsLogic> getBrokerMlidDetails();
 	
-	List<IncomingJobs> getJobList();
+	List<IncomingJobResponse> getJobList();
 
 	String createEnquiry(List<CreateJobRequest> createJob);
 
 	List<String> fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId);
 
 	String createReturns(List<Returns> returnsList);
+
+	String updateJob(List<IncomingJobResponse> job);
 
 }
 

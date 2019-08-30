@@ -41,6 +41,7 @@ import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -132,15 +133,16 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	TransitTimeRepository transitTimeRepository;
 	
 	@Autowired
-<<<<<<< HEAD
+
 	IncomingJobsLogicRepository incomingJobRepository;
 	
 	
 	@Autowired
 	IncomingJobsRepository incomingRepository;
-=======
+
+	@Autowired
 	ReturnsRepository returnsRepository; 
->>>>>>> 565773254b98600089406eae920f418b97530312
+
 
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -860,7 +862,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
-<<<<<<< HEAD
+
 	public List<IncomingJobsLogic> getBrokerMlidDetails() {
 		// TODO Auto-generated method stub
 		List<IncomingJobsLogic> jobs = (List<IncomingJobsLogic>) incomingJobRepository.findAll();
@@ -887,11 +889,12 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				jobs.setPiece(jobRequest.getPrice());
 				jobs.setWeight(jobRequest.getWeight());
 				
-				System.out.println("Date:"+jobRequest.getEta());
+				LocalDate date1  = LocalDate.parse(jobRequest.getEta(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 				
 				Date date = Date.from(Instant.parse(jobRequest.getEta()));
 				
-				jobs.setEta(date);
+				System.out.println("Date:"+date+":"+date1);
+				jobs.setEta(date1);
 				joblist.add(jobs);
 			}
 
@@ -902,9 +905,42 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
-	public List<IncomingJobs> getJobList() {
+	public List<IncomingJobResponse> getJobList() {
 		// TODO Auto-generated method stub
-		return (List<IncomingJobs>) incomingRepository.findAll();
+		List<IncomingJobs> js = (List<IncomingJobs>)incomingRepository.findAll();
+		List<IncomingJobResponse> joblist = new ArrayList<IncomingJobResponse>();
+		for(IncomingJobs job :js)
+		{
+			IncomingJobResponse jobs = new IncomingJobResponse();
+			System.out.println("ATA:"+job.getAta());
+			jobs.setJobid(job.getID());
+			
+			if(job.getEta()!=null)
+			{
+			jobs.setEta(job.getEta().toString());
+			}
+			if(job.getAta()!=null)
+			{
+			jobs.setAta(job.getAta().toString());
+			
+			}
+			jobs.setBroker(job.getBroker());
+			jobs.setClear(job.getClear());
+			jobs.setConsignee(job.getConsignee());
+			jobs.setDestination(job.getDestination());
+			jobs.setFlight(job.getFlight());
+			jobs.setHawb(job.getHawb());
+			jobs.setHeld(job.getHeld());
+			jobs.setMawb(job.getMawb());
+			jobs.setMLID(job.getMLID());
+			jobs.setNote(job.getNote());
+			jobs.setOutturn(job.getOutturn());
+			jobs.setPiece(job.getPiece());
+			jobs.setWeight(job.getWeight());
+			joblist.add(jobs);
+			
+		}
+		return  joblist;
 	}
 	
 
@@ -918,6 +954,58 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	public String createReturns(List<Returns> returnsList) {
 		returnsRepository.saveAll(returnsList);
 		return "Returns Updated Successfully";
+	}
+
+	@Override
+	public String updateJob(List<IncomingJobResponse> js) {
+		// TODO Auto-generated method stub
+		
+		List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
+		
+		for(IncomingJobResponse job :js)
+		{
+			IncomingJobs jobs = new IncomingJobs();
+			System.out.println("jkk"+job.getBroker()+"::"+job.getEta()+job.getClear());
+			jobs.setBroker(job.getBroker());
+			jobs.setClear(job.getClear());
+			jobs.setConsignee(job.getConsignee());
+			jobs.setDestination(job.getDestination());
+			jobs.setFlight(job.getFlight());
+			jobs.setHawb(job.getHawb());
+			jobs.setHeld(job.getHeld());
+			jobs.setMawb(job.getMawb());
+			jobs.setMLID(job.getMLID());
+			jobs.setNote(job.getNote());
+
+			LocalDate date1  = LocalDate.parse(job.getEta());
+			
+			if(job.getAta().contains("T04:"))
+			{
+			 LocalDate date2 = LocalDate.parse(job.getAta(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+			 jobs.setAta(date2);
+			}
+			else
+			{LocalDate date2  = LocalDate.parse(job.getAta());
+			jobs.setAta(date2);
+			}
+		
+			jobs.setEta(date1);
+			
+			jobs.setPiece(job.getPiece());
+			jobs.setWeight(job.getWeight());
+			jobs.setID(job.getJobid());
+			
+		
+			if(job.getOutturn()!=null && job.getOutturn().equalsIgnoreCase("True"))
+			{
+			jobs.setOutturn("Y");
+			}
+		jobs.setHeld(job.getHeld());
+			joblist.add(jobs);
+			
+		}
+		incomingRepository.saveAll(joblist);
+		return "Job Updated Succesfully";
 	}
 
 }

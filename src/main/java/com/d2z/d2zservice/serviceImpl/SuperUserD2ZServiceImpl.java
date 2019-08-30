@@ -85,6 +85,7 @@ import uk.org.okapibarcode.backend.DataMatrix.ForceMode;
 import uk.org.okapibarcode.backend.Symbol.DataType;
 import uk.org.okapibarcode.output.Java2DRenderer;
 import com.d2z.d2zservice.model.ExportShipment;
+import com.d2z.d2zservice.model.IncomingJobResponse;
 
 @Service
 public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
@@ -1029,7 +1030,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	}
 
 	@Override
-<<<<<<< HEAD
+
 	public List<AddShipmentModel> incomingjobList() {
 		// TODO Auto-generated method stub
 		List<IncomingJobsLogic> job = d2zDao.getBrokerMlidDetails();
@@ -1155,7 +1156,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		}
 
 	@Override
-	public List<IncomingJobs> getJobList() {
+	public List<IncomingJobResponse> getJobList() {
 		// TODO Auto-generated method stub
 	return d2zDao.getJobList();
 	}
@@ -1207,6 +1208,17 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage(clientDetails);
 		return usrMsg;
+	}
+
+	@Override
+	public UserMessage updateJob(List<IncomingJobResponse> job) {
+		// TODO Auto-generated method stub
+		
+		String jobInfo = d2zDao.updateJob(job);
+		UserMessage usrMsg = new UserMessage();
+		usrMsg.setMessage(jobInfo);
+		return usrMsg;
+
 	}
 
 

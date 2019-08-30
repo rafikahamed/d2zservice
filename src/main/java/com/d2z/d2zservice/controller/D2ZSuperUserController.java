@@ -45,6 +45,7 @@ import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
+import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 
 @RestController
@@ -298,9 +299,14 @@ public class D2ZSuperUserController {
 		return jobInfo;
 	}
 	
+	@RequestMapping(method = RequestMethod.POST, path = "/update-job")
+	public UserMessage updateJob(@RequestBody List<IncomingJobResponse> Job) {
+		UserMessage jobInfo = superUserD2zService.updateJob(Job);
+		return jobInfo;
+	}
 	@RequestMapping(method = RequestMethod.GET, path = "/incoming-job-list")
-	public List<IncomingJobs> createJobList() {
-		List<IncomingJobs> jobInfo = superUserD2zService.getJobList();
+	public List<IncomingJobResponse> createJobList() {
+		List<IncomingJobResponse> jobInfo = superUserD2zService.getJobList();
 		return jobInfo;
 	}
 	
