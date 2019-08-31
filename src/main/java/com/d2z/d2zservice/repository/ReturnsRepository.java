@@ -20,5 +20,18 @@ public interface ReturnsRepository extends CrudRepository<Returns, Long>{
 			"  and A.Role_Id = 3")
 	List<String> fetchClientDetails(@Param("referenceNumber") String referenceNumber, @Param("barcodeLabel") String barcodeLabel, 
 			@Param("articleId") String articleId);
+	
+	
+	@Query( nativeQuery = true, value="SELECT * FROM Returns where "
+			+ "returnsCreatedDate between :fromDate and :toDate and User_Id in (:userId)") 
+	List<Returns> fetchOutstandingDetails(@Param("fromDate") String fromDate, @Param("toDate") String toDate, @Param("userId") Integer[] userId);
+
+	
+	@Query("SELECT distinct(r.brokerName) FROM Returns r") 
+	List<String> fetchReturnsBroker();
+
+	@Query( nativeQuery = true, value="SELECT * FROM Returns where brokerName = :brokerName and "
+			+ "returnsCreatedDate between :fromDate and :toDate") 
+	List<Returns> returnsOutstandingDetails(@Param("fromDate") String fromDate, @Param("toDate") String toDate, @Param("brokerName") String brokerName);
 
 }

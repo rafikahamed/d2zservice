@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,6 @@ import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
-import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
@@ -1006,6 +1004,17 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		}
 		incomingRepository.saveAll(joblist);
 		return "Job Updated Succesfully";
+	}
+
+	@Override
+	public List<String> fetchReturnsBroker() {
+		List<String> brokerReturns= returnsRepository.fetchReturnsBroker();
+		return brokerReturns;
+	}
+
+	@Override
+	public List<Returns> returnsOutstanding(String fromDate, String toDate, String brokerName) {
+		return returnsRepository.returnsOutstandingDetails(fromDate,toDate,brokerName);
 	}
 
 }

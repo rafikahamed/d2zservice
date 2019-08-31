@@ -38,6 +38,7 @@ import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.FFResponse;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
@@ -66,6 +67,7 @@ import com.d2z.d2zservice.model.PflCreateShippingOrderInfo;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
 import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
@@ -1887,6 +1889,12 @@ else
 		} catch (EtowerFailureResponseException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public List<Returns> returnsOutstanding(String fromDate, String toDate, String userId) {
+		List<Returns> outstandingData =  d2zDao.returnsOutstanding(fromDate,toDate,userId);
+		return outstandingData;
 	}
 
 }

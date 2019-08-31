@@ -320,6 +320,15 @@ public class D2ZSuperUserController {
     public UserMessage createReturns(@RequestBody List<Returns> returns) {
 		return superUserD2zService.createReturns(returns);
     }
-
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/returns-broker")
+    public List<DropDownModel> fetchReturnsBroker() {
+		return superUserD2zService.fetchReturnsBroker();
+    }
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/outStanding-returns")
+	public List<Returns> returnsOutstanding(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate, @RequestParam("brokerName") String brokerName) {
+		return superUserD2zService.returnsOutstanding(fromDate, toDate, brokerName);
+	}
 	
 }

@@ -8,6 +8,7 @@ import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FastwayPostcode;
 import com.d2z.d2zservice.entity.PostcodeZone;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
@@ -149,5 +150,7 @@ public interface ID2ZDao {
 	public Double getAudcurrency(String country);
 	
 	public List<SenderdataMaster> fetchConsignmentsByRefNbr(List<String> refNbrs);
+
+	public List<Returns> returnsOutstanding(String fromDate, String toDate, String userId);
 
 }

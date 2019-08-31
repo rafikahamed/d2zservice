@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.d2z.d2zservice.entity.CSTickets;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.PCAlabelException;
@@ -26,6 +27,7 @@ import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
@@ -273,5 +275,10 @@ public class D2zController {
 	public void getcurrency() {
 		d2zService.currencyRate();
 	}
-	 
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/outStanding-returns")
+	public List<Returns> returnsOutstanding(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate, @RequestParam("userId") String userId) {
+		List<Returns> returnsInfo = d2zService.returnsOutstanding(fromDate, toDate, userId);
+		return returnsInfo;
+	}
 }

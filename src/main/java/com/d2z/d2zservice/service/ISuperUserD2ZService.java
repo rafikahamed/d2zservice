@@ -1,8 +1,6 @@
 package com.d2z.d2zservice.service;
 
 import java.util.List;
-
-import com.d2z.d2zservice.entity.IncomingJobs;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -120,18 +118,20 @@ public interface ISuperUserD2ZService{
 
 	public List<OpenEnquiryResponse> completedEnquiryDetails();
 
-	
 	public List<AddShipmentModel> incomingjobList();
 	
 	public UserMessage createJob(List<CreateJobRequest> createJob);
 	
 	public List<IncomingJobResponse> getJobList();
 
-
 	public ReturnsClientResponse fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId);
 
 	public UserMessage createReturns(List<Returns> returns);
 
 	public UserMessage updateJob(List<IncomingJobResponse> job);
+
+	public List<DropDownModel> fetchReturnsBroker();
+
+	public List<Returns> returnsOutstanding(String fromDate, String toDate, String brokerName);
 
 }

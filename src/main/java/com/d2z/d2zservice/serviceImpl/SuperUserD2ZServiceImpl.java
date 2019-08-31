@@ -1221,5 +1221,23 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 
 	}
 
+	@Override
+	public List<DropDownModel> fetchReturnsBroker() {
+		List<String> returnsBroker = d2zDao.fetchReturnsBroker();
+		List<DropDownModel> brokerList = new ArrayList<DropDownModel>();
+		for (String mlid : returnsBroker) {
+			DropDownModel dropDownVaL = new DropDownModel();
+			dropDownVaL.setName(mlid);
+			dropDownVaL.setValue(mlid);
+			brokerList.add(dropDownVaL);
+		}
+		return brokerList;
+	}
+
+	@Override
+	public List<Returns> returnsOutstanding(String fromDate, String toDate, String brokerName) {
+		return  d2zDao.returnsOutstanding(fromDate,toDate,brokerName);
+	}
+
 
 }
