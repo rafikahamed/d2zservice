@@ -5,14 +5,17 @@ import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.AUWeight;
+import com.d2z.d2zservice.model.AddShipmentModel;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.BrokerShipmentList;
+import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
@@ -21,11 +24,13 @@ import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
+import com.d2z.d2zservice.model.IncomingJobResponse;
 
 public interface ISuperUserD2ZService{
 
@@ -112,4 +117,21 @@ public interface ISuperUserD2ZService{
 	public UserMessage updateEnquiryDetails(List<OpenEnquiryResponse> openEnquiryDetails);
 
 	public List<OpenEnquiryResponse> completedEnquiryDetails();
+
+	public List<AddShipmentModel> incomingjobList();
+	
+	public UserMessage createJob(List<CreateJobRequest> createJob);
+	
+	public List<IncomingJobResponse> getJobList();
+
+	public ReturnsClientResponse fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId);
+
+	public UserMessage createReturns(List<Returns> returns);
+
+	public UserMessage updateJob(List<IncomingJobResponse> job);
+
+	public List<DropDownModel> fetchReturnsBroker();
+
+	public List<Returns> returnsOutstanding(String fromDate, String toDate, String brokerName);
+
 }

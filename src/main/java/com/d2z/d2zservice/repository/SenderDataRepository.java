@@ -240,17 +240,40 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 List<SenderdataMaster> fetchConsignmentsManifestShippment(@Param("referenceNumbers") List<String> referenceNumbers);
 
 
-	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwaybill FROM (SELECT DISTINCT U.client_broker_id, S.airwaybill FROM Senderdata_Invoicing S INNER JOIN users U \n" + 
-			"ON S.airwaybill IS NOT NULL AND U.role_id = '3' AND S.user_id = U.user_id AND S.Invoiced = 'N') B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name")
+//	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwaybill FROM (SELECT DISTINCT U.client_broker_id, S.airwaybill FROM Senderdata_Invoicing S INNER JOIN users U \n" + 
+//			"ON S.airwaybill IS NOT NULL AND U.role_id = '3' AND S.user_id = U.user_id AND S.Invoiced = 'N') B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name")
+//	List<String> fetchSenderShipmenntData();
+	 
+	@Query(nativeQuery = true, value="SELECT DISTINCT U.Client_BrokerName, \r\n" + 
+			"                        S.airwaybill \r\n" + 
+			"        FROM   senderdata_invoicing S \r\n" + 
+			"               INNER JOIN users U \r\n" + 
+			"                       ON S.airwaybill IS NOT NULL \r\n" + 
+			"                          AND U.role_id = '3' \r\n" + 
+			"                          AND S.user_id = U.user_id \r\n" + 
+			"                          AND S.invoiced = 'N'\r\n" + 
+			"						  order by U.Client_BrokerName")
 	List<String> fetchSenderShipmenntData();
-
 	
-	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwaybill FROM \n" + 
-			"(\n" + 
-			"SELECT DISTINCT U.client_broker_id, S.airwaybill FROM Senderdata_Invoicing S INNER JOIN users U \n" + 
-			"ON S.airwaybill IS NOT NULL AND U.role_id = '3' AND S.user_id = U.user_id AND S.Invoiced = 'Y' and S.Billed = 'N'\n" + 
-			") \n" + 
-			"B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name;")
+//	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwaybill FROM \n" + 
+//			"(\n" + 
+//			"SELECT DISTINCT U.client_broker_id, S.airwaybill FROM Senderdata_Invoicing S INNER JOIN users U \n" + 
+//			"ON S.airwaybill IS NOT NULL AND U.role_id = '3' AND S.user_id = U.user_id AND S.Invoiced = 'Y' and S.Billed = 'N'\n" + 
+//			") \n" + 
+//			"B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name;")
+//	List<String> brokerInvoiced();
+	
+	@Query(nativeQuery = true, value="SELECT DISTINCT U.Client_BrokerName, \r\n" + 
+			"                        S.airwaybill \r\n" + 
+			"        FROM   senderdata_invoicing S \r\n" + 
+			"               INNER JOIN users U \r\n" + 
+			"                       ON S.airwaybill IS NOT NULL \r\n" + 
+			"                          AND U.role_id = '3' \r\n" + 
+			"                          AND S.user_id = U.user_id \r\n" + 
+			"                          AND S.invoiced = 'Y' \r\n" + 
+			"                          AND S.billed = 'N'\r\n" + 
+			"Order by U.client_brokername\r\n" + 
+			"")
 	List<String> brokerInvoiced();
 	
 	@Query(nativeQuery = true, value="select D.user_name, C.airwayBill, C.articleId, C.reference_number, C.d2zRate, C.weight, C.brokerRate from\n" + 
@@ -278,15 +301,78 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 			"B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name")
 	List<String> fetchNotBilled();
 	
-	@Query(nativeQuery = true, value="SELECT DISTINCT S.articleid  AS TrackingNumber, S.reference_number AS reference, S.consignee_postcode AS postcode, S.weight AS Weight,\n" + 
-			"				  B.rate AS postage, S.fuelsurcharge AS Fuelsurcharge, S.brokerrate AS total, S.servicetype AS servicetype ,S.airwaybill AS ShipmentNumber FROM Senderdata_Invoicing S\n" + 
-			"				  INNER JOIN POSTCODEZONES P ON P.postcode = S.consignee_postcode AND P.suburb = S.consignee_suburb INNER JOIN BROKERRATES B\n" + 
-			"                ON S.airwaybill in (:airwayBill) AND B.brokerusername in (:broker) AND ( S.weight BETWEEN Cast(B.minweight AS DECIMAL(18, 4)) AND\n" + 
-			" 				  Cast( B.maxweight AS DECIMAL(18, 4)) ) AND S.servicetype = B.servicetype AND S.consignee_postcode = P.postcode\n" + 
-			"					AND B.zoneid = P.zone AND S.Billed = :billed AND S.Invoiced = :invoiced ")
+//	@Query(nativeQuery = true, value="SELECT DISTINCT S.articleid  AS TrackingNumber, S.reference_number AS reference, S.consignee_postcode AS postcode, S.weight AS Weight,\n" + 
+//			"				  B.rate AS postage, S.fuelsurcharge AS Fuelsurcharge, S.brokerrate AS total, S.servicetype AS servicetype ,S.airwaybill AS ShipmentNumber FROM Senderdata_Invoicing S\n" + 
+//			"				  INNER JOIN POSTCODEZONES P ON P.postcode = S.consignee_postcode AND P.suburb = S.consignee_suburb INNER JOIN BROKERRATES B\n" + 
+//			"                ON S.airwaybill in (:airwayBill) AND B.brokerusername in (:broker) AND ( S.weight BETWEEN Cast(B.minweight AS DECIMAL(18, 4)) AND\n" + 
+//			" 				  Cast( B.maxweight AS DECIMAL(18, 4)) ) AND S.servicetype = B.servicetype AND S.consignee_postcode = P.postcode\n" + 
+//			"					AND B.zoneid = P.zone AND S.Billed = :billed AND S.Invoiced = :invoiced ")
+//	List<String> downloadInvoice(@Param("broker") List<String> broker, @Param("airwayBill")  List<String> airwayBill, @Param("billed") String billed,
+//									@Param("invoiced") String invoiced);
+
+	@Query(nativeQuery = true, value="SELECT \r\n" + 
+			"  DISTINCT S.articleid AS TrackingNumber, \r\n" + 
+			"  S.reference_number AS reference, \r\n" + 
+			"  S.consignee_postcode AS postcode, \r\n" + 
+			"  S.weight AS Weight, \r\n" + 
+			"  B.rate AS postage, \r\n" + 
+			"  S.fuelsurcharge AS Fuelsurcharge, \r\n" + 
+			"  S.brokerrate AS total, \r\n" + 
+			"  S.servicetype AS servicetype, \r\n" + 
+			"  S.airwaybill AS ShipmentNumber \r\n" + 
+			"FROM \r\n" + 
+			"  senderdata_invoicing S \r\n" + 
+			"  INNER JOIN fastwaypostcode P ON P.postcode = S.consignee_postcode \r\n" + 
+			"  AND P.suburb = S.consignee_suburb \r\n" + 
+			"  INNER JOIN brokerrates B ON S.airwaybill IN (:airwayBill) \r\n" + 
+			"  AND B.brokerusername IN (:broker) \r\n" + 
+			"  AND (\r\n" + 
+			"    S.weight BETWEEN Cast(\r\n" + 
+			"      B.minweight AS DECIMAL(18, 4)\r\n" + 
+			"    ) \r\n" + 
+			"    AND Cast(\r\n" + 
+			"      B.maxweight AS DECIMAL(18, 4)\r\n" + 
+			"    )\r\n" + 
+			"  ) \r\n" + 
+			"  AND S.servicetype = B.servicetype \r\n" + 
+			"  AND S.consignee_postcode = P.postcode \r\n" + 
+			"  AND B.zoneid = P.zoneid \r\n" + 
+			"  AND S.billed = :billed \r\n" + 
+			"  AND S.invoiced = :invoiced\r\n" + 
+			"UNION \r\n" + 
+			"SELECT \r\n" + 
+			"  DISTINCT S.articleid AS TrackingNumber, \r\n" + 
+			"  S.reference_number AS reference, \r\n" + 
+			"  S.consignee_postcode AS postcode, \r\n" + 
+			"  S.weight AS Weight, \r\n" + 
+			"  B.rate AS postage, \r\n" + 
+			"  S.fuelsurcharge AS Fuelsurcharge, \r\n" + 
+			"  S.brokerrate AS total, \r\n" + 
+			"  S.servicetype AS servicetype, \r\n" + 
+			"  S.airwaybill AS ShipmentNumber \r\n" + 
+			"FROM \r\n" + 
+			"  senderdata_invoicing S \r\n" + 
+			"  INNER JOIN postcodezones P ON P.postcode = S.consignee_postcode \r\n" + 
+			"  AND P.suburb = S.consignee_suburb \r\n" + 
+			"  INNER JOIN brokerrates B ON S.airwaybill IN (:airwayBill) \r\n" + 
+			"  AND B.brokerusername IN (:broker) \r\n" + 
+			"  AND (\r\n" + 
+			"    S.weight BETWEEN Cast(\r\n" + 
+			"      B.minweight AS DECIMAL(18, 4)\r\n" + 
+			"    ) \r\n" + 
+			"    AND Cast(\r\n" + 
+			"      B.maxweight AS DECIMAL(18, 4)\r\n" + 
+			"    )\r\n" + 
+			"  ) \r\n" + 
+			"  AND S.servicetype = B.servicetype \r\n" + 
+			"  AND S.consignee_postcode = P.postcode \r\n" + 
+			"  AND B.zoneid = P.zone \r\n" + 
+			"  AND S.billed = :billed\r\n" + 
+			"  AND S.invoiced = :invoiced\r\n" + 
+			"")
 	List<String> downloadInvoice(@Param("broker") List<String> broker, @Param("airwayBill")  List<String> airwayBill, @Param("billed") String billed,
 									@Param("invoiced") String invoiced);
-
+	
 	@Query("SELECT t.user_ID FROM SenderdataMaster t where  t.reference_number = :reference_number")
 	 Integer fetchUserIdByReferenceNumber( String reference_number);
 

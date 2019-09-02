@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.d2z.d2zservice.entity.CSTickets;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.PCAlabelException;
@@ -21,6 +22,7 @@ import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
@@ -117,5 +119,7 @@ public interface ID2ZService {
 	public void currencyRate();
 
 	void updateCubicWeight();
+
+	public List<Returns> returnsOutstanding(String fromDate, String toDate, String userId);
 
 }

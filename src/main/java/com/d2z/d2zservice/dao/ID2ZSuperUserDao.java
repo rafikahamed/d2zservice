@@ -5,10 +5,12 @@ import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
+import com.d2z.d2zservice.entity.IncomingJobsLogic;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
@@ -16,7 +18,9 @@ import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
+import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
+import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -142,6 +146,22 @@ public interface ID2ZSuperUserDao {
 	String updateEnquiryDetails(List<OpenEnquiryResponse> openEnquiryDetails);
 
 	List<CSTickets> completedEnquiryDetails();
+	
+	List<IncomingJobsLogic> getBrokerMlidDetails();
+	
+	List<IncomingJobResponse> getJobList();
+
+	String createEnquiry(List<CreateJobRequest> createJob);
+
+	List<String> fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId);
+
+	String createReturns(List<Returns> returnsList);
+
+	String updateJob(List<IncomingJobResponse> job);
+
+	List<String> fetchReturnsBroker();
+
+	List<Returns> returnsOutstanding(String fromDate, String toDate, String brokerName);
 
 }
 

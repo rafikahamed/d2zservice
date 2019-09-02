@@ -2,8 +2,12 @@ package com.d2z.d2zservice.daoImpl;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +21,13 @@ import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.D2ZRates;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
+import com.d2z.d2zservice.entity.IncomingJobs;
+import com.d2z.d2zservice.entity.IncomingJobsLogic;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.TransitTime;
@@ -29,7 +36,10 @@ import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
+import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
+import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -46,10 +56,13 @@ import com.d2z.d2zservice.repository.ConsigneeCountRepository;
 import com.d2z.d2zservice.repository.D2ZRatesRepository;
 import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.FFResponseRepository;
+import com.d2z.d2zservice.repository.IncomingJobsLogicRepository;
+import com.d2z.d2zservice.repository.IncomingJobsRepository;
 import com.d2z.d2zservice.repository.MlidRepository;
 import com.d2z.d2zservice.repository.NonD2ZDataRepository;
 import com.d2z.d2zservice.repository.ReconcileNDRepository;
 import com.d2z.d2zservice.repository.ReconcileRepository;
+import com.d2z.d2zservice.repository.ReturnsRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.Senderdata_InvoicingRepository;
 import com.d2z.d2zservice.repository.ServiceTypeListRepository;
@@ -116,6 +129,18 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	
 	@Autowired
 	TransitTimeRepository transitTimeRepository;
+	
+	@Autowired
+
+	IncomingJobsLogicRepository incomingJobRepository;
+	
+	
+	@Autowired
+	IncomingJobsRepository incomingRepository;
+
+	@Autowired
+	ReturnsRepository returnsRepository; 
+
 
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -832,6 +857,164 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	public List<CSTickets> completedEnquiryDetails() {
 		List<CSTickets> completedTicketDetails = csticketsRepository.completedEnquiryDetails();
 		return completedTicketDetails;
+	}
+
+	@Override
+
+	public List<IncomingJobsLogic> getBrokerMlidDetails() {
+		// TODO Auto-generated method stub
+		List<IncomingJobsLogic> jobs = (List<IncomingJobsLogic>) incomingJobRepository.findAll();
+		return jobs;
+	}
+
+	@Override
+	public String createEnquiry(List<CreateJobRequest> createJob) {
+		
+		List<IncomingJobs> joblist = new ArrayList<IncomingJobs>();
+		
+		for(CreateJobRequest jobRequest :createJob)
+		{
+			for(DropDownModel model : jobRequest.getMlid())
+			{
+				IncomingJobs jobs = new IncomingJobs();
+				jobs.setBroker(jobRequest.getType());
+				jobs.setMLID(model.getName());
+				jobs.setConsignee(jobRequest.getConsignee());
+				jobs.setDestination(jobRequest.getDest());
+				jobs.setHawb(jobRequest.getHawb());
+				jobs.setMawb(jobRequest.getMawb());
+				jobs.setFlight(jobRequest.getFlight());
+				jobs.setPiece(jobRequest.getPrice());
+				jobs.setWeight(jobRequest.getWeight());
+				
+				LocalDate date1  = LocalDate.parse(jobRequest.getEta(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+				
+				Date date = Date.from(Instant.parse(jobRequest.getEta()));
+				
+				System.out.println("Date:"+date+":"+date1);
+				jobs.setEta(date1);
+				joblist.add(jobs);
+			}
+
+		}
+		incomingRepository.saveAll(joblist);
+					return "Job created Successfully";
+		
+	}
+
+	@Override
+	public List<IncomingJobResponse> getJobList() {
+		// TODO Auto-generated method stub
+		List<IncomingJobs> js = (List<IncomingJobs>)incomingRepository.findAll();
+		List<IncomingJobResponse> joblist = new ArrayList<IncomingJobResponse>();
+		for(IncomingJobs job :js)
+		{
+			IncomingJobResponse jobs = new IncomingJobResponse();
+			System.out.println("ATA:"+job.getAta());
+			jobs.setJobid(job.getID());
+			
+			if(job.getEta()!=null)
+			{
+			jobs.setEta(job.getEta().toString());
+			}
+			if(job.getAta()!=null)
+			{
+			jobs.setAta(job.getAta().toString());
+			
+			}
+			jobs.setBroker(job.getBroker());
+			jobs.setClear(job.getClear());
+			jobs.setConsignee(job.getConsignee());
+			jobs.setDestination(job.getDestination());
+			jobs.setFlight(job.getFlight());
+			jobs.setHawb(job.getHawb());
+			jobs.setHeld(job.getHeld());
+			jobs.setMawb(job.getMawb());
+			jobs.setMLID(job.getMLID());
+			jobs.setNote(job.getNote());
+			jobs.setOutturn(job.getOutturn());
+			jobs.setPiece(job.getPiece());
+			jobs.setWeight(job.getWeight());
+			joblist.add(jobs);
+			
+		}
+		return  joblist;
+	}
+	
+
+	@Override
+	public List<String> fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId) {
+		List<String> clientDetails = returnsRepository.fetchClientDetails(referenceNumber,barcodeLabel,articleId);
+		return clientDetails;
+	}
+
+	@Override
+	public String createReturns(List<Returns> returnsList) {
+		returnsRepository.saveAll(returnsList);
+		return "Returns Updated Successfully";
+	}
+
+	@Override
+	public String updateJob(List<IncomingJobResponse> js) {
+		// TODO Auto-generated method stub
+		
+		List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
+		
+		for(IncomingJobResponse job :js)
+		{
+			IncomingJobs jobs = new IncomingJobs();
+			System.out.println("jkk"+job.getBroker()+"::"+job.getEta()+job.getClear());
+			jobs.setBroker(job.getBroker());
+			jobs.setClear(job.getClear());
+			jobs.setConsignee(job.getConsignee());
+			jobs.setDestination(job.getDestination());
+			jobs.setFlight(job.getFlight());
+			jobs.setHawb(job.getHawb());
+			jobs.setHeld(job.getHeld());
+			jobs.setMawb(job.getMawb());
+			jobs.setMLID(job.getMLID());
+			jobs.setNote(job.getNote());
+
+			LocalDate date1  = LocalDate.parse(job.getEta());
+			
+			if(job.getAta().contains("T04:"))
+			{
+			 LocalDate date2 = LocalDate.parse(job.getAta(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+			 jobs.setAta(date2);
+			}
+			else
+			{LocalDate date2  = LocalDate.parse(job.getAta());
+			jobs.setAta(date2);
+			}
+		
+			jobs.setEta(date1);
+			
+			jobs.setPiece(job.getPiece());
+			jobs.setWeight(job.getWeight());
+			jobs.setID(job.getJobid());
+			
+		
+			if(job.getOutturn()!=null && job.getOutturn().equalsIgnoreCase("True"))
+			{
+			jobs.setOutturn("Y");
+			}
+		jobs.setHeld(job.getHeld());
+			joblist.add(jobs);
+			
+		}
+		incomingRepository.saveAll(joblist);
+		return "Job Updated Succesfully";
+	}
+
+	@Override
+	public List<String> fetchReturnsBroker() {
+		List<String> brokerReturns= returnsRepository.fetchReturnsBroker();
+		return brokerReturns;
+	}
+
+	@Override
+	public List<Returns> returnsOutstanding(String fromDate, String toDate, String brokerName) {
+		return returnsRepository.returnsOutstandingDetails(fromDate,toDate,brokerName);
 	}
 
 }

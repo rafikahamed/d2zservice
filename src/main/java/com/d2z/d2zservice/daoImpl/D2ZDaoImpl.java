@@ -21,6 +21,7 @@ import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.EbayResponse;
 import com.d2z.d2zservice.entity.FastwayPostcode;
 import com.d2z.d2zservice.entity.PostcodeZone;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
@@ -53,6 +54,7 @@ import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
 import com.d2z.d2zservice.repository.FastwayPostcodeRepository;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
+import com.d2z.d2zservice.repository.ReturnsRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
@@ -106,6 +108,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	CurrencyProxy currencyproxy;
+	
+	@Autowired
+	ReturnsRepository returnsRepository;
 
 	@Override
 	public String exportParcel(List<SenderData> orderDetailList,Map<String, LabelData> barcodeMap) {
@@ -1088,7 +1093,13 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public List<SenderdataMaster> fetchConsignmentsByRefNbr(List<String> refNbrs) {
-		// TODO Auto-generated method stub
 		return senderDataRepository.fetchConsignmentsByRefNbr(refNbrs);
+	}
+
+	@Override
+	public List<Returns> returnsOutstanding(String fromDate, String toDate, String userId) {
+		Integer[] userIds = Arrays.stream(userId.split(",")).map(String::trim).map(Integer::valueOf).toArray(Integer[]::new);
+		List<Returns> returnsDetails = returnsRepository.fetchOutstandingDetails(fromDate,toDate,userIds);
+		return returnsDetails;
 	}
 }

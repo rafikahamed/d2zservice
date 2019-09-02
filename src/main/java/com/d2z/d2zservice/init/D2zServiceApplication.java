@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.core.env.StandardEnvironment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -32,10 +31,6 @@ public class D2zServiceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(D2zServiceApplication.class, args);
 		
-//		 StandardEnvironment environment = new StandardEnvironment(); new
-//		  SpringApplicationBuilder() .sources(D2zServiceApplication.class)
-//		  .environment(environment) .resourceLoader(new JarResourceLoader(environment,
-//		  "resources.extract.dir")) .build() .run(args);
 		try {
 		    String result = InetAddress.getLocalHost().getHostName();
 		    if (StringUtils.isNotEmpty( result))

@@ -14,18 +14,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.d2z.d2zservice.entity.IncomingJobs;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.AUWeight;
+import com.d2z.d2zservice.model.AddShipmentModel;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.BrokerShipmentList;
+import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
@@ -34,11 +39,13 @@ import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
+import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 
 @RestController
@@ -115,6 +122,13 @@ public class D2ZSuperUserController {
     public List<BrokerList> brokerList() {
 		List<BrokerList> brokerList = superUserD2zService.brokerList();
 		return brokerList;
+    }
+	
+
+	@RequestMapping( method = RequestMethod.GET, path = "/incomingList",  produces = "application/json")
+    public List<AddShipmentModel> incomingjobList() {
+		List<AddShipmentModel> jobList = superUserD2zService.incomingjobList();
+		return jobList;
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/broker-shipmentList")
@@ -277,5 +291,44 @@ public class D2ZSuperUserController {
     public List<OpenEnquiryResponse> completedEnquiryDetails() {
 		return superUserD2zService.completedEnquiryDetails();
     }
+	
+
+	@RequestMapping(method = RequestMethod.POST, path = "/create-job")
+	public UserMessage createJob(@RequestBody List<CreateJobRequest> createJob) {
+		UserMessage jobInfo = superUserD2zService.createJob(createJob);
+		return jobInfo;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, path = "/update-job")
+	public UserMessage updateJob(@RequestBody List<IncomingJobResponse> Job) {
+		UserMessage jobInfo = superUserD2zService.updateJob(Job);
+		return jobInfo;
+	}
+	@RequestMapping(method = RequestMethod.GET, path = "/incoming-job-list")
+	public List<IncomingJobResponse> createJobList() {
+		List<IncomingJobResponse> jobInfo = superUserD2zService.getJobList();
+		return jobInfo;
+	}
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/clientDetails")
+    public ReturnsClientResponse fetchClientDetails(@RequestParam("referenceNumber") String referenceNumber,
+    	@RequestParam("barcodeLabel") String barcodeLabel, @RequestParam("articleId") String articleId) {
+		return superUserD2zService.fetchClientDetails(referenceNumber,barcodeLabel,articleId);
+    }
+	
+	@RequestMapping( method = RequestMethod.POST, path = "/create-returns")
+    public UserMessage createReturns(@RequestBody List<Returns> returns) {
+		return superUserD2zService.createReturns(returns);
+    }
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/returns-broker")
+    public List<DropDownModel> fetchReturnsBroker() {
+		return superUserD2zService.fetchReturnsBroker();
+    }
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/outStanding-returns")
+	public List<Returns> returnsOutstanding(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate, @RequestParam("brokerName") String brokerName) {
+		return superUserD2zService.returnsOutstanding(fromDate, toDate, brokerName);
+	}
 	
 }
