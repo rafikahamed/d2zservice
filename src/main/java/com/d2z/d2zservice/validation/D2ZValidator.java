@@ -358,4 +358,24 @@ public class D2ZValidator {
 	
 	}
 
+	public void isAddressValidUI(List<SenderData> senderData) throws ReferenceNumberNotUniqueException {
+		List<String> invalidAddress = new ArrayList<String>();
+		senderData.forEach(obj -> {
+			if( (obj.getServiceType().startsWith("FW") || obj.getServiceType().startsWith("MC"))
+					&& (obj.getConsigneeAddr1().toUpperCase().contains("PO BOX") || obj.getConsigneeAddr1().toUpperCase().contains("PARCEL COLLECT"))) {
+				invalidAddress.add(obj.getReferenceNumber()+"-"+obj.getConsigneeAddr1());
+			}
+			if( (obj.getServiceType().startsWith("FW") || obj.getServiceType().startsWith("MC"))
+					&& null != obj.getConsigneeAddr2() 
+					&& (obj.getConsigneeAddr2().toUpperCase().contains("PO BOX") || obj.getConsigneeAddr2().toUpperCase().contains("PARCEL COLLECT"))) {
+				invalidAddress.add(obj.getReferenceNumber()+"-"+obj.getConsigneeAddr2());
+			}
+			
+		});
+		if(!invalidAddress.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("PO Box and Parcel collect not accepted on this service",invalidAddress);
+		}
+		
+	}
+
 }

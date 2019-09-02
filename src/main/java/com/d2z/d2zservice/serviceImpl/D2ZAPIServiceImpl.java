@@ -1,10 +1,12 @@
 package com.d2z.d2zservice.serviceImpl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
@@ -177,9 +179,18 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 	private void makeCreateShippingOrderPFLCall (List<SenderDataApi> data,
 			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
 		PflCreateShippingRequest pflRequest = new PflCreateShippingRequest();
+		Map<String, String> systemRefNbrMap = new HashMap<String, String>();
+
 		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
 		for (SenderDataApi orderDetail : data) {
 			PflCreateShippingOrderInfo request = new PflCreateShippingOrderInfo();
+			 Random rnd = new Random();
+			 int uniqueNumber = 10000000 + rnd.nextInt(90000000);
+    		 String sysRefNbr = "RTFG"+uniqueNumber;
+    		 request.setCustom_ref(sysRefNbr);
+    		 
+			systemRefNbrMap.put(request.getCustom_ref(), orderDetail.getReferenceNumber());
+
 			request.setCustom_ref(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
 			String recpName = orderDetail.getConsigneeName().length() > 34
@@ -198,7 +209,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			pflOrderInfoRequest.add(request);
 		}
 		pflRequest.setOrderinfo(pflOrderInfoRequest);
-		pflWrapper.createShippingOrderPFL(data, pflRequest, userName, senderDataResponseList, serviceType);
+		pflWrapper.createShippingOrderPFL(data, pflRequest, userName, senderDataResponseList, serviceType,systemRefNbrMap);
 	}
 
 	@Override

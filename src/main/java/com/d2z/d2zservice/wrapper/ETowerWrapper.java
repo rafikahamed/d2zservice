@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,7 +46,8 @@ public class ETowerWrapper {
 
 	public void makeCreateShippingOrderEtowerCallForAPIData(CreateConsignmentRequest data,
 			List<SenderDataResponse> senderDataResponseList) throws EtowerFailureResponseException {
-		List<com.d2z.d2zservice.model.etower.CreateShippingRequest> eTowerRequest = constructEtowerRequestWithAPIData(data);
+		Map<String, String> systemRefNbrMap = new HashMap<String, String>();
+		List<com.d2z.d2zservice.model.etower.CreateShippingRequest> eTowerRequest = constructEtowerRequestWithAPIData(data,systemRefNbrMap);
 		String status = null;
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		
@@ -74,7 +76,7 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 		} else {*/
 			if (null != status) {
 				GainLabelsResponse gainLabelResponse = eTowerProxy.makeCallToGainLabels(gainLabelTrackingNo);
-				processGainLabelsResponse(gainLabelResponse, barcodeMap);
+				processGainLabelsResponse(gainLabelResponse, barcodeMap,systemRefNbrMap);
 			}
 			int userId = d2zDao.fetchUserIdbyUserName(data.getUserName());
 			System.out.println("Barcode Map-->"+barcodeMap.size());
@@ -100,9 +102,11 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 
 	public void makeCreateShippingOrderEtowerCallForFileData(List<SenderData> data,
 			List<SenderDataResponse> senderDataResponseList) throws EtowerFailureResponseException {
+		Map<String, String> systemRefNbrMap = new HashMap<String, String>();
 		List<com.d2z.d2zservice.model.etower.CreateShippingRequest> eTowerRequest = constructEtowerRequestWithFileData(
-				data);
+				data,systemRefNbrMap);
 		String status = null;
+		
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		List<String> gainLabelTrackingNo = new ArrayList<String>();
 
@@ -126,7 +130,7 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 		} else {*/
 			if (null != status) {
 				GainLabelsResponse gainLabelResponse = eTowerProxy.makeCallToGainLabels(gainLabelTrackingNo);
-				processGainLabelsResponse(gainLabelResponse, barcodeMap);
+				processGainLabelsResponse(gainLabelResponse, barcodeMap,systemRefNbrMap);
 			}
 			String senderFileID = d2zDao.exportParcel(data, barcodeMap);
 
@@ -147,7 +151,7 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 
 	}
 
-	private List<CreateShippingRequest> constructEtowerRequestWithFileData(List<SenderData> data) {
+	private List<CreateShippingRequest> constructEtowerRequestWithFileData(List<SenderData> data,Map<String,String> systemRefNbrMap) {
 		List<com.d2z.d2zservice.model.etower.CreateShippingRequest> eTowerRequest = new ArrayList<com.d2z.d2zservice.model.etower.CreateShippingRequest>();
 		Map<String, String> postCodeZoneMap = D2ZSingleton.getInstance().getPostCodeZoneMap();
 		ListIterator<SenderData> iterator = data.listIterator();
@@ -155,8 +159,11 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 		while (iterator.hasNext()) {
 			SenderData orderDetail = iterator.next();
 			com.d2z.d2zservice.model.etower.CreateShippingRequest request = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
-
-			request.setReferenceNo(orderDetail.getReferenceNumber());
+			Random rnd = new Random();
+			int uniqueNumber = 10000 + rnd.nextInt(90000);
+			request.setReferenceNo("SW10" + uniqueNumber);
+			systemRefNbrMap.put(request.getReferenceNo(), orderDetail.getReferenceNumber());
+			//request.setReferenceNo(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
 			
 					String recpName = orderDetail.getConsigneeName().length() > 34
@@ -469,15 +476,18 @@ s);
 		return response.getStatus();
 	}
 
-	private List<CreateShippingRequest> constructEtowerRequestWithAPIData(CreateConsignmentRequest data) {
+	private List<CreateShippingRequest> constructEtowerRequestWithAPIData(CreateConsignmentRequest data,Map<String, String> systemRefNbrMap) {
 		List<com.d2z.d2zservice.model.etower.CreateShippingRequest> eTowerRequest = new ArrayList<com.d2z.d2zservice.model.etower.CreateShippingRequest>();
 		Map<String, String> postCodeZoneMap = D2ZSingleton.getInstance().getPostCodeZoneMap();
 		 
 		List<SenderDataApi> updatedOrderDetail = new ArrayList<SenderDataApi>();
 		for (SenderDataApi orderDetail : data.getConsignmentData()) {
 			com.d2z.d2zservice.model.etower.CreateShippingRequest request = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
-
-			request.setReferenceNo(orderDetail.getReferenceNumber());
+			Random rnd = new Random();
+			int uniqueNumber = 10000 + rnd.nextInt(90000);
+			request.setReferenceNo("SW10" + uniqueNumber);
+			systemRefNbrMap.put(request.getReferenceNo(), orderDetail.getReferenceNumber());
+			//request.setReferenceNo(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
 			String recpName = orderDetail.getConsigneeName().length() > 34
 					? orderDetail.getConsigneeName().substring(0, 34)
@@ -680,7 +690,7 @@ s);
 	}
 
 	private Map<String, LabelData> processGainLabelsResponse(GainLabelsResponse response,
-			Map<String, LabelData> barcodeMap) {
+			Map<String, LabelData> barcodeMap, Map<String,String> systemRefNbrMap) {
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 		if (response != null) {
 			List<LabelData> responseData = response.getData();
@@ -707,7 +717,7 @@ s);
 					errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 					responseEntity.add(errorResponse);
 					data.setProvider("Etower");
-					barcodeMap.put(data.getReferenceNo(), data);
+					barcodeMap.put(systemRefNbrMap.get(data.getReferenceNo()), data);
 				} else {
 					for (EtowerErrorResponse error : errors) {
 						ETowerResponse errorResponse = new ETowerResponse();
@@ -739,7 +749,9 @@ s);
 				CreateShippingRequest request = new CreateShippingRequest();
 				System.out.println(orderDetail.getArticleId());
 				request.setTrackingNo(orderDetail.getArticleId());
-				request.setReferenceNo("SW10" + orderDetail.getReference_number());
+				Random rnd = new Random();
+				int uniqueNumber = 10000 + rnd.nextInt(90000);
+				request.setReferenceNo("SW10" + uniqueNumber);
 				request.setRecipientCompany(orderDetail.getConsigneeCompany());
 				String recpName = orderDetail.getConsignee_name().length() > 34
 						? orderDetail.getConsignee_name().substring(0, 34)

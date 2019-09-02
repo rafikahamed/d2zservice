@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.mail.Authenticator;
@@ -184,6 +185,7 @@ public class D2ZServiceImpl implements ID2ZService {
 				.collect(Collectors.toList());
 		d2zValidator.isReferenceNumberUniqueUI(incomingRefNbr);
 		d2zValidator.isServiceValidUI(orderDetailList);
+		d2zValidator.isAddressValidUI(orderDetailList);
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 		String serviceType = orderDetailList.get(0).getServiceType();
@@ -950,10 +952,17 @@ else
 	private void makeCreateShippingOrderPFLCall (List<SenderDataApi> data,
 			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
 		PflCreateShippingRequest pflRequest = new PflCreateShippingRequest();
+		Map<String, String> systemRefNbrMap = new HashMap<String, String>();
 		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
 		for (SenderDataApi orderDetail : data) {
 			PflCreateShippingOrderInfo request = new PflCreateShippingOrderInfo();
-			request.setCustom_ref(orderDetail.getReferenceNumber());
+			 Random rnd = new Random();
+			 int uniqueNumber = 1000000 + rnd.nextInt(9000000);
+    		 String sysRefNbr = "RTFG"+uniqueNumber;
+    		 request.setCustom_ref(sysRefNbr);
+  			systemRefNbrMap.put(request.getCustom_ref(), orderDetail.getReferenceNumber());
+
+			//request.setCustom_ref(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
 			String recpName = orderDetail.getConsigneeName().length() > 34
 					? orderDetail.getConsigneeName().substring(0, 34)
@@ -971,16 +980,22 @@ else
 			pflOrderInfoRequest.add(request);
 		}
 		pflRequest.setOrderinfo(pflOrderInfoRequest);
-		pflWrapper.createShippingOrderPFL(data, pflRequest, userName, senderDataResponseList, serviceType);
+		pflWrapper.createShippingOrderPFL(data, pflRequest, userName, senderDataResponseList, serviceType,systemRefNbrMap);
 	}
 	
 	private void makeCreateShippingOrderFilePFLCall (List<SenderData> data,
 			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
 		PflCreateShippingRequest pflRequest = new PflCreateShippingRequest();
+		Map<String, String> systemRefNbrMap = new HashMap<String, String>();
 		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
 		for (SenderData orderDetail : data) {
 			PflCreateShippingOrderInfo request = new PflCreateShippingOrderInfo();
-			request.setCustom_ref(orderDetail.getReferenceNumber());
+			 Random rnd = new Random();
+			 int uniqueNumber = 1000000 + rnd.nextInt(9000000);
+    		 String sysRefNbr = "RTFG"+uniqueNumber;
+    		 request.setCustom_ref(sysRefNbr);
+  			systemRefNbrMap.put(request.getCustom_ref(), orderDetail.getReferenceNumber());
+		//	request.setCustom_ref(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
 			String recpName = orderDetail.getConsigneeName().length() > 34
 					? orderDetail.getConsigneeName().substring(0, 34)
@@ -998,7 +1013,7 @@ else
 			pflOrderInfoRequest.add(request);
 		}
 		pflRequest.setOrderinfo(pflOrderInfoRequest);
-		pflWrapper.createShippingOrderPFLUI(data, pflRequest, userName, senderDataResponseList, serviceType);
+		pflWrapper.createShippingOrderPFLUI(data, pflRequest, userName, senderDataResponseList, serviceType,systemRefNbrMap);
 	}
 
 	@Override
@@ -1130,7 +1145,11 @@ else
 					email = data.getConsignee_Email().trim();
 				}
 				ShipmentRequest shipmentRequest = new ShipmentRequest();
-				shipmentRequest.setSender_references(data.getReference_number());
+				 Random rnd = new Random();
+				 int uniqueNumber = 100000000 + rnd.nextInt(900000000);
+	    		 String sysRefNbr = "D"+uniqueNumber;
+	    		 shipmentRequest.setSender_references(sysRefNbr);
+				//shipmentRequest.setSender_references(data.getReference_number());
 				shipmentRequest.setEmail_tracking_enabled(email != null);
 
 				FromAddress from = new FromAddress();
