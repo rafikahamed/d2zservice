@@ -4,8 +4,11 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -64,6 +67,20 @@ public class D2ZCommonUtil {
 		String newDate = sdf.format(c.getTime());  
 		System.out.println("Date after Addition: "+newDate);
 		return newDate+" "+timeStampSplitArray[1];
+	}
+
+	public static String formatPCAMessage(String msg) {
+		List<String> sysRefNbrs = new ArrayList<String>();
+		String[] arr = msg.split(" ");
+		for(String s : arr) {
+			if(s.startsWith("CR")){
+				sysRefNbrs.add(s);
+			}
+		}
+		List<String> list = new ArrayList<String>(Arrays.asList(arr));
+		list.removeAll(sysRefNbrs);
+		String formattedMsg = String.join(" ", list);
+		return formattedMsg;
 	}
 	  
 }

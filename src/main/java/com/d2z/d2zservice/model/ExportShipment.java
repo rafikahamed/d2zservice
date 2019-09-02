@@ -14,7 +14,16 @@ public class ExportShipment {
 		  private String consignee_Phone;
 		  private String product_Description;
 		  private String shipper_Country;
-		  public String getShipper_Country() {
+		  private String articleID;
+		  
+		  
+		  public String getArticleID() {
+			return articleID;
+		}
+		public void setArticleID(String articleID) {
+			this.articleID = articleID;
+		}
+		public String getShipper_Country() {
 			return shipper_Country;
 		}
 		public void setShipper_Country(String shipper_Country) {

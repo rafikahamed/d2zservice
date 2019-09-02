@@ -144,19 +144,19 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"C.consignee_name,C.consignee_addr1,C.consignee_Suburb,\r\n" + 
 	 		"C.consignee_State,C.consignee_Postcode,C.consignee_Phone,\r\n" + 
 	 		"C.product_Description,C.shipper_Country,C.weight,C.barcodelabelNumber,\r\n" + 
-	 		"C.servicetype,C.currency\r\n" + 
+	 		"C.servicetype,C.currency,C.articleId\r\n" + 
 	 		"FROM   (SELECT A.client_broker_id, \r\n" + 
 	 		"               B.reference_number,B.value,B.shipped_Quantity,\r\n" + 
 	 		"B.consignee_name,B.consignee_addr1,B.consignee_Suburb,\r\n" + 
 	 		"B.consignee_State,B.consignee_Postcode,B.consignee_Phone,\r\n" + 
 	 		"B.product_Description,B.shipper_Country,B.weight,B.barcodelabelNumber,\r\n" + 
-	 		"B.servicetype,B.currency\r\n" + 
+	 		"B.servicetype,B.currency,B.articleId\r\n" + 
 	 		"        FROM   (SELECT senderdata0_.reference_number,senderdata0_.value,\r\n" + 
 	 		"senderdata0_.shipped_Quantity,senderdata0_.consignee_name,senderdata0_.consignee_addr1,\r\n" + 
 	 		"senderdata0_.consignee_Suburb,senderdata0_.consignee_State,\r\n" + 
 	 		"senderdata0_.consignee_Postcode,senderdata0_.consignee_Phone,\r\n" + 
 	 		"senderdata0_.product_Description,senderdata0_.shipper_Country,senderdata0_.User_ID,\r\n" + 
-	 		"senderdata0_.weight,senderdata0_.barcodelabelNumber,senderdata0_.servicetype,senderdata0_.currency\r\n" + 
+	 		"senderdata0_.weight,senderdata0_.barcodelabelNumber,senderdata0_.servicetype,senderdata0_.currency,senderdata0_.articleId\r\n" + 
 	 		"  FROM   dbo.senderdata_master senderdata0_ \r\n" + 
 	 		"                       INNER JOIN trackandtrace trackandtr1_ \r\n" + 
 	 		"                               ON senderdata0_.reference_number = \r\n" + 

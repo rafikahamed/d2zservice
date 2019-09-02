@@ -49,13 +49,13 @@ public class ConsignmentValidator  implements
 			.addConstraintViolation();
 			isValid= false;
 		}
-			else if(null != value.getServiceType() && value.getServiceType().startsWith("FW") && (value.getConsigneeAddr1().toUpperCase().contains("PO BOX") || value.getConsigneeAddr1().toUpperCase().contains("PARCEL COLLECT"))) {
+			else if(null != value.getServiceType() && (value.getServiceType().startsWith("FW") || value.getServiceType().startsWith("MC")) && (value.getConsigneeAddr1().toUpperCase().contains("PO BOX") || value.getConsigneeAddr1().toUpperCase().contains("PARCEL COLLECT"))) {
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getConsigneeAddr1()+","+"PO Box and Parcel collect not accepted on this service")
 			.addConstraintViolation();
 			isValid= false;
 		}
-		if(null != value.getServiceType() && value.getServiceType().startsWith("FW") && null != value.getConsigneeAddr2() 
+		if(null != value.getServiceType() && (value.getServiceType().startsWith("FW") || value.getServiceType().startsWith("MC")) && null != value.getConsigneeAddr2() 
 				&& (value.getConsigneeAddr2().toUpperCase().contains("PO BOX") || value.getConsigneeAddr2().toUpperCase().contains("PARCEL COLLECT"))) {
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getConsigneeAddr2()+","+"PO Box and Parcel collect not accepted on this service")

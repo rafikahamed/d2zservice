@@ -26,6 +26,7 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
+import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.CurrencyDetails;
@@ -449,6 +450,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 		        	if(!senderMasterData.isEmpty()) {
 		        		freipostWrapper.uploadManifestService(senderMasterData);
 		        	}
+		        	
 	    		}
 	        }};
 	        new Thread(r).start();

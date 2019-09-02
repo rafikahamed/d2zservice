@@ -33,7 +33,7 @@ public class PFLWrapper {
 	private ID2ZDao d2zDao;
 	
 	public void createShippingOrderPFL(List<SenderDataApi> incomingRequest,
-			PflCreateShippingRequest PFLRequest, String userName, List<SenderDataResponse> senderDataResponseList, String serviceType) 
+			PflCreateShippingRequest PFLRequest, String userName, List<SenderDataResponse> senderDataResponseList, String serviceType, Map<String, String> systemRefNbrMap) 
 						throws EtowerFailureResponseException {
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		PFLCreateShippingResponse pflResponse = pflProxy.makeCallForCreateShippingOrder(PFLRequest, serviceType);
@@ -42,7 +42,7 @@ public class PFLWrapper {
 			throw new EtowerFailureResponseException("Error in file – please contact customer support");
 		}else {
 			if(pflResponse.getResult() != null) {
-				processLabelsResponse(pflResponse, barcodeMap);
+				processLabelsResponse(pflResponse, barcodeMap,systemRefNbrMap);
 				int userId =d2zDao.fetchUserIdbyUserName(userName);
 				String senderFileID = d2zDao.createConsignments(incomingRequest, userId, userName, barcodeMap);
 				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
@@ -70,7 +70,7 @@ public class PFLWrapper {
 	}
 	
 	public void createShippingOrderPFLUI(List<SenderData> incomingRequest,
-			PflCreateShippingRequest PFLRequest, String userName, List<SenderDataResponse> senderDataResponseList, String serviceType) 
+			PflCreateShippingRequest PFLRequest, String userName, List<SenderDataResponse> senderDataResponseList, String serviceType, Map<String, String> systemRefNbrMap) 
 					throws EtowerFailureResponseException{
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		PFLCreateShippingResponse pflResponse = pflProxy.makeCallForCreateShippingOrder(PFLRequest, serviceType);
@@ -79,7 +79,7 @@ public class PFLWrapper {
 			throw new EtowerFailureResponseException("Error in file – please contact customer support");
 		}else {
 			if(pflResponse.getResult() != null) {
-				processLabelsResponse(pflResponse, barcodeMap);
+				processLabelsResponse(pflResponse, barcodeMap,systemRefNbrMap);
 				String senderFileID = d2zDao.exportParcel(incomingRequest,barcodeMap);
 				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 				Iterator itr = insertedOrder.iterator();
@@ -125,16 +125,16 @@ public class PFLWrapper {
 		}
 	}
 	
-	private Map<String, LabelData> processLabelsResponse(PFLCreateShippingResponse pflResponse, Map<String, LabelData> barcodeMap) {
+	private Map<String, LabelData> processLabelsResponse(PFLCreateShippingResponse pflResponse, Map<String, LabelData> barcodeMap, Map<String, String> systemRefNbrMap) {
 		for (PFLResponseData data : pflResponse.getResult()) {
 			LabelData labelData = new LabelData();
-			labelData.setReferenceNo(data.getReference());
+			labelData.setReferenceNo(systemRefNbrMap.get(data.getReference()));
 			labelData.setArticleId(data.getId());
 			labelData.setTrackingNo(data.getTracking());
 			labelData.setHub(data.getHub());
 			labelData.setMatrix(data.getMatrix());
 			labelData.setProvider("PFL");
-			barcodeMap.put(data.getReference(), labelData);
+			barcodeMap.put(labelData.getReferenceNo(), labelData);
 		}
 		return barcodeMap;
 	}
