@@ -1097,7 +1097,14 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public List<Returns> returnsOutstanding(String fromDate, String toDate, String userId) {
 		Integer[] userIds = Arrays.stream(userId.split(",")).map(String::trim).map(Integer::valueOf).toArray(Integer[]::new);
-		List<Returns> returnsDetails = returnsRepository.fetchOutstandingDetails(fromDate,toDate,userIds);
+		List<Returns> returnsDetails = new ArrayList<Returns>();
+		System.out.println("fromDate  --->"+fromDate);
+		System.out.println("toDate----->"+toDate);
+		if( fromDate.equals(null)  && toDate.equals(null)) {
+			returnsDetails = returnsRepository.fetchOutstandingDetails(fromDate,toDate,userIds);
+		}else {
+			returnsDetails = returnsRepository.fetchOutstandingCompleteDetails(userIds);
+		}
 		return returnsDetails;
 	}
 }

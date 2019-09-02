@@ -278,7 +278,9 @@ public class D2zController {
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/outStanding-returns")
 	public List<Returns> returnsOutstanding(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate, @RequestParam("userId") String userId) {
+		System.out.println("Inside Outstanding Method");
 		List<Returns> returnsInfo = d2zService.returnsOutstanding(fromDate, toDate, userId);
 		return returnsInfo;
 	}
+	
 }
