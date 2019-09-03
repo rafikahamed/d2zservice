@@ -97,7 +97,8 @@ public class PCAWrapper {
 			pcaReceiver.setCity(orderDetail.getConsigneeSuburb());
 			pcaReceiver.setSuburb(orderDetail.getConsigneeSuburb());
 			pcaReceiver.setPostcode(orderDetail.getConsigneePostcode());
-			pcaReceiver.setPhone(orderDetail.getConsigneePhone());
+			/*pcaReceiver.setPhone(orderDetail.getConsigneePhone());*/
+			pcaReceiver.setPhone("040040040");
 			pcaReceiver.setEmail(orderDetail.getConsigneeEmail());
 			request.setReceiver(pcaReceiver);
 
@@ -108,7 +109,8 @@ public class PCAWrapper {
 			pcaConsignee.setCity(orderDetail.getConsigneeSuburb());
 			pcaConsignee.setSuburb(orderDetail.getConsigneeSuburb());
 			pcaConsignee.setPostcode(orderDetail.getConsigneePostcode());
-			pcaConsignee.setPhone(orderDetail.getConsigneePhone());
+			//pcaConsignee.setPhone(orderDetail.getConsigneePhone());
+			pcaConsignee.setPhone("040040040");
 			pcaConsignee.setEmail(orderDetail.getConsigneeEmail());
 			request.setConsignee(pcaConsignee);
 
@@ -183,7 +185,8 @@ public class PCAWrapper {
 			pcaReceiver.setCity(orderDetail.getConsignee_Suburb());
 			pcaReceiver.setSuburb(orderDetail.getConsignee_Suburb());
 			pcaReceiver.setPostcode(orderDetail.getConsignee_Postcode());
-			pcaReceiver.setPhone(orderDetail.getConsignee_Phone());
+			//pcaReceiver.setPhone(orderDetail.getConsignee_Phone());
+			pcaReceiver.setPhone("040040040");
 			pcaReceiver.setEmail(orderDetail.getConsignee_Email());
 			request.setReceiver(pcaReceiver);
 
@@ -194,7 +197,8 @@ public class PCAWrapper {
 			pcaConsignee.setCity(orderDetail.getConsignee_Suburb());
 			pcaConsignee.setSuburb(orderDetail.getConsignee_Suburb());
 			pcaConsignee.setPostcode(orderDetail.getConsignee_Postcode());
-			pcaConsignee.setPhone(orderDetail.getConsignee_Phone());
+			//pcaConsignee.setPhone(orderDetail.getConsignee_Phone());
+			pcaConsignee.setPhone("040040040");
 			pcaConsignee.setEmail(orderDetail.getConsignee_Email());
 			request.setConsignee(pcaConsignee);
 
@@ -309,7 +313,7 @@ public class PCAWrapper {
 					labelData.setArticleId(data.getConnote());
 					labelData.setTrackingNo(data.getRef());
 					labelData.setHub(data.getDepot());
-					labelData.setMatrix(matrixMap.get(data.getCustref()));
+					labelData.setMatrix(matrixMap.get(labelData.getReferenceNo()));
 					labelData.setProvider("PCA");
 					if("StarTrack".equalsIgnoreCase(chargeType)) {
 						labelData.setCarrier("StarTrack");
@@ -370,7 +374,8 @@ public class PCAWrapper {
 			pcaReceiver.setCity(orderDetail.getConsigneeSuburb());
 			pcaReceiver.setSuburb(orderDetail.getConsigneeSuburb());
 			pcaReceiver.setPostcode(orderDetail.getConsigneePostcode());
-			pcaReceiver.setPhone(orderDetail.getConsigneePhone());
+			//pcaReceiver.setPhone(orderDetail.getConsigneePhone());
+			pcaReceiver.setPhone("040040040");
 			pcaReceiver.setEmail(orderDetail.getConsigneeEmail());
 			request.setReceiver(pcaReceiver);
 
@@ -381,7 +386,8 @@ public class PCAWrapper {
 			pcaConsignee.setCity(orderDetail.getConsigneeSuburb());
 			pcaConsignee.setSuburb(orderDetail.getConsigneeSuburb());
 			pcaConsignee.setPostcode(orderDetail.getConsigneePostcode());
-			pcaConsignee.setPhone(orderDetail.getConsigneePhone());
+			//pcaConsignee.setPhone(orderDetail.getConsigneePhone());
+			pcaConsignee.setPhone("040040040");
 			pcaConsignee.setEmail(orderDetail.getConsigneeEmail());
 			request.setConsignee(pcaConsignee);
 
