@@ -150,6 +150,8 @@ public interface ID2ZSuperUserDao {
 	List<IncomingJobsLogic> getBrokerMlidDetails();
 	
 	List<IncomingJobResponse> getJobList();
+	
+	List<IncomingJobResponse> getClosedJobList();
 
 	String createEnquiry(List<CreateJobRequest> createJob);
 
@@ -158,6 +160,9 @@ public interface ID2ZSuperUserDao {
 	String createReturns(List<Returns> returnsList);
 
 	String updateJob(List<IncomingJobResponse> job);
+	
+	String deleteJob(List<IncomingJobResponse> job);
+
 
 	List<String> fetchReturnsBroker();
 

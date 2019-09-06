@@ -123,12 +123,17 @@ public interface ISuperUserD2ZService{
 	public UserMessage createJob(List<CreateJobRequest> createJob);
 	
 	public List<IncomingJobResponse> getJobList();
+	
+	
+	public List<IncomingJobResponse> getcloseJobList();
 
 	public ReturnsClientResponse fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId);
 
 	public UserMessage createReturns(List<Returns> returns);
 
 	public UserMessage updateJob(List<IncomingJobResponse> job);
+	
+	public UserMessage deleteJob(List<IncomingJobResponse> job);
 
 	public List<DropDownModel> fetchReturnsBroker();
 
