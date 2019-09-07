@@ -209,7 +209,7 @@ public class SPCourierController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/create-enquiry")
-	public UserMessage createEnquiry(@RequestBody List<CreateEnquiryRequest> createEnquiry) {
+	public UserMessage createEnquiry(@RequestBody List<CreateEnquiryRequest> createEnquiry) throws ReferenceNumberNotUniqueException {
 		UserMessage enquiryInfo = d2zService.createEnquiry(createEnquiry);
 		return enquiryInfo;
 	}

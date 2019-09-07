@@ -65,7 +65,6 @@ public class D2ZCommonUtil {
 		 }
 		c.add(Calendar.DAY_OF_MONTH, Integer.parseInt(transitTime));  
 		String newDate = sdf.format(c.getTime());  
-		System.out.println("Date after Addition: "+newDate);
 		return newDate+" "+timeStampSplitArray[1];
 	}
 

@@ -78,7 +78,7 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 			"                          AND S.status = 'Open') B \r\n" + 
 			"       INNER JOIN users A \r\n" + 
 			"               ON A.user_id = B.client_broker_id \r\n" + 
-			"ORDER  BY A.user_name ;")
+			"ORDER  BY B.TrackingEventDateOccured  DESC ;")
 	List<String> fetchOpenEnquiryDetails();
 	
 	

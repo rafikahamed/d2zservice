@@ -10,7 +10,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.APIRates;
@@ -26,7 +29,7 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
-import com.d2z.d2zservice.exception.EtowerFailureResponseException;
+import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.CurrencyDetails;
@@ -60,6 +63,7 @@ import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
+import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
@@ -111,6 +115,10 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	ReturnsRepository returnsRepository;
+	
+	@Autowired
+	@Lazy
+	private D2ZValidator d2zValidator;
 
 	@Override
 	public String exportParcel(List<SenderData> orderDetailList,Map<String, LabelData> barcodeMap) {
@@ -977,11 +985,10 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 
 	public List<String> getArticleIDForFreiPostTracking() {
-		// TODO Auto-generated method stub
 		return trackAndTraceRepository.getArticleIDForFreiPostTracking();
 	}
 	
-	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry) {
+	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry) throws ReferenceNumberNotUniqueException {
 		List<CSTickets> csTctList = new ArrayList<CSTickets>();
 		for(CreateEnquiryRequest enquiryRequest:createEnquiry) {
 			CSTickets tickets = new CSTickets();
@@ -1021,6 +1028,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 			tickets.setUserId(enquiryRequest.getUserId());
 			tickets.setTrackingEventDateOccured(Timestamp.valueOf(LocalDateTime.now()));
 			csTctList.add(tickets);
+		}
+		for(CSTickets csTicket: csTctList) {
+			if(null ==  csTicket.getReferenceNumber()) {
+				throw new ReferenceNumberNotUniqueException("Reference Number (or) Article Id is not avilable in the system",null);
+			}
 		}
 		csticketsRepository.saveAll(csTctList);
 		return "Enquiry created Successfully";

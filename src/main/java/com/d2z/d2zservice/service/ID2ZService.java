@@ -106,7 +106,7 @@ public interface ID2ZService {
 
 	public void freipostTrackingEvent();
 
-	public UserMessage createEnquiry(List<CreateEnquiryRequest> createEnquiry);
+	public UserMessage createEnquiry(List<CreateEnquiryRequest> createEnquiry) throws ReferenceNumberNotUniqueException;
 
 	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, String userId);
 

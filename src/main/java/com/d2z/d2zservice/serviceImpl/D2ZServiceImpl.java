@@ -1787,7 +1787,7 @@ else
 	}
 
 	@Override
-	public UserMessage createEnquiry(List<CreateEnquiryRequest> createEnquiry) {
+	public UserMessage createEnquiry(List<CreateEnquiryRequest> createEnquiry) throws ReferenceNumberNotUniqueException {
 		String enquiryInfo = d2zDao.createEnquiry(createEnquiry);
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage(enquiryInfo);

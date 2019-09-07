@@ -834,8 +834,11 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				openEnquiryResponse.setConsigneePostcode(obj[13] != null ? obj[13].toString() : "");
 				openEnquiryResponse.setProductDescription(obj[14] != null ? obj[14].toString() : "");
 				TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(openEnquiryResponse.getConsigneePostcode());
-				if(null != transitTimeResponse)
+				if( null != transitTimeResponse && null != transitTimeResponse.getTransitTime()) {
 					deliveryDate = D2ZCommonUtil.getIncreasedTime(openEnquiryResponse.getTrackingEventDateOccured(),transitTimeResponse.getTransitTime());
+				}else {
+					
+				}
 				openEnquiryResponse.setTrackingDeliveryDate(deliveryDate);
 				openEnquiryList.add(openEnquiryResponse);
 			  }
