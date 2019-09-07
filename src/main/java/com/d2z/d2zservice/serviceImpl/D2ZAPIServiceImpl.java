@@ -185,7 +185,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 		for (SenderDataApi orderDetail : data) {
 			PflCreateShippingOrderInfo request = new PflCreateShippingOrderInfo();
 			 Random rnd = new Random();
-			 int uniqueNumber = 10000000 + rnd.nextInt(90000000);
+			 int uniqueNumber = 1000000 + rnd.nextInt(9000000);
     		 String sysRefNbr = "RTFG"+uniqueNumber;
     		 request.setCustom_ref(sysRefNbr);
     		 

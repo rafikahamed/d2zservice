@@ -714,7 +714,9 @@ else
 
 		if ("Y".equalsIgnoreCase(autoShipment)) {
 			try {
-				allocateShipment(referenceNumber, manifestNumber.concat("AutoShip"));
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMdd");
+    			String shipmentNumber = userId+simpleDateFormat.format(new Date());
+				allocateShipment(referenceNumber, manifestNumber.concat("AS").concat(shipmentNumber));
 			} catch (ReferenceNumberNotUniqueException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

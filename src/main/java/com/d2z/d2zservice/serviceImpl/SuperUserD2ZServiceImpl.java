@@ -1162,6 +1162,14 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	return d2zDao.getJobList();
 	}
 	
+
+	@Override
+	public List<IncomingJobResponse> getcloseJobList() {
+		// TODO Auto-generated method stub
+		return d2zDao.getClosedJobList();
+	}
+
+	
 	@Override
 	public ReturnsClientResponse fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId) {
 		List<String> clientDetails = d2zDao.fetchClientDetails(referenceNumber,barcodeLabel,articleId);
@@ -1238,6 +1246,16 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	@Override
 	public List<Returns> returnsOutstanding(String fromDate, String toDate, String brokerName) {
 		return  d2zDao.returnsOutstanding(fromDate,toDate,brokerName);
+	}
+
+	@Override
+	public UserMessage deleteJob(List<IncomingJobResponse> job) {
+		// TODO Auto-generated method stub
+		String jobInfo = d2zDao.deleteJob(job);
+		UserMessage usrMsg = new UserMessage();
+		usrMsg.setMessage(jobInfo);
+		return usrMsg;
+
 	}
 
 

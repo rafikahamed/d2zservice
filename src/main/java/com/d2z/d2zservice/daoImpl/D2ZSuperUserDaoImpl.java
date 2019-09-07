@@ -889,12 +889,13 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				jobs.setFlight(jobRequest.getFlight());
 				jobs.setPiece(jobRequest.getPrice());
 				jobs.setWeight(jobRequest.getWeight());
+				jobs.setIsDeleted("N");
 				
-				LocalDate date1  = LocalDate.parse(jobRequest.getEta(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+				LocalDate date1  = LocalDate.parse(jobRequest.getEta());
 				
-				Date date = Date.from(Instant.parse(jobRequest.getEta()));
+
 				
-				System.out.println("Date:"+date+":"+date1);
+				System.out.println("Date:"+":"+date1);
 				jobs.setEta(date1);
 				joblist.add(jobs);
 			}
@@ -908,7 +909,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	@Override
 	public List<IncomingJobResponse> getJobList() {
 		// TODO Auto-generated method stub
-		List<IncomingJobs> js = (List<IncomingJobs>)incomingRepository.findAll();
+		List<IncomingJobs> js = (List<IncomingJobs>)incomingRepository.fetchincomingJobs();
 		List<IncomingJobResponse> joblist = new ArrayList<IncomingJobResponse>();
 		for(IncomingJobs job :js)
 		{
@@ -1002,6 +1003,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			jobs.setOutturn("Y");
 			}
 		jobs.setHeld(job.getHeld());
+		jobs.setIsDeleted("N");
 			joblist.add(jobs);
 			
 		}
@@ -1019,5 +1021,100 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	public List<Returns> returnsOutstanding(String fromDate, String toDate, String brokerName) {
 		return returnsRepository.returnsOutstandingDetails(fromDate,toDate,brokerName);
 	}
+
+	@Override
+	public List<IncomingJobResponse> getClosedJobList() {
+		// TODO Auto-generated method stub
+		
+			List<IncomingJobs> js = (List<IncomingJobs>)incomingRepository.fetchJobs();
+			List<IncomingJobResponse> joblist = new ArrayList<IncomingJobResponse>();
+			for(IncomingJobs job :js)
+			{
+				IncomingJobResponse jobs = new IncomingJobResponse();
+				System.out.println("ATA:"+job.getAta());
+				jobs.setJobid(job.getID());
+				
+				if(job.getEta()!=null)
+				{
+				jobs.setEta(job.getEta().toString());
+				}
+				if(job.getAta()!=null)
+				{
+				jobs.setAta(job.getAta().toString());
+				
+				}
+				jobs.setBroker(job.getBroker());
+				jobs.setClear(job.getClear());
+				jobs.setConsignee(job.getConsignee());
+				jobs.setDestination(job.getDestination());
+				jobs.setFlight(job.getFlight());
+				jobs.setHawb(job.getHawb());
+				jobs.setHeld(job.getHeld());
+				jobs.setMawb(job.getMawb());
+				jobs.setMLID(job.getMLID());
+				jobs.setNote(job.getNote());
+				jobs.setOutturn(job.getOutturn());
+				jobs.setPiece(job.getPiece());
+				jobs.setWeight(job.getWeight());
+				joblist.add(jobs);
+				
+			}
+			return  joblist;
+		}
+
+	@Override
+	public String deleteJob(List<IncomingJobResponse> js) {
+		// TODO Auto-generated method stub
+List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
+		
+		for(IncomingJobResponse job :js)
+		{
+			IncomingJobs jobs = new IncomingJobs();
+			System.out.println("jkk"+job.getBroker()+"::"+job.getEta()+job.getClear());
+			jobs.setBroker(job.getBroker());
+			jobs.setClear(job.getClear());
+			jobs.setConsignee(job.getConsignee());
+			jobs.setDestination(job.getDestination());
+			jobs.setFlight(job.getFlight());
+			jobs.setHawb(job.getHawb());
+			jobs.setHeld(job.getHeld());
+			jobs.setMawb(job.getMawb());
+			jobs.setMLID(job.getMLID());
+			jobs.setNote(job.getNote());
+
+			LocalDate date1  = LocalDate.parse(job.getEta());
+			
+			if(job.getAta().contains("T04:"))
+			{
+			 LocalDate date2 = LocalDate.parse(job.getAta(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+			 jobs.setAta(date2);
+			}
+			else
+			{LocalDate date2  = LocalDate.parse(job.getAta());
+			jobs.setAta(date2);
+			}
+		
+			jobs.setEta(date1);
+			
+			jobs.setPiece(job.getPiece());
+			jobs.setWeight(job.getWeight());
+			jobs.setID(job.getJobid());
+			
+		
+			if(job.getOutturn()!=null && job.getOutturn().equalsIgnoreCase("True"))
+			{
+			jobs.setOutturn("Y");
+			}
+		jobs.setHeld(job.getHeld());
+		jobs.setIsDeleted("Y");
+			joblist.add(jobs);
+			
+		}
+		incomingRepository.saveAll(joblist);
+		return "Job Deleted Succesfully";
+	}
+		
+
+	
 
 }
