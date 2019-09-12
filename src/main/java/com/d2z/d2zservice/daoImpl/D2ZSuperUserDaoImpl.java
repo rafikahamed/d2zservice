@@ -222,6 +222,12 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		User userDetails = userRepository.fetchBrokerbyCompanyName(companyName);
 		return userDetails;
 	}
+	
+	@Override
+	public List<String> fetchServiceTypeByUserName(String userName) {
+		List<String> serviceTypeList = userServiceRepository.fetchAllServiceTypeByUserName(userName);
+		return serviceTypeList;
+	}
 
 	@Override
 	public List<String> exportDeteledConsignments(String fromDate, String toDate) {

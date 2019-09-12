@@ -168,5 +168,7 @@ public interface ID2ZSuperUserDao {
 
 	List<Returns> returnsOutstanding(String fromDate, String toDate, String brokerName);
 
+	
+	public List<String> fetchServiceTypeByUserName(String userName);
 }
 
