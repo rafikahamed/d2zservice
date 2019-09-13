@@ -61,10 +61,12 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 			userDetails.setSuburb(user.getSuburb());
 			userDetails.setUserName(user.getUsername());
 			userDetails.seteBayToken(user.getEBayToken());
-			Set<UserService> userServiceList = user.getUserService();
+			/*Set<UserService> userServiceList = user.getUserService();
 			List<String> serviceType = userServiceList.stream().map(obj -> { 
 				 System.out.println("filter: " + obj);
-				return obj.getServiceType();}).collect(Collectors.toList());
+				return obj.getServiceType();}).collect(Collectors.toList());*/
+			
+			List<String> serviceType =d2zDao.fetchServiceTypeByUserName(user.getUsername());
 			userDetails.setServiceType(serviceType);
 		}
 		return userDetails;

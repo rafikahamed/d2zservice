@@ -30,5 +30,7 @@ public interface ID2ZBrokerDao {
 	User login(String userName, String passWord);
 
 	public List<Integer> getClientId(Integer userId);
+	
+	public List<String> fetchServiceTypeByUserName(String userName);
 
 }

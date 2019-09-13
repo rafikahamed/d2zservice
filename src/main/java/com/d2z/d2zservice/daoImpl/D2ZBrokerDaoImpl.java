@@ -12,6 +12,7 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.UserRepository;
+import com.d2z.d2zservice.repository.UserServiceRepository;
 
 @Repository
 public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
@@ -21,6 +22,10 @@ public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
 	
 	@Autowired
 	SenderDataRepository senderDataRepository;
+	
+	@Autowired
+	UserServiceRepository userServiceRepository ;
+	
 	
 	@Override
 	public List<String> companyDetails(String brokerId) {
@@ -88,5 +93,10 @@ public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
 		return listOfClientId;
 	}
 
+	@Override
+	public List<String> fetchServiceTypeByUserName(String userName) {
+		List<String> serviceTypeList = userServiceRepository.fetchAllServiceTypeByUserName(userName);
+		return serviceTypeList;
+	}
 
 }
