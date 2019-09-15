@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -1011,6 +1012,10 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 			tickets.setTrackingEventDateOccured(Timestamp.valueOf(LocalDateTime.now()));
 			csTctList.add(tickets);
 		}
+		List<String> incomingRefNbr = csTctList.stream().map(obj -> {
+			return obj.getReferenceNumber(); })
+				.collect(Collectors.toList());
+		isReferenceNumberUniqueUI(incomingRefNbr);
 		for(CSTickets csTicket: csTctList) {
 			if(null ==  csTicket.getReferenceNumber()) {
 				throw new ReferenceNumberNotUniqueException("Reference Number (or) Article Id is not avilable in the system",null);
@@ -1018,6 +1023,25 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		}
 		csticketsRepository.saveAll(csTctList);
 		return "Enquiry created Successfully";
+	}
+	
+	
+	public void isReferenceNumberUniqueUI(List<String> incomingRefNbr) throws ReferenceNumberNotUniqueException{
+		System.out.println(incomingRefNbr.toString());
+		List<String> referenceNumber_DB = csticketsRepository.fetchAllReferenceNumbers();
+		referenceNumber_DB.addAll(incomingRefNbr);
+		
+		System.out.println(referenceNumber_DB);
+		List<String> duplicateRefNbr = referenceNumber_DB.stream().collect(Collectors.groupingBy(Function.identity(),     
+	              Collectors.counting()))                                             
+	          .entrySet().stream()
+	          .filter(e -> e.getValue() > 1)                                      
+	          .map(e -> e.getKey())                                                  
+	          .collect(Collectors.toList());
+		
+		if(!duplicateRefNbr.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Reference Number or Article Id must be unique",duplicateRefNbr);
+		}
 	}
 
 	@Override
