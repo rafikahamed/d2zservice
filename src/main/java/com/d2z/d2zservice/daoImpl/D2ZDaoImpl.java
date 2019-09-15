@@ -599,8 +599,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 			}
 		}
 		if(!userDetails.getDeletedServiceTypes().isEmpty()) {
+			
 			for(String serviceType : userDetails.getDeletedServiceTypes() ) {
+				
 				UserService userService  = userServiceRepository.fetchbyCompanyNameAndServiceType(existingUser.getCompanyName(), serviceType,userDetails.getUserName());
+			
 				if(userService!=null) {
 					userService.setService_isDeleted(true);
 					userService.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
@@ -609,6 +612,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 				
 		}
 		}
+	
 		userServiceRepository.saveAll(userServiceList);
 
 	}

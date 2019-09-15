@@ -157,10 +157,13 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		userDetails.setState(user.getState());
 		userDetails.setSuburb(user.getSuburb());
 		userDetails.setUserName(user.getUsername());
+	/*
 		Set<UserService> userServiceList = user.getUserService();
 		List<String> serviceType = userServiceList.stream().map(obj -> {
 			return obj.getServiceType();
-		}).collect(Collectors.toList());
+		}).collect(Collectors.toList());*/
+		
+		List<String> serviceType = d2zDao.fetchServiceTypeByUserName(user.getUsername());
 		userDetails.setServiceType(serviceType);
 		return userDetails;
 	}

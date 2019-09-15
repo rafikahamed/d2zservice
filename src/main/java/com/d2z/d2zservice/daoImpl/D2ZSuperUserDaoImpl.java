@@ -222,6 +222,12 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		User userDetails = userRepository.fetchBrokerbyCompanyName(companyName);
 		return userDetails;
 	}
+	
+	@Override
+	public List<String> fetchServiceTypeByUserName(String userName) {
+		List<String> serviceTypeList = userServiceRepository.fetchAllServiceTypeByUserName(userName);
+		return serviceTypeList;
+	}
 
 	@Override
 	public List<String> exportDeteledConsignments(String fromDate, String toDate) {
@@ -890,13 +896,16 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				jobs.setPiece(jobRequest.getPrice());
 				jobs.setWeight(jobRequest.getWeight());
 				jobs.setIsDeleted("N");
-				
+				System.out.println("Date:"+":"+jobRequest.getEta().length());
+				if(jobRequest.getEta()!=null && jobRequest.getEta().length() > 0)
+				{
 				LocalDate date1  = LocalDate.parse(jobRequest.getEta());
 				
 
 				
 				System.out.println("Date:"+":"+date1);
 				jobs.setEta(date1);
+				}
 				joblist.add(jobs);
 			}
 
@@ -978,8 +987,15 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			jobs.setMawb(job.getMawb());
 			jobs.setMLID(job.getMLID());
 			jobs.setNote(job.getNote());
-
+if(job.getEta()!=null && job.getEta().length() > 0)
+{
 			LocalDate date1  = LocalDate.parse(job.getEta());
+			jobs.setEta(date1);
+			
+}
+if(job.getAta()!=null &&  job.getAta().length() > 0)
+{
+	System.out.print("Ata;"+job.getAta());
 			
 			if(job.getAta().contains("T04:"))
 			{
@@ -990,8 +1006,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			{LocalDate date2  = LocalDate.parse(job.getAta());
 			jobs.setAta(date2);
 			}
+}
 		
-			jobs.setEta(date1);
 			
 			jobs.setPiece(job.getPiece());
 			jobs.setWeight(job.getWeight());
@@ -1081,20 +1097,27 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 			jobs.setMawb(job.getMawb());
 			jobs.setMLID(job.getMLID());
 			jobs.setNote(job.getNote());
-
-			LocalDate date1  = LocalDate.parse(job.getEta());
-			
-			if(job.getAta().contains("T04:"))
+			if(job.getEta()!=null && job.getEta().length() > 0)
 			{
-			 LocalDate date2 = LocalDate.parse(job.getAta(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-			 jobs.setAta(date2);
+						LocalDate date1  = LocalDate.parse(job.getEta());
+						jobs.setEta(date1);
+						
 			}
-			else
-			{LocalDate date2  = LocalDate.parse(job.getAta());
-			jobs.setAta(date2);
+			if(job.getAta()!=null &&  job.getAta().length() > 0)
+			{
+						
+						if(job.getAta().contains("T04:"))
+						{
+						 LocalDate date2 = LocalDate.parse(job.getAta(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+						 jobs.setAta(date2);
+						}
+						else
+						{LocalDate date2  = LocalDate.parse(job.getAta());
+						jobs.setAta(date2);
+						}
 			}
-		
-			jobs.setEta(date1);
+					
+					
 			
 			jobs.setPiece(job.getPiece());
 			jobs.setWeight(job.getWeight());
