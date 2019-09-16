@@ -91,4 +91,7 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 	@Query(value="SELECT t FROM CSTickets t where status = 'closed' and trackingEventDateOccured >= getdate() -14") 
 	List<CSTickets> completedEnquiryDetails();
 
+	@Query("SELECT distinct(c.referenceNumber) FROM CSTickets c") 
+	List<String> fetchAllReferenceNumbers();
+
 }
