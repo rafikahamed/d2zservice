@@ -104,7 +104,7 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 	 		"\r\n" + 
 	 		"")*/
 	 
-	 @Query(nativeQuery = true, value="SELECT DISTINCT t.articleid  from trackandtrace t where  t.user_id ='52' "
+	 @Query(nativeQuery = true, value="SELECT DISTINCT t.articleid  from trackandtrace t where  t.user_id in('52','94') "
 	 		+ " AND    t.trackeventdetails = 'SHIPMENT ALLOCATED' AND  t.filename = 'AUPost'"
 	 		+ "AND t.trackeventdateoccured > dateadd(day,-21,getdate())")
 	 
