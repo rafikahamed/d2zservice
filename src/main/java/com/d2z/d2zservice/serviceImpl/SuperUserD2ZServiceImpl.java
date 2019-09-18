@@ -194,7 +194,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	public List<SenderdataMaster> exportConsignmentData(String fromDate, String toDate) {
 		return d2zDao.exportConsignments(fromDate, toDate);
 	}
-
+	
 	@Override
 	public List<ExportShipment> exportShipmentData(String fromDate, String toDate) {
 		List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
@@ -1261,6 +1261,46 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		usrMsg.setMessage(jobInfo);
 		return usrMsg;
 
+	}
+
+	@Override
+	public List<SenderdataMaster> exportConsignmentDatafile(String type, List<String> Data) {
+		// TODO Auto-generated method stub
+		return d2zDao.exportConsignmentsfile(type, Data);
+	}
+
+	@Override
+	public List<ExportShipment> exportShipmentDatafile(String type, List<String> Data) {
+		// TODO Auto-generated method stub
+		List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
+		List<Object> ExportDeleteList = d2zDao.exportShipmentfile(type, Data);
+		Iterator itr = ExportDeleteList.iterator();
+		while (itr.hasNext()) {
+			Object[] obj = (Object[]) itr.next();
+			// System.out.println(obj.length);
+			// now you have one array of Object for each row
+			ExportShipment exportval = new ExportShipment();
+			exportval.setBroker_name(String.valueOf(obj[0]));
+			exportval.setReference_number(String.valueOf(obj[1]));
+			exportval.setValue(Double.valueOf("" + obj[2]));
+			exportval.setShippedQuantity(Integer.valueOf("" + obj[3]));
+			exportval.setConsignee_name(String.valueOf(obj[4]));
+			exportval.setConsignee_addr1(String.valueOf(obj[5]));
+			exportval.setConsignee_Suburb(String.valueOf(obj[6]));
+			exportval.setConsignee_State(String.valueOf(obj[7]));
+			exportval.setConsignee_Postcode(String.valueOf(obj[8]));
+			exportval.setConsignee_Phone(String.valueOf(obj[9]));
+			exportval.setProduct_Description(String.valueOf(obj[10]));
+			exportval.setShipper_Country(String.valueOf(obj[11]));
+			exportval.setWeight(Double.valueOf("" + obj[12]));
+			exportval.setBarcodelabelNumber(String.valueOf(obj[13]));
+			exportval.setServicetype(String.valueOf(obj[14]));
+			exportval.setCurrency(String.valueOf(obj[15]));
+			exportval.setArticleID(String.valueOf(obj[16]));
+			exportshipmentlist.add(exportval);
+		}
+		// ExportDeleteList.forEach(System.out::println);
+		return exportshipmentlist;
 	}
 
 

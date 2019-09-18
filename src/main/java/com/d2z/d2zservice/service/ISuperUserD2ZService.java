@@ -45,8 +45,13 @@ public interface ISuperUserD2ZService{
 	public List<ExportDelete> exportDeteledConsignments(String fromDate, String toDate);
 
 	List<SenderdataMaster> exportConsignmentData(String fromDate, String toDate);
+	
+	List<SenderdataMaster> exportConsignmentDatafile(String type, List<String> Data);
 
 	List<ExportShipment> exportShipmentData(String fromDate, String toDate);
+	
+	List<ExportShipment> exportShipmentDatafile(String type, List<String> Data);
+	
 	
 	List<ExportShipment> exportNonShipmentData(String fromDate, String toDate);
 

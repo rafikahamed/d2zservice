@@ -1136,6 +1136,60 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 		incomingRepository.saveAll(joblist);
 		return "Job Deleted Succesfully";
 	}
+
+	@Override
+	public List<SenderdataMaster> exportConsignmentsfile(String Type, List<String> Data) {
+		// TODO Auto-generated method stub
+		
+		
+		List<SenderdataMaster> exportedConsignments;
+		if(Type.equals("articleid"))
+		{
+			exportedConsignments = senderDataRepository.exportConsignmentsArticleid(Data);
+		}
+		else if (Type.equals("barcodelabel"))
+				{
+			exportedConsignments = senderDataRepository.exportConsignmentsBarcode(Data);
+				}
+			
+			
+		else
+		{
+			System.out.print("in else");
+			exportedConsignments = senderDataRepository.exportConsignmentsRef(Data);
+		}
+		
+		
+		System.out.println(exportedConsignments.size());
+		return exportedConsignments;
+	}
+
+	@Override
+	public List<Object> exportShipmentfile(String Type, List<String> Data) {
+		// TODO Auto-generated method stub
+		
+		List<Object> exportedShipment ;
+		
+		if(Type.equals("articleid"))
+		{
+			exportedShipment = senderDataRepository.exportShipmentArticleid(Data);
+		}
+		else if (Type.equals("barcodelabel"))
+				{
+			exportedShipment = senderDataRepository.exportShipmentBarcode(Data);
+				}
+			
+			
+		else
+		{
+			System.out.print("in else");
+			exportedShipment = senderDataRepository.exportShipmentRef(Data);
+		}
+				
+		System.out.println(exportedShipment.size());
+		return exportedShipment;
+		
+	}
 		
 
 	

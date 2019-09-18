@@ -92,12 +92,27 @@ public class D2ZSuperUserController {
 	 public List<SenderdataMaster> exportConsignmentData(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
 		return superUserD2zService.exportConsignmentData(fromDate, toDate);
    }
+	@RequestMapping( method = RequestMethod.GET, path = "/export/consignmentfile")
+	 public List<SenderdataMaster> exportConsignmentDataFile(@RequestParam("type") String type,@RequestParam("Data") List<String> Data) {
+		System.out.println("in type:"+type);
+		for(String S : Data)
+		{
+			System.out.println(S);
+		}
+		
+		return superUserD2zService.exportConsignmentDatafile(type, Data);
+		//return superUserD2zService.exportConsignmentData(fromDate, toDate);
+  }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/export/shipment")
 	 public List<ExportShipment> exportShipmentData(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
 		return superUserD2zService.exportShipmentData(fromDate, toDate);
 	}
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/export/shipmentfile")
+	 public List<ExportShipment> exportShipmentDataFile(@RequestParam("type") String type,@RequestParam("Data") List<String> Data) {
+		return superUserD2zService.exportShipmentDatafile(type, Data);
+	}
 	@RequestMapping( method = RequestMethod.GET, path = "/export/nonshipment")
 	 public List<ExportShipment> exportNonShipmentData(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
 		return superUserD2zService.exportNonShipmentData(fromDate, toDate);
