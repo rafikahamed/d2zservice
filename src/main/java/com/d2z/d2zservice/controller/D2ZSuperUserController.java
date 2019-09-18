@@ -95,10 +95,7 @@ public class D2ZSuperUserController {
 	@RequestMapping( method = RequestMethod.GET, path = "/export/consignmentfile")
 	 public List<SenderdataMaster> exportConsignmentDataFile(@RequestParam("type") String type,@RequestParam("Data") List<String> Data) {
 		System.out.println("in type:"+type);
-		for(String S : Data)
-		{
-			System.out.println(S);
-		}
+		
 		
 		return superUserD2zService.exportConsignmentDatafile(type, Data);
 		//return superUserD2zService.exportConsignmentData(fromDate, toDate);
