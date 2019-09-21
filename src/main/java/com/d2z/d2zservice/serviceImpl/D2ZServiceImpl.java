@@ -1919,4 +1919,45 @@ else
 		return outstandingData;
 	}
 
+	@Override
+	public List<ShipmentDetails> downloadShipmentDatabyType(List<String> number, Integer userId, String type) {
+		// TODO Auto-generated method stub
+		
+		List<Integer> listOfClientId = d2zBrokerDao.getClientId(userId);
+		List<SenderdataMaster> senderDataList = d2zDao.fetchShipmentDatabyType(number, listOfClientId,type);
+		System.out.println(senderDataList.size() + " records");
+		Double audcurrency = d2zDao.getAudcurrency("USD");
+		List<ShipmentDetails> shipmentDetails = new ArrayList<ShipmentDetails>();
+		for (SenderdataMaster senderData : senderDataList) {
+			ShipmentDetails shipmentData = new ShipmentDetails();
+			shipmentData.setReferenceNumber(senderData.getReference_number());
+			//shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
+			shipmentData.setCon_no(senderData.getArticleId().substring(0, 12));
+			shipmentData.setConsigneeName(senderData.getConsignee_name());
+			shipmentData.setConsigneeAddress(senderData.getConsignee_addr1());
+			shipmentData.setWeight(senderData.getWeight());
+			shipmentData.setConsigneePhone(senderData.getConsignee_Phone());
+			shipmentData.setConsigneeSuburb(senderData.getConsignee_Suburb());
+			shipmentData.setConsigneeState(senderData.getConsignee_State());
+			shipmentData.setConsigneePostcode(senderData.getConsignee_Postcode());
+			shipmentData.setDestination("AUSTRALIA");
+			shipmentData.setQuantity(senderData.getShippedQuantity());
+			shipmentData.setCommodity(senderData.getProduct_Description());
+			Double uscurrency = senderData.getValue()*audcurrency;
+			shipmentData.setValue(uscurrency);
+			shipmentData.setShipperName(senderData.getShipper_Name());
+			shipmentData.setShipperAddress(senderData.getShipper_Addr1());
+			shipmentData.setShipperCity(senderData.getShipper_City());
+			shipmentData.setShipperState(senderData.getShipper_State());
+			shipmentData.setShipperPostcode(senderData.getShipper_Postcode());
+			shipmentData.setShipperCountry(senderData.getShipper_Country());
+			shipmentData.setShipperContact(senderData.getAirwayBill());
+			shipmentDetails.add(shipmentData);
+		}
+//		byte[] bytes = shipmentWriter.generateShipmentxls(shipmentDetails);
+//		return bytes;
+		return shipmentDetails;
+		
+	}
+
 }

@@ -216,6 +216,17 @@ public class D2zController {
 		return senderData;
 	}
 
+	@RequestMapping(method = RequestMethod.GET, path = "/consignments/shipmenttype")
+	public List<ShipmentDetails> downloadShipmentDatabyType(@RequestParam("Data") List<String> Number,
+			@RequestParam("userId") Integer userId,@RequestParam("Type") String Type) {
+		for(String S : Number)
+		{
+			System.out.println(S);
+		}
+		List<ShipmentDetails> senderData = d2zService.downloadShipmentDatabyType(Number, userId,Type);
+		return senderData;
+	}
+
 	@RequestMapping(method = RequestMethod.POST, path = "/ebay/completeSale")
 	public UserMessage uploadShipmentToEbay(@RequestBody Ebay_ShipmentDetails shipmentDetails) {
 		UserMessage userMsg = d2zService.uploadShipmentDetailsToEbay(shipmentDetails);

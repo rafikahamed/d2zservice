@@ -122,4 +122,6 @@ public interface ID2ZService {
 
 	public List<Returns> returnsOutstanding(String fromDate, String toDate, String userId);
 
+	public List<ShipmentDetails> downloadShipmentDatabyType(List<String> number, Integer userId, String type);
+
 }

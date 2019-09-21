@@ -154,4 +154,7 @@ public interface ID2ZDao {
 
 	public List<Returns> returnsOutstanding(String fromDate, String toDate, String userId);
 
+	public List<SenderdataMaster> fetchShipmentDatabyType(List<String> number, List<Integer> listOfClientId,
+			String type);
+
 }

@@ -10,6 +10,7 @@ import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.entity.Consignments;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.User;
+import com.d2z.d2zservice.model.ShipmentDetails;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
@@ -97,6 +98,34 @@ public class D2ZBrokerDaoImpl implements ID2ZBrokerDao{
 	public List<String> fetchServiceTypeByUserName(String userName) {
 		List<String> serviceTypeList = userServiceRepository.fetchAllServiceTypeByUserName(userName);
 		return serviceTypeList;
+	}
+
+	@Override
+	public List<SenderdataMaster> fetchShipmentDatabyType(List<String> number, List<Integer> listOfClientId,
+			String type) {
+		// TODO Auto-generated method stub
+List<SenderdataMaster> senderData;
+		
+		
+		
+		if(type.equals("articleid"))
+		{
+			senderData = senderDataRepository.fetchShipmentDatabyArticleId(number, listOfClientId);
+		}
+		else if (type.equals("barcodelabel"))
+				{
+			senderData = senderDataRepository.fetchShipmentDatabyBarcode(number, listOfClientId);
+				}
+			
+			
+		else
+		{
+			System.out.print("in else");
+			senderData = senderDataRepository.fetchShipmentDatabyReference(number, listOfClientId);
+		}
+		
+		// TODO Auto-generated method stub
+		return senderData;
 	}
 
 }
