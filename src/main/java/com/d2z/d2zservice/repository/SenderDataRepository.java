@@ -83,6 +83,15 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 
 	@Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.airwayBill = :shipmentNumber and t.isDeleted = 'N'") 
 	List<SenderdataMaster> fetchShipmentData(@Param("shipmentNumber") String shipmentNumber,@Param("userId") List<Integer> userId);
+	
+	@Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.articleId IN (:articleid) and t.isDeleted = 'N'") 
+	List<SenderdataMaster> fetchShipmentDatabyArticleId(@Param("articleid")List <String> shipmentNumber,@Param("userId") List<Integer> userId);
+	
+	@Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.reference_number IN (:referencenumber) and t.isDeleted = 'N'") 
+	List<SenderdataMaster> fetchShipmentDatabyReference(@Param("referencenumber") List<String> shipmentNumber,@Param("userId") List<Integer> userId);
+	
+	@Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.barcodelabelNumber IN (:barcodelabelNumber) and t.isDeleted = 'N'") 
+	List<SenderdataMaster> fetchShipmentDatabyBarcode(@Param("barcodelabelNumber") List<String> shipmentNumber,@Param("userId") List<Integer> userId);
 
 	@Query(nativeQuery = true, value="SELECT DISTINCT t.manifest_number FROM senderdata_master t where t.user_ID IN (:userId) and t.AirwayBill is null and t.isDeleted = 'N'") 
 	List<String> fetchManifestNumber(@Param("userId") List<Integer> userId);

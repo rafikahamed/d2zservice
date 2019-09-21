@@ -1127,4 +1127,32 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		}
 		return returnsDetails;
 	}
+
+	@Override
+	public List<SenderdataMaster> fetchShipmentDatabyType(List<String> number, List<Integer> listOfClientId,
+			String type) {
+		List<SenderdataMaster> senderData;
+		
+		
+		
+		if(type.equals("articleid"))
+		{
+			senderData = senderDataRepository.fetchShipmentDatabyArticleId(number, listOfClientId);
+		}
+		else if (type.equals("barcodelabel"))
+				{
+			senderData = senderDataRepository.fetchShipmentDatabyBarcode(number, listOfClientId);
+				}
+			
+			
+		else
+		{
+			System.out.print("in else");
+			senderData = senderDataRepository.fetchShipmentDatabyReference(number, listOfClientId);
+		}
+		
+		// TODO Auto-generated method stub
+		return senderData;
+	}
+
 }
