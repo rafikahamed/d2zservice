@@ -124,4 +124,8 @@ public interface ID2ZService {
 
 	public List<ShipmentDetails> downloadShipmentDatabyType(List<String> number, Integer userId, String type);
 
+	public List<ShipmentDetails> downloadShipmentDataTemplate(String shipmentNumber, Integer userId);
+
+	public List<ShipmentDetails> downloadShipmentDataTemplatebyType(List<String> number, Integer userId, String type);
+
 }

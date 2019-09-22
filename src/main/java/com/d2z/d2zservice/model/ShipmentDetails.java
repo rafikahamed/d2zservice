@@ -8,11 +8,55 @@ public class ShipmentDetails {
 	private String consigneeName;
 	private String consigneeCompany;
 	private String consigneePhone;
+	
 	private String consigneeAddress;
 	private String consigneeSuburb;
 	private String consigneeState;
 	private String consigneePostcode;
 	private String destination;
+	private String count;
+	private String orgin;
+	private String dest;
+	private String goods;
+	private String sac;
+	
+	public String getCount() {
+		return count;
+	}
+	public void setCount(String count) {
+		this.count = count;
+	}
+	public String getOrgin() {
+		return orgin;
+	}
+	public void setOrgin(String orgin) {
+		this.orgin = orgin;
+	}
+	public String getDest() {
+		return dest;
+	}
+	public void setDest(String dest) {
+		this.dest = dest;
+	}
+	public String getGoods() {
+		return goods;
+	}
+	public void setGoods(String goods) {
+		this.goods = goods;
+	}
+	public String getSac() {
+		return sac;
+	}
+	public void setSac(String sac) {
+		this.sac = sac;
+	}
+	public String getLanding() {
+		return landing;
+	}
+	public void setLanding(String landing) {
+		this.landing = landing;
+	}
+	private String landing;
 	private int quantity;
 	private String commodity;
 	private double value;
