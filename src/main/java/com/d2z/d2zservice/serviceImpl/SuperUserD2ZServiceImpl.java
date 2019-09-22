@@ -427,7 +427,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		List<Reconcile> reconcileCalculatedList = new ArrayList<Reconcile>();
 		List<String> reconcileReferenceNum = new ArrayList<String>();
 		// Check for duplicates
-		if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("freipost")) {
+		if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("PFL")) {
 			d2zValidator.isReferenceNumberUniqueReconcile(reconcileData, "D2Z");
 		} else {
 			d2zValidator.isArticleIdUniqueReconcile(reconcileData, "D2Z");
@@ -456,18 +456,21 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("UBI")) {
 					reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getNormalRateParcel()));
 					reconcileObj.setSupplierWeight(reconcile.getArticleActualWeight());
-					reconcileObj
-							.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
+					reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
 				} else if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("freipost")) {
 					reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getCost()));
 					reconcileObj.setSupplierWeight(reconcile.getChargedWeight());
-					reconcileObj
-							.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
+					reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
+				} else if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("PFL")) {
+					reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getCost()));
+					reconcileObj.setSupplierWeight(reconcile.getChargedWeight());
+					reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
 				}
-				if (reconcileObj.getSupplierCharge() != null && reconcileObj.getD2ZCost() != null)
-					reconcileObj.setCostDifference(
-							reconcileObj.getSupplierCharge().subtract(reconcileObj.getD2ZCost(), mc));
-				reconcileObj.setSupplierType(reconcileData.get(0).getSupplierType());
+				if (reconcileObj.getSupplierCharge() != null && reconcileObj.getD2ZCost() != null) {
+					reconcileObj.setCostDifference(reconcileObj.getSupplierCharge().subtract(reconcileObj.getD2ZCost(), mc));
+					reconcileObj.setSupplierType(reconcileData.get(0).getSupplierType());
+				}
+					
 			}
 			reconcileCalculatedList.add(reconcileObj);
 			if (reconcileObj.getBrokerUserName() != null) {
@@ -475,7 +478,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			} else {
 				if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("UBI")) {
 					reconcileObj.setArticleId(reconcile.getArticleNo());
-				} else if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("freipost")) {
+				} else if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("PFL")) {
 					reconcileObj.setReference_number(reconcile.getRefrenceNumber());
 				}
 			}

@@ -406,9 +406,6 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 			") C INNER JOIN users D on C.client_broker_id = D.user_id \n" + 
 			"")
 	List<String> reconcileData(@Param("articleNo") String articleNo, @Param("refrenceNumber") String refrenceNumber);
-
-//	@Procedure(name = "InvoiceUpdate")
-//	void approvedInvoice(@Param("Indicator") String Indicator, @Param("Airwaybill") String Airwaybill);
 	
 	@Procedure(name = "reconcilerates")
 	void reconcilerates(@Param("Reference_number") String Reference_number);
