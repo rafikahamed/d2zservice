@@ -92,12 +92,24 @@ public class D2ZSuperUserController {
 	 public List<SenderdataMaster> exportConsignmentData(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
 		return superUserD2zService.exportConsignmentData(fromDate, toDate);
    }
+	@RequestMapping( method = RequestMethod.GET, path = "/export/consignmentfile")
+	 public List<SenderdataMaster> exportConsignmentDataFile(@RequestParam("type") String type,@RequestParam("Data") List<String> Data) {
+		System.out.println("in type:"+type);
+		
+		
+		return superUserD2zService.exportConsignmentDatafile(type, Data);
+		//return superUserD2zService.exportConsignmentData(fromDate, toDate);
+  }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/export/shipment")
 	 public List<ExportShipment> exportShipmentData(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
 		return superUserD2zService.exportShipmentData(fromDate, toDate);
 	}
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/export/shipmentfile")
+	 public List<ExportShipment> exportShipmentDataFile(@RequestParam("type") String type,@RequestParam("Data") List<String> Data) {
+		return superUserD2zService.exportShipmentDatafile(type, Data);
+	}
 	@RequestMapping( method = RequestMethod.GET, path = "/export/nonshipment")
 	 public List<ExportShipment> exportNonShipmentData(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
 		return superUserD2zService.exportNonShipmentData(fromDate, toDate);
@@ -304,9 +316,19 @@ public class D2ZSuperUserController {
 		UserMessage jobInfo = superUserD2zService.updateJob(Job);
 		return jobInfo;
 	}
+	@RequestMapping(method = RequestMethod.POST, path = "/delete-job")
+	public UserMessage deleteJob(@RequestBody List<IncomingJobResponse> Job) {
+		UserMessage jobInfo = superUserD2zService.deleteJob(Job);
+		return jobInfo;
+	}
 	@RequestMapping(method = RequestMethod.GET, path = "/incoming-job-list")
 	public List<IncomingJobResponse> createJobList() {
 		List<IncomingJobResponse> jobInfo = superUserD2zService.getJobList();
+		return jobInfo;
+	}
+	@RequestMapping(method = RequestMethod.GET, path = "/closing-job-list")
+	public List<IncomingJobResponse> closeJobList() {
+		List<IncomingJobResponse> jobInfo = superUserD2zService.getcloseJobList();
 		return jobInfo;
 	}
 	

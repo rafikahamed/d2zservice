@@ -7,6 +7,7 @@ import com.d2z.d2zservice.model.BaggingRequest;
 import com.d2z.d2zservice.model.BaggingResponse;
 import com.d2z.d2zservice.model.DirectInjectionDetails;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.ShipmentDetails;
 import com.d2z.d2zservice.model.UserDetails;
 
 public interface IBrokerD2ZService {
@@ -28,5 +29,7 @@ public interface IBrokerD2ZService {
 	public List<SenderdataMaster> downloadShipmentData(String shipmentNumber, Integer userId);
 
 	public BaggingResponse getbagDetails(BaggingRequest request);
+
+	public List<SenderdataMaster> downloadShipmentDatabyType(List<String> number, Integer userId, String type);
 
 }

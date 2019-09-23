@@ -51,6 +51,17 @@ public class IncomingJobs implements Serializable{
 	@Column(name = "ETA")
 	private LocalDate Eta;
 	
+	@Column(name = "ISDeleted")
+	private String isDeleted;
+	
+	public String getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(String isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 	public String getID() {
 		return ID;
 	}

@@ -43,7 +43,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	List<String> fetchTrackingDetails(@Param("fileName") String fileName);
 
 	
-	@Query(nativeQuery = true, value="Select reference_number from senderdata_master t where t.isDeleted = 'N'") 
+	@Query(nativeQuery = true, value="Select distinct(reference_number) from senderdata_master t where t.isDeleted = 'N'") 
 	List<String> fetchAllReferenceNumbers();
 	 
 	@Query(nativeQuery = true, value="Select reference_number, datamatrix, articleId, BarcodelabelNumber, Carrier,injectionState from senderdata_master t where sender_Files_ID=:senderFileID") 
@@ -83,6 +83,15 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 
 	@Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.airwayBill = :shipmentNumber and t.isDeleted = 'N'") 
 	List<SenderdataMaster> fetchShipmentData(@Param("shipmentNumber") String shipmentNumber,@Param("userId") List<Integer> userId);
+	
+	@Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.articleId IN (:articleid) and t.isDeleted = 'N'") 
+	List<SenderdataMaster> fetchShipmentDatabyArticleId(@Param("articleid")List <String> shipmentNumber,@Param("userId") List<Integer> userId);
+	
+	@Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.reference_number IN (:referencenumber) and t.isDeleted = 'N'") 
+	List<SenderdataMaster> fetchShipmentDatabyReference(@Param("referencenumber") List<String> shipmentNumber,@Param("userId") List<Integer> userId);
+	
+	@Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.barcodelabelNumber IN (:barcodelabelNumber) and t.isDeleted = 'N'") 
+	List<SenderdataMaster> fetchShipmentDatabyBarcode(@Param("barcodelabelNumber") List<String> shipmentNumber,@Param("userId") List<Integer> userId);
 
 	@Query(nativeQuery = true, value="SELECT DISTINCT t.manifest_number FROM senderdata_master t where t.user_ID IN (:userId) and t.AirwayBill is null and t.isDeleted = 'N'") 
 	List<String> fetchManifestNumber(@Param("userId") List<Integer> userId);
@@ -138,6 +147,16 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 
 	 @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.trackEventDateOccured between :fromTime and :toTime") 
 	 List<SenderdataMaster> exportConsignments(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
+	 
+	 @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.reference_number in (:Ref)") 
+	                                                                                                                                             
+	 List<SenderdataMaster> exportConsignmentsRef(@Param("Ref") List<String> Reference);
+	 
+	 @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.articleID in (:Articleid)") 
+	 List<SenderdataMaster> exportConsignmentsArticleid(@Param("Articleid") List<String> Article);
+	 
+	 @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.barcodelabelNumber in (:Barcode)") 
+	 List<SenderdataMaster> exportConsignmentsBarcode(@Param("Barcode") List<String> Barcode);
 
 	 @Query(nativeQuery = true, value = "SELECT D.user_name, \r\n" + 
 	 		"       C.reference_number,C.value,C.shipped_Quantity,\r\n" + 
@@ -163,7 +182,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"                                  trackandtr1_.reference_number \r\n" + 
 	 		"                WHERE  trackandtr1_.trackeventdetails = 'SHIPMENT ALLOCATED' \r\n" + 
 	 		"                       AND trackandtr1_.isdeleted <> 'Y' \r\n" + 
-	 		"                       AND ( trackandtr1_.trackeventdateoccured BETWEEN :fromTime AND :toTime  \r\n" + 
+	 		"                       AND ( trackandtr1_.reference_number in (:Ref)  \r\n" + 
 	 		"                           ))B \r\n" + 
 	 		"               INNER JOIN users A \r\n" + 
 	 		"                       ON A.user_id = B.user_id \r\n" + 
@@ -171,7 +190,108 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"       INNER JOIN users D \r\n" + 
 	 		"               ON D.user_id = C.client_broker_id ") 
 	 		
-	 List<Object> exportShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
+	 List<Object> exportShipmentRef(@Param("Ref") List<String> Ref);
+	 
+	 
+	 @Query(nativeQuery = true, value = "SELECT D.user_name, \r\n" + 
+		 		"       C.reference_number,C.value,C.shipped_Quantity,\r\n" + 
+		 		"C.consignee_name,C.consignee_addr1,C.consignee_Suburb,\r\n" + 
+		 		"C.consignee_State,C.consignee_Postcode,C.consignee_Phone,\r\n" + 
+		 		"C.product_Description,C.shipper_Country,C.weight,C.barcodelabelNumber,\r\n" + 
+		 		"C.servicetype,C.currency,C.articleId\r\n" + 
+		 		"FROM   (SELECT A.client_broker_id, \r\n" + 
+		 		"               B.reference_number,B.value,B.shipped_Quantity,\r\n" + 
+		 		"B.consignee_name,B.consignee_addr1,B.consignee_Suburb,\r\n" + 
+		 		"B.consignee_State,B.consignee_Postcode,B.consignee_Phone,\r\n" + 
+		 		"B.product_Description,B.shipper_Country,B.weight,B.barcodelabelNumber,\r\n" + 
+		 		"B.servicetype,B.currency,B.articleId\r\n" + 
+		 		"        FROM   (SELECT senderdata0_.reference_number,senderdata0_.value,\r\n" + 
+		 		"senderdata0_.shipped_Quantity,senderdata0_.consignee_name,senderdata0_.consignee_addr1,\r\n" + 
+		 		"senderdata0_.consignee_Suburb,senderdata0_.consignee_State,\r\n" + 
+		 		"senderdata0_.consignee_Postcode,senderdata0_.consignee_Phone,\r\n" + 
+		 		"senderdata0_.product_Description,senderdata0_.shipper_Country,senderdata0_.User_ID,\r\n" + 
+		 		"senderdata0_.weight,senderdata0_.barcodelabelNumber,senderdata0_.servicetype,senderdata0_.currency,senderdata0_.articleId\r\n" + 
+		 		"  FROM   dbo.senderdata_master senderdata0_ \r\n" + 
+		 		"                       INNER JOIN trackandtrace trackandtr1_ \r\n" + 
+		 		"                               ON senderdata0_.reference_number = \r\n" + 
+		 		"                                  trackandtr1_.reference_number \r\n" + 
+		 		"                WHERE  trackandtr1_.trackeventdetails = 'SHIPMENT ALLOCATED' \r\n" + 
+		 		"                       AND trackandtr1_.isdeleted <> 'Y' \r\n" + 
+		 		"                       AND ( trackandtr1_.articleid in (:Articleid)  \r\n" + 
+		 		"                           ))B \r\n" + 
+		 		"               INNER JOIN users A \r\n" + 
+		 		"                       ON A.user_id = B.user_id \r\n" + 
+		 		"                          AND A.role_id = '3') C \r\n" + 
+		 		"       INNER JOIN users D \r\n" + 
+		 		"               ON D.user_id = C.client_broker_id ") 
+		 		
+		 List<Object> exportShipmentArticleid(@Param("Articleid") List<String> articleid);
+	 @Query(nativeQuery = true, value = "SELECT D.user_name, \r\n" + 
+		 		"       C.reference_number,C.value,C.shipped_Quantity,\r\n" + 
+		 		"C.consignee_name,C.consignee_addr1,C.consignee_Suburb,\r\n" + 
+		 		"C.consignee_State,C.consignee_Postcode,C.consignee_Phone,\r\n" + 
+		 		"C.product_Description,C.shipper_Country,C.weight,C.barcodelabelNumber,\r\n" + 
+		 		"C.servicetype,C.currency,C.articleId\r\n" + 
+		 		"FROM   (SELECT A.client_broker_id, \r\n" + 
+		 		"               B.reference_number,B.value,B.shipped_Quantity,\r\n" + 
+		 		"B.consignee_name,B.consignee_addr1,B.consignee_Suburb,\r\n" + 
+		 		"B.consignee_State,B.consignee_Postcode,B.consignee_Phone,\r\n" + 
+		 		"B.product_Description,B.shipper_Country,B.weight,B.barcodelabelNumber,\r\n" + 
+		 		"B.servicetype,B.currency,B.articleId\r\n" + 
+		 		"        FROM   (SELECT senderdata0_.reference_number,senderdata0_.value,\r\n" + 
+		 		"senderdata0_.shipped_Quantity,senderdata0_.consignee_name,senderdata0_.consignee_addr1,\r\n" + 
+		 		"senderdata0_.consignee_Suburb,senderdata0_.consignee_State,\r\n" + 
+		 		"senderdata0_.consignee_Postcode,senderdata0_.consignee_Phone,\r\n" + 
+		 		"senderdata0_.product_Description,senderdata0_.shipper_Country,senderdata0_.User_ID,\r\n" + 
+		 		"senderdata0_.weight,senderdata0_.barcodelabelNumber,senderdata0_.servicetype,senderdata0_.currency,senderdata0_.articleId\r\n" + 
+		 		"  FROM   dbo.senderdata_master senderdata0_ \r\n" + 
+		 		"                       INNER JOIN trackandtrace trackandtr1_ \r\n" + 
+		 		"                               ON senderdata0_.reference_number = \r\n" + 
+		 		"                                  trackandtr1_.reference_number \r\n" + 
+		 		"                WHERE  trackandtr1_.trackeventdetails = 'SHIPMENT ALLOCATED' \r\n" + 
+		 		"                       AND trackandtr1_.isdeleted <> 'Y' \r\n" + 
+		 		"                       AND ( trackandtr1_.barcodelabelnumber in (:Barcode)  \r\n" + 
+		 		"                           ))B \r\n" + 
+		 		"               INNER JOIN users A \r\n" + 
+		 		"                       ON A.user_id = B.user_id \r\n" + 
+		 		"                          AND A.role_id = '3') C \r\n" + 
+		 		"       INNER JOIN users D \r\n" + 
+		 		"               ON D.user_id = C.client_broker_id ") 
+		 		
+		 List<Object> exportShipmentBarcode(@Param("Barcode") List<String> data);
+	 @Query(nativeQuery = true, value = "SELECT D.user_name, \r\n" + 
+		 		"       C.reference_number,C.value,C.shipped_Quantity,\r\n" + 
+		 		"C.consignee_name,C.consignee_addr1,C.consignee_Suburb,\r\n" + 
+		 		"C.consignee_State,C.consignee_Postcode,C.consignee_Phone,\r\n" + 
+		 		"C.product_Description,C.shipper_Country,C.weight,C.barcodelabelNumber,\r\n" + 
+		 		"C.servicetype,C.currency,C.articleId\r\n" + 
+		 		"FROM   (SELECT A.client_broker_id, \r\n" + 
+		 		"               B.reference_number,B.value,B.shipped_Quantity,\r\n" + 
+		 		"B.consignee_name,B.consignee_addr1,B.consignee_Suburb,\r\n" + 
+		 		"B.consignee_State,B.consignee_Postcode,B.consignee_Phone,\r\n" + 
+		 		"B.product_Description,B.shipper_Country,B.weight,B.barcodelabelNumber,\r\n" + 
+		 		"B.servicetype,B.currency,B.articleId\r\n" + 
+		 		"        FROM   (SELECT senderdata0_.reference_number,senderdata0_.value,\r\n" + 
+		 		"senderdata0_.shipped_Quantity,senderdata0_.consignee_name,senderdata0_.consignee_addr1,\r\n" + 
+		 		"senderdata0_.consignee_Suburb,senderdata0_.consignee_State,\r\n" + 
+		 		"senderdata0_.consignee_Postcode,senderdata0_.consignee_Phone,\r\n" + 
+		 		"senderdata0_.product_Description,senderdata0_.shipper_Country,senderdata0_.User_ID,\r\n" + 
+		 		"senderdata0_.weight,senderdata0_.barcodelabelNumber,senderdata0_.servicetype,senderdata0_.currency,senderdata0_.articleId\r\n" + 
+		 		"  FROM   dbo.senderdata_master senderdata0_ \r\n" + 
+		 		"                       INNER JOIN trackandtrace trackandtr1_ \r\n" + 
+		 		"                               ON senderdata0_.reference_number = \r\n" + 
+		 		"                                  trackandtr1_.reference_number \r\n" + 
+		 		"                WHERE  trackandtr1_.trackeventdetails = 'SHIPMENT ALLOCATED' \r\n" + 
+		 		"                       AND trackandtr1_.isdeleted <> 'Y' \r\n" + 
+		 		"                       AND ( trackandtr1_.trackeventdateoccured BETWEEN :fromTime AND :toTime  \r\n" + 
+		 		"                           ))B \r\n" + 
+		 		"               INNER JOIN users A \r\n" + 
+		 		"                       ON A.user_id = B.user_id \r\n" + 
+		 		"                          AND A.role_id = '3') C \r\n" + 
+		 		"       INNER JOIN users D \r\n" + 
+		 		"               ON D.user_id = C.client_broker_id ") 
+		 		
+		 List<Object> exportShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
 	/* @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'SHIPMENT ALLOCATED' and t.isDeleted != 'Y' and t.trackEventDateOccured between :fromTime and :toTime") 
 	List<SenderdataMaster> exportShipment(@Param("fromTime") String fromTime , @Param("toTime") String toTime);*/
 	 @Query(nativeQuery = true, value = "SELECT B.user_name, \r\n" + 
@@ -286,9 +406,6 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 			") C INNER JOIN users D on C.client_broker_id = D.user_id \n" + 
 			"")
 	List<String> reconcileData(@Param("articleNo") String articleNo, @Param("refrenceNumber") String refrenceNumber);
-
-//	@Procedure(name = "InvoiceUpdate")
-//	void approvedInvoice(@Param("Indicator") String Indicator, @Param("Airwaybill") String Airwaybill);
 	
 	@Procedure(name = "reconcilerates")
 	void reconcilerates(@Param("Reference_number") String Reference_number);

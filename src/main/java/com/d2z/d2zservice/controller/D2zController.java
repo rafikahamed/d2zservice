@@ -78,7 +78,7 @@ public class D2zController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/create-enquiry")
-	public UserMessage createEnquiry(@RequestBody List<CreateEnquiryRequest> createEnquiry) {
+	public UserMessage createEnquiry(@RequestBody List<CreateEnquiryRequest> createEnquiry) throws ReferenceNumberNotUniqueException {
 		UserMessage enquiryInfo = d2zService.createEnquiry(createEnquiry);
 		return enquiryInfo;
 	}
@@ -216,6 +216,30 @@ public class D2zController {
 		return senderData;
 	}
 
+	@RequestMapping(method = RequestMethod.GET, path = "/consignments/shipmenttype")
+	public List<ShipmentDetails> downloadShipmentDatabyType(@RequestParam("Data") List<String> Number,
+			@RequestParam("userId") Integer userId,@RequestParam("Type") String Type) {
+		
+		List<ShipmentDetails> senderData = d2zService.downloadShipmentDatabyType(Number, userId,Type);
+		return senderData;
+	}
+
+	
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/consignments/shipmenttemplate")
+	public List<ShipmentDetails> downloadShipmentDataTemplate(@RequestParam("shipmentNumber") String shipmentNumber,
+			@RequestParam("userId") Integer userId) {
+		List<ShipmentDetails> senderData = d2zService.downloadShipmentDataTemplate(shipmentNumber, userId);
+		return senderData;
+	}
+
+	@RequestMapping(method = RequestMethod.GET, path = "/consignments/shipmenttypetemplate")
+	public List<ShipmentDetails> downloadShipmentDataTemplatebyType(@RequestParam("Data") List<String> Number,
+			@RequestParam("userId") Integer userId,@RequestParam("Type") String Type) {
+		
+		List<ShipmentDetails> senderData = d2zService.downloadShipmentDataTemplatebyType(Number, userId,Type);
+		return senderData;
+	}
 	@RequestMapping(method = RequestMethod.POST, path = "/ebay/completeSale")
 	public UserMessage uploadShipmentToEbay(@RequestBody Ebay_ShipmentDetails shipmentDetails) {
 		UserMessage userMsg = d2zService.uploadShipmentDetailsToEbay(shipmentDetails);
@@ -278,7 +302,9 @@ public class D2zController {
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/outStanding-returns")
 	public List<Returns> returnsOutstanding(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate, @RequestParam("userId") String userId) {
+		System.out.println("Inside Outstanding Method");
 		List<Returns> returnsInfo = d2zService.returnsOutstanding(fromDate, toDate, userId);
 		return returnsInfo;
 	}
+	
 }

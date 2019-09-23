@@ -157,10 +157,13 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		userDetails.setState(user.getState());
 		userDetails.setSuburb(user.getSuburb());
 		userDetails.setUserName(user.getUsername());
+	/*
 		Set<UserService> userServiceList = user.getUserService();
 		List<String> serviceType = userServiceList.stream().map(obj -> {
 			return obj.getServiceType();
-		}).collect(Collectors.toList());
+		}).collect(Collectors.toList());*/
+		
+		List<String> serviceType = d2zDao.fetchServiceTypeByUserName(user.getUsername());
 		userDetails.setServiceType(serviceType);
 		return userDetails;
 	}
@@ -191,7 +194,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	public List<SenderdataMaster> exportConsignmentData(String fromDate, String toDate) {
 		return d2zDao.exportConsignments(fromDate, toDate);
 	}
-
+	
 	@Override
 	public List<ExportShipment> exportShipmentData(String fromDate, String toDate) {
 		List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
@@ -425,7 +428,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		List<Reconcile> reconcileCalculatedList = new ArrayList<Reconcile>();
 		List<String> reconcileReferenceNum = new ArrayList<String>();
 		// Check for duplicates
-		if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("freipost")) {
+		if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("PFL")) {
 			d2zValidator.isReferenceNumberUniqueReconcile(reconcileData, "D2Z");
 		} else {
 			d2zValidator.isArticleIdUniqueReconcile(reconcileData, "D2Z");
@@ -454,18 +457,21 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("UBI")) {
 					reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getNormalRateParcel()));
 					reconcileObj.setSupplierWeight(reconcile.getArticleActualWeight());
-					reconcileObj
-							.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
+					reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
 				} else if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("freipost")) {
 					reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getCost()));
 					reconcileObj.setSupplierWeight(reconcile.getChargedWeight());
-					reconcileObj
-							.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
+					reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
+				} else if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("PFL")) {
+					reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getCost()));
+					reconcileObj.setSupplierWeight(reconcile.getChargedWeight());
+					reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
 				}
-				if (reconcileObj.getSupplierCharge() != null && reconcileObj.getD2ZCost() != null)
-					reconcileObj.setCostDifference(
-							reconcileObj.getSupplierCharge().subtract(reconcileObj.getD2ZCost(), mc));
-				reconcileObj.setSupplierType(reconcileData.get(0).getSupplierType());
+				if (reconcileObj.getSupplierCharge() != null && reconcileObj.getD2ZCost() != null) {
+					reconcileObj.setCostDifference(reconcileObj.getSupplierCharge().subtract(reconcileObj.getD2ZCost(), mc));
+					reconcileObj.setSupplierType(reconcileData.get(0).getSupplierType());
+				}
+					
 			}
 			reconcileCalculatedList.add(reconcileObj);
 			if (reconcileObj.getBrokerUserName() != null) {
@@ -473,7 +479,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			} else {
 				if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("UBI")) {
 					reconcileObj.setArticleId(reconcile.getArticleNo());
-				} else if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("freipost")) {
+				} else if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("PFL")) {
 					reconcileObj.setReference_number(reconcile.getRefrenceNumber());
 				}
 			}
@@ -1163,6 +1169,14 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	return d2zDao.getJobList();
 	}
 	
+
+	@Override
+	public List<IncomingJobResponse> getcloseJobList() {
+		// TODO Auto-generated method stub
+		return d2zDao.getClosedJobList();
+	}
+
+	
 	@Override
 	public ReturnsClientResponse fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId) {
 		List<String> clientDetails = d2zDao.fetchClientDetails(referenceNumber,barcodeLabel,articleId);
@@ -1228,10 +1242,12 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		List<String> returnsBroker = d2zDao.fetchReturnsBroker();
 		List<DropDownModel> brokerList = new ArrayList<DropDownModel>();
 		for (String mlid : returnsBroker) {
-			DropDownModel dropDownVaL = new DropDownModel();
-			dropDownVaL.setName(mlid);
-			dropDownVaL.setValue(mlid);
-			brokerList.add(dropDownVaL);
+			if(null != mlid) {
+				DropDownModel dropDownVaL = new DropDownModel();
+				dropDownVaL.setName(mlid);
+				dropDownVaL.setValue(mlid);
+				brokerList.add(dropDownVaL);
+			}
 		}
 		return brokerList;
 	}
@@ -1239,6 +1255,56 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	@Override
 	public List<Returns> returnsOutstanding(String fromDate, String toDate, String brokerName) {
 		return  d2zDao.returnsOutstanding(fromDate,toDate,brokerName);
+	}
+
+	@Override
+	public UserMessage deleteJob(List<IncomingJobResponse> job) {
+		// TODO Auto-generated method stub
+		String jobInfo = d2zDao.deleteJob(job);
+		UserMessage usrMsg = new UserMessage();
+		usrMsg.setMessage(jobInfo);
+		return usrMsg;
+
+	}
+
+	@Override
+	public List<SenderdataMaster> exportConsignmentDatafile(String type, List<String> Data) {
+		// TODO Auto-generated method stub
+		return d2zDao.exportConsignmentsfile(type, Data);
+	}
+
+	@Override
+	public List<ExportShipment> exportShipmentDatafile(String type, List<String> Data) {
+		// TODO Auto-generated method stub
+		List<ExportShipment> exportshipmentlist = new ArrayList<ExportShipment>();
+		List<Object> ExportDeleteList = d2zDao.exportShipmentfile(type, Data);
+		Iterator itr = ExportDeleteList.iterator();
+		while (itr.hasNext()) {
+			Object[] obj = (Object[]) itr.next();
+			// System.out.println(obj.length);
+			// now you have one array of Object for each row
+			ExportShipment exportval = new ExportShipment();
+			exportval.setBroker_name(String.valueOf(obj[0]));
+			exportval.setReference_number(String.valueOf(obj[1]));
+			exportval.setValue(Double.valueOf("" + obj[2]));
+			exportval.setShippedQuantity(Integer.valueOf("" + obj[3]));
+			exportval.setConsignee_name(String.valueOf(obj[4]));
+			exportval.setConsignee_addr1(String.valueOf(obj[5]));
+			exportval.setConsignee_Suburb(String.valueOf(obj[6]));
+			exportval.setConsignee_State(String.valueOf(obj[7]));
+			exportval.setConsignee_Postcode(String.valueOf(obj[8]));
+			exportval.setConsignee_Phone(String.valueOf(obj[9]));
+			exportval.setProduct_Description(String.valueOf(obj[10]));
+			exportval.setShipper_Country(String.valueOf(obj[11]));
+			exportval.setWeight(Double.valueOf("" + obj[12]));
+			exportval.setBarcodelabelNumber(String.valueOf(obj[13]));
+			exportval.setServicetype(String.valueOf(obj[14]));
+			exportval.setCurrency(String.valueOf(obj[15]));
+			exportval.setArticleID(String.valueOf(obj[16]));
+			exportshipmentlist.add(exportval);
+		}
+		// ExportDeleteList.forEach(System.out::println);
+		return exportshipmentlist;
 	}
 
 

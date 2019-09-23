@@ -34,4 +34,7 @@ public interface ReturnsRepository extends CrudRepository<Returns, Long>{
 			+ "returnsCreatedDate between :fromDate and :toDate") 
 	List<Returns> returnsOutstandingDetails(@Param("fromDate") String fromDate, @Param("toDate") String toDate, @Param("brokerName") String brokerName);
 
+	@Query( nativeQuery = true, value="SELECT * FROM Returns where User_Id in (:userId)") 
+	List<Returns> fetchOutstandingCompleteDetails(@Param("userId") Integer[] userId);
+
 }

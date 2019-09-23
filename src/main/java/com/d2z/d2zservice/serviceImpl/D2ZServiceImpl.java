@@ -1799,7 +1799,7 @@ else
 	}
 
 	@Override
-	public UserMessage createEnquiry(List<CreateEnquiryRequest> createEnquiry) {
+	public UserMessage createEnquiry(List<CreateEnquiryRequest> createEnquiry) throws ReferenceNumberNotUniqueException {
 		String enquiryInfo = d2zDao.createEnquiry(createEnquiry);
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage(enquiryInfo);
@@ -1930,5 +1930,197 @@ else
 	}
 
 
+	@Override
+	public List<ShipmentDetails> downloadShipmentDatabyType(List<String> number, Integer userId, String type) {
+		// TODO Auto-generated method stub
+		
+		List<Integer> listOfClientId = d2zBrokerDao.getClientId(userId);
+		List<SenderdataMaster> senderDataList = d2zDao.fetchShipmentDatabyType(number, listOfClientId,type);
+		System.out.println(senderDataList.size() + " records");
+		Double audcurrency = d2zDao.getAudcurrency("USD");
+		List<ShipmentDetails> shipmentDetails = new ArrayList<ShipmentDetails>();
+		for (SenderdataMaster senderData : senderDataList) {
+			ShipmentDetails shipmentData = new ShipmentDetails();
+			shipmentData.setReferenceNumber(senderData.getReference_number());
+			//shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
+			shipmentData.setCon_no(senderData.getArticleId().substring(0, 12));
+			shipmentData.setConsigneeName(senderData.getConsignee_name());
+			shipmentData.setConsigneeAddress(senderData.getConsignee_addr1());
+			shipmentData.setWeight(senderData.getWeight());
+			shipmentData.setConsigneePhone(senderData.getConsignee_Phone());
+			shipmentData.setConsigneeSuburb(senderData.getConsignee_Suburb());
+			shipmentData.setConsigneeState(senderData.getConsignee_State());
+			shipmentData.setConsigneePostcode(senderData.getConsignee_Postcode());
+			shipmentData.setDestination("AUSTRALIA");
+			shipmentData.setQuantity(senderData.getShippedQuantity());
+			shipmentData.setCommodity(senderData.getProduct_Description());
+			Double uscurrency = senderData.getValue()*audcurrency;
+			shipmentData.setValue(uscurrency);
+			shipmentData.setShipperName(senderData.getShipper_Name());
+			shipmentData.setShipperAddress(senderData.getShipper_Addr1());
+			shipmentData.setShipperCity(senderData.getShipper_City());
+			shipmentData.setShipperState(senderData.getShipper_State());
+			shipmentData.setShipperPostcode(senderData.getShipper_Postcode());
+			shipmentData.setShipperCountry(senderData.getShipper_Country());
+			shipmentData.setShipperContact(senderData.getAirwayBill());
+			shipmentDetails.add(shipmentData);
+		}
+//		byte[] bytes = shipmentWriter.generateShipmentxls(shipmentDetails);
+//		return bytes;
+		return shipmentDetails;
+		
+	}
+
+	@Override
+	public List<ShipmentDetails> downloadShipmentDataTemplate(String shipmentNumber, Integer userId) {
+		// TODO Auto-generated method stub
+		List<Integer> listOfClientId = d2zBrokerDao.getClientId(userId);
+		List<SenderdataMaster> senderDataList = d2zDao.fetchShipmentData(shipmentNumber, listOfClientId);
+		System.out.println(senderDataList.size() + " records");
+		
+		List<ShipmentDetails> shipmentDetails = new ArrayList<ShipmentDetails>();
+		for (SenderdataMaster senderData : senderDataList) {
+			ShipmentDetails shipmentData = new ShipmentDetails();
+			if(senderData.getReference_number()!=null && senderData.getReference_number().length() > 21)
+			{
+				shipmentData.setReferenceNumber(senderData.getReference_number().substring(0, 21));
+			}
+			else
+			{
+				shipmentData.setReferenceNumber(senderData.getReference_number());
+			}
+			
+			//shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
+			
+			shipmentData.setConsigneeName(senderData.getConsignee_name());
+			if(senderData.getConsignee_addr1()!=null && senderData.getConsignee_addr1().length() > 49)
+			{
+			shipmentData.setConsigneeAddress(senderData.getConsignee_addr1().substring(0, 49));
+			}
+			else
+			{
+				shipmentData.setConsigneeAddress(senderData.getConsignee_addr1());
+			}
+			shipmentData.setConsigneeSuburb(senderData.getConsignee_Suburb());
+			
+			shipmentData.setConsigneeState(senderData.getConsignee_State());
+			if(senderData.getConsignee_Postcode()!=null && senderData.getConsignee_Postcode().length() > 4)
+			{
+				shipmentData.setConsigneePostcode(senderData.getConsignee_Postcode().substring(0, 4));
+			}
+			else
+			{
+				shipmentData.setConsigneePostcode(senderData.getConsignee_Postcode());
+			}
+			
+			shipmentData.setDestination("AU");
+			shipmentData.setCommodity(senderData.getProduct_Description());
+			shipmentData.setCount("1");
+			shipmentData.setLanding("1");
+			shipmentData.setWeight(senderData.getWeight());
+			
+			shipmentData.setShipperName(senderData.getShipper_Name());
+			shipmentData.setShipperAddress(senderData.getShipper_Addr1());
+			shipmentData.setShipperCity(senderData.getShipper_City());
+			shipmentData.setShipperState(senderData.getShipper_State());
+			shipmentData.setShipperPostcode(senderData.getShipper_Postcode());
+			shipmentData.setShipperCountry(senderData.getShipper_Country());
+			shipmentData.setOrgin("HKG");
+			shipmentData.setDest("SYD");
+			shipmentData.setValue(senderData.getValue());
+			shipmentData.setGoods("AUD");
+			
+			if( senderData.getValue() > 1000)
+			{
+				shipmentData.setSac("N");
+			}
+			else
+			{
+				shipmentData.setSac("Y");
+			}
+			shipmentData.setShipperContact(senderData.getAirwayBill());
+			shipmentDetails.add(shipmentData);
+		}
+//		byte[] bytes = shipmentWriter.generateShipmentxls(shipmentDetails);
+//		return bytes;
+		return shipmentDetails;
+
+	}
+
+	@Override
+	public List<ShipmentDetails> downloadShipmentDataTemplatebyType(List<String> number, Integer userId, String type) {
+		// TODO Auto-generated method stub
+		List<Integer> listOfClientId = d2zBrokerDao.getClientId(userId);
+		List<SenderdataMaster> senderDataList = d2zDao.fetchShipmentDatabyType(number, listOfClientId,type);
+		System.out.println(senderDataList.size() + " records");
+		
+		
+		List<ShipmentDetails> shipmentDetails = new ArrayList<ShipmentDetails>();
+		for (SenderdataMaster senderData : senderDataList) {
+			ShipmentDetails shipmentData = new ShipmentDetails();
+			if(senderData.getReference_number()!=null && senderData.getReference_number().length() > 21)
+			{
+				shipmentData.setReferenceNumber(senderData.getReference_number().substring(0, 21));
+			}
+			else
+			{
+				shipmentData.setReferenceNumber(senderData.getReference_number());
+			}
+			
+			//shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
+			
+			shipmentData.setConsigneeName(senderData.getConsignee_name());
+			if(senderData.getConsignee_addr1()!=null && senderData.getConsignee_addr1().length() > 49)
+			{
+			shipmentData.setConsigneeAddress(senderData.getConsignee_addr1().substring(0, 49));
+			}
+			else
+			{
+				shipmentData.setConsigneeAddress(senderData.getConsignee_addr1());
+			}
+			shipmentData.setConsigneeSuburb(senderData.getConsignee_Suburb());
+			
+			shipmentData.setConsigneeState(senderData.getConsignee_State());
+			if(senderData.getConsignee_Postcode()!=null && senderData.getConsignee_Postcode().length() > 4)
+			{
+				shipmentData.setConsigneePostcode(senderData.getConsignee_Postcode().substring(0, 4));
+			}
+			else
+			{
+				shipmentData.setConsigneePostcode(senderData.getConsignee_Postcode());
+			}
+			
+			shipmentData.setDestination("AU");
+			shipmentData.setCommodity(senderData.getProduct_Description());
+			shipmentData.setCount("1");
+			shipmentData.setLanding("1");
+			shipmentData.setWeight(senderData.getWeight());
+			
+			shipmentData.setShipperName(senderData.getShipper_Name());
+			shipmentData.setShipperAddress(senderData.getShipper_Addr1());
+			shipmentData.setShipperCity(senderData.getShipper_City());
+			shipmentData.setShipperState(senderData.getShipper_State());
+			shipmentData.setShipperPostcode(senderData.getShipper_Postcode());
+			shipmentData.setShipperCountry(senderData.getShipper_Country());
+			shipmentData.setOrgin("HKG");
+			shipmentData.setDest("SYD");
+			shipmentData.setValue(senderData.getValue());
+			shipmentData.setGoods("AUD");
+			
+			if( senderData.getValue() > 1000)
+			{
+				shipmentData.setSac("N");
+			}
+			else
+			{
+				shipmentData.setSac("Y");
+			}
+			shipmentData.setShipperContact(senderData.getAirwayBill());
+			shipmentDetails.add(shipmentData);
+		}
+//		byte[] bytes = shipmentWriter.generateShipmentxls(shipmentDetails);
+//		return bytes;
+		return shipmentDetails;
+	}
 
 }

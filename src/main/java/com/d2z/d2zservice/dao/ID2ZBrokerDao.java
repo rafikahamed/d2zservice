@@ -6,6 +6,7 @@ import com.d2z.d2zservice.entity.Consignments;
 
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.User;
+import com.d2z.d2zservice.model.ShipmentDetails;
 
 public interface ID2ZBrokerDao {
 	
@@ -30,5 +31,9 @@ public interface ID2ZBrokerDao {
 	User login(String userName, String passWord);
 
 	public List<Integer> getClientId(Integer userId);
+	
+	public List<String> fetchServiceTypeByUserName(String userName);
+
+	public List<SenderdataMaster> fetchShipmentDatabyType(List<String> number, List<Integer> listOfClientId, String type);
 
 }

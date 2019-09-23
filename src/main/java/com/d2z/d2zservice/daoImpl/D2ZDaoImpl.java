@@ -11,7 +11,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.APIRates;
@@ -27,7 +31,7 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
-import com.d2z.d2zservice.exception.EtowerFailureResponseException;
+import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.CurrencyDetails;
@@ -61,6 +65,7 @@ import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
+import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
@@ -112,6 +117,10 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	ReturnsRepository returnsRepository;
+	
+	@Autowired
+	@Lazy
+	private D2ZValidator d2zValidator;
 
 	@Override
 	public String exportParcel(List<SenderData> orderDetailList,Map<String, LabelData> barcodeMap) {
@@ -593,8 +602,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 			}
 		}
 		if(!userDetails.getDeletedServiceTypes().isEmpty()) {
+			
 			for(String serviceType : userDetails.getDeletedServiceTypes() ) {
+				
 				UserService userService  = userServiceRepository.fetchbyCompanyNameAndServiceType(existingUser.getCompanyName(), serviceType,userDetails.getUserName());
+			
 				if(userService!=null) {
 					userService.setService_isDeleted(true);
 					userService.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
@@ -603,6 +615,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 				
 		}
 		}
+	
 		userServiceRepository.saveAll(userServiceList);
 
 	}
@@ -974,11 +987,10 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 
 	public List<String> getArticleIDForFreiPostTracking() {
-		// TODO Auto-generated method stub
 		return trackAndTraceRepository.getArticleIDForFreiPostTracking();
 	}
 	
-	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry) {
+	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry) throws ReferenceNumberNotUniqueException {
 		List<CSTickets> csTctList = new ArrayList<CSTickets>();
 		for(CreateEnquiryRequest enquiryRequest:createEnquiry) {
 			CSTickets tickets = new CSTickets();
@@ -1019,8 +1031,36 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 			tickets.setTrackingEventDateOccured(Timestamp.valueOf(LocalDateTime.now()));
 			csTctList.add(tickets);
 		}
+		List<String> incomingRefNbr = csTctList.stream().map(obj -> {
+			return obj.getReferenceNumber(); })
+				.collect(Collectors.toList());
+		isReferenceNumberUniqueUI(incomingRefNbr);
+		for(CSTickets csTicket: csTctList) {
+			if(null ==  csTicket.getReferenceNumber()) {
+				throw new ReferenceNumberNotUniqueException("Reference Number (or) Article Id is not avilable in the system",null);
+			}
+		}
 		csticketsRepository.saveAll(csTctList);
 		return "Enquiry created Successfully";
+	}
+	
+	
+	public void isReferenceNumberUniqueUI(List<String> incomingRefNbr) throws ReferenceNumberNotUniqueException{
+		System.out.println(incomingRefNbr.toString());
+		List<String> referenceNumber_DB = csticketsRepository.fetchAllReferenceNumbers();
+		referenceNumber_DB.addAll(incomingRefNbr);
+		
+		System.out.println(referenceNumber_DB);
+		List<String> duplicateRefNbr = referenceNumber_DB.stream().collect(Collectors.groupingBy(Function.identity(),     
+	              Collectors.counting()))                                             
+	          .entrySet().stream()
+	          .filter(e -> e.getValue() > 1)                                      
+	          .map(e -> e.getKey())                                                  
+	          .collect(Collectors.toList());
+		
+		if(!duplicateRefNbr.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Reference Number or Article Id must be unique",duplicateRefNbr);
+		}
 	}
 
 	@Override
@@ -1096,9 +1136,42 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public List<Returns> returnsOutstanding(String fromDate, String toDate, String userId) {
 		Integer[] userIds = Arrays.stream(userId.split(",")).map(String::trim).map(Integer::valueOf).toArray(Integer[]::new);
-		List<Returns> returnsDetails = returnsRepository.fetchOutstandingDetails(fromDate,toDate,userIds);
+		List<Returns> returnsDetails = new ArrayList<Returns>();
+		System.out.println("fromDate  --->"+fromDate);
+		System.out.println("toDate----->"+toDate);
+		if( fromDate.equals(null)  && toDate.equals(null)) {
+			returnsDetails = returnsRepository.fetchOutstandingDetails(fromDate,toDate,userIds);
+		}else {
+			returnsDetails = returnsRepository.fetchOutstandingCompleteDetails(userIds);
+		}
 		return returnsDetails;
 	}
 
+	@Override
+	public List<SenderdataMaster> fetchShipmentDatabyType(List<String> number, List<Integer> listOfClientId,
+			String type) {
+		List<SenderdataMaster> senderData;
+		
+		
+		
+		if(type.equals("articleid"))
+		{
+			senderData = senderDataRepository.fetchShipmentDatabyArticleId(number, listOfClientId);
+		}
+		else if (type.equals("barcodelabel"))
+				{
+			senderData = senderDataRepository.fetchShipmentDatabyBarcode(number, listOfClientId);
+				}
+			
+			
+		else
+		{
+			System.out.print("in else");
+			senderData = senderDataRepository.fetchShipmentDatabyReference(number, listOfClientId);
+		}
+		
+		// TODO Auto-generated method stub
+		return senderData;
+	}
 
 }

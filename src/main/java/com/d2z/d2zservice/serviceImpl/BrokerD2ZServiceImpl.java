@@ -22,6 +22,7 @@ import com.d2z.d2zservice.model.BaggingResponse;
 import com.d2z.d2zservice.model.Bags;
 import com.d2z.d2zservice.model.DirectInjectionDetails;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.ShipmentDetails;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.service.IBrokerD2ZService;
 
@@ -61,10 +62,12 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 			userDetails.setSuburb(user.getSuburb());
 			userDetails.setUserName(user.getUsername());
 			userDetails.seteBayToken(user.getEBayToken());
-			Set<UserService> userServiceList = user.getUserService();
+			/*Set<UserService> userServiceList = user.getUserService();
 			List<String> serviceType = userServiceList.stream().map(obj -> { 
 				 System.out.println("filter: " + obj);
-				return obj.getServiceType();}).collect(Collectors.toList());
+				return obj.getServiceType();}).collect(Collectors.toList());*/
+			
+			List<String> serviceType =d2zDao.fetchServiceTypeByUserName(user.getUsername());
 			userDetails.setServiceType(serviceType);
 		}
 		return userDetails;
@@ -273,6 +276,14 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 
 	}
 		
+	}
+
+	@Override
+	public List<SenderdataMaster> downloadShipmentDatabyType(List<String> number, Integer userId, String type) {
+		// TODO Auto-generated method stub
+		List<Integer> listOfClientId = d2zDao.getClientId(userId);
+		return d2zDao.fetchShipmentDatabyType(number, listOfClientId,
+				 type);
 	}
 
 }

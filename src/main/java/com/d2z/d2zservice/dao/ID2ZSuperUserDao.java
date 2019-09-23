@@ -42,8 +42,12 @@ public interface ID2ZSuperUserDao {
 	List<String> exportDeteledConsignments(String fromDate, String toDate);
 
 	List<SenderdataMaster> exportConsignments(String fromDate, String toDate);
+	
+	List<SenderdataMaster> exportConsignmentsfile(String Type, List<String> Data);
 
 	List<Object> exportShipment(String fromDate, String toDate);
+	
+	List<Object> exportShipmentfile(String Type, List<String> Data);
 	
 	List<Object> exportNonShipment(String fromDate, String toDate);
 
@@ -152,6 +156,8 @@ public interface ID2ZSuperUserDao {
 	List<IncomingJobsLogic> getBrokerMlidDetails();
 	
 	List<IncomingJobResponse> getJobList();
+	
+	List<IncomingJobResponse> getClosedJobList();
 
 	String createEnquiry(List<CreateJobRequest> createJob);
 
@@ -160,10 +166,15 @@ public interface ID2ZSuperUserDao {
 	String createReturns(List<Returns> returnsList);
 
 	String updateJob(List<IncomingJobResponse> job);
+	
+	String deleteJob(List<IncomingJobResponse> job);
+
 
 	List<String> fetchReturnsBroker();
 
 	List<Returns> returnsOutstanding(String fromDate, String toDate, String brokerName);
 
+	
+	public List<String> fetchServiceTypeByUserName(String userName);
 }
 

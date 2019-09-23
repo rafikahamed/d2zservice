@@ -106,7 +106,7 @@ public interface ID2ZService {
 
 	public void freipostTrackingEvent();
 
-	public UserMessage createEnquiry(List<CreateEnquiryRequest> createEnquiry);
+	public UserMessage createEnquiry(List<CreateEnquiryRequest> createEnquiry) throws ReferenceNumberNotUniqueException;
 
 	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, String userId);
 
@@ -121,5 +121,11 @@ public interface ID2ZService {
 	void updateCubicWeight();
 
 	public List<Returns> returnsOutstanding(String fromDate, String toDate, String userId);
+
+	public List<ShipmentDetails> downloadShipmentDatabyType(List<String> number, Integer userId, String type);
+
+	public List<ShipmentDetails> downloadShipmentDataTemplate(String shipmentNumber, Integer userId);
+
+	public List<ShipmentDetails> downloadShipmentDataTemplatebyType(List<String> number, Integer userId, String type);
 
 }

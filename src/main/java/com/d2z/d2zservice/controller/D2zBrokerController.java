@@ -20,6 +20,7 @@ import com.d2z.d2zservice.model.BaggingResponse;
 import com.d2z.d2zservice.model.DirectInjectionDetails;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ShipmentDetails;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.service.IBrokerD2ZService;
 import com.d2z.d2zservice.service.ID2ZService;
@@ -80,6 +81,12 @@ public class D2zBrokerController {
 		return brokerD2zService.downloadShipmentData(shipmentNumber, userId);
 	}
 
+	@RequestMapping(method = RequestMethod.GET, path = "/consignments/shipmenttype")
+	public List<SenderdataMaster> downloadShipmentDatabyType(@RequestParam("Data") List<String> Number,
+			@RequestParam("userId") Integer userId,@RequestParam("Type") String Type) {
+		List<SenderdataMaster> senderData = brokerD2zService.downloadShipmentDatabyType(Number, userId,Type);
+		return senderData;
+	}
 	@RequestMapping(method = RequestMethod.POST, path = "/bag")
 	public BaggingResponse getbagDetails(@RequestBody @Valid BaggingRequest request) {
 		BaggingResponse response = brokerD2zService.getbagDetails(request);
