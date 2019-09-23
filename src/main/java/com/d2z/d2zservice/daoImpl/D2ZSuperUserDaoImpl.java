@@ -2,12 +2,15 @@ package com.d2z.d2zservice.daoImpl;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +45,7 @@ import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.ZoneDetails;
@@ -147,6 +151,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		List<Trackandtrace> trackingDetailsList = new ArrayList<Trackandtrace>();
 		for (UploadTrackingFileData fileDataValue : fileData) {
 			Trackandtrace trackingDetails = new Trackandtrace();
+			trackingDetails.setRowId(D2ZCommonUtil.generateTrackID());
 			trackingDetails.setReference_number(fileDataValue.getReferenceNumber());
 			trackingDetails.setArticleID(fileDataValue.getConnoteNo());
 			trackingDetails.setTrackEventDetails(fileDataValue.getTrackEventDetails().toUpperCase());
@@ -178,6 +183,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		for (ArrivalReportFileData fileDataValue : fileData) {
 			Trackandtrace trackingDetails = new Trackandtrace();
 			trackingDetails.setReference_number(fileDataValue.getReferenceNumber());
+			trackingDetails.setRowId(D2ZCommonUtil.generateTrackID());
 			trackingDetails.setArticleID(fileDataValue.getConnoteNo());
 			String trackEvent = "Shortage";
 			if ("CLEAR".equalsIgnoreCase(fileDataValue.getStatus())) {
@@ -261,7 +267,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
-	public ResponseMessage insertTrackingDetails(TrackingEventResponse trackEventresponse) {
+	public ResponseMessage insertTrackingDetails(TrackingEventResponse trackEventresponse,Map<String,String> map) {
 		List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
 		List<TrackEventResponseData> responseData = trackEventresponse.getData();
 		ResponseMessage responseMsg = new ResponseMessage();
@@ -274,9 +280,24 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 
 				if (data != null && data.getEvents() != null) {
 					for (ETowerTrackingDetails trackingDetails : data.getEvents()) {
+						SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+						SimpleDateFormat output = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						
+					    Date eventTime = null;
+					    Date latestTime = null;
+						try {
+							eventTime = inputFormat.parse(trackingDetails.getEventTime());
+							latestTime = output.parse(map.get(trackingDetails.getTrackingNo()));
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						if(eventTime.after(latestTime)) {
 						Trackandtrace trackandTrace = new Trackandtrace();
+						trackandTrace.setRowId(D2ZCommonUtil.generateTrackID());
 						trackandTrace.setArticleID(trackingDetails.getTrackingNo());
 						trackandTrace.setFileName("eTowerAPI");
+						
 						// Date date = Date.from(Instant.ofEpochSecond(trackingDetails.getEventTime()));
 						// Date date = new Date((long)trackingDetails.getEventTime());
 
@@ -325,22 +346,31 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 							trackandTrace.setIsDeleted("Y");
 						}
 						trackAndTraceList.add(trackandTrace);
+						}
 					}
 
 				}
 			}
 			trackAndTraceRepository.saveAll(trackAndTraceList);
 			trackAndTraceRepository.updateTracking();
-			trackAndTraceRepository.deleteDuplicates();
+			//trackAndTraceRepository.deleteDuplicates();
 			responseMsg.setResponseMessage("Data uploaded successfully from ETower");
 		}
 		return responseMsg;
 	}
 
 	@Override
-	public List<String> fetchTrackingNumbersForETowerCall() {
-		List<String> dbResult = trackAndTraceRepository.fetchTrackingNumbersForETowerCall();
-		return dbResult;
+	public Map<String,String> fetchTrackingNumbersForETowerCall() {
+	List<String> dbResult = trackAndTraceRepository.fetchTrackingNumbersForETowerCall();
+		Map<String,String> map = new HashMap<String,String>();
+		Iterator itr = dbResult.iterator();
+		while (itr.hasNext()) {
+			Object[] obj = (Object[]) itr.next();
+			map.put(obj[0].toString(),obj[1].toString());
+			
+		}
+		
+		return map;
 
 	}
 

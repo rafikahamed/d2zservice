@@ -1,6 +1,8 @@
 package com.d2z.d2zservice.service;
 
 import java.util.List;
+import java.util.Map;
+
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -50,7 +52,7 @@ public interface ISuperUserD2ZService{
 	
 	List<ExportShipment> exportNonShipmentData(String fromDate, String toDate);
 
-	public ResponseMessage trackingEvent(List<String> trackingNumbers);
+	//public ResponseMessage trackingEvent(List<String> trackingNumbers);
 
 	public UserMessage uploadBrokerRates(List<BrokerRatesData> brokerRatesData);
 
@@ -133,5 +135,7 @@ public interface ISuperUserD2ZService{
 	public List<DropDownModel> fetchReturnsBroker();
 
 	public List<Returns> returnsOutstanding(String fromDate, String toDate, String brokerName);
+
+	ResponseMessage trackingEvent(List<String> trackingNbrs, Map<String, String> map);
 
 }

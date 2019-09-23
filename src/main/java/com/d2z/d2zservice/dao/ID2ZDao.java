@@ -109,7 +109,7 @@ public interface ID2ZDao {
 
 	public List<String>  fetchDataForAUPost();
 
-	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails);
+	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails, Map<String, String> map);
     
 	public void logAUPostResponse(List<AUPostResponse> aupostresponse);
 
