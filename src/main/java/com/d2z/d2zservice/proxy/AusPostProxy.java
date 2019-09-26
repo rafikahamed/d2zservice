@@ -95,14 +95,14 @@ public class AusPostProxy {
 		ResponseEntity<TrackingResponse> responseEntity = template.exchange(url, HttpMethod.GET, requestEntity, TrackingResponse.class);
 		System.out.println(responseEntity.getStatusCode());
 		TrackingResponse response = responseEntity.getBody();
-//	        ObjectWriter ow = new ObjectMapper().writer();
-//	        String jsonResponse = null;
-//			try {
-//				jsonResponse = ow.writeValueAsString(response);
-//			} catch (JsonProcessingException e) {
-//				e.printStackTrace();
-//			}
-//	        System.out.println("Response :: " + jsonResponse);
+	        ObjectWriter ow = new ObjectMapper().writer();
+	        String jsonResponse = null;
+			try {
+				jsonResponse = ow.writeValueAsString(response);
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+	        System.out.println("Response :: " + jsonResponse);
 	     return response;
 	}
 	

@@ -1388,7 +1388,19 @@ else
 			ShipmentDetails shipmentData = new ShipmentDetails();
 			shipmentData.setReferenceNumber(senderData.getReference_number());
 			//shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
-			shipmentData.setCon_no(senderData.getArticleId().substring(0, 12));
+			String connoteNo = "";
+			if(null!=senderData.getBarcodelabelNumber()) {
+				if(senderData.getBarcodelabelNumber().length()==12) {
+					connoteNo = senderData.getBarcodelabelNumber();
+				}
+				else if(senderData.getBarcodelabelNumber().length()==39) {
+					connoteNo = senderData.getBarcodelabelNumber().substring(18, 28);
+				}
+				else if(senderData.getBarcodelabelNumber().length()==41) {
+					connoteNo = senderData.getBarcodelabelNumber().substring(18,30);
+				}
+			}
+			shipmentData.setCon_no(connoteNo);
 			shipmentData.setConsigneeName(senderData.getConsignee_name());
 			shipmentData.setConsigneeAddress(senderData.getConsignee_addr1());
 			shipmentData.setWeight(senderData.getWeight());
@@ -1398,9 +1410,18 @@ else
 			shipmentData.setConsigneePostcode(senderData.getConsignee_Postcode());
 			shipmentData.setDestination("AUSTRALIA");
 			shipmentData.setQuantity(senderData.getShippedQuantity());
-			shipmentData.setCommodity(senderData.getProduct_Description());
+			String commodity = senderData.getProduct_Description();
+			if(null!=commodity) {
+			if(commodity.length()>50) {
+				commodity = "Car Accessory";
+			}
+			if(commodity.equalsIgnoreCase("Education Board")) {
+				commodity = "Education Accessory";
+			}
+			}
+			shipmentData.setCommodity(commodity);
 			Double uscurrency = senderData.getValue()*audcurrency;
-			shipmentData.setValue(uscurrency);
+			shipmentData.setValue(Math.round(uscurrency*100.0)/100.0);
 			shipmentData.setShipperName(senderData.getShipper_Name());
 			shipmentData.setShipperAddress(senderData.getShipper_Addr1());
 			shipmentData.setShipperCity(senderData.getShipper_City());
@@ -1943,7 +1964,20 @@ else
 			ShipmentDetails shipmentData = new ShipmentDetails();
 			shipmentData.setReferenceNumber(senderData.getReference_number());
 			//shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
-			shipmentData.setCon_no(senderData.getArticleId().substring(0, 12));
+			String connoteNo = "";
+			if(null!=senderData.getBarcodelabelNumber()) {
+				if(senderData.getBarcodelabelNumber().length()==12) {
+					connoteNo = senderData.getBarcodelabelNumber();
+				}
+				else if(senderData.getBarcodelabelNumber().length()==39) {
+					connoteNo = senderData.getBarcodelabelNumber().substring(18,28);
+				}
+				else if(senderData.getBarcodelabelNumber().length()==41) {
+					connoteNo = senderData.getBarcodelabelNumber().substring(18,30);
+				}
+			}
+			 
+			shipmentData.setCon_no(connoteNo);
 			shipmentData.setConsigneeName(senderData.getConsignee_name());
 			shipmentData.setConsigneeAddress(senderData.getConsignee_addr1());
 			shipmentData.setWeight(senderData.getWeight());
@@ -1953,9 +1987,19 @@ else
 			shipmentData.setConsigneePostcode(senderData.getConsignee_Postcode());
 			shipmentData.setDestination("AUSTRALIA");
 			shipmentData.setQuantity(senderData.getShippedQuantity());
-			shipmentData.setCommodity(senderData.getProduct_Description());
+			String commodity = senderData.getProduct_Description();
+			if(null!=commodity) {
+			if(commodity.length()>50) {
+				commodity = "Car Accessory";
+			}
+			if(commodity.equalsIgnoreCase("Education Board")) {
+				commodity = "Education Accessory";
+			}
+			}
+			shipmentData.setCommodity(commodity);
+			
 			Double uscurrency = senderData.getValue()*audcurrency;
-			shipmentData.setValue(uscurrency);
+			shipmentData.setValue(Math.round(uscurrency*100.0)/100.0);
 			shipmentData.setShipperName(senderData.getShipper_Name());
 			shipmentData.setShipperAddress(senderData.getShipper_Addr1());
 			shipmentData.setShipperCity(senderData.getShipper_City());
