@@ -174,5 +174,7 @@ public interface ID2ZSuperUserDao {
 
 	
 	public List<String> fetchServiceTypeByUserName(String userName);
+
+	String submitJob(List<IncomingJobResponse> job);
 }
 

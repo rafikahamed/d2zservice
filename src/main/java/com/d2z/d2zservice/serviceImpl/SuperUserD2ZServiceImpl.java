@@ -1306,5 +1306,16 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		return exportshipmentlist;
 	}
 
+	@Override
+	public UserMessage submitJob(List<IncomingJobResponse> job) {
+		// TODO Auto-generated method stub
+		
+		String jobInfo = d2zDao.submitJob(job);
+		UserMessage usrMsg = new UserMessage();
+		usrMsg.setMessage(jobInfo);
+		return usrMsg;
+		
+	}
+
 
 }

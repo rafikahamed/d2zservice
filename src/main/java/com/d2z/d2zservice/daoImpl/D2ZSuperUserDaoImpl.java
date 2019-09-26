@@ -1190,6 +1190,68 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 		return exportedShipment;
 		
 	}
+
+	@Override
+	public String submitJob(List<IncomingJobResponse> Job) {
+		// TODO Auto-generated method stub
+		
+List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
+		
+		for(IncomingJobResponse job :Job)
+		{
+			IncomingJobs jobs = new IncomingJobs();
+			System.out.println("jkk"+job.getBroker()+"::"+job.getEta()+job.getClear());
+			jobs.setBroker(job.getBroker());
+			jobs.setClear(job.getClear());
+			jobs.setConsignee(job.getConsignee());
+			jobs.setDestination(job.getDestination());
+			jobs.setFlight(job.getFlight());
+			jobs.setHawb(job.getHawb());
+			jobs.setHeld(job.getHeld());
+			jobs.setMawb(job.getMawb());
+			jobs.setMLID(job.getMLID());
+			jobs.setNote(job.getNote());
+			if(job.getEta()!=null && job.getEta().length() > 0)
+			{
+						LocalDate date1  = LocalDate.parse(job.getEta());
+						jobs.setEta(date1);
+						
+			}
+			if(job.getAta()!=null &&  job.getAta().length() > 0)
+			{
+						
+						if(job.getAta().contains("T04:"))
+						{
+						 LocalDate date2 = LocalDate.parse(job.getAta(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+						 jobs.setAta(date2);
+						}
+						else
+						{LocalDate date2  = LocalDate.parse(job.getAta());
+						jobs.setAta(date2);
+						}
+			}
+					
+					
+			
+			jobs.setPiece(job.getPiece());
+			jobs.setWeight(job.getWeight());
+			jobs.setID(job.getJobid());
+			
+		
+			if(job.getOutturn()!=null && job.getOutturn().equalsIgnoreCase("True"))
+			{
+			jobs.setOutturn("Y");
+			}
+		jobs.setHeld(job.getHeld());
+		jobs.setIsSubmitted("Y");
+		jobs.setIsDeleted("N");
+			joblist.add(jobs);
+			
+		}
+		incomingRepository.saveAll(joblist);
+		return "Job Submitted Succesfully";
+		
+	}
 		
 
 	

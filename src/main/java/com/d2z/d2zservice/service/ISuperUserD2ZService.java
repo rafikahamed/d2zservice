@@ -144,4 +144,6 @@ public interface ISuperUserD2ZService{
 
 	public List<Returns> returnsOutstanding(String fromDate, String toDate, String brokerName);
 
+	public UserMessage submitJob(List<IncomingJobResponse> job);
+
 }

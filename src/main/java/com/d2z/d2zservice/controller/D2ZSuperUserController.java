@@ -321,6 +321,12 @@ public class D2ZSuperUserController {
 		UserMessage jobInfo = superUserD2zService.deleteJob(Job);
 		return jobInfo;
 	}
+	
+	@RequestMapping(method = RequestMethod.POST, path = "/submit-job")
+	public UserMessage submitJob(@RequestBody List<IncomingJobResponse> Job) {
+		UserMessage jobInfo = superUserD2zService.submitJob(Job);
+		return jobInfo;
+	}
 	@RequestMapping(method = RequestMethod.GET, path = "/incoming-job-list")
 	public List<IncomingJobResponse> createJobList() {
 		List<IncomingJobResponse> jobInfo = superUserD2zService.getJobList();
