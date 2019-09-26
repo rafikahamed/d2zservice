@@ -1737,18 +1737,28 @@ else
 
 	@Override
 	public ResponseMessage auTrackingEvent() {
+		trackAndTraceRepository.updateAUPostTrack();
 		ResponseMessage respMsg = null;
 		List<String> articleIdData = trackAndTraceRepository.getArticleId();
-		List<List<String>> articleIdList = ListUtils.partition(articleIdData, 10);
+		List<String> articleIds = new ArrayList<String>();
+		Map<String,String> map = new HashMap<String,String>();
+		Iterator itr = articleIdData.iterator();
+		while (itr.hasNext()) {
+			Object[] obj = (Object[]) itr.next();
+			articleIds.add(obj[0].toString());
+			map.put(obj[0].toString(),obj[1].toString());
+			
+		}
+		List<List<String>> articleIdList = ListUtils.partition(articleIds, 10);
 		int count = 1;
 		for (List<String> articleIdNumbers : articleIdList) {
 			System.out.println(count + ":::" + articleIdNumbers.size());
 			count++;
-			String articleIds = StringUtils.join(articleIdNumbers, ", ");
-			TrackingResponse auTrackingDetails = ausPostProxy.trackingEvent(articleIds);
+			String articleId = StringUtils.join(articleIdNumbers, ", ");
+			TrackingResponse auTrackingDetails = ausPostProxy.trackingEvent(articleId);
 			System.out.println("AU Track Response");
 			System.out.println(auTrackingDetails.toString());
-			respMsg = d2zDao.insertAUTrackingDetails(auTrackingDetails);
+			respMsg = d2zDao.insertAUTrackingDetails(auTrackingDetails,map);
 			System.out.print("timestamp:"+LocalDateTime.now());
 			try {
 				if(count > 10)
@@ -1918,6 +1928,7 @@ else
 		List<Returns> outstandingData =  d2zDao.returnsOutstanding(fromDate,toDate,userId);
 		return outstandingData;
 	}
+
 
 	@Override
 	public List<ShipmentDetails> downloadShipmentDatabyType(List<String> number, Integer userId, String type) {

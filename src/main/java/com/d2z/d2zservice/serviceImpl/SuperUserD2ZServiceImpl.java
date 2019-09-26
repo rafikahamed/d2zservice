@@ -260,7 +260,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	}
 
 	@Override
-	public ResponseMessage trackingEvent(List<String> trackingNbrs) {
+	public ResponseMessage trackingEvent(List<String> trackingNbrs,Map<String,String> map) {
 		ResponseMessage respMsg = null;
 		List<List<String>> trackingNbrList = ListUtils.partition(trackingNbrs, 300);
 		int count = 1;
@@ -268,7 +268,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			System.out.println(count + ":::" + trackingNumbers.size());
 			count++;
 			TrackingEventResponse response = proxy.makeCallForTrackingEvents(trackingNumbers);
-			respMsg = d2zDao.insertTrackingDetails(response);
+			respMsg = d2zDao.insertTrackingDetails(response,map);
 		}
 		// List<List<ETowerTrackingDetails>> response = proxy.stubETower();
 		return respMsg;
@@ -278,11 +278,12 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 //	@Scheduled(cron = "0 0/10 * * * ?")
 	@Override
 	public void scheduledTrackingEvent() {
-		List<String> trackingNumbers = d2zDao.fetchTrackingNumbersForETowerCall();
+		Map<String,String> map = d2zDao.fetchTrackingNumbersForETowerCall();
+		List<String> trackingNumbers = new ArrayList<>(map.keySet());
 		if (trackingNumbers.isEmpty()) {
 			System.out.println("ETower call not required");
 		} else {
-			trackingEvent(trackingNumbers);
+			trackingEvent(trackingNumbers,map);
 		}
 	}
 

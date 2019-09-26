@@ -116,7 +116,7 @@ public class D2ZSuperUserController {
 	}
 	@RequestMapping( method = RequestMethod.GET, path = "/track/etower/{trackingNumbers}")
     public ResponseMessage trackingCode(@PathVariable List<String> trackingNumbers) {
-		return superUserD2zService.trackingEvent(trackingNumbers);
+		return null;//superUserD2zService.trackingEvent(trackingNumbers);
 		
     }
 	@RequestMapping( method = RequestMethod.POST, path = "/brokerRates", consumes=MediaType.APPLICATION_JSON)

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.TimeZone;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -81,5 +82,9 @@ public class D2ZCommonUtil {
 		String formattedMsg = String.join(" ", list);
 		return formattedMsg;
 	}
-	  
+	public static int generateTrackID() {
+		Random rnd = new Random();
+		int uniqueNumber = 100000 + rnd.nextInt(900000);
+		return uniqueNumber;
+	}
 }

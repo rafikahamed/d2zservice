@@ -1,6 +1,7 @@
 package com.d2z.d2zservice.daoImpl;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -410,6 +411,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 				while (itr.hasNext()) {
 					Object[] obj = (Object[]) itr.next();
 	    			Trackandtrace trackAndTrace = new Trackandtrace();
+	    			trackAndTrace.setRowId(D2ZCommonUtil.generateTrackID());
 	    			trackAndTrace.setUser_Id(String.valueOf(userId));
 	    			trackAndTrace.setReference_number(obj[0].toString());
 	    			trackAndTrace.setTrackEventCode("CC");
@@ -763,6 +765,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		if(data!=null &&  data.getEvents()!=null) {
 			
 			for(ETowerTrackingDetails trackingDetails : data.getEvents()) {
+				
 				Trackandtrace trackandTrace = new Trackandtrace();
 				trackandTrace.setArticleID(trackingDetails.getTrackingNo());
 				trackandTrace.setFileName("eTowerAPI");
@@ -886,27 +889,43 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		
 		return refNbrs;
 	}
-	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails) {
+	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails,Map<String,String> map) {
 		List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
 		List<TrackingResults> trackingData = auTrackingDetails.getTracking_results();
 		ResponseMessage responseMsg =  new ResponseMessage();
 		if(trackingData.isEmpty()) {
-			responseMsg.setResponseMessage("No Data from ETower");
+			responseMsg.setResponseMessage("No Data from AUPost");
 		}else {
 			for(TrackingResults data : trackingData ) {
 				if(data!=null && data.getTrackable_items()!=null) {
 					for(TrackableItems trackingLabel : data.getTrackable_items()) {
+						
 						if(trackingLabel != null && trackingLabel.getEvents() != null) {
 							for(TrackingEvents trackingEvents: trackingLabel.getEvents()) {
+								SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+								SimpleDateFormat output = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+								
+							    Date eventTime = null;
+							    Date latestTime = null;
+								try {
+									eventTime = inputFormat.parse(trackingEvents.getDate().substring(0,19));
+									latestTime = output.parse(map.get(trackingLabel.getArticle_id()));
+								} catch (ParseException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								if(eventTime.after(latestTime)) {
 								Trackandtrace trackandTrace = new Trackandtrace();
+								trackandTrace.setRowId(D2ZCommonUtil.generateTrackID());
 								trackandTrace.setArticleID(trackingLabel.getArticle_id());
 								trackandTrace.setTrackEventDetails(trackingEvents.getDescription());
 								trackandTrace.setTrackEventDateOccured(trackingEvents.getDate().substring(0,19));
 								trackandTrace.setLocation(trackingEvents.getLocation());
 								trackandTrace.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
 							//	trackandTrace.setFileName("AU-Post");
-								trackandTrace.setFileName("AUPost");
+								trackandTrace.setFileName("AUPostTrack");
 								trackAndTraceList.add(trackandTrace);
+								}
 							}
 						}
 					}

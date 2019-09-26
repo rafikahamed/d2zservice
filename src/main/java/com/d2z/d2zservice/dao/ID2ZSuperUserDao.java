@@ -1,6 +1,8 @@
 package com.d2z.d2zservice.dao;
 
 import java.util.List;
+import java.util.Map;
+
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
@@ -49,11 +51,11 @@ public interface ID2ZSuperUserDao {
 	
 	List<Object> exportNonShipment(String fromDate, String toDate);
 
-	List<String> fetchTrackingNumbersForETowerCall();
+	Map<String,String> fetchTrackingNumbersForETowerCall();
 	
 	List<String> fetchTrackingNumbersForPCACall();
 
-	ResponseMessage insertTrackingDetails(TrackingEventResponse response);
+	ResponseMessage insertTrackingDetails(TrackingEventResponse response, Map<String, String> map);
 
 	public String uploadBrokerRates(List<BrokerRatesData> brokerRatesData);
 
