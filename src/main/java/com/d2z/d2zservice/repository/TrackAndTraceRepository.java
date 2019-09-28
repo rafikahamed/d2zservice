@@ -117,8 +117,10 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 	 		+ " AND    t.trackeventdetails = 'SHIPMENT ALLOCATED' AND  t.filename = 'AUPost'"
 	 		+ "AND t.trackeventdateoccured > dateadd(day,-21,getdate())")*/
 	 @Query(nativeQuery = true, value="SELECT t.articleid,max(t.TrackEventDateOccured) from trackandtrace t where "
-		 		+ "t.filename = 'AUPostTrack'"
-		 		+ "AND t.trackeventdateoccured > dateadd(day,-21,getdate()) group by t.articleid")
+		 		+ "t.filename = 'AUPostTrack' AND t.trackeventdateoccured > dateadd(day,-21,getdate()) AND articleid NOT IN (SELECT DISTINCT articleid \r\n" + 
+		 		"                             FROM   trackandtrace \r\n" + 
+		 		"                             WHERE  trackeventdetails = 'Delivered' \r\n" + 
+		 		"                                    AND filename = 'AUPostTrack') GROUP  BY t.articleid")
 	 List<String> getArticleId();
 	 
 	 @Modifying(flushAutomatically = true,clearAutomatically = true)

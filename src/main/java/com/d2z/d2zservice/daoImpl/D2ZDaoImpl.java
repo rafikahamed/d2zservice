@@ -896,25 +896,32 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		if(trackingData.isEmpty()) {
 			responseMsg.setResponseMessage("No Data from AUPost");
 		}else {
+			SimpleDateFormat output = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 			for(TrackingResults data : trackingData ) {
 				if(data!=null && data.getTrackable_items()!=null) {
 					for(TrackableItems trackingLabel : data.getTrackable_items()) {
+					    Date latestTime = null;
+						try {
+							latestTime = output.parse(map.get(trackingLabel.getArticle_id()));
+						} catch (ParseException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 						
 						if(trackingLabel != null && trackingLabel.getEvents() != null) {
 							for(TrackingEvents trackingEvents: trackingLabel.getEvents()) {
-								SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-								SimpleDateFormat output = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-								
 							    Date eventTime = null;
-							    Date latestTime = null;
 								try {
 									eventTime = inputFormat.parse(trackingEvents.getDate().substring(0,19));
-									latestTime = output.parse(map.get(trackingLabel.getArticle_id()));
 								} catch (ParseException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
+
 								if(eventTime.after(latestTime)) {
+								/*System.out.println("Inserting..." + trackingLabel.getArticle_id() +" : "+trackingEvents.getDate().substring(0,19)
+										+ " : "+trackingEvents.getDescription());*/
 								Trackandtrace trackandTrace = new Trackandtrace();
 								trackandTrace.setRowId(D2ZCommonUtil.generateTrackID());
 								trackandTrace.setArticleID(trackingLabel.getArticle_id());
