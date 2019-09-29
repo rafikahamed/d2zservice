@@ -36,6 +36,7 @@ import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.service.ID2ZService;
+import com.d2z.d2zservice.service.ISuperUserD2ZService;
 
 @RestController
 @Validated
@@ -46,6 +47,9 @@ public class D2zController {
 
 	@Autowired
 	private ID2ZService d2zService;
+	
+	@Autowired
+	private ISuperUserD2ZService superUserD2zService;
 
 	@RequestMapping(method = RequestMethod.GET, path = "/login")
 	public UserDetails login(@RequestParam("userName") String userName, @RequestParam("passWord") String passWord) {
@@ -285,6 +289,7 @@ public class D2zController {
 	@RequestMapping(method = RequestMethod.GET, path = "/currency")
 	public void getcurrency() {
 		d2zService.currencyRate();
+		//superUserD2zService.triggerSC();
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/outStanding-returns")

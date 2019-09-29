@@ -93,5 +93,20 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 
 	@Query("SELECT distinct(c.referenceNumber) FROM CSTickets c") 
 	List<String> fetchAllReferenceNumbers();
+	
+	@Query(value="SELECT t FROM CSTickets t where status = 'open'") 
+	List<CSTickets> fetchCSTicketDetails();
+
+	@Modifying
+	@Transactional
+	@Query("update CSTickets c set c.trackingEvent = :description, c.trackingStatus = :status where c.articleID = :article_id")
+	void updateAUCSTrackingDetails(@Param("article_id") String article_id, @Param("description") String description, 
+			@Param("status") String status);
+	
+//	@Modifying
+//	@Transactional
+//	@Query("update CSTickets c set c.trackingEvent = :status, c.trackingStatus = :status_code where c.articleID = :article_id")
+//	void updatePFLCSTrackingDetails(@Param("barcodeLabel") String barcodeLabel, @Param("status") String status, 
+//			@Param("status_code") String status_code);
 
 }

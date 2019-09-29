@@ -41,11 +41,16 @@ import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
+import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.ZoneDetails;
 import com.d2z.d2zservice.model.ZoneRates;
+import com.d2z.d2zservice.model.auspost.TrackableItems;
+import com.d2z.d2zservice.model.auspost.TrackingEvents;
+import com.d2z.d2zservice.model.auspost.TrackingResponse;
+import com.d2z.d2zservice.model.auspost.TrackingResults;
 import com.d2z.d2zservice.model.etower.ETowerTrackingDetails;
 import com.d2z.d2zservice.model.etower.TrackEventResponseData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
@@ -1190,8 +1195,70 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 		return exportedShipment;
 		
 	}
+
+	@Override
+	public List<CSTickets> fetchCSTickets() {
+		return csticketsRepository.fetchCSTicketDetails();
+	}
+
+	@Override
+	public ResponseMessage updateAUCSTrackingDetails(TrackingResponse auTrackingDetails) {
+		List<TrackingResults> trackingData = auTrackingDetails.getTracking_results();
+		ResponseMessage responseMsg =  new ResponseMessage();
+		if(trackingData.isEmpty()) {
+			responseMsg.setResponseMessage("No Tracking Info from AuPost");
+		}else {
+			for(TrackingResults data : trackingData ) {
+				if(data!=null && data.getTrackable_items()!=null) {
+					for(TrackableItems trackingLabel : data.getTrackable_items()) {
+						if(trackingLabel != null && trackingLabel.getEvents() != null) {
+							for(TrackingEvents trackingEvents: trackingLabel.getEvents()) {
+								csticketsRepository.updateAUCSTrackingDetails(trackingLabel.getArticle_id(), trackingEvents.getDescription(), trackingLabel.getStatus());
+							}
+						}
+					}
+				}
+			}
+			responseMsg.setResponseMessage("Data uploaded successfully from AU Post");
+		}
+		return responseMsg;
+	 }
+
+	@Override
+	public ResponseMessage updateAUEtowerTrackingDetails(TrackingEventResponse trackEventresponse) {
+		List<TrackEventResponseData> responseData = trackEventresponse.getData();
+		ResponseMessage responseMsg = new ResponseMessage();
+		if (responseData.isEmpty()) {
+			responseMsg.setResponseMessage("No Data from ETower");
+		} else {
+			for (TrackEventResponseData data : responseData) {
+				if (data != null && data.getEvents() != null) {
+					for (ETowerTrackingDetails trackingDetails : data.getEvents()) {
+						csticketsRepository.updateAUCSTrackingDetails(trackingDetails.getTrackingNo(), trackingDetails.getActivity(), null);
+					}
+				}
+			}
+			responseMsg.setResponseMessage("Data uploaded successfully from ETower");
+		}
+		return responseMsg;
+	}
+
+	@Override
+	public String fetchBarcodeLabel(String articleID) {
+		return senderDataRepository.fetchBarcodeDetails(articleID);
+	}
+
+	@Override
+	public ResponseMessage updatePFLTrackingDetails(List<PFLTrackingResponseDetails> pflTrackingDetails) {
+		ResponseMessage responseMsg = new ResponseMessage();
+		if(pflTrackingDetails.isEmpty()) {
+			responseMsg.setResponseMessage("No Data from PFL");
+		}else {
+			for(PFLTrackingResponseDetails data:pflTrackingDetails) {
+				//csticketsRepository.updatePFLCSTrackingDetails(data.getBarcodeLabel(), data.getStatus(), data.getStatus_code());
+			}
+		}
+		return null;
+	}
 		
-
-	
-
 }

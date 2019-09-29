@@ -22,9 +22,11 @@ import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
+import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 
 public interface ID2ZSuperUserDao {
@@ -167,12 +169,20 @@ public interface ID2ZSuperUserDao {
 	
 	String deleteJob(List<IncomingJobResponse> job);
 
-
 	List<String> fetchReturnsBroker();
 
 	List<Returns> returnsOutstanding(String fromDate, String toDate, String brokerName);
 
-	
 	public List<String> fetchServiceTypeByUserName(String userName);
+
+	List<CSTickets> fetchCSTickets();
+
+	ResponseMessage updateAUCSTrackingDetails(TrackingResponse auTrackingDetails);
+
+	ResponseMessage updateAUEtowerTrackingDetails(TrackingEventResponse response);
+
+	String fetchBarcodeLabel(String articleID);
+
+	ResponseMessage updatePFLTrackingDetails(List<PFLTrackingResponseDetails> pflTrackingDetails);
 }
 

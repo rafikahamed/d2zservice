@@ -31,6 +31,7 @@ import org.springframework.web.client.RestTemplate;
 import com.d2z.d2zservice.model.PCACancelRequest;
 import com.d2z.d2zservice.model.PCACreateShipmentRequest;
 import com.d2z.d2zservice.model.PCACreateShippingResponse;
+import com.d2z.d2zservice.model.PCATrackEventRequest;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -48,57 +49,74 @@ public class PcaProxy {
 	
 	@Value("${pca.apiId}")
 	private String apiId;
-
+	
 	public void trackingEvent(List<String> articleIds) {
-		String url = "https://s1.pcaex.com/api/tracking";
-		RestTemplate template = new RestTemplate();
-		HttpHeaders headers = new HttpHeaders();
-		String ArticleData = "{\"connote\":";
-
-		if (articleIds.size() > 1) {
-			String ID = "[";
-			for (String item : articleIds) {
-				ID = ID + "\"" + item + "\"" + ",";
-				// ID=ID+item+",";
-			}
-			// articleIds.forEach(item->ID=ID+item+",");
-			ID = ID.substring(0, ID.length() - 1);
-			ID = ID + "]";
-			ArticleData = ArticleData + ID + "}";
-		} else {
-			ArticleData = ArticleData + articleIds.get(0) + "}";
-		}
-		System.out.println(ArticleData);
-
-		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-		formData.add("api_id", "api_test");
-		formData.add("data", ArticleData);
-		String sign = calculatesign(ArticleData);
-		formData.add("sign", sign.toUpperCase());
-
-		HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
-		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-		converter.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
-		template.getMessageConverters().add(converter);
-		ResponseEntity<Object> response = template.exchange(url, HttpMethod.POST, requestEntity, Object.class);
-
-		System.out.println(response.getStatusCode());
-		System.out.println(response.getBody().toString());
-
-		byte ptext[];
+		ObjectMapper mapper = new ObjectMapper();
+		PCATrackEventRequest pcaTracking = new PCATrackEventRequest();
+		pcaTracking.setConnote(articleIds.get(0));
+		String jsonString = null;
 		try {
-			ptext = response.getBody().toString().getBytes("ISO-8859-1");
-			String value = new String(ptext, "UTF-8");
-			System.out.println(value);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			jsonString = mapper.writeValueAsString(pcaTracking);
+		} catch (JsonProcessingException e1) {
+			e1.printStackTrace();
 		}
-
+		System.out.println("PCA Request ------>");
+		System.out.println(jsonString);
+		String response = executePost("http://api.pcaexpress.com.au/tracking", constructParamWithoutMethod(jsonString));
+		System.out.println(response);
+		return;
 	}
 
+//	public void trackingEvent(List<String> articleIds) {
+//		String url = "https://s1.pcaex.com/api/tracking";
+//		RestTemplate template = new RestTemplate();
+//		HttpHeaders headers = new HttpHeaders();
+//		String ArticleData = "{\"connote\":";
+//
+//		if (articleIds.size() > 1) {
+//			String ID = "[";
+//			for (String item : articleIds) {
+//				ID = ID + "\"" + item + "\"" + ",";
+//			}
+//			ID = ID.substring(0, ID.length() - 1);
+//			ID = ID + "]";
+//			ArticleData = ArticleData + ID + "}";
+//		} else {
+//			ArticleData = ArticleData + articleIds.get(0) + "}";
+//		}
+//		System.out.println(ArticleData);
+//
+//		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+//
+//		MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+//		formData.add("api_id", apiId);
+//		formData.add("data", ArticleData);
+//		String sign = calculatesign(ArticleData);
+//		formData.add("sign", sign.toUpperCase());
+//
+//		HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
+//		System.out.println("requestEntity---->"+requestEntity);
+//		System.out.println(url);
+////		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+////		converter.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
+////		template.getMessageConverters().add(converter);
+//		ResponseEntity<Object> response = template.exchange(url, HttpMethod.POST, requestEntity, Object.class);
+//
+//		System.out.println(response.getStatusCode());
+//		System.out.println(response.getBody().toString());
+//
+//		byte ptext[];
+//		try {
+//			ptext = response.getBody().toString().getBytes("ISO-8859-1");
+//			String value = new String(ptext, "UTF-8");
+//			System.out.println(value);
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//	}
+	
 	public String calculatesign(String data) {
 		String ApiKey = "6366b2bb8b8d7407a3d46f6fa79a9af3472e1381442b49e637dfc96a0b0d6808";
 		String Data = "api_idapi_testdata" + data;
@@ -167,7 +185,35 @@ public class PcaProxy {
 			return requestData;
     	}
 	}
-
+	
+	public String constructParamWithoutMethod(String pcaRequest) {
+		String requestData="";
+		try {
+			requestData = "api_id=" + URLEncoder.encode(apiId, "UTF-8") + "&data=" + URLEncoder.encode(pcaRequest.toString(), "UTF-8") + "&sign="
+					+ URLEncoder.encode(getSignWithoutMethod(pcaRequest.toString()), "UTF-8");
+			System.out.println(requestData);
+			return requestData;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return requestData;
+    	}
+	}
+	
+	private String getSignWithoutMethod(String data) {
+		Map<String, String> collect = new TreeMap<>();
+		collect.put("api_id", apiId);
+		collect.put("data", data);
+		StringBuilder sBuilder = new StringBuilder();
+		sBuilder.append(apiKey);
+		for (Map.Entry<String, String> entry : collect.entrySet()) {
+			sBuilder.append(entry.getKey());
+			sBuilder.append(entry.getValue());
+		}
+		sBuilder.append(apiKey);
+		return getMd5(sBuilder.toString());
+	}
+	
 	private String getSign(String data, String method) {
 		Map<String, String> collect = new TreeMap<>();
 		collect.put("api_id", apiId);
@@ -224,6 +270,7 @@ public class PcaProxy {
 				reponse.append('\r');
 			}
 			rd.close();
+			System.out.println(reponse);
 			return reponse.toString();
 		} catch (Exception e) {
 			e.printStackTrace();

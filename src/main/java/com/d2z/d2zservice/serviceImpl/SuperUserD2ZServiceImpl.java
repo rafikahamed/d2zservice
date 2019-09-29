@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
@@ -54,6 +55,10 @@ import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
+import com.d2z.d2zservice.model.PCADim;
+import com.d2z.d2zservice.model.PFLTrackingResponse;
+import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
+import com.d2z.d2zservice.model.PflTrackEventRequest;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsClientResponse;
@@ -61,10 +66,17 @@ import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.model.auspost.TrackableItems;
+import com.d2z.d2zservice.model.auspost.TrackingEvents;
+import com.d2z.d2zservice.model.auspost.TrackingResponse;
+import com.d2z.d2zservice.model.auspost.TrackingResults;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
+import com.d2z.d2zservice.proxy.AusPostProxy;
 import com.d2z.d2zservice.proxy.ETowerProxy;
+import com.d2z.d2zservice.proxy.PFLProxy;
 import com.d2z.d2zservice.proxy.PcaProxy;
+import com.d2z.d2zservice.repository.CSTicketsRepository;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
@@ -101,9 +113,15 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 
 	@Autowired
 	private PcaProxy pcaproxy;
+	
+	@Autowired
+	private PFLProxy pflProxy;
 
 	@Autowired
 	private D2ZValidator d2zValidator;
+	
+	@Autowired
+	AusPostProxy ausPostProxy;
 
 	@Override
 	public UserMessage uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -1306,5 +1324,111 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		return exportshipmentlist;
 	}
 
+	@Override
+	public void triggerSC() {
+		List<CSTickets> csTickets = d2zDao.fetchCSTickets();
+		List<String> pcaList = new ArrayList<String>();
+		List<String> pflList = new ArrayList<String>();
+		List<String> etowerList = new ArrayList<String>();
+		List<String> auPostList = new ArrayList<String>();
+		if(csTickets != null) {
+			for(CSTickets csTicketDetails:csTickets) {
+				if(csTicketDetails.getCarrier().equalsIgnoreCase("FastwayS") || csTicketDetails.getCarrier().equalsIgnoreCase("StarTrack")) {
+					if(csTicketDetails.getArticleID() != null)
+						pcaList.add(d2zDao.fetchBarcodeLabel(csTicketDetails.getArticleID()));
+				}else if(csTicketDetails.getCarrier().equalsIgnoreCase("FastwayM")) {
+					if(csTicketDetails.getArticleID() != null)
+						pflList.add(d2zDao.fetchBarcodeLabel(csTicketDetails.getArticleID()));
+				}else if(csTicketDetails.getCarrier().equalsIgnoreCase("Express")) {
+					if(csTicketDetails.getArticleID() != null)
+						etowerList.add(csTicketDetails.getArticleID());
+				}else if(csTicketDetails.getCarrier().equalsIgnoreCase("eParcel")) {
+					if("33G7K".contains(csTicketDetails.getArticleID().substring(0,5))|| "33G7L".contains(csTicketDetails.getArticleID().substring(0,5)) ||
+						"33G7M".contains(csTicketDetails.getArticleID().substring(0,5)) || "33G7N".contains(csTicketDetails.getArticleID().substring(0,5)) ||
+						"33G7P".contains(csTicketDetails.getArticleID().substring(0,5)) || "SJU".contains(csTicketDetails.getArticleID().substring(0,3)) ||
+						"ZK6".contains(csTicketDetails.getArticleID().substring(0,3))){
+						if(csTicketDetails.getArticleID() != null)
+							etowerList.add(csTicketDetails.getArticleID());
+					}
+					if("33PE9".contains(csTicketDetails.getArticleID().substring(0,5)) || "33PET".contains(csTicketDetails.getArticleID().substring(0,5)) ||
+							"33PEN".contains(csTicketDetails.getArticleID().substring(0,5)) || "33PEH".contains(csTicketDetails.getArticleID().substring(0,5))) {
+						if(csTicketDetails.getArticleID() != null)
+							auPostList.add(csTicketDetails.getArticleID());
+					}
+					if("AMQ".contains(csTicketDetails.getArticleID().substring(0,3))) {
+						if(csTicketDetails.getArticleID() != null)
+							pcaList.add(csTicketDetails.getArticleID());
+					}
+				}
+			}
+		}
+		if(pcaList.size() > 0 ) {
+			System.out.println(pcaList.toString());	
+			pcaproxy.trackingEvent(pcaList);
+		}
+		if(pflList.size() > 0 ) {
+			System.out.println(pflList.toString());
+			List<PFLTrackingResponseDetails> pflTrackingDetails = new ArrayList<PFLTrackingResponseDetails>();
+			for(String pflValue:pflList) {
+				PflTrackEventRequest pflTrackEvent = new PflTrackEventRequest();
+				PFLTrackingResponseDetails pflResp = new PFLTrackingResponseDetails();
+				pflTrackEvent.setTracking_number(pflValue);
+				PFLTrackingResponse pflTrackResp = pflProxy.trackingEvent(pflTrackEvent);
+				pflResp.setBarcodeLabel(pflTrackEvent.getTracking_number());
+				pflResp.setStatus(pflTrackResp.getResult().get(0).getStatus());
+				pflResp.setStatus_code(pflTrackResp.getResult().get(0).getStatus_code());
+				pflTrackingDetails.add(pflResp);
+			}
+			System.out.println(pflTrackingDetails);
+			ResponseMessage respMsg = d2zDao.updatePFLTrackingDetails(pflTrackingDetails);
+		}
+		if(etowerList.size() > 0 ) {
+			System.out.println(etowerList.toString());
+			eTowerTrackingEvent(etowerList);
+		}
+		if(auPostList.size() > 0 ) {
+			System.out.println(auPostList.toString());
+			auTrackingEvent(auPostList);
+		}
+	}
+	
+	public ResponseMessage auTrackingEvent(List<String> auPostList) {
+		ResponseMessage respMsg = null;
+		List<List<String>> articleIdList = ListUtils.partition(auPostList, 10);
+		int count = 1;
+		for (List<String> articleIdNumbers : articleIdList) {
+			System.out.println(count + ":::" + articleIdNumbers.size());
+			count++;
+			String articleIds = StringUtils.join(articleIdNumbers, ", ");
+			TrackingResponse auTrackingDetails = ausPostProxy.trackingEvent(articleIds);
+			System.out.println("AU Track Response");
+			System.out.println(auTrackingDetails.toString());
+			respMsg = d2zDao.updateAUCSTrackingDetails(auTrackingDetails);
+			System.out.print("timestamp:"+LocalDateTime.now());
+			try {
+				if(count > 10){
+					Thread.sleep(60000);
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.out.print("After thread timestamp:"+LocalDateTime.now());
+		}
+		return respMsg;
+	}
+	
+	
+	public ResponseMessage eTowerTrackingEvent(List<String> trackingNbrs) {
+		ResponseMessage respMsg = null;
+		List<List<String>> trackingNbrList = ListUtils.partition(trackingNbrs, 300);
+		int count = 1;
+		for (List<String> trackingNumbers : trackingNbrList) {
+			System.out.println(count + ":::" + trackingNumbers.size());
+			count++;
+			TrackingEventResponse response = proxy.makeCallForTrackingEvents(trackingNumbers);
+			respMsg = d2zDao.updateAUEtowerTrackingDetails(response);
+		}
+		return respMsg;
+	}
 
 }
