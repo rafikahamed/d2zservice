@@ -935,6 +935,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				
 				System.out.println("Date:"+":"+date1);
 				jobs.setEta(date1);
+				
 				}
 				joblist.add(jobs);
 			}
@@ -953,7 +954,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		for(IncomingJobs job :js)
 		{
 			IncomingJobResponse jobs = new IncomingJobResponse();
-			System.out.println("ATA:"+job.getAta());
+			System.out.println("ATA:"+job.getAta()+"ETA:"+job.getEta());
 			jobs.setJobid(job.getID());
 			
 			if(job.getEta()!=null)
@@ -1006,7 +1007,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		for(IncomingJobResponse job :js)
 		{
 			IncomingJobs jobs = new IncomingJobs();
-			System.out.println("jkk"+job.getBroker()+"::"+job.getEta()+job.getClear());
+			
 			jobs.setBroker(job.getBroker());
 			jobs.setClear(job.getClear());
 			jobs.setConsignee(job.getConsignee());
@@ -1019,7 +1020,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			jobs.setNote(job.getNote());
 if(job.getEta()!=null && job.getEta().length() > 0)
 {
+
 			LocalDate date1  = LocalDate.parse(job.getEta());
+			
 			jobs.setEta(date1);
 			
 }
@@ -1044,7 +1047,7 @@ if(job.getAta()!=null &&  job.getAta().length() > 0)
 			jobs.setID(job.getJobid());
 			
 		
-			if(job.getOutturn()!=null && job.getOutturn().equalsIgnoreCase("True"))
+			if(job.getOutturn()!=null && (job.getOutturn().equalsIgnoreCase("True") || job.getOutturn().equalsIgnoreCase("Y")))
 			{
 			jobs.setOutturn("Y");
 			}
@@ -1053,6 +1056,7 @@ if(job.getAta()!=null &&  job.getAta().length() > 0)
 			joblist.add(jobs);
 			
 		}
+		
 		incomingRepository.saveAll(joblist);
 		return "Job Updated Succesfully";
 	}
