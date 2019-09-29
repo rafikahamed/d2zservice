@@ -12,9 +12,9 @@ import com.d2z.d2zservice.entity.IncomingJobs;
 public interface IncomingJobsRepository extends CrudRepository<IncomingJobs,Long>{
 
 	
-	@Query( nativeQuery = true, value="SELECT * FROM incomingjobs where  OUTTURN = 'Y' and ISDeleted = 'N'") 
+	@Query( nativeQuery = true, value="SELECT * FROM incomingjobs where  ISSubmitted = 'Y' and ISDeleted = 'N'") 
 	List<IncomingJobs> fetchJobs();
 	
-	@Query( nativeQuery = true, value="SELECT * FROM incomingjobs where   OUTTURN IS NULL") 
+	@Query( nativeQuery = true, value="SELECT * FROM incomingjobs where   ISSubmitted IS NULL") 
 	List<IncomingJobs> fetchincomingJobs();
 }
