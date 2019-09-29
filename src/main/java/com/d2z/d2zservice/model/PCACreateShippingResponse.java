@@ -1,5 +1,8 @@
 package com.d2z.d2zservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PCACreateShippingResponse {
 	
 	private int status;
