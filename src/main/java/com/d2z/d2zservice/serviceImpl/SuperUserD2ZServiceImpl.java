@@ -278,7 +278,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	}
 
 	@Override
-	public ResponseMessage trackingEvent(List<String> trackingNbrs) {
+	public ResponseMessage trackingEvent(List<String> trackingNbrs,Map<String,String> map) {
 		ResponseMessage respMsg = null;
 		List<List<String>> trackingNbrList = ListUtils.partition(trackingNbrs, 300);
 		int count = 1;
@@ -286,7 +286,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			System.out.println(count + ":::" + trackingNumbers.size());
 			count++;
 			TrackingEventResponse response = proxy.makeCallForTrackingEvents(trackingNumbers);
-			respMsg = d2zDao.insertTrackingDetails(response);
+			respMsg = d2zDao.insertTrackingDetails(response,map);
 		}
 		// List<List<ETowerTrackingDetails>> response = proxy.stubETower();
 		return respMsg;
@@ -296,11 +296,12 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 //	@Scheduled(cron = "0 0/10 * * * ?")
 	@Override
 	public void scheduledTrackingEvent() {
-		List<String> trackingNumbers = d2zDao.fetchTrackingNumbersForETowerCall();
+		Map<String,String> map = d2zDao.fetchTrackingNumbersForETowerCall();
+		List<String> trackingNumbers = new ArrayList<>(map.keySet());
 		if (trackingNumbers.isEmpty()) {
 			System.out.println("ETower call not required");
 		} else {
-			trackingEvent(trackingNumbers);
+			trackingEvent(trackingNumbers,map);
 		}
 	}
 
@@ -1094,81 +1095,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		}
 		
 		
-		/*AddShipmentModel data1 = new AddShipmentModel();
-		DropDownModel DropDownBroker = new DropDownModel();
-		DropDownBroker.setName("Test1");
-		DropDownBroker.setValue("Test1");
-		DropDownModel DropDownMlid = new DropDownModel();
-		DropDownMlid.setName("Testvalue1");
-		DropDownMlid.setValue("Testvalue1");
-		DropDownModel DropDownMlid1 = new DropDownModel();
-		DropDownMlid1.setName("TestValue2");
-		DropDownMlid1.setValue("TestValue2");
-		DropDownModel DropDownMlid2 = new DropDownModel();
-		DropDownMlid.setName("TestValue3");
-		DropDownMlid.setValue("TestValue3");
-		DropDownModel DropDownCon = new DropDownModel();
-		DropDownCon.setName("Testvalue1");
-		DropDownCon.setValue("Testvalue1");
-		DropDownModel DropDownCon1 = new DropDownModel();
-		DropDownCon1.setName("TestValue2");
-		DropDownCon1.setValue("TestValue2");
-		DropDownModel DropDownCon2 = new DropDownModel();
-		DropDownCon2.setName("TestValue3");
-		DropDownCon2.setValue("TestValue3");
-		List<DropDownModel> incomingmlid = new ArrayList<DropDownModel>();
-		incomingmlid.add(DropDownMlid);
-		incomingmlid.add(DropDownMlid1);
-		
-		incomingmlid.add(DropDownMlid2);
-		
-		
-		List<DropDownModel> incomingconsign = new ArrayList<DropDownModel>();
-		incomingconsign.add(DropDownCon);
-		incomingconsign.add(DropDownCon1);
-		incomingconsign.add(DropDownCon2);
-		data1.setBrokerName(DropDownBroker);
-		data1.setConsignee(incomingconsign);
-		data1.setMlid(incomingmlid);
-		AddShipmentModel data2 = new AddShipmentModel();
-		DropDownModel DropDownBroker2 = new DropDownModel();
-		DropDownBroker2.setName("Test12");
-		DropDownBroker2.setValue("Test12");
-		DropDownModel DropDownMlid21 = new DropDownModel();
-		DropDownMlid21.setName("Testvalue11");
-		DropDownMlid21.setValue("Testvalue11");
-		DropDownModel DropDownMlid22 = new DropDownModel();
-		DropDownMlid22.setName("TestValue22");
-		DropDownMlid22.setValue("TestValue22");
-		DropDownModel DropDownMlid23 = new DropDownModel();
-		DropDownMlid23.setName("TestValue33");
-		DropDownMlid23.setValue("TestValue33");
-		DropDownModel DropDownCon21 = new DropDownModel();
-		DropDownCon21.setName("Testvaluea1");
-		DropDownCon21.setValue("Testvaluea1");
-		DropDownModel DropDownCon22 = new DropDownModel();
-		DropDownCon22.setName("TestValuea2");
-		DropDownCon22.setValue("TestValuea2");
-		DropDownModel DropDownCon23 = new DropDownModel();
-		DropDownCon23.setName("TestValuea3");
-		DropDownCon23.setValue("TestValuea3");
-		List<DropDownModel> incomingmlid1 = new ArrayList<DropDownModel>();
-		incomingmlid1.add(DropDownMlid21);
-		incomingmlid1.add(DropDownMlid22);
-		
-		incomingmlid1.add(DropDownMlid23);
-		
-		
-		List<DropDownModel> incomingconsign1 = new ArrayList<DropDownModel>();
-		incomingconsign1.add(DropDownCon21);
-		incomingconsign1.add(DropDownCon22);
-		incomingconsign1.add(DropDownCon23);
-		data2.setBrokerName(DropDownBroker2);
-		data2.setConsignee(incomingconsign1);
-		data2.setMlid(incomingmlid1);
-		incomingjob.add(data1);
-		incomingjob.add(data2);*/
-		return incomingjob;
+				return incomingjob;
 	}
 
 	@Override
@@ -1430,5 +1357,16 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		}
 		return respMsg;
 	}
+	
+	public UserMessage submitJob(List<IncomingJobResponse> job) {
+		// TODO Auto-generated method stub
+		
+		String jobInfo = d2zDao.submitJob(job);
+		UserMessage usrMsg = new UserMessage();
+		usrMsg.setMessage(jobInfo);
+		return usrMsg;
+		
+	}
+
 
 }

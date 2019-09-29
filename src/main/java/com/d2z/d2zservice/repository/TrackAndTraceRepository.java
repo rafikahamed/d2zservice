@@ -1,11 +1,14 @@
 package com.d2z.d2zservice.repository;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.d2z.d2zservice.entity.Trackandtrace;
 
@@ -25,12 +28,16 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 	 @Procedure(name = "delete-duplicate")
 	 void deleteDuplicates();
 	 
-	 @Query(nativeQuery = true,value="SELECT DISTINCT t.articleID FROM Trackandtrace t where t.fileName = 'eTowerAPI' and t.articleID NOT IN \n"+
+	/* @Query(nativeQuery = true,value="SELECT DISTINCT t.articleID FROM Trackandtrace t where t.fileName = 'eTowerAPI' and t.articleID NOT IN \n"+
 	 "(SELECT DISTINCT t.articleID FROM Trackandtrace t where (t.trackEventDetails = 'DELIVERED' and t.fileName = 'eTowerAPI') OR\n"+
-			 "(t.trackEventDetails = 'SHIPMENT ALLOCATED' AND  t.fileName = 'eTowerAPI' and t.trackEventDateOccured <= Dateadd(day,-21,Getdate())))")
+			 "(t.trackEventDetails = 'SHIPMENT ALLOCATED' AND  t.fileName = 'eTowerAPI' and t.trackEventDateOccured <= Dateadd(day,-21,Getdate())))")*/
 	
 	/* @Query(nativeQuery = true,value="SELECT DISTINCT t.articleID FROM Trackandtrace t where t.fileName = 'eTowerAPI' and t.articleID NOT IN \n"+
 			 "(SELECT DISTINCT t.articleID FROM Trackandtrace t where t.trackEventDetails = 'DELIVERED' and t.fileName = 'eTowerAPI')")*/
+	 //List<String> fetchTrackingNumbersForETowerCall();
+	 @Query(nativeQuery = true,value="SELECT t.articleID,max(t.TrackEventDateOccured) FROM Trackandtrace t where t.fileName = 'eTowerAPI' and t.articleID NOT IN \n"+
+			 "(SELECT DISTINCT t.articleID FROM Trackandtrace t where (t.trackEventDetails = 'DELIVERED' and t.fileName = 'eTowerAPI') OR\n"+
+					 "(t.fileName = 'eTowerAPI' and t.trackEventDateOccured <= Dateadd(day,-21,Getdate()))) group by t.articleID")
 	  List<String> fetchTrackingNumbersForETowerCall();
 	 
 	 @Query(nativeQuery = true,value="SELECT DISTINCT t.articleID FROM Trackandtrace t where t.fileName = 'PCA' and t.articleID NOT IN \n"+
@@ -104,11 +111,22 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 	 		"\r\n" + 
 	 		"")*/
 	 
-	 @Query(nativeQuery = true, value="SELECT DISTINCT t.articleid  from trackandtrace t where  t.user_id in('52','94') "
+
+
+	/* @Query(nativeQuery = true, value="SELECT DISTINCT t.articleid  from trackandtrace t where  t.user_id in('52','94') "
 	 		+ " AND    t.trackeventdetails = 'SHIPMENT ALLOCATED' AND  t.filename = 'AUPost'"
-	 		+ "AND t.trackeventdateoccured > dateadd(day,-21,getdate())")
-	 
+	 		+ "AND t.trackeventdateoccured > dateadd(day,-21,getdate())")*/
+	 @Query(nativeQuery = true, value="SELECT t.articleid,max(t.TrackEventDateOccured) from trackandtrace t where "
+		 		+ "t.filename = 'AUPostTrack' AND t.trackeventdateoccured > dateadd(day,-21,getdate()) AND articleid NOT IN (SELECT DISTINCT articleid \r\n" + 
+		 		"                             FROM   trackandtrace \r\n" + 
+		 		"                             WHERE  trackeventdetails = 'Delivered' \r\n" + 
+		 		"                                    AND filename = 'AUPostTrack') GROUP  BY t.articleid")
 	 List<String> getArticleId();
+	 
+	 @Modifying(flushAutomatically = true,clearAutomatically = true)
+		@Transactional
+		 @Query(nativeQuery = true, value="Update Trackandtrace set fileName = 'AUPostTrack' where user_Id IN ('52','94') and fileName = 'AUPost' ")
+	 void updateAUPostTrack();
 	 
 	 @Query(nativeQuery = true,value="SELECT DISTINCT t.articleID FROM Trackandtrace t where t.fileName = 'freipost' and t.articleID NOT IN \n"+
 			 "(SELECT DISTINCT t.articleID FROM Trackandtrace t where (t.trackEventDetails = 'DELIVERED' and t.fileName = 'freipost') OR\n"+

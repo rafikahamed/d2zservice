@@ -116,7 +116,7 @@ public class D2ZSuperUserController {
 	}
 	@RequestMapping( method = RequestMethod.GET, path = "/track/etower/{trackingNumbers}")
     public ResponseMessage trackingCode(@PathVariable List<String> trackingNumbers) {
-		return superUserD2zService.trackingEvent(trackingNumbers);
+		return null;//superUserD2zService.trackingEvent(trackingNumbers);
 		
     }
 	@RequestMapping( method = RequestMethod.POST, path = "/brokerRates", consumes=MediaType.APPLICATION_JSON)
@@ -319,6 +319,12 @@ public class D2ZSuperUserController {
 	@RequestMapping(method = RequestMethod.POST, path = "/delete-job")
 	public UserMessage deleteJob(@RequestBody List<IncomingJobResponse> Job) {
 		UserMessage jobInfo = superUserD2zService.deleteJob(Job);
+		return jobInfo;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, path = "/submit-job")
+	public UserMessage submitJob(@RequestBody List<IncomingJobResponse> Job) {
+		UserMessage jobInfo = superUserD2zService.submitJob(Job);
 		return jobInfo;
 	}
 	@RequestMapping(method = RequestMethod.GET, path = "/incoming-job-list")

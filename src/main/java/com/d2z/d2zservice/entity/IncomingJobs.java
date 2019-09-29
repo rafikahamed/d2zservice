@@ -15,6 +15,14 @@ import javax.persistence.Table;
 @Table(name="IncomingJobs")
 public class IncomingJobs implements Serializable{
 	
+	public String getIsSubmitted() {
+		return isSubmitted;
+	}
+
+	public void setIsSubmitted(String isSubmitted) {
+		this.isSubmitted = isSubmitted;
+	}
+
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "RowID")
@@ -53,6 +61,10 @@ public class IncomingJobs implements Serializable{
 	
 	@Column(name = "ISDeleted")
 	private String isDeleted;
+	
+
+	@Column(name = "ISSubmitted")
+	private String isSubmitted;
 	
 	public String getIsDeleted() {
 		return isDeleted;
