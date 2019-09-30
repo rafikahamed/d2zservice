@@ -10,6 +10,7 @@ public class ReconcileData {
 	private double chargedWeight;
 	private double cost;
 	private String postCode;
+	private String barcodeLabelNumber;
 	
 	public String getArticleNo() {
 		return articleNo;
@@ -60,4 +61,11 @@ public class ReconcileData {
 	public void setPostCode(String postCode) {
 		this.postCode = postCode;
 	}
+	public String getBarcodeLabelNumber() {
+		return barcodeLabelNumber;
+	}
+	public void setBarcodeLabelNumber(String barcodeLabelNumber) {
+		this.barcodeLabelNumber = barcodeLabelNumber;
+	}
+	
 }

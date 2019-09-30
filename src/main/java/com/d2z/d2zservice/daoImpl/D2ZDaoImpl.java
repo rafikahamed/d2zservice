@@ -200,7 +200,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 				LabelData pflLabel= barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setInjectionState(pflLabel.getHub());
 				senderDataObj.setBarcodelabelNumber(pflLabel.getTrackingNo());
-				senderDataObj.setArticleId(pflLabel.getArticleId());
+				senderDataObj.setArticleId(pflLabel.getTrackingNo());
+				senderDataObj.setMlid(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
 				senderDataObj.setCarrier("FastwayM");
 			}else if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PCA") && 
@@ -208,7 +209,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 				LabelData pflLabel= barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setInjectionState(pflLabel.getHub());
 				senderDataObj.setBarcodelabelNumber(pflLabel.getTrackingNo());
-				senderDataObj.setArticleId(pflLabel.getArticleId());
+				senderDataObj.setArticleId(pflLabel.getTrackingNo());
+				senderDataObj.setMlid(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
 				senderDataObj.setCarrier("FastwayS");
 			}

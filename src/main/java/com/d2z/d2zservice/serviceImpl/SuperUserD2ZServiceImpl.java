@@ -447,7 +447,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		List<String> reconcileReferenceNum = new ArrayList<String>();
 		// Check for duplicates
 		if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("PFL")) {
-			d2zValidator.isReferenceNumberUniqueReconcile(reconcileData, "D2Z");
+			d2zValidator.isArticleIdUniqueReconcile(reconcileData, "D2Z");
 		} else {
 			d2zValidator.isArticleIdUniqueReconcile(reconcileData, "D2Z");
 		}
