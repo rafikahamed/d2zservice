@@ -39,13 +39,13 @@ public class Scheduler {
 		 }
 		
 		
-		 try { 
+		/* try { 
 			 System.out.println("Calling AUPost Tracking Proxy");
 			 d2zService.auTrackingEvent();
 			 }
 		 catch(Exception e){
 		 System.out.println(e.getLocalizedMessage()); 
-		 }
+		 }*/
 		 
 		/* try { 
 			 System.out.println("Freipost Tracking");
