@@ -15,6 +15,6 @@ public interface IncomingJobsRepository extends CrudRepository<IncomingJobs,Long
 	@Query( nativeQuery = true, value="SELECT * FROM incomingjobs where  ISSubmitted = 'Y' and ISDeleted = 'N'") 
 	List<IncomingJobs> fetchJobs();
 	
-	@Query( nativeQuery = true, value="SELECT * FROM incomingjobs where   ISSubmitted IS NULL") 
+	@Query( nativeQuery = true, value="SELECT * FROM incomingjobs where   ISSubmitted IS NULL and ISDeleted = 'N'") 
 	List<IncomingJobs> fetchincomingJobs();
 }

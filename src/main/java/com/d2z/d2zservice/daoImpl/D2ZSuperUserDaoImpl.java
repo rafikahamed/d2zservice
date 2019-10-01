@@ -1054,6 +1054,7 @@ if(job.getAta()!=null &&  job.getAta().length() > 0)
 		
 			if(job.getOutturn()!=null && (job.getOutturn().equalsIgnoreCase("True") || job.getOutturn().equalsIgnoreCase("Y")))
 			{
+				System.out.print("Outturn;"+job.getOutturn());	
 			jobs.setOutturn("Y");
 			}
 		jobs.setHeld(job.getHeld());
@@ -1163,8 +1164,9 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 			jobs.setID(job.getJobid());
 			
 		
-			if(job.getOutturn()!=null && job.getOutturn().equalsIgnoreCase("True"))
+			if(job.getOutturn()!=null && (job.getOutturn().equalsIgnoreCase("True") || job.getOutturn().equalsIgnoreCase("Y")))
 			{
+				System.out.print("Outturn;"+job.getOutturn());	
 			jobs.setOutturn("Y");
 			}
 		jobs.setHeld(job.getHeld());
@@ -1277,8 +1279,9 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 			jobs.setID(job.getJobid());
 			
 		
-			if(job.getOutturn()!=null && job.getOutturn().equalsIgnoreCase("True"))
+			if(job.getOutturn()!=null && (job.getOutturn().equalsIgnoreCase("True") || job.getOutturn().equalsIgnoreCase("Y")))
 			{
+				System.out.print("Outturn;"+job.getOutturn());	
 			jobs.setOutturn("Y");
 			}
 		jobs.setHeld(job.getHeld());
