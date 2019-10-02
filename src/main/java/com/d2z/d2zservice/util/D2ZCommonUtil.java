@@ -82,9 +82,9 @@ public class D2ZCommonUtil {
 		String formattedMsg = String.join(" ", list);
 		return formattedMsg;
 	}
-	public static int generateTrackID() {
+	/*public static int generateTrackID() {
 		Random rnd = new Random();
 		int uniqueNumber = 100000 + rnd.nextInt(900000);
 		return uniqueNumber;
-	}
+	}*/
 }

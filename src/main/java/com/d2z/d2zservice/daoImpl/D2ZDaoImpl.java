@@ -352,8 +352,11 @@ public class D2ZDaoImpl implements ID2ZDao{
 			}
 			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType())){
 				senderDataObj.setCarrier("Express");
-			}else {
+			}else if(null == senderDataValue.getCarrier() || senderDataValue.getCarrier().isEmpty()){
 				senderDataObj.setCarrier("eParcel");
+			}
+			else {
+				senderDataObj.setCarrier(senderDataValue.getCarrier());
 			}
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
 			senderDataObj.setStatus("CONSIGNMENT CREATED");
@@ -413,7 +416,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 				while (itr.hasNext()) {
 					Object[] obj = (Object[]) itr.next();
 	    			Trackandtrace trackAndTrace = new Trackandtrace();
-	    			trackAndTrace.setRowId(D2ZCommonUtil.generateTrackID());
+	    			//trackAndTrace.setRowId(D2ZCommonUtil.generateTrackID());
 	    			trackAndTrace.setUser_Id(String.valueOf(userId));
 	    			trackAndTrace.setReference_number(obj[0].toString());
 	    			trackAndTrace.setTrackEventCode("CC");
@@ -925,7 +928,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 								/*System.out.println("Inserting..." + trackingLabel.getArticle_id() +" : "+trackingEvents.getDate().substring(0,19)
 										+ " : "+trackingEvents.getDescription());*/
 								Trackandtrace trackandTrace = new Trackandtrace();
-								trackandTrace.setRowId(D2ZCommonUtil.generateTrackID());
+								//trackandTrace.setRowId(D2ZCommonUtil.generateTrackID());
 								trackandTrace.setArticleID(trackingLabel.getArticle_id());
 								trackandTrace.setTrackEventDetails(trackingEvents.getDescription());
 								trackandTrace.setTrackEventDateOccured(trackingEvents.getDate().substring(0,19));

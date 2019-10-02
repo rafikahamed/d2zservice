@@ -156,7 +156,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		List<Trackandtrace> trackingDetailsList = new ArrayList<Trackandtrace>();
 		for (UploadTrackingFileData fileDataValue : fileData) {
 			Trackandtrace trackingDetails = new Trackandtrace();
-			trackingDetails.setRowId(D2ZCommonUtil.generateTrackID());
+			//trackingDetails.setRowId(D2ZCommonUtil.generateTrackID());
 			trackingDetails.setReference_number(fileDataValue.getReferenceNumber());
 			trackingDetails.setArticleID(fileDataValue.getConnoteNo());
 			trackingDetails.setTrackEventDetails(fileDataValue.getTrackEventDetails().toUpperCase());
@@ -188,7 +188,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		for (ArrivalReportFileData fileDataValue : fileData) {
 			Trackandtrace trackingDetails = new Trackandtrace();
 			trackingDetails.setReference_number(fileDataValue.getReferenceNumber());
-			trackingDetails.setRowId(D2ZCommonUtil.generateTrackID());
+			//trackingDetails.setRowId(D2ZCommonUtil.generateTrackID());
 			trackingDetails.setArticleID(fileDataValue.getConnoteNo());
 			String trackEvent = "Shortage";
 			if ("CLEAR".equalsIgnoreCase(fileDataValue.getStatus())) {
@@ -305,7 +305,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 						}
 						if(eventTime.after(latestTime)) {
 						Trackandtrace trackandTrace = new Trackandtrace();
-						trackandTrace.setRowId(D2ZCommonUtil.generateTrackID());
+						//trackandTrace.setRowId(D2ZCommonUtil.generateTrackID());
 						trackandTrace.setArticleID(trackingDetails.getTrackingNo());
 						trackandTrace.setFileName("eTowerAPI");
 						
