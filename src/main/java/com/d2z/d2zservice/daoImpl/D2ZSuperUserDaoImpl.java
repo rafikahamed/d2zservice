@@ -917,12 +917,15 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		List<IncomingJobs> joblist = new ArrayList<IncomingJobs>();
 		
 		for(CreateJobRequest jobRequest :createJob)
-		{
+		{String mlid = "";
 			for(DropDownModel model : jobRequest.getMlid())
 			{
+				 mlid = mlid + model.getName()+",";
+			}
+			mlid = mlid.substring(0, mlid.length() - 1);
 				IncomingJobs jobs = new IncomingJobs();
 				jobs.setBroker(jobRequest.getType());
-				jobs.setMLID(model.getName());
+				jobs.setMLID(mlid);
 				jobs.setConsignee(jobRequest.getConsignee());
 				jobs.setDestination(jobRequest.getDest());
 				jobs.setHawb(jobRequest.getHawb());
@@ -943,7 +946,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				
 				}
 				joblist.add(jobs);
-			}
+			
 
 		}
 		incomingRepository.saveAll(joblist);
