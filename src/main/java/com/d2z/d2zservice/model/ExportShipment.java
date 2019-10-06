@@ -16,8 +16,15 @@ public class ExportShipment {
 		  private String shipper_Country;
 		  private String articleID;
 		  private String dat;
+		  private String manifest;
 		  
-		  public String getDat() {
+		  public String getManifest() {
+			return manifest;
+		}
+		public void setManifest(String manifest) {
+			this.manifest = manifest;
+		}
+		public String getDat() {
 			return dat;
 		}
 		public void setDat(String dat) {

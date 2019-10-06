@@ -242,6 +242,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			exportval.setCurrency(String.valueOf(obj[15]));
 			exportval.setArticleID(String.valueOf(obj[16]));
 			exportval.setDat(String.valueOf(obj[17]));
+			exportval.setManifest(String.valueOf(obj[18]));
 			exportshipmentlist.add(exportval);
 		}
 		// ExportDeleteList.forEach(System.out::println);
@@ -1249,6 +1250,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			exportval.setCurrency(String.valueOf(obj[15]));
 			exportval.setArticleID(String.valueOf(obj[16]));
 			exportval.setDat(String.valueOf(obj[17]));
+			exportval.setManifest(String.valueOf(obj[18]));
 			exportshipmentlist.add(exportval);
 		}
 		// ExportDeleteList.forEach(System.out::println);
