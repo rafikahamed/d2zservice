@@ -5,6 +5,13 @@ public class ExportDelete {
 private String reference_number;
 private String barcodelabelNumber;
 private String brokername;
+private String dat;
+public String getDat() {
+	return dat;
+}
+public void setDat(String dat) {
+	this.dat = dat;
+}
 private SenderData senderdata;
 public String getReference_number() {
 	return reference_number;

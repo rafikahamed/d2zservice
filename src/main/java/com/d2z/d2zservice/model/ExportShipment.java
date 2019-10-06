@@ -15,9 +15,15 @@ public class ExportShipment {
 		  private String product_Description;
 		  private String shipper_Country;
 		  private String articleID;
+		  private String dat;
 		  
-		  
-		  public String getArticleID() {
+		  public String getDat() {
+			return dat;
+		}
+		public void setDat(String dat) {
+			this.dat = dat;
+		}
+		public String getArticleID() {
 			return articleID;
 		}
 		public void setArticleID(String articleID) {

@@ -199,6 +199,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			exportval.setBrokername(String.valueOf(obj[0]));
 			exportval.setReference_number(String.valueOf(obj[1]));
 			exportval.setBarcodelabelNumber(String.valueOf(obj[2]));
+			exportval.setDat(String.valueOf(obj[3]));
 			exportdeletelist.add(exportval);
 		}
 		// ExportDeleteList.forEach(System.out::println);
@@ -240,6 +241,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			exportval.setServicetype(String.valueOf(obj[14]));
 			exportval.setCurrency(String.valueOf(obj[15]));
 			exportval.setArticleID(String.valueOf(obj[16]));
+			exportval.setDat(String.valueOf(obj[17]));
 			exportshipmentlist.add(exportval);
 		}
 		// ExportDeleteList.forEach(System.out::println);
@@ -271,6 +273,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			exportval.setBarcodelabelNumber(String.valueOf(obj[13]));
 			exportval.setServicetype(String.valueOf(obj[14]));
 			exportval.setCurrency(String.valueOf(obj[15]));
+			exportval.setDat(String.valueOf(obj[17]));
 			exportshipmentlist.add(exportval);
 		}
 		// ExportDeleteList.forEach(System.out::println);
@@ -1245,6 +1248,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			exportval.setServicetype(String.valueOf(obj[14]));
 			exportval.setCurrency(String.valueOf(obj[15]));
 			exportval.setArticleID(String.valueOf(obj[16]));
+			exportval.setDat(String.valueOf(obj[17]));
 			exportshipmentlist.add(exportval);
 		}
 		// ExportDeleteList.forEach(System.out::println);
