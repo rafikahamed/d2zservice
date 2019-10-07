@@ -35,7 +35,7 @@ public class D2zServiceApplication {
 		try {
 		    String result = InetAddress.getLocalHost().getHostName();
 		    if (StringUtils.isNotEmpty( result))
-		        System.out.println("Service HOST Name --->"+result);
+		        System.out.println("Service HOST Name sample --->"+result);
 		} catch (UnknownHostException e) {
 		}
 	}
