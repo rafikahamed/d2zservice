@@ -199,7 +199,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			exportval.setBrokername(String.valueOf(obj[0]));
 			exportval.setReference_number(String.valueOf(obj[1]));
 			exportval.setBarcodelabelNumber(String.valueOf(obj[2]));
-			exportval.setDat(String.valueOf(obj[3]));
+			exportval.setDat(String.valueOf(obj[3]).substring(0, 10));
 			exportdeletelist.add(exportval);
 		}
 		// ExportDeleteList.forEach(System.out::println);
@@ -211,7 +211,9 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 
 	@Override
 	public List<SenderdataMaster> exportConsignmentData(String fromDate, String toDate) {
-		return d2zDao.exportConsignments(fromDate, toDate);
+		List<SenderdataMaster> output = d2zDao.exportConsignments(fromDate, toDate);
+		output.forEach(senderdata -> senderdata.setTimestamp(senderdata.getTimestamp().substring(0,10)));
+		return output;
 	}
 	
 	@Override
@@ -241,7 +243,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			exportval.setServicetype(String.valueOf(obj[14]));
 			exportval.setCurrency(String.valueOf(obj[15]));
 			exportval.setArticleID(String.valueOf(obj[16]));
-			exportval.setDat(String.valueOf(obj[17]));
+			exportval.setDat(String.valueOf(obj[17]).substring(0, 10));
 			exportval.setManifest(String.valueOf(obj[18]));
 			exportshipmentlist.add(exportval);
 		}
@@ -274,7 +276,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			exportval.setBarcodelabelNumber(String.valueOf(obj[13]));
 			exportval.setServicetype(String.valueOf(obj[14]));
 			exportval.setCurrency(String.valueOf(obj[15]));
-			exportval.setDat(String.valueOf(obj[17]));
+			exportval.setDat(String.valueOf(obj[17]).substring(0, 10));
 			exportshipmentlist.add(exportval);
 		}
 		// ExportDeleteList.forEach(System.out::println);
@@ -1218,7 +1220,10 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	@Override
 	public List<SenderdataMaster> exportConsignmentDatafile(String type, List<String> Data) {
 		// TODO Auto-generated method stub
-		return d2zDao.exportConsignmentsfile(type, Data);
+		List<SenderdataMaster> output = d2zDao.exportConsignmentsfile(type, Data);
+		output.forEach(senderdata -> senderdata.setTimestamp(senderdata.getTimestamp().substring(0,10)));
+		return output;
+	
 	}
 
 	@Override
@@ -1249,7 +1254,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			exportval.setServicetype(String.valueOf(obj[14]));
 			exportval.setCurrency(String.valueOf(obj[15]));
 			exportval.setArticleID(String.valueOf(obj[16]));
-			exportval.setDat(String.valueOf(obj[17]));
+			exportval.setDat(String.valueOf(obj[17]).substring(0, 10));
 			exportval.setManifest(String.valueOf(obj[18]));
 			exportshipmentlist.add(exportval);
 		}
