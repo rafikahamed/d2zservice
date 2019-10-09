@@ -189,5 +189,7 @@ public interface ID2ZSuperUserDao {
 	
 	String submitJob(List<IncomingJobResponse> job);
 
+	List<Returns> returnsOutstanding();
+
 }
 

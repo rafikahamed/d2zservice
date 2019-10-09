@@ -1379,5 +1379,10 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 		}
 		return null;
 	}
+
+	@Override
+	public List<Returns> returnsOutstanding() {
+		return returnsRepository.returnsOutstanding();
+	}
 		
 }

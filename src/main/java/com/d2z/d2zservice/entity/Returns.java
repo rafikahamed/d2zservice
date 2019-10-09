@@ -65,6 +65,9 @@ public class Returns implements Serializable {
 	@Column(name = "ResendRefNumber")
 	private String resendRefNumber;
 	
+	@Column(name = "status")
+	private String status;
+	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
@@ -195,6 +198,14 @@ public class Returns implements Serializable {
 
 	public void setAction(String action) {
 		this.action = action;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 }
