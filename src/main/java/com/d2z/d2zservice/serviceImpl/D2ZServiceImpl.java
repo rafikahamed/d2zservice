@@ -68,6 +68,7 @@ import com.d2z.d2zservice.model.PflCreateShippingOrderInfo;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
 import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
@@ -2165,6 +2166,12 @@ else
 //		byte[] bytes = shipmentWriter.generateShipmentxls(shipmentDetails);
 //		return bytes;
 		return shipmentDetails;
+	}
+
+	@Override
+	public UserMessage returnAction(List<ReturnsAction> returnsAction) {
+		UserMessage usrMsg =  d2zDao.returnAction(returnsAction);
+		return usrMsg;
 	}
 
 }

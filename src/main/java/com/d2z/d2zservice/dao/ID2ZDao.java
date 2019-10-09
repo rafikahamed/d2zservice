@@ -18,9 +18,11 @@ import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.UserDetails;
+import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
@@ -156,5 +158,7 @@ public interface ID2ZDao {
 
 	public List<SenderdataMaster> fetchShipmentDatabyType(List<String> number, List<Integer> listOfClientId,
 			String type);
+
+	public UserMessage returnAction(List<ReturnsAction> returnsAction);
 
 }

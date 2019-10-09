@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
@@ -81,6 +83,7 @@ import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 
 @Repository
 public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
@@ -1078,7 +1081,21 @@ if(job.getAta()!=null &&  job.getAta().length() > 0)
 
 	@Override
 	public List<Returns> returnsOutstanding(String fromDate, String toDate, String brokerName) {
-		return returnsRepository.returnsOutstandingDetails(fromDate,toDate,brokerName);
+		List<Returns> returnDetails = null;
+//		System.out.println("fromDate--->"+fromDate);
+//		System.out.println("toDate--->"+toDate);
+//		System.out.println("apache from date"+StringUtils.isEmpty(fromDate.toString()));
+//		System.out.println("apache to date"+StringUtils.isEmpty(toDate.toString()));
+//		System.out.println("Strings from date"+Strings.isNullOrEmpty(fromDate.toString()));
+//		System.out.println("Strings to date"+Strings.isNullOrEmpty(toDate.toString()));
+		if(Strings.isNullOrEmpty(fromDate) && Strings.isNullOrEmpty(toDate)) {
+			System.out.println("Inside not date condition---");
+			returnDetails = returnsRepository.returnsOutstandingDetails(fromDate,toDate,brokerName);
+		}else {
+			System.out.println("Inside date valid condition---");
+			returnDetails = returnsRepository.returnsOutstandingDetailsBroker(brokerName);
+		}
+		return returnDetails;
 	}
 
 	@Override

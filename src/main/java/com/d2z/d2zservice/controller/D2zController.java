@@ -27,6 +27,7 @@ import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
@@ -302,13 +303,18 @@ public class D2zController {
 	@RequestMapping(method = RequestMethod.GET, path = "/currency")
 	public void getcurrency() {
 		d2zService.currencyRate();
-		//superUserD2zService.triggerSC();
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/outStanding-returns")
-	public List<Returns> returnsOutstanding(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate, @RequestParam("userId") String userId) {
-		System.out.println("Inside Outstanding Method");
+	public List<Returns> returnsOutstanding(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate, 
+			@RequestParam("userId") String userId) {
 		List<Returns> returnsInfo = d2zService.returnsOutstanding(fromDate, toDate, userId);
+		return returnsInfo;
+	}
+	
+	@RequestMapping(method = RequestMethod.PUT, path = "/action-returns")
+	public UserMessage returnAction(@RequestBody List<ReturnsAction> returnsAction) {
+		UserMessage returnsInfo = d2zService.returnAction(returnsAction);
 		return returnsInfo;
 	}
 	

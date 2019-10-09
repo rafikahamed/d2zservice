@@ -37,9 +37,11 @@ import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.CurrencyDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.UserDetails;
+import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.auspost.TrackableItems;
 import com.d2z.d2zservice.model.auspost.TrackingEvents;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
@@ -1149,8 +1151,6 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public List<Returns> returnsOutstanding(String fromDate, String toDate, String userId) {
 		Integer[] userIds = Arrays.stream(userId.split(",")).map(String::trim).map(Integer::valueOf).toArray(Integer[]::new);
 		List<Returns> returnsDetails = new ArrayList<Returns>();
-		System.out.println("fromDate  --->"+fromDate);
-		System.out.println("toDate----->"+toDate);
 		if( fromDate.equals(null)  && toDate.equals(null)) {
 			returnsDetails = returnsRepository.fetchOutstandingDetails(fromDate,toDate,userIds);
 		}else {
@@ -1184,6 +1184,16 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		
 		// TODO Auto-generated method stub
 		return senderData;
+	}
+
+	@Override
+	public UserMessage returnAction(List<ReturnsAction> returnsAction) {
+		for(ReturnsAction actionRequest:returnsAction) {
+			returnsRepository.updateReturnAction(actionRequest.getAction(), actionRequest.getResendRefNumber(), actionRequest.getArticleId());
+		}
+		UserMessage usrMsg = new UserMessage();
+		usrMsg.setMessage("Return Action Updated Successfully");
+		return usrMsg;
 	}
 
 }

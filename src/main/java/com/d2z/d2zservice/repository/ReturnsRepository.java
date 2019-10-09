@@ -1,9 +1,11 @@
 package com.d2z.d2zservice.repository;
 
 import java.util.List;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 import com.d2z.d2zservice.entity.Returns;
 
 public interface ReturnsRepository extends CrudRepository<Returns, Long>{
@@ -23,7 +25,7 @@ public interface ReturnsRepository extends CrudRepository<Returns, Long>{
 	
 	
 	@Query( nativeQuery = true, value="SELECT * FROM Returns where "
-			+ "returnsCreatedDate between :fromDate and :toDate and User_Id in (:userId)") 
+			+ "returnsCreatedDate between :fromDate and :toDate and User_Id in (:userId) and action is null") 
 	List<Returns> fetchOutstandingDetails(@Param("fromDate") String fromDate, @Param("toDate") String toDate, @Param("userId") Integer[] userId);
 
 	
@@ -33,8 +35,17 @@ public interface ReturnsRepository extends CrudRepository<Returns, Long>{
 	@Query( nativeQuery = true, value="SELECT * FROM Returns where brokerName = :brokerName and "
 			+ "returnsCreatedDate between :fromDate and :toDate") 
 	List<Returns> returnsOutstandingDetails(@Param("fromDate") String fromDate, @Param("toDate") String toDate, @Param("brokerName") String brokerName);
+	
+	@Query( nativeQuery = true, value="SELECT * FROM Returns where brokerName = :brokerName") 
+	List<Returns> returnsOutstandingDetailsBroker(@Param("brokerName") String brokerName);
 
-	@Query( nativeQuery = true, value="SELECT * FROM Returns where User_Id in (:userId)") 
+	@Query( nativeQuery = true, value="SELECT * FROM Returns where User_Id in (:userId) and action is null") 
 	List<Returns> fetchOutstandingCompleteDetails(@Param("userId") Integer[] userId);
+	
+	@Modifying
+	@Transactional
+	@Query("update Returns r set r.action = :action, r.resendRefNumber = :resendRefNumber where r.articleId = :articleId")
+	void updateReturnAction(@Param("action") String action, @Param("resendRefNumber") String resendRefNumber, 
+			@Param("articleId") String articleId);
 
 }
