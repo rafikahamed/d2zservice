@@ -48,6 +48,7 @@ import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
@@ -1383,6 +1384,16 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 	@Override
 	public List<Returns> returnsOutstanding() {
 		return returnsRepository.returnsOutstanding();
+	}
+
+	@Override
+	public UserMessage updateAction(List<ReturnsAction> returnsAction) {
+		for(ReturnsAction actionRequest:returnsAction) {
+			returnsRepository.updateReturnStatus(actionRequest.getArticleId());
+		}
+		UserMessage usrMsg = new UserMessage();
+		usrMsg.setMessage("Return Action Updated Successfully");
+		return usrMsg;
 	}
 		
 }

@@ -39,6 +39,7 @@ import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
@@ -362,6 +363,11 @@ public class D2ZSuperUserController {
 	@RequestMapping(method = RequestMethod.GET, path = "/action-returns")
 	public List<Returns> returnsActionDetails() {
 		return superUserD2zService.returnsOutstanding();
+	}
+	
+	@RequestMapping(method = RequestMethod.PUT, path = "/action")
+	public UserMessage updateAction(@RequestBody List<ReturnsAction> returnsAction) {
+		return superUserD2zService.updateAction(returnsAction);
 	}
 	
 }
