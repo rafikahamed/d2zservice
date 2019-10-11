@@ -379,7 +379,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"               B.currency, \r\n" + 
 	 		"               B.articleid,\r\n" + 
 	 		"			   B.trackeventdateoccured,\r\n" + 
-	 		"			   B.Manifest_number\r\n" + 
+	 		"			   B.AirwayBill\r\n" + 
 	 		"        FROM   (SELECT senderdata0_.reference_number, \r\n" + 
 	 		"                       senderdata0_.value, \r\n" + 
 	 		"                       senderdata0_.shipped_quantity, \r\n" + 
@@ -398,7 +398,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"                       senderdata0_.currency, \r\n" + 
 	 		"                       senderdata0_.articleid,\r\n" + 
 	 		"					   trackandtr1_.TrackEventDateOccured,\r\n" + 
-	 		"					   senderdata0_.Manifest_number\r\n" + 
+	 		"					   senderdata0_.AirwayBill\r\n" + 
 	 		"                FROM   dbo.senderdata_master senderdata0_ \r\n" + 
 	 		"                       INNER JOIN trackandtrace trackandtr1_ \r\n" + 
 	 		"                               ON senderdata0_.reference_number = \r\n" + 
@@ -461,7 +461,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"               B.currency, \r\n" + 
 	 		"               B.articleid,\r\n" + 
 	 		"			   B.trackeventdateoccured,\r\n" + 
-	 		"			   B.Manifest_number\r\n" + 
+	 		"			   B.AirwayBill\r\n" + 
 	 		"        FROM   (SELECT senderdata0_.reference_number, \r\n" + 
 	 		"                       senderdata0_.value, \r\n" + 
 	 		"                       senderdata0_.shipped_quantity, \r\n" + 
@@ -480,7 +480,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"                       senderdata0_.currency, \r\n" + 
 	 		"                       senderdata0_.articleid,\r\n" + 
 	 		"					   trackandtr1_.TrackEventDateOccured,\r\n" + 
-	 		"					   senderdata0_.Manifest_number\r\n" + 
+	 		"					   senderdata0_.AirwayBill\r\n" + 
 	 		"                FROM   dbo.senderdata_master senderdata0_ \r\n" + 
 	 		"                       INNER JOIN trackandtrace trackandtr1_ \r\n" + 
 	 		"                               ON senderdata0_.reference_number = \r\n" + 
