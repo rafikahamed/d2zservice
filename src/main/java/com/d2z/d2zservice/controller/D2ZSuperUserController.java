@@ -359,4 +359,9 @@ public class D2ZSuperUserController {
 		return superUserD2zService.returnsOutstanding(fromDate, toDate, brokerName);
 	}
 	
+	@RequestMapping(method = RequestMethod.GET, path = "/action-returns")
+	public List<Returns> returnsActionDetails() {
+		return superUserD2zService.returnsOutstanding();
+	}
+	
 }

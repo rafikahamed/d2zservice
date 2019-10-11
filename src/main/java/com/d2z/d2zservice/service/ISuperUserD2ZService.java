@@ -152,4 +152,6 @@ public interface ISuperUserD2ZService{
 	
 	ResponseMessage trackingEvent(List<String> trackingNbrs, Map<String, String> map);
 
+	public List<Returns> returnsOutstanding();
+
 }

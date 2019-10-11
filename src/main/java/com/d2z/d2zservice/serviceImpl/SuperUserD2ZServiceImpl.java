@@ -1379,5 +1379,10 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		
 	}
 
+	@Override
+	public List<Returns> returnsOutstanding() {
+		return d2zDao.returnsOutstanding();
+	}
+
 
 }

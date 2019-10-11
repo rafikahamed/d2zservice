@@ -59,6 +59,15 @@ public class Returns implements Serializable {
 	@Column(name = "ReturnsCreatedDate")
 	private Timestamp returnsCreatedDate;
 	
+	@Column(name = "Action")
+	private String action;
+	
+	@Column(name = "ResendRefNumber")
+	private String resendRefNumber;
+	
+	@Column(name = "status")
+	private String status;
+	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
@@ -175,4 +184,28 @@ public class Returns implements Serializable {
 		this.returnsCreatedDate = returnsCreatedDate;
 	}
 
+	public String getResendRefNumber() {
+		return resendRefNumber;
+	}
+
+	public void setResendRefNumber(String resendRefNumber) {
+		this.resendRefNumber = resendRefNumber;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
 }

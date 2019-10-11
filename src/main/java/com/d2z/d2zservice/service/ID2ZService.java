@@ -1,9 +1,7 @@
 package com.d2z.d2zservice.service;
 
 import java.util.List;
-
 import javax.validation.Valid;
-
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
@@ -14,7 +12,6 @@ import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.CreateEnquiryRequest;
-import com.d2z.d2zservice.model.CurrencyDetails;
 import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
@@ -22,7 +19,7 @@ import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
-import com.d2z.d2zservice.model.ReturnsClientResponse;
+import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
@@ -127,5 +124,7 @@ public interface ID2ZService {
 	public List<ShipmentDetails> downloadShipmentDataTemplate(String shipmentNumber, Integer userId);
 
 	public List<ShipmentDetails> downloadShipmentDataTemplatebyType(List<String> number, Integer userId, String type);
+
+	public UserMessage returnAction(List<ReturnsAction> returnsAction);
 
 }
