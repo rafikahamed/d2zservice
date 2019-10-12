@@ -276,7 +276,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			exportval.setBarcodelabelNumber(String.valueOf(obj[13]));
 			exportval.setServicetype(String.valueOf(obj[14]));
 			exportval.setCurrency(String.valueOf(obj[15]));
-			exportval.setDat(String.valueOf(obj[17]).substring(0, 10));
+			exportval.setDat(String.valueOf(obj[16]).substring(0, 10));
 			exportshipmentlist.add(exportval);
 		}
 		// ExportDeleteList.forEach(System.out::println);
