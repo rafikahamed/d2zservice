@@ -48,8 +48,12 @@ public interface ReturnsRepository extends CrudRepository<Returns, Long>{
 	void updateReturnAction(@Param("action") String action, @Param("resendRefNumber") String resendRefNumber, 
 			@Param("articleId") String articleId);
 
-	
 	@Query( nativeQuery = true, value="SELECT * FROM Returns where action is not null and status is null") 
 	List<Returns> returnsOutstanding();
+
+	@Modifying
+	@Transactional
+	@Query("update Returns r set r.status = 'closed' where r.articleId = :articleId")
+	void updateReturnStatus(@Param("articleId") String articleId);
 
 }

@@ -1020,6 +1020,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setConsigneeState(senderArticleId.getConsignee_State());
 					tickets.setConsigneePostcode(senderArticleId.getConsignee_Postcode());
 					tickets.setProductDescription(senderArticleId.getProduct_Description());
+					tickets.setBarcodelabelNumber(senderArticleId.getBarcodelabelNumber());
 					tickets.setCarrier(senderArticleId.getCarrier());
 				}
 			}else if(enquiryRequest.getType().equalsIgnoreCase("Reference Number")) {
@@ -1033,6 +1034,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setConsigneeState(senderRefId.getConsignee_State());
 					tickets.setConsigneePostcode(senderRefId.getConsignee_Postcode());
 					tickets.setProductDescription(senderRefId.getProduct_Description());
+					tickets.setBarcodelabelNumber(senderRefId.getBarcodelabelNumber());
 					tickets.setCarrier(senderRefId.getCarrier());
 				}
 			}

@@ -80,6 +80,9 @@ public class CSTickets implements Serializable {
 	@Column(name = "Product_Description")
 	private String productDescription;
 	
+	@Column(name="BarcodelabelNumber")
+	private String barcodelabelNumber;
+	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
@@ -258,6 +261,14 @@ public class CSTickets implements Serializable {
 
 	public void setProductDescription(String productDescription) {
 		this.productDescription = productDescription;
+	}
+
+	public String getBarcodelabelNumber() {
+		return barcodelabelNumber;
+	}
+
+	public void setBarcodelabelNumber(String barcodelabelNumber) {
+		this.barcodelabelNumber = barcodelabelNumber;
 	}
 	
 }

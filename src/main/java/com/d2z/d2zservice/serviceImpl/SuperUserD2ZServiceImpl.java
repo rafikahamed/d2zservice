@@ -61,6 +61,7 @@ import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.PflTrackEventRequest;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -1382,6 +1383,11 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	@Override
 	public List<Returns> returnsOutstanding() {
 		return d2zDao.returnsOutstanding();
+	}
+
+	@Override
+	public UserMessage updateAction(List<ReturnsAction> returnsAction) {
+		return  d2zDao.updateAction(returnsAction);
 	}
 
 

@@ -26,6 +26,7 @@ import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
@@ -190,6 +191,8 @@ public interface ID2ZSuperUserDao {
 	String submitJob(List<IncomingJobResponse> job);
 
 	List<Returns> returnsOutstanding();
+
+	UserMessage updateAction(List<ReturnsAction> returnsAction);
 
 }
 
