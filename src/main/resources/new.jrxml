@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="eparcelLabel" pageWidth="378" pageHeight="563" columnWidth="358" leftMargin="10" rightMargin="10" topMargin="10" bottomMargin="10" uuid="497a1b87-dc25-40fb-8871-81fa7737ae82">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="net.sf.jasperreports.text.truncate.at.char" value="true"/>
+	<style name="labelStyle" isBlankWhenNull="true" fontName="MyArial"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="referenceNumber" class="java.lang.String">
+		<fieldDescription><![CDATA[referenceNumber]]></fieldDescription>
+	</field>
+	<field name="injectionState" class="java.lang.String">
+		<fieldDescription><![CDATA[injectionState]]></fieldDescription>
+	</field>
+	<field name="consigneeName" class="java.lang.String">
+		<fieldDescription><![CDATA[consigneeName]]></fieldDescription>
+	</field>
+	<field name="consigneeAddr1" class="java.lang.String">
+		<fieldDescription><![CDATA[consigneeAddr1]]></fieldDescription>
+	</field>
+	<field name="consigneeAddr2" class="java.lang.String">
+		<fieldDescription><![CDATA[consigneeAddr2]]></fieldDescription>
+	</field>
+	<field name="consigneeSuburb" class="java.lang.String">
+		<fieldDescription><![CDATA[consigneeSuburb]]></fieldDescription>
+	</field>
+	<field name="consigneeState" class="java.lang.String">
+		<fieldDescription><![CDATA[consigneeState]]></fieldDescription>
+	</field>
+	<field name="consigneePostcode" class="java.lang.String">
+		<fieldDescription><![CDATA[consigneePostcode]]></fieldDescription>
+	</field>
+	<field name="consigneeCompany" class="java.lang.String">
+		<fieldDescription><![CDATA[consigneeCompany]]></fieldDescription>
+	</field>
+	<field name="sku" class="java.lang.String">
+		<fieldDescription><![CDATA[sku]]></fieldDescription>
+	</field>
+	<field name="consigneePhone" class="java.lang.String">
+		<fieldDescription><![CDATA[consigneePhone]]></fieldDescription>
+	</field>
+	<field name="weight" class="java.lang.String">
+		<fieldDescription><![CDATA[weight]]></fieldDescription>
+	</field>
+	<field name="shipperName" class="java.lang.String">
+		<fieldDescription><![CDATA[shipperName]]></fieldDescription>
+	</field>
+	<field name="shipperAddr1" class="java.lang.String">
+		<fieldDescription><![CDATA[shipperAddr1]]></fieldDescription>
+	</field>
+	<field name="shipperCity" class="java.lang.String">
+		<fieldDescription><![CDATA[shipperCity]]></fieldDescription>
+	</field>
+	<field name="shipperState" class="java.lang.String">
+		<fieldDescription><![CDATA[shipperState]]></fieldDescription>
+	</field>
+	<field name="shipperPostcode" class="java.lang.String">
+		<fieldDescription><![CDATA[shipperPostcode]]></fieldDescription>
+	</field>
+	<field name="barcodeLabelNumber" class="java.lang.String">
+		<fieldDescription><![CDATA[barcodeLabelNumber]]></fieldDescription>
+	</field>
+	<field name="datamatrixImage" class="java.lang.Object">
+		<fieldDescription><![CDATA[datamatrixImage]]></fieldDescription>
+	</field>
+	<field name="labelSenderName" class="java.lang.String">
+		<fieldDescription><![CDATA[labelSenderName]]></fieldDescription>
+	</field>
+	<field name="deliveryInstructions" class="java.lang.String">
+		<fieldDescription><![CDATA[deliveryInstructions]]></fieldDescription>
+	</field>
+	<field name="returnAddress1" class="java.lang.String">
+		<fieldDescription><![CDATA[returnAddress1]]></fieldDescription>
+	</field>
+	<field name="returnAddress2" class="java.lang.String">
+		<fieldDescription><![CDATA[returnAddress2]]></fieldDescription>
+	</field>
+	<field name="productDescription" class="java.lang.String">
+		<fieldDescription><![CDATA[productDescription]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="150" splitType="Stretch">
+			<staticText>
+				<reportElement x="1" y="50" width="90" height="17" uuid="2e26354a-dcb3-4618-8c40-881364ae1d2f"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="MyArial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DELIVER TO]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="1" y="83" width="279" height="15" uuid="a601a683-c7db-4d24-9aec-0d2005557fd2"/>
+				<textElement>
+					<font fontName="MyArial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{consigneeName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1" y="98" width="279" height="15" uuid="92138a07-6798-4dab-9ca1-66628b76bb71"/>
+				<textElement>
+					<font fontName="MyArial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{consigneeAddr1}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1" y="128" width="279" height="19" uuid="4001379f-9f34-4cb8-85b8-dff1c158b25a"/>
+				<textElement>
+					<font fontName="MyArial" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{consigneeSuburb}.concat(" ").concat($F{consigneeState}).concat(" ").concat( $F{consigneePostcode}).toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="100" y="51" width="50" height="17" uuid="5961d0cb-d6b9-4e83-8603-e0dcbad1f16d"/>
+				<textElement>
+					<font fontName="MyArial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PHONE:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="150" y="51" width="100" height="17" uuid="39e1a67b-326c-459a-b06e-ce69a3a459a8"/>
+				<textElement>
+					<font fontName="MyArial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{consigneePhone}.equals(null) ? "" : $F{consigneePhone}]]></textFieldExpression>
+			</textField>
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement x="1" y="0" width="357" height="50" uuid="63d0b5f7-568e-4dc4-9fd5-5db50af1ce6f"/>
+				<imageExpression><![CDATA["eParcel.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="289" y="50" width="52" height="52" uuid="6bea52eb-2308-425d-b45b-e8f87db99b37"/>
+				<imageExpression><![CDATA[$F{datamatrixImage}]]></imageExpression>
+			</image>
+			<textField isBlankWhenNull="true">
+				<reportElement x="289" y="112" width="52" height="20" uuid="7c8b49d6-3136-474e-a9ae-20a5e2b2d776"/>
+				<box>
+					<pen lineWidth="1.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{injectionState}.substring( 0, 3 )]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1" y="68" width="279" height="15" uuid="b6fe4701-add5-4b2c-9152-307c2c349bc0"/>
+				<textElement>
+					<font fontName="MyArial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{consigneeCompany}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1" y="113" width="279" height="15" uuid="c77e6fec-6afa-4310-90fa-9564ce4b2f76"/>
+				<textElement>
+					<font fontName="MyArial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{consigneeAddr2}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="50" splitType="Stretch">
+			<line>
+				<reportElement x="-1" y="1" width="361" height="1" uuid="89085511-8572-4651-9b28-293642462ea7"/>
+			</line>
+			<staticText>
+				<reportElement x="1" y="17" width="200" height="15" uuid="e8861318-4022-4caf-ba4f-f0846e8e9606"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="MyArial" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DELIVERY INSTRUCTIONS]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="292" y="6" width="48" height="30" uuid="5dfcc6c1-29cd-4049-abcd-ce114710fba5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="MyArial" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{weight}.concat("kg")]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="-1" y="49" width="361" height="1" uuid="ac84d537-6cb7-4b35-99e8-1b9c3b520982"/>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1" y="33" width="269" height="15" uuid="4d45a4c4-8d84-4738-bc59-6549e8367841"/>
+				<textElement>
+					<font fontName="MyArial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{deliveryInstructions}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="2" width="90" height="15" uuid="07bd837f-e84d-47cf-9c2c-cb3e161fa9f0"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="MyArial" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESCRIPTION]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="91" y="2" width="169" height="15" uuid="93acae0d-89d3-4e13-ad88-cc879927d5a3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="MyArial" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{productDescription}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="268" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="190" height="20" uuid="7088cf99-4141-473a-9754-3358a627ac9e"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="MyArial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SIGNATURE ON DELIVERY REQUIRED]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="260" y="6" width="88" height="20" uuid="d5335efc-ab5f-4d65-b774-aa8d4a4132c4"/>
+				<textElement textAlignment="Center">
+					<font fontName="MyArial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{barcodeLabelNumber}.substring( 18, 30 )]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="206" y="30" width="44" height="15" uuid="b962e244-74eb-44f1-9e34-f556c323353f"/>
+				<textElement>
+					<font fontName="MyArial" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Parcel]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="274" y="30" width="32" height="18" uuid="6ef57e18-17f8-4e56-bebd-38ac5da15c25"/>
+				<textElement textAlignment="Center">
+					<font fontName="MyArial"/>
+				</textElement>
+				<text><![CDATA[1/1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="205" y="7" width="45" height="15" uuid="1a95eb52-dec4-4987-823d-b53a7f6bbf0e"/>
+				<text><![CDATA[CON NO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="59" y="57" width="70" height="15" uuid="b4a1eb33-4136-4af9-acae-f7cbdaf8b082"/>
+				<textElement>
+					<font fontName="MyArial" size="12"/>
+				</textElement>
+				<text><![CDATA[AP Article Id:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="129" y="57" width="218" height="15" uuid="ef325528-746f-4670-8076-b08a19118226"/>
+				<textElement>
+					<font fontName="MyArial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{barcodeLabelNumber}.substring( 18 )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="128" y="151" width="220" height="15" uuid="dbf8cf09-6823-45a2-bf98-ecefca01df40"/>
+				<textElement>
+					<font fontName="MyArial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{barcodeLabelNumber}.substring( 18 )]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="57" y="151" width="70" height="15" uuid="96ffe972-517a-4eb8-80cf-b17b5aa3c28a"/>
+				<textElement>
+					<font fontName="MyArial" size="12"/>
+				</textElement>
+				<text><![CDATA[AP Article Id:]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="10" y="81" width="338" height="83" uuid="59d0a8fc-b56d-4bf1-b304-0f08862723c5"/>
+				<c:EAN128 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" moduleWidth="1.4" textPosition="none" checksumMode="check">
+					<c:codeExpression><![CDATA[$F{barcodeLabelNumber}]]></c:codeExpression>
+				</c:EAN128>
+			</componentElement>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="75" splitType="Immediate">
+			<staticText>
+				<reportElement x="147" y="-88" width="205" height="52" uuid="5e7e8bb0-50c6-443b-a308-f1cee1a1ad91"/>
+				<textElement>
+					<font fontName="MyArial" size="7"/>
+				</textElement>
+				<text><![CDATA[Aviation Security and Dangerous Goods Declaration: The sender acknowledges that this article may be carried by air and will be subject to aviation security and clearing procedures; and the sender declares that the article does not contain any dangerous or prohibited goods, explosive or incendiary devices. A false declaration is a criminal offence.]]></text>
+			</staticText>
+			<line>
+				<reportElement x="146" y="-90" width="1" height="165" uuid="9283bbad-0880-4df9-bba2-6eea5aba015c"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="-43" width="146" height="15" uuid="10f9c6c8-ddb8-4d0a-a178-d84d51e31c0a"/>
+				<textElement>
+					<font fontName="MyArial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Return Address (If undeliverable)]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="1" y="-28" width="139" height="15" uuid="fd473895-7f65-4525-a18d-12237e140300"/>
+				<textElement>
+					<font fontName="MyArial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(($F{labelSenderName} == null) || ($F{labelSenderName}.isEmpty()))?"SW1":$F{labelSenderName}.length()>3?$F{labelSenderName}.substring( 0,3 ):$F{labelSenderName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="-13" width="139" height="15" uuid="74384646-f320-4f97-b252-5446ab2b0273"/>
+				<textElement>
+					<font fontName="MyArial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(($F{returnAddress1} == null) || ($F{returnAddress1}.isEmpty()))?"18 Grimes Court":$F{returnAddress1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="2" width="139" height="15" uuid="7fd1e4c2-8511-4e79-bd2c-292dfd3b0b70"/>
+				<textElement>
+					<font fontName="MyArial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(($F{returnAddress2}==null) || ($F{returnAddress2}.isEmpty()))?"Derrimut VIC 3030":$F{returnAddress2}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="147" y="30" width="211" height="1" uuid="fc0f367d-a0be-4d9b-b0ca-8aecc6f7ee5c"/>
+			</line>
+			<staticText>
+				<reportElement x="154" y="33" width="44" height="15" uuid="c6b92165-89fc-4b03-b7b8-ed2df3c5bdee"/>
+				<text><![CDATA[Order No:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="201" y="33" width="149" height="15" uuid="8a4b12e3-a01e-40fe-b4f5-2e626ce1e552"/>
+				<textFieldExpression><![CDATA[$F{referenceNumber}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="154" y="50" width="45" height="15" uuid="bed2a0d1-e188-4cf8-930c-9722cdb00f1b"/>
+				<textElement>
+					<font fontName="MyArial"/>
+				</textElement>
+				<text><![CDATA[SKU No:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="201" y="50" width="150" height="15" uuid="7c9c8dd3-77f7-46c6-980b-ff0c3f3125e2"/>
+				<textElement>
+					<font fontName="MyArial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sku}]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement x="154" y="-13" width="193" height="40" uuid="116ec055-854a-4be1-bfa2-034e05e39482"/>
+				<c:EAN128 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" moduleWidth="1.4" textPosition="none" checksumMode="check">
+					<c:codeExpression><![CDATA[$F{barcodeLabelNumber}]]></c:codeExpression>
+				</c:EAN128>
+			</componentElement>
+			<staticText>
+				<reportElement x="166" y="-32" width="171" height="15" uuid="dbf9dc22-7f03-4f3d-ae46-4b8293b51a35"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Customer Use Only]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>
