@@ -699,6 +699,11 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
+	public List<ETowerResponse> fetchEtowerLogResponseApi(List<String> api ,String fromDate, String toDate) {
+		List<ETowerResponse> etowerResponseData = eTowerResponseRepository.fetchEtowerLogResponseApi(fromDate,toDate,api);
+		return etowerResponseData;
+	}
+	@Override
 	public List<AUPostResponse> fetchAUPosLogtResponse(String fromDate, String toDate) {
 		List<AUPostResponse> auPostResponseData = auPostResponseRepository.fetchAUPostLogResponse(fromDate,toDate);
 		return auPostResponseData;

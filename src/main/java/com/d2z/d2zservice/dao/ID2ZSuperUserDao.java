@@ -129,6 +129,9 @@ public interface ID2ZSuperUserDao {
 	List<String> fetchAllReconcileNonD2zArticleIdNumbers();
 
 	List<ETowerResponse> fetchEtowerLogResponse(String fromDate, String toDate);
+	
+	List<ETowerResponse> fetchEtowerLogResponseApi(List<String> api ,String fromDate, String toDate);
+
 
 	List<AUPostResponse> fetchAUPosLogtResponse(String fromDate, String toDate);
 

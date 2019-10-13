@@ -762,19 +762,26 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 
 	@Override
 	public List<?> fetchApiLogs(String client, String fromDate, String toDate) {
-		
+		List<String> apiname = new ArrayList<String>();
 		if(client.equalsIgnoreCase("etower")) {
-			List<ETowerResponse> etowerResponse = d2zDao.fetchEtowerLogResponse(fromDate,toDate);
+			apiname.add("Create Shipping Order");
+			apiname.add("Forecast");
+			List<ETowerResponse> etowerResponse = d2zDao.fetchEtowerLogResponseApi(apiname,fromDate,toDate);
 			return etowerResponse;
 		}else if(client.equalsIgnoreCase("auPost")) {
 			List<AUPostResponse> auPostResponse = d2zDao.fetchAUPosLogtResponse(fromDate,toDate);
 			return auPostResponse;
-		}else if(client.equalsIgnoreCase("fdm")) {
-			List<FFResponse> fdmResponse = d2zDao.fetchFdmLogResponse(fromDate,toDate);
-			return fdmResponse;
-		}else if(client.equalsIgnoreCase("freiPost")) {
-			List<FFResponse> freiPostResponse = d2zDao.fetchFreiPostResponseResponse(fromDate,toDate);
-			return freiPostResponse;
+		}else if(client.equalsIgnoreCase("pfl")) {
+			apiname.add("PFL - Create order");
+			apiname.add("PFL - Submit order");
+			List<ETowerResponse> etowerResponse = d2zDao.fetchEtowerLogResponseApi(apiname,fromDate,toDate);
+			return etowerResponse;
+		}else if(client.equalsIgnoreCase("nex")) {
+			System.out.println("in nex");
+			apiname.add("NEX - Create order");
+			
+			List<ETowerResponse> etowerResponse = d2zDao.fetchEtowerLogResponseApi(apiname,fromDate,toDate);
+			return etowerResponse;
 		}
 		return null;
 	}
