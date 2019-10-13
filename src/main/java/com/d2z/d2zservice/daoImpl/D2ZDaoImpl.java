@@ -288,7 +288,6 @@ public class D2ZDaoImpl implements ID2ZDao{
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		LabelData provider = null;
 		List<String> autoShipRefNbrs = new ArrayList<String>();
-		
 		User userInfo = userRepository.findByUsername(userName);
 		boolean autoShipment =("Y").equals( userInfo.getAutoShipment());
 		String fileSeqId = "D2ZAPI"+senderDataRepository.fetchNextSeq();
@@ -334,25 +333,21 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
 			senderDataObj.setDeliveryInstructions(senderDataValue.getDeliveryInstructions());
 			if(senderDataValue.getBarcodeLabelNumber()!=null && !senderDataValue.getBarcodeLabelNumber().trim().isEmpty()
-					&& senderDataValue.getDatamatrix()!=null && !senderDataValue.getDatamatrix().trim().isEmpty())
-			{
+					&& senderDataValue.getDatamatrix()!=null && !senderDataValue.getDatamatrix().trim().isEmpty()){
 				senderDataObj.setBarcodelabelNumber(senderDataValue.getBarcodeLabelNumber());
 				senderDataObj.setArticleId(senderDataValue.getBarcodeLabelNumber().substring(18));
 				if(senderDataValue.getBarcodeLabelNumber().length() == 41)
 				senderDataObj.setMlid(senderDataValue.getBarcodeLabelNumber().substring(18,23));
 				else if(senderDataValue.getBarcodeLabelNumber().length() == 39)
 				senderDataObj.setMlid(senderDataValue.getBarcodeLabelNumber().substring(18,21));
-
-			
 				senderDataObj.setDatamatrix(senderDataValue.getDatamatrix());
 				if(autoShipment)
 					autoShipRefNbrs.add(senderDataValue.getReferenceNumber());
 			}
-			if(senderDataValue.getInjectionState()!=null)
-			{
+			if(senderDataValue.getInjectionState()!=null){
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
 			}
-			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType())){
+			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType()) || "1PME".equalsIgnoreCase(senderDataValue.getServiceType())){
 				senderDataObj.setCarrier("Express");
 			}else if(null == senderDataValue.getCarrier() || senderDataValue.getCarrier().isEmpty()){
 				senderDataObj.setCarrier("eParcel");
@@ -396,9 +391,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
 		System.out.println("create consignment API object construction Done data got inserted--->"+insertedOrder.size());
 		if(orderDetailList.get(0).getBarcodeLabelNumber()==null || orderDetailList.get(0).getBarcodeLabelNumber().trim().isEmpty()
-				|| orderDetailList.get(0).getDatamatrix()==null || orderDetailList.get(0).getDatamatrix().trim().isEmpty())
-		{
-		storProcCall(fileSeqId);
+				|| orderDetailList.get(0).getDatamatrix()==null || orderDetailList.get(0).getDatamatrix().trim().isEmpty()){
+			storProcCall(fileSeqId);
 		}
 		updateTrackAndTrace(fileSeqId,userId,autoShipRefNbrs);
 		return fileSeqId;
