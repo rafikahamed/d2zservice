@@ -100,7 +100,7 @@
 				</textElement>
 				<text><![CDATA[DELIVER TO]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField isBlankWhenNull="true">
 				<reportElement x="1" y="83" width="279" height="15" uuid="a601a683-c7db-4d24-9aec-0d2005557fd2"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>

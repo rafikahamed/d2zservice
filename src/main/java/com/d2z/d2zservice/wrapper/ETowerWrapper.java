@@ -161,7 +161,7 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 			com.d2z.d2zservice.model.etower.CreateShippingRequest request = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
 			Random rnd = new Random();
 			int uniqueNumber = 100000 + rnd.nextInt(900000);
-			request.setReferenceNo("SW10" + uniqueNumber);
+			request.setReferenceNo("SW10S" + uniqueNumber);
 			systemRefNbrMap.put(request.getReferenceNo(), orderDetail.getReferenceNumber());
 			//request.setReferenceNo(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
@@ -375,7 +375,7 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 		for(String s : referencenumber)
 		{
-						DeleteShippingResponse data = eTowerProxy.makeCallToDelete("SW10" +
+						DeleteShippingResponse data = eTowerProxy.makeCallToDelete("SW10S" +
 s);
 			ETowerResponse errorResponse = new ETowerResponse();
 			errorResponse.setAPIName("Delete Shipping Order");
@@ -485,7 +485,7 @@ s);
 			com.d2z.d2zservice.model.etower.CreateShippingRequest request = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
 			Random rnd = new Random();
 			int uniqueNumber = 100000 + rnd.nextInt(900000);
-			request.setReferenceNo("SW10" + uniqueNumber);
+			request.setReferenceNo("SW10S" + uniqueNumber);
 			systemRefNbrMap.put(request.getReferenceNo(), orderDetail.getReferenceNumber());
 			//request.setReferenceNo(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
@@ -751,7 +751,7 @@ s);
 				request.setTrackingNo(orderDetail.getArticleId());
 				Random rnd = new Random();
 				int uniqueNumber = 100000 + rnd.nextInt(900000);
-				request.setReferenceNo("SW10" + uniqueNumber);
+				request.setReferenceNo("SW10S" + uniqueNumber);
 				request.setRecipientCompany(orderDetail.getConsigneeCompany());
 				String recpName = orderDetail.getConsignee_name().length() > 34
 						? orderDetail.getConsignee_name().substring(0, 34)

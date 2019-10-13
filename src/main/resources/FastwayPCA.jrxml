@@ -116,7 +116,7 @@
 	<detail>
 		<band height="354" splitType="Stretch">
 			<property name="com.jaspersoft.studio.layout"/>
-			<textField isStretchWithOverflow="true">
+			<textField>
 				<reportElement x="1" y="15" width="188" height="15" uuid="a601a683-c7db-4d24-9aec-0d2005557fd2"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>

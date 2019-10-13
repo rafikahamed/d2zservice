@@ -352,13 +352,10 @@ public class D2ZDaoImpl implements ID2ZDao{
 			{
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
 			}
-			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType())){
+			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType()) || "1PME".equalsIgnoreCase(senderDataValue.getServiceType())){
 				senderDataObj.setCarrier("Express");
-			}else if(null == senderDataValue.getCarrier() || senderDataValue.getCarrier().isEmpty()){
+			}else{
 				senderDataObj.setCarrier("eParcel");
-			}
-			else {
-				senderDataObj.setCarrier(senderDataValue.getCarrier());
 			}
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
 			senderDataObj.setStatus("CONSIGNMENT CREATED");

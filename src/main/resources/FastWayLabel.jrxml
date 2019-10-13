@@ -350,7 +350,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeAddr2}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+			<textField isBlankWhenNull="true">
 				<reportElement x="1" y="4" width="244" height="41" uuid="99809cf8-ecd9-4f13-a8e7-2cb5f662906b"/>
 				<box>
 					<pen lineWidth="0.0" lineColor="#D9D2D2"/>

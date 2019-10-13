@@ -362,12 +362,14 @@ public class D2ZValidator {
 		List<String> invalidAddress = new ArrayList<String>();
 		senderData.forEach(obj -> {
 			if( (obj.getServiceType().startsWith("FW") || obj.getServiceType().startsWith("MC"))
-					&& (obj.getConsigneeAddr1().toUpperCase().contains("PO BOX") || obj.getConsigneeAddr1().toUpperCase().contains("POBOX") || obj.getConsigneeAddr1().toUpperCase().contains("PARCEL COLLECT"))) {
+					&& (obj.getConsigneeAddr1().toUpperCase().contains("PO BOX") || obj.getConsigneeAddr1().toUpperCase().contains("POBOX") 
+							|| obj.getConsigneeAddr1().toUpperCase().contains("PARCEL COLLECT") || obj.getConsigneeAddr1().toUpperCase().contains("PARCEL LOCKER"))) {
 				invalidAddress.add(obj.getReferenceNumber()+"-"+obj.getConsigneeAddr1());
 			}
 			if( (obj.getServiceType().startsWith("FW") || obj.getServiceType().startsWith("MC"))
 					&& null != obj.getConsigneeAddr2() 
-					&& (obj.getConsigneeAddr2().toUpperCase().contains("PO BOX") || obj.getConsigneeAddr1().toUpperCase().contains("POBOX") || obj.getConsigneeAddr2().toUpperCase().contains("PARCEL COLLECT"))) {
+					&& (obj.getConsigneeAddr2().toUpperCase().contains("PO BOX") || obj.getConsigneeAddr1().toUpperCase().contains("POBOX") 
+							|| obj.getConsigneeAddr2().toUpperCase().contains("PARCEL COLLECT") || obj.getConsigneeAddr1().toUpperCase().contains("PARCEL LOCKER"))) {
 				invalidAddress.add(obj.getReferenceNumber()+"-"+obj.getConsigneeAddr2());
 			}
 			
