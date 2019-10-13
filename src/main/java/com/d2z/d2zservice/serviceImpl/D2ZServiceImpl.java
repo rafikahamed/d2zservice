@@ -886,16 +886,14 @@ else
 			return senderDataResponseList;
 		}else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) 
 					|| "MCM3".equalsIgnoreCase(serviceType) || "MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)){
-			
 			PFLSenderDataRequest consignmentData = d2zValidator.isFWSubPostCodeValid(orderDetail);
 			System.out.println("service type:"+serviceType+":"+consignmentData.getPflSenderDataApi().size());
 			if(consignmentData.getPflSenderDataApi().size() > 0) {
-				if("MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)) 	
-				{System.out.println("inside MCS");
-				
+				if("MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)){
+					System.out.println("inside MCS");
 					pcaWrapper.makeCreateShippingOrderPFACall(consignmentData.getPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName(),serviceType);
 				}
-					else
+				else
 					makeCreateShippingOrderPFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName(), serviceType);
 			}
 			

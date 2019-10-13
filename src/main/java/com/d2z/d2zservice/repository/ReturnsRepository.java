@@ -17,7 +17,7 @@ public interface ReturnsRepository extends CrudRepository<Returns, Long>{
 			"	  (\r\n" + 
 			"	  select User_ID, Consignee_name, carrier, Reference_number, BarcodelabelNumber, ArticleId FROM SENDERDATA_MASTER where \r\n" + 
 			"	 Reference_number = :referenceNumber or \r\n" + 
-			"  BarcodelabelNumber = :barcodeLabel or ArticleId = :articleId )  b\r\n" + 
+			"  BarcodelabelNumber like %:barcodeLabel% or ArticleId = :articleId )  b\r\n" + 
 			"  ON A.User_ID = b.User_ID \r\n" + 
 			"  and A.Role_Id = 3")
 	List<String> fetchClientDetails(@Param("referenceNumber") String referenceNumber, @Param("barcodeLabel") String barcodeLabel, 
@@ -48,8 +48,12 @@ public interface ReturnsRepository extends CrudRepository<Returns, Long>{
 	void updateReturnAction(@Param("action") String action, @Param("resendRefNumber") String resendRefNumber, 
 			@Param("articleId") String articleId);
 
-	
 	@Query( nativeQuery = true, value="SELECT * FROM Returns where action is not null and status is null") 
 	List<Returns> returnsOutstanding();
+
+	@Modifying
+	@Transactional
+	@Query("update Returns r set r.status = 'closed' where r.articleId = :articleId")
+	void updateReturnStatus(@Param("articleId") String articleId);
 
 }

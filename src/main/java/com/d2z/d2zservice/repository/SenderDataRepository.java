@@ -541,7 +541,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"     senderdata0_.consignee_phone, \r\n" + 
 	 		"     senderdata0_.product_description, \r\n" + 
 	 		"     senderdata0_.shipper_country, \r\n" + 
-	 		"     senderdata0_.user_id, \r\n" + 
+	 		
 	 		"     senderdata0_.weight, \r\n" + 
 	 		"     senderdata0_.barcodelabelnumber, \r\n" + 
 	 		"     senderdata0_.servicetype, \r\n" + 

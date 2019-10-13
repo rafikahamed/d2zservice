@@ -480,7 +480,7 @@ public class PCAWrapper {
 			for(PCACreateShippingResponse pcaData: pcaResponse) {
 				if(!pcaData.getMsg().equalsIgnoreCase("Success")) {
 					ETowerResponse errorResponse = new ETowerResponse();
-					errorResponse.setAPIName("PCA - Create order");
+					errorResponse.setAPIName("NEX - Create order");
 					errorResponse.setErrorCode(String.valueOf(pcaData.getStatus()));
 					errorResponse.setErrorMessage(pcaData.getMsg());
 					errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
@@ -488,7 +488,7 @@ public class PCAWrapper {
 					responseEntity.add(errorResponse);
 				}else {
 					ETowerResponse errorResponse = new ETowerResponse();
-					errorResponse.setAPIName("PCA - Create order");
+					errorResponse.setAPIName("NEX - Create order");
 					errorResponse.setReferenceNumber(pcaData.getCustref());
 					errorResponse.setOrderId(pcaData.getConnote());
 					errorResponse.setTrackingNo(pcaData.getRef());

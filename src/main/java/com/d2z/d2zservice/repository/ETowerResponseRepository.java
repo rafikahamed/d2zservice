@@ -10,6 +10,10 @@ public interface ETowerResponseRepository extends CrudRepository<ETowerResponse,
 
      @Query(nativeQuery = true, value="SELECT * FROM ETowerResponse where Timestamp between :fromDate and :toDate") 
      List<ETowerResponse> fetchEtowerLogResponse(@Param("fromDate") String fromDate, @Param("toDate") String toDate);
+     
+     @Query(nativeQuery = true, value="SELECT * FROM ETowerResponse where APIName IN (:api) and Timestamp between :fromDate and :toDate") 
+     List<ETowerResponse> fetchEtowerLogResponseApi(@Param("fromDate") String fromDate, @Param("toDate") String toDate,@Param("api") List<String> apiname);
+     
  
 }
 

@@ -61,6 +61,7 @@ import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.PflTrackEventRequest;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
+import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -276,7 +277,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			exportval.setBarcodelabelNumber(String.valueOf(obj[13]));
 			exportval.setServicetype(String.valueOf(obj[14]));
 			exportval.setCurrency(String.valueOf(obj[15]));
-			exportval.setDat(String.valueOf(obj[17]).substring(0, 10));
+			exportval.setDat(String.valueOf(obj[16]).substring(0, 10));
 			exportshipmentlist.add(exportval);
 		}
 		// ExportDeleteList.forEach(System.out::println);
@@ -761,19 +762,26 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 
 	@Override
 	public List<?> fetchApiLogs(String client, String fromDate, String toDate) {
-		
+		List<String> apiname = new ArrayList<String>();
 		if(client.equalsIgnoreCase("etower")) {
-			List<ETowerResponse> etowerResponse = d2zDao.fetchEtowerLogResponse(fromDate,toDate);
+			apiname.add("Create Shipping Order");
+			apiname.add("Forecast");
+			List<ETowerResponse> etowerResponse = d2zDao.fetchEtowerLogResponseApi(apiname,fromDate,toDate);
 			return etowerResponse;
 		}else if(client.equalsIgnoreCase("auPost")) {
 			List<AUPostResponse> auPostResponse = d2zDao.fetchAUPosLogtResponse(fromDate,toDate);
 			return auPostResponse;
-		}else if(client.equalsIgnoreCase("fdm")) {
-			List<FFResponse> fdmResponse = d2zDao.fetchFdmLogResponse(fromDate,toDate);
-			return fdmResponse;
-		}else if(client.equalsIgnoreCase("freiPost")) {
-			List<FFResponse> freiPostResponse = d2zDao.fetchFreiPostResponseResponse(fromDate,toDate);
-			return freiPostResponse;
+		}else if(client.equalsIgnoreCase("pfl")) {
+			apiname.add("PFL - Create order");
+			apiname.add("PFL - Submit order");
+			List<ETowerResponse> etowerResponse = d2zDao.fetchEtowerLogResponseApi(apiname,fromDate,toDate);
+			return etowerResponse;
+		}else if(client.equalsIgnoreCase("nex")) {
+			System.out.println("in nex");
+			apiname.add("NEX - Create order");
+			
+			List<ETowerResponse> etowerResponse = d2zDao.fetchEtowerLogResponseApi(apiname,fromDate,toDate);
+			return etowerResponse;
 		}
 		return null;
 	}
@@ -1382,6 +1390,11 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	@Override
 	public List<Returns> returnsOutstanding() {
 		return d2zDao.returnsOutstanding();
+	}
+
+	@Override
+	public UserMessage updateAction(List<ReturnsAction> returnsAction) {
+		return  d2zDao.updateAction(returnsAction);
 	}
 
 
