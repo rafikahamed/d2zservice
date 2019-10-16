@@ -44,6 +44,7 @@ import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
 import com.d2z.d2zservice.model.IncomingJobResponse;
@@ -369,5 +370,12 @@ public class D2ZSuperUserController {
 	public UserMessage updateAction(@RequestBody List<ReturnsAction> returnsAction) {
 		return superUserD2zService.updateAction(returnsAction);
 	}
+	
+	
+	@RequestMapping(method = RequestMethod.POST, path = "/weight",consumes=MediaType.APPLICATION_JSON)
+	public UserMessage updateWeight(@RequestBody List<WeightUpload> weight) {
+		return superUserD2zService.uploadWeight(weight);
+	}
+	
 	
 }

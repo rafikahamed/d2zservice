@@ -52,6 +52,7 @@ import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.ZoneDetails;
 import com.d2z.d2zservice.model.ZoneRates;
 import com.d2z.d2zservice.model.auspost.TrackableItems;
@@ -1398,6 +1399,20 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 		}
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage("Return Action Updated Successfully");
+		return usrMsg;
+	}
+
+	@Override
+	public UserMessage uploadweight(List<WeightUpload> weight) {
+		// TODO Auto-generated method stub
+		for(WeightUpload wei : weight)
+		{
+			Double weig = (Double.parseDouble(wei.getWeight()));
+			senderDataRepository.updateweight(weig, wei.getArticleid());
+			senderdata_InvoicingRepository.updateinvoicingweight(weig, wei.getArticleid());
+		}
+		UserMessage usrMsg = new UserMessage();
+		usrMsg.setMessage("Weight Updated Successfully");
 		return usrMsg;
 	}
 		
