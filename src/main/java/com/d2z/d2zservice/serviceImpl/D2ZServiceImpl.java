@@ -1153,8 +1153,8 @@ else
 				 Random rnd = new Random();
 				 int uniqueNumber = 100000000 + rnd.nextInt(900000000);
 	    		 String sysRefNbr = "D"+uniqueNumber;
-	    		 shipmentRequest.setSender_references(sysRefNbr);
 				//shipmentRequest.setSender_references(data.getReference_number());
+	    		 shipmentRequest.setSender_references(sysRefNbr);
 				shipmentRequest.setEmail_tracking_enabled(email != null);
 
 				FromAddress from = new FromAddress();
@@ -1162,7 +1162,9 @@ else
 				shipmentRequest.setFrom(from);
 
 				ToAddress to = new ToAddress();
-				to.setName(data.getConsignee_name());
+				to.setName(data.getConsignee_name().length() > 39	
+				        ? data.getConsignee_name().substring(0, 39)
+						:data.getConsignee_name());
 				to.setPostcode(data.getConsignee_Postcode());
 				to.setState(data.getConsignee_State());
 				to.setSuburb(data.getConsignee_Suburb());
