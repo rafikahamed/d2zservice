@@ -1165,6 +1165,7 @@ else
 				to.setName(data.getConsignee_name().length() > 39	
 				        ? data.getConsignee_name().substring(0, 39)
 						:data.getConsignee_name());
+				
 				to.setPostcode(data.getConsignee_Postcode());
 				to.setState(data.getConsignee_State());
 				to.setSuburb(data.getConsignee_Suburb());
