@@ -1,13 +1,22 @@
 package com.d2z.d2zservice.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.d2z.d2zservice.entity.Senderdata_Invoicing;
 
 public interface Senderdata_InvoicingRepository extends CrudRepository<Senderdata_Invoicing, Long>{
 	
 	@Procedure(name = "InvoiceUpdate")
 	void approvedInvoice(@Param("Indicator") String Indicator, @Param("Airwaybill") String Airwaybill);
+	
+	@Modifying(flushAutomatically = true,clearAutomatically = true)
+	@Transactional
+	@Query(nativeQuery = true, value="Update Senderdata_Invoicing  set Weight = :weight,Invoiced = 'N', Billed = 'N'  where ArticleId = :articleid")
+	void updateinvoicingweight(@Param("weight") Double weight, @Param("articleid") String articleid);
 
 }

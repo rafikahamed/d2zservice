@@ -29,6 +29,7 @@ import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 
@@ -196,6 +197,8 @@ public interface ID2ZSuperUserDao {
 	List<Returns> returnsOutstanding();
 
 	UserMessage updateAction(List<ReturnsAction> returnsAction);
+
+	UserMessage uploadweight(List<WeightUpload> weight);
 
 }
 

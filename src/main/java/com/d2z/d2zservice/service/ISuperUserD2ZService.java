@@ -31,6 +31,7 @@ import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
 import com.d2z.d2zservice.model.IncomingJobResponse;
@@ -156,5 +157,7 @@ public interface ISuperUserD2ZService{
 	public List<Returns> returnsOutstanding();
 
 	public UserMessage updateAction(List<ReturnsAction> returnsAction);
+
+	public UserMessage uploadWeight(List<WeightUpload> weight);
 
 }

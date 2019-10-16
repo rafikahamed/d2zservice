@@ -67,6 +67,7 @@ import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.auspost.TrackableItems;
 import com.d2z.d2zservice.model.auspost.TrackingEvents;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
@@ -1395,6 +1396,12 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	@Override
 	public UserMessage updateAction(List<ReturnsAction> returnsAction) {
 		return  d2zDao.updateAction(returnsAction);
+	}
+
+	@Override
+	public UserMessage uploadWeight(List<WeightUpload> weight) {
+		// TODO Auto-generated method stub
+		return d2zDao.uploadweight(weight);
 	}
 
 
