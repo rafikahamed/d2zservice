@@ -16,7 +16,7 @@ public interface Senderdata_InvoicingRepository extends CrudRepository<Senderdat
 	
 	@Modifying(flushAutomatically = true,clearAutomatically = true)
 	@Transactional
-	@Query(nativeQuery = true, value="Update Senderdata_Invoicing  set Weight = :weight,Invoiced = 'N', Billed = 'N'  where ArticleId = :articleid")
+	@Query(nativeQuery = true, value="Update Senderdata_Invoicing  set Weight = :weight,Invoiced = 'N', Billed = 'N',d2zrate=null,brokerrate =null  where ArticleId = :articleid")
 	void updateinvoicingweight(@Param("weight") Double weight, @Param("articleid") String articleid);
 
 }
