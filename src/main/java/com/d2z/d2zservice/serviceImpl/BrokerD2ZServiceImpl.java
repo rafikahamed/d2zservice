@@ -159,7 +159,25 @@ public class BrokerD2ZServiceImpl implements IBrokerD2ZService{
 	public List<SenderdataMaster> downloadShipmentData(String shipmentNumber, Integer userId) {
 		// TODO Auto-generated method stub
 		List<Integer> listOfClientId = d2zDao.getClientId(userId);
-		return d2zDao.fetchShipmentData(shipmentNumber,listOfClientId);
+		 List<SenderdataMaster> data =  d2zDao.fetchShipmentData(shipmentNumber,listOfClientId);
+		 List<SenderdataMaster> shipmentData = new ArrayList<SenderdataMaster>();
+		 for(SenderdataMaster senderData : data) {
+			 String connoteNo = "";
+				if(null!=senderData.getBarcodelabelNumber()) {
+					if(senderData.getBarcodelabelNumber().length()==12) {
+						connoteNo = senderData.getBarcodelabelNumber();
+					}
+					else if(senderData.getBarcodelabelNumber().length()==39) {
+						connoteNo = senderData.getBarcodelabelNumber().substring(18, 28);
+					}
+					else if(senderData.getBarcodelabelNumber().length()==41) {
+						connoteNo = senderData.getBarcodelabelNumber().substring(18,30);
+					}
+				}
+				senderData.setBarcodelabelNumber(connoteNo);
+				shipmentData.add(senderData);
+		 }
+		 return shipmentData;
 	}
 
 
