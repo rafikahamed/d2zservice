@@ -11,6 +11,7 @@ import java.math.MathContext;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -39,6 +40,7 @@ import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
+import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.AddShipmentModel;
@@ -82,6 +84,11 @@ import com.d2z.d2zservice.repository.CSTicketsRepository;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
+import com.d2z.d2zservice.wrapper.ETowerWrapper;
+import com.d2z.d2zservice.wrapper.FreipostWrapper;
+import com.d2z.d2zservice.wrapper.PCAWrapper;
+import com.d2z.d2zservice.wrapper.PFLWrapper;
+
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -125,6 +132,18 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	@Autowired
 	AusPostProxy ausPostProxy;
 
+	@Autowired
+	PFLWrapper pflWrapper;
+	
+	@Autowired
+	PCAWrapper pcaWrapper;
+	
+	@Autowired
+	FreipostWrapper freipostWrapper;
+
+	@Autowired
+	ETowerWrapper eTowerWrapper; 
+	
 	@Override
 	public UserMessage uploadTrackingFile(List<UploadTrackingFileData> fileData) {
 		UserMessage userMsg = new UserMessage();
@@ -1402,6 +1421,103 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	public UserMessage uploadWeight(List<WeightUpload> weight) {
 		// TODO Auto-generated method stub
 		return d2zDao.uploadweight(weight);
+	}
+
+	@Override
+	public ResponseMessage allocateShipment(String articleid, String shipmentNumber) {
+		// TODO Auto-generated method stub
+String[] articleNbrs = articleid.split(",");
+		
+		
+		
+		ResponseMessage userMsg = new ResponseMessage();
+		/* String[] refNbrs = referenceNumbers.split(",");
+		List<String> refNumbers = Arrays.asList(refNbrs);*/
+		List<String> refNumbers = d2zDao.fetchRefnobyArticle(Arrays.asList(articleNbrs));
+	System.out.println("refno"+refNumbers.size());
+		List<SenderdataMaster> consignments = d2zDao.fetchConsignmentsByRefNbr(refNumbers);
+		if(consignments.isEmpty()) {
+			userMsg.setResponseMessage("Invalid Article id");
+		}
+		String referenceNumbers =refNumbers.stream()
+                .collect(Collectors.joining(","));
+		
+		List<String> allocateddata = consignments.stream().filter(obj -> null!=obj.getAirwayBill())
+				.map(a -> {
+			
+				String msg = a.getReference_number();
+			
+			/*if (a.getIsDeleted().equalsIgnoreCase("Y")) {
+				msg = new StringBuffer(a.getReference_number());
+				msg.append(" : Consignment already deleted");
+			}*/
+			return msg;
+		}).collect(Collectors.toList());
+		/*if (!invalidData.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Request failed", invalidData);
+		}*/
+		List<String> toAllocate = refNumbers;
+		toAllocate.removeAll(allocateddata);
+		
+		String[] refNbrs = toAllocate.stream().toArray(String[] ::new);
+		
+		
+      
+		  d2zDao.allocateShipment(referenceNumbers, shipmentNumber);
+		
+		  String msg  = d2zDao.updateinvoicing(articleid,shipmentNumber);
+		userMsg.setResponseMessage(msg);
+		 
+		Runnable freipost = new Runnable( ) {			
+	        public void run() {
+	        	String[] refNbrArray = referenceNumbers.split(",");
+	        	List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
+	        	if(!senderMasterData.isEmpty()) {
+	        		freipostWrapper.uploadManifestService(senderMasterData);
+	        	}
+	        	
+	        	List<SenderdataMaster> pcaData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"PCA");
+	        	if(!pcaData.isEmpty()) {
+	        		try {
+						pcaWrapper.makeCreateShippingOrderPCACall(pcaData);
+					} catch (EtowerFailureResponseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	        	}
+	        	
+	        	List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
+	        	 if(!fastwayOrderId.isEmpty()) {
+	        		 try {
+						pflWrapper.createSubmitOrderPFL(fastwayOrderId);
+					} catch (EtowerFailureResponseException e) {
+						e.printStackTrace();
+					}
+	        	 }
+	        
+	        	 List<String> articleIDS = d2zDao.fetchDataForEtowerForeCastCall(refNbrs);
+	        	 if(!articleIDS.isEmpty()) {
+	        		 eTowerWrapper.makeEtowerForecastCall(articleIDS);
+	        	 }
+	        }};
+	        new Thread(freipost).start();
+	        
+		/* Runnable pfl = new Runnable( ) {			
+		        public void run() {
+		        }
+		    };
+			new Thread(pfl).start();
+		
+		 Runnable r = new Runnable( ) {			
+	        public void run() {
+	        	
+	        }
+	     };
+		 new Thread(r).start();*/
+		 
+		
+		return userMsg;
+
 	}
 
 

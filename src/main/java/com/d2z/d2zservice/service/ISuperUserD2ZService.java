@@ -160,4 +160,6 @@ public interface ISuperUserD2ZService{
 
 	public UserMessage uploadWeight(List<WeightUpload> weight);
 
+	public ResponseMessage allocateShipment(String articleid, String shipmentNumber);
+
 }

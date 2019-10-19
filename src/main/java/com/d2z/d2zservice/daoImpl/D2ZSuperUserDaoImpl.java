@@ -1405,15 +1405,65 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 	@Override
 	public UserMessage uploadweight(List<WeightUpload> weight) {
 		// TODO Auto-generated method stub
+		System.out.println("before for:"+System.currentTimeMillis());
 		for(WeightUpload wei : weight)
 		{
 			Double weig = (Double.parseDouble(wei.getWeight()));
 			senderDataRepository.updateweight(weig, wei.getArticleid());
 			senderdata_InvoicingRepository.updateinvoicingweight(weig, wei.getArticleid());
 		}
+		System.out.println("after for:"+System.currentTimeMillis());
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage("Weight Updated Successfully");
 		return usrMsg;
+	}
+
+	@Override
+	public List<SenderdataMaster> fetchConsignmentsByRefNbr(List<String> refNbrs) {
+		return senderDataRepository.fetchConsignmentsByRefNbr(refNbrs);
+	}
+
+	@Override
+	public List<String> fetchRefnobyArticle(List<String> articleid) {
+		// TODO Auto-generated method stub
+		List<String> refnbrs = senderDataRepository.fetchreferencenumberforArticleid(articleid);
+		return refnbrs;
+	}
+
+	@Override
+	public String allocateShipment(String referenceNumbers, String shipmentNumber) {
+		// TODO Auto-generated method stub
+		senderDataRepository.updateAirwayBill(referenceNumbers.split(","), shipmentNumber,D2ZCommonUtil.getAETCurrentTimestamp());
+		senderDataRepository.allocateShipment(referenceNumbers, shipmentNumber);
+		return "Shipment Allocated Successfully";
+	}
+
+	@Override
+	public List<SenderdataMaster> fetchDataBasedonSupplier(List<String> incomingRefNbr, String supplier) {
+		// TODO Auto-generated method stub
+		return senderDataRepository.fetchDataBasedonSupplier(incomingRefNbr, supplier);
+	}
+
+	@Override
+	public List<String> fetchDataforPFLSubmitOrder(String[] refNbrs) {
+		// TODO Auto-generated method stub
+		return senderDataRepository.fetchDataforPFLSubmitOrder(refNbrs);
+	}
+
+	@Override
+	public List<String> fetchDataForEtowerForeCastCall(String[] refNbrs) {
+		// TODO Auto-generated method stub
+		return senderDataRepository.fetchDataForEtowerForeCastCall(refNbrs);
+	}
+
+	@Override
+	public String updateinvoicing(String toAllocate, String shipmentNumber) {
+		// TODO Auto-generated method stub
+		System.out.println("airway"+shipmentNumber);
+		int count = senderdata_InvoicingRepository.updateinvoicingairway(shipmentNumber,toAllocate.split(","));
+		System.out.println("updated"+count);
+		//senderdata_InvoicingRepository.selectinvoicing(toAllocate.split(","));
+		return "Updated Succesfully";
 	}
 		
 }

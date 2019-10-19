@@ -377,5 +377,9 @@ public class D2ZSuperUserController {
 		return superUserD2zService.uploadWeight(weight);
 	}
 	
+	@RequestMapping(method = RequestMethod.GET, path = "/allocate-shipment")
+	 public ResponseMessage allocateShipment(@RequestParam("articleid") String articleid, @RequestParam("shipment")String shipmentNumber)  {
+		return  superUserD2zService.allocateShipment(articleid,shipmentNumber);
+	}
 	
 }

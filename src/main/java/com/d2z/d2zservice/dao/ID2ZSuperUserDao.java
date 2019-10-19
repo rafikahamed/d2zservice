@@ -200,5 +200,18 @@ public interface ID2ZSuperUserDao {
 
 	UserMessage uploadweight(List<WeightUpload> weight);
 
+	List<String> fetchRefnobyArticle(List<String> articleid);
+	
+	public List<SenderdataMaster> fetchConsignmentsByRefNbr(List<String> refNbrs);
+	
+	public List<SenderdataMaster> fetchDataBasedonSupplier(List<String> incomingRefNbr, String string);
+	
+	public List<String> fetchDataforPFLSubmitOrder(String[] refNbrs);
+	
+	public String allocateShipment(String referenceNumbers, String shipmentNumber);
+	
+	public List<String> fetchDataForEtowerForeCastCall(String[] refNbrs);
+
+	String updateinvoicing(String toAllocate, String shipmentNumber);
 }
 
