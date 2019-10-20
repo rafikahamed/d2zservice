@@ -17,7 +17,7 @@ public interface ReturnsRepository extends CrudRepository<Returns, Long>{
 			"	  (\r\n" + 
 			"	  select User_ID, Consignee_name, carrier, Reference_number, BarcodelabelNumber, ArticleId FROM SENDERDATA_MASTER where \r\n" + 
 			"	 Reference_number = :referenceNumber or \r\n" + 
-			"  BarcodelabelNumber like %:barcodeLabel% or ArticleId = :articleId or datamatrix = :datamatrix)  b\r\n" + 
+			"  BarcodelabelNumber like %:barcodeLabel% or ArticleId = :articleId or datamatrix = :barcodeLabel)  b\r\n" + 
 			"  ON A.User_ID = b.User_ID \r\n" + 
 			"  and A.Role_Id = 3")
 	List<String> fetchClientDetails(@Param("referenceNumber") String referenceNumber, @Param("barcodeLabel") String barcodeLabel, 
