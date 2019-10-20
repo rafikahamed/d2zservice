@@ -47,6 +47,9 @@ public class CSTickets implements Serializable {
 	@Column(name = "ExpectedDeliveryDate")
 	private Timestamp expectedDeliveryDate;
 	
+	@Column(name = "EnquiryOpenDate")
+	private Timestamp enquiryOpenDate;
+	
 	@Column(name = "Status")
 	private String status;
 	
@@ -269,6 +272,14 @@ public class CSTickets implements Serializable {
 
 	public void setBarcodelabelNumber(String barcodelabelNumber) {
 		this.barcodelabelNumber = barcodelabelNumber;
+	}
+
+	public Timestamp getEnquiryOpenDate() {
+		return enquiryOpenDate;
+	}
+
+	public void setEnquiryOpenDate(Timestamp enquiryOpenDate) {
+		this.enquiryOpenDate = enquiryOpenDate;
 	}
 	
 }

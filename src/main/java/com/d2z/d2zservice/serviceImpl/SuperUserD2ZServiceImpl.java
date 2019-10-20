@@ -1300,11 +1300,15 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		if(csTickets != null) {
 			for(CSTickets csTicketDetails:csTickets) {
 				if(csTicketDetails.getCarrier().equalsIgnoreCase("FastwayS") || csTicketDetails.getCarrier().equalsIgnoreCase("StarTrack")) {
-					if(csTicketDetails.getArticleID() != null)
-						pcaList.add(d2zDao.fetchBarcodeLabel(csTicketDetails.getArticleID()));
+					if(csTicketDetails.getArticleID() != null && csTicketDetails.getBarcodelabelNumber() != null) {
+						//pcaList.add(d2zDao.fetchBarcodeLabel(csTicketDetails.getArticleID()));
+						pcaList.add(csTicketDetails.getBarcodelabelNumber());
+					}
 				}else if(csTicketDetails.getCarrier().equalsIgnoreCase("FastwayM")) {
-					if(csTicketDetails.getArticleID() != null)
-						pflList.add(d2zDao.fetchBarcodeLabel(csTicketDetails.getArticleID()));
+					if(csTicketDetails.getArticleID() != null && csTicketDetails.getBarcodelabelNumber() != null) {
+						//pflList.add(d2zDao.fetchBarcodeLabel(csTicketDetails.getArticleID()));
+						pflList.add(csTicketDetails.getBarcodelabelNumber());
+					}
 				}else if(csTicketDetails.getCarrier().equalsIgnoreCase("Express")) {
 					if(csTicketDetails.getArticleID() != null)
 						etowerList.add(csTicketDetails.getArticleID());
@@ -1329,10 +1333,12 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			}
 		}
 		if(pcaList.size() > 0 ) {
+			System.out.println("PCA List-->");
 			System.out.println(pcaList.toString());	
 			pcaproxy.trackingEvent(pcaList);
 		}
 		if(pflList.size() > 0 ) {
+			System.out.println("PFL List-->");
 			System.out.println(pflList.toString());
 			List<PFLTrackingResponseDetails> pflTrackingDetails = new ArrayList<PFLTrackingResponseDetails>();
 			for(String pflValue:pflList) {
@@ -1340,19 +1346,28 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				PFLTrackingResponseDetails pflResp = new PFLTrackingResponseDetails();
 				pflTrackEvent.setTracking_number(pflValue);
 				PFLTrackingResponse pflTrackResp = pflProxy.trackingEvent(pflTrackEvent);
-				pflResp.setBarcodeLabel(pflTrackEvent.getTracking_number());
-				pflResp.setStatus(pflTrackResp.getResult().get(0).getStatus());
-				pflResp.setStatus_code(pflTrackResp.getResult().get(0).getStatus_code());
-				pflTrackingDetails.add(pflResp);
+				if(pflTrackResp.getResult() != null) {
+					pflResp.setBarcodeLabel(pflTrackEvent.getTracking_number());
+					pflResp.setStatus(pflTrackResp.getResult().get(0).getStatus());
+					pflResp.setStatus_code(pflTrackResp.getResult().get(0).getStatus_code());
+					pflResp.setDate(pflTrackResp.getResult().get(0).getDate());
+					pflTrackingDetails.add(pflResp);
+				}
 			}
 			System.out.println(pflTrackingDetails);
-			ResponseMessage respMsg = d2zDao.updatePFLTrackingDetails(pflTrackingDetails);
+			ResponseMessage respMsg = null;
+			if(pflTrackingDetails.size() > 0) 
+				respMsg = d2zDao.updatePFLTrackingDetails(pflTrackingDetails);
+			else 
+				System.out.println("No Response from PFL for the giventracking number");
 		}
 		if(etowerList.size() > 0 ) {
+			System.out.println("Etower List");
 			System.out.println(etowerList.toString());
 			eTowerTrackingEvent(etowerList);
 		}
 		if(auPostList.size() > 0 ) {
+			System.out.println("AUPost List");
 			System.out.println(auPostList.toString());
 			auTrackingEvent(auPostList);
 		}

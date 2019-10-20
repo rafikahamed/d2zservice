@@ -59,6 +59,7 @@ public class ETowerProxy {
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
+		System.out.println("Etower Tracking response --->");
         System.out.println("Response :: " + jsonResponse);
         return responseList;
 	}

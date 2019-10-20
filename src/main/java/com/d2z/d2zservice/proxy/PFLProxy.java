@@ -235,8 +235,9 @@ public class PFLProxy {
 		try {
 			ResponseEntity<PFLTrackingResponse> responseEntity = template.exchange(url, HttpMethod.POST,
 					httpEntity, PFLTrackingResponse.class);
-			System.out.println(responseEntity.getStatusCode());
+			System.out.println("PFL Response code--->"+responseEntity.getStatusCode());
 			response = responseEntity.getBody();
+			System.out.println(response);
 		} catch (HttpStatusCodeException e) {
 			System.out.println("error code :" + e.getStatusCode());
 			jsonResponse = e.getResponseBodyAsString();

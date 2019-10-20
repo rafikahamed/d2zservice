@@ -2,6 +2,7 @@ package com.d2z.d2zservice.daoImpl;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -13,6 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -874,7 +876,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				openEnquiryResponse.setUserId(Integer.parseInt(obj[2].toString()));
 				openEnquiryResponse.setClient_broker_id(Integer.parseInt(obj[3].toString()));
 				openEnquiryResponse.setArticleID(obj[4] != null ? obj[4].toString() : "");
-				openEnquiryResponse.setTrackingEventDateOccured(obj[5] != null ? obj[5].toString() : "");
+				openEnquiryResponse.setTrackingEventDateOccured(obj[5] != null ? obj[5].toString(): null);
 				openEnquiryResponse.setConsigneeName(obj[6] != null ? obj[6].toString() : "");
 				openEnquiryResponse.setStatus(obj[7] != null ? obj[7].toString() : "");
 				openEnquiryResponse.setComments(obj[8] != null ? obj[8].toString() : "");
@@ -884,8 +886,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				openEnquiryResponse.setConsigneeState(obj[12] != null ? obj[12].toString() : "");
 				openEnquiryResponse.setConsigneePostcode(obj[13] != null ? obj[13].toString() : "");
 				openEnquiryResponse.setProductDescription(obj[14] != null ? obj[14].toString() : "");
+				openEnquiryResponse.setTrackingEvent(obj[15] != null ? obj[15].toString() : "");
 				TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(openEnquiryResponse.getConsigneePostcode());
-				if( null != transitTimeResponse && null != transitTimeResponse.getTransitTime()) {
+				if( null != transitTimeResponse && null != transitTimeResponse.getTransitTime() && null !=openEnquiryResponse.getTrackingEventDateOccured()) {
 					deliveryDate = D2ZCommonUtil.getIncreasedTime(openEnquiryResponse.getTrackingEventDateOccured(),transitTimeResponse.getTransitTime());
 				}else {
 					
@@ -1331,16 +1334,24 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 	public ResponseMessage updateAUCSTrackingDetails(TrackingResponse auTrackingDetails) {
 		List<TrackingResults> trackingData = auTrackingDetails.getTracking_results();
 		ResponseMessage responseMsg =  new ResponseMessage();
-		if(trackingData.isEmpty()) {
+		if(trackingData == null) {
 			responseMsg.setResponseMessage("No Tracking Info from AuPost");
 		}else {
 			for(TrackingResults data : trackingData ) {
 				if(data!=null && data.getTrackable_items()!=null) {
 					for(TrackableItems trackingLabel : data.getTrackable_items()) {
-						if(trackingLabel != null && trackingLabel.getEvents() != null) {
-							for(TrackingEvents trackingEvents: trackingLabel.getEvents()) {
-								csticketsRepository.updateAUCSTrackingDetails(trackingLabel.getArticle_id(), trackingEvents.getDescription(), trackingLabel.getStatus());
+						if(trackingLabel != null && trackingLabel.getEvents() != null && trackingLabel.getEvents().isEmpty()) {
+							DateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+							DateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+							Date date = null;
+							try {
+								date = inputFormat.parse(trackingLabel.getEvents().get(0).getDate());
+							} catch (ParseException e) {
+								e.printStackTrace();
 							}
+							String eventDateOccuredAuPost = outputFormat.format(date);
+							System.out.println("AU Post Response Event Date--->"+eventDateOccuredAuPost);
+							csticketsRepository.updateAUCSTrackingDetails(trackingLabel.getArticle_id(), trackingLabel.getEvents().get(0).getDescription(), trackingLabel.getStatus(), Timestamp.valueOf(eventDateOccuredAuPost));
 						}
 					}
 				}
@@ -1354,14 +1365,22 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 	public ResponseMessage updateAUEtowerTrackingDetails(TrackingEventResponse trackEventresponse) {
 		List<TrackEventResponseData> responseData = trackEventresponse.getData();
 		ResponseMessage responseMsg = new ResponseMessage();
-		if (responseData.isEmpty()) {
+		if (responseData == null) {
 			responseMsg.setResponseMessage("No Data from ETower");
 		} else {
 			for (TrackEventResponseData data : responseData) {
 				if (data != null && data.getEvents() != null) {
-					for (ETowerTrackingDetails trackingDetails : data.getEvents()) {
-						csticketsRepository.updateAUCSTrackingDetails(trackingDetails.getTrackingNo(), trackingDetails.getActivity(), null);
+					DateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+				    DateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+				    Date date = null;
+					try {
+						date = inputFormat.parse(data.getEvents().get(0).getEventTime());
+					} catch (ParseException e) {
+						e.printStackTrace();
 					}
+				    String eventDateOccured = outputFormat.format(date);
+				    System.out.println("Etower Response Event Date--->"+eventDateOccured);
+					csticketsRepository.updateAUCSTrackingDetails(data.getEvents().get(0).getTrackingNo(), data.getEvents().get(0).getActivity(), data.getStatus(), Timestamp.valueOf(eventDateOccured));
 				}
 			}
 			responseMsg.setResponseMessage("Data uploaded successfully from ETower");
@@ -1378,13 +1397,14 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 	public ResponseMessage updatePFLTrackingDetails(List<PFLTrackingResponseDetails> pflTrackingDetails) {
 		ResponseMessage responseMsg = new ResponseMessage();
 		if(pflTrackingDetails.isEmpty()) {
-			responseMsg.setResponseMessage("No Data from PFL");
+			responseMsg.setResponseMessage("No Data from PFL Response");
 		}else {
 			for(PFLTrackingResponseDetails data:pflTrackingDetails) {
-				//csticketsRepository.updatePFLCSTrackingDetails(data.getBarcodeLabel(), data.getStatus(), data.getStatus_code());
+				csticketsRepository.updatePFLCSTrackingDetails(data.getBarcodeLabel(), data.getStatus(), data.getStatus_code(), Timestamp.valueOf(data.getDate()));
 			}
+			responseMsg.setResponseMessage("Data uploaded successfully from PFL");
 		}
-		return null;
+		return responseMsg;
 	}
 
 	@Override

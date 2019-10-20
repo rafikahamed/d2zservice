@@ -1,5 +1,6 @@
 package com.d2z.d2zservice.repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Modifying;
@@ -37,7 +38,7 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 			"				B.Consignee_Suburb,\r\n" + 
 			"				B.Consignee_State,\r\n" + 
 			"				B.Consignee_Postcode,\r\n" + 
-			"				B.Product_Description\r\n" + 
+			"				B.Product_Description, B.TrackingEvent\r\n" + 
 			"FROM   (\r\n" + 
 			"	SELECT DISTINCT U.client_broker_id, \r\n" + 
 			"                        S.ticketid ,\r\n" + 
@@ -51,7 +52,7 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 			"						S.Consignee_Suburb,\r\n" + 
 			"						S.Consignee_State,\r\n" + 
 			"						S.Consignee_Postcode,\r\n" + 
-			"						S.Product_Description\r\n" + 
+			"						S.Product_Description, S.TrackingEvent\r\n" + 
 			"        FROM CSTickets S \r\n" + 
 			"               INNER JOIN users U \r\n" + 
 			"                       ON U.role_id IN ( '3' ) \r\n" + 
@@ -70,7 +71,7 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 			"						S.Consignee_Suburb,\r\n" + 
 			"						S.Consignee_State,\r\n" + 
 			"						S.Consignee_Postcode,\r\n" + 
-			"						S.Product_Description\r\n" + 
+			"						S.Product_Description, S.TrackingEvent \r\n" + 
 			"        FROM   CSTickets S \r\n" + 
 			"               INNER JOIN users U \r\n" + 
 			"                       ON U.role_id IN ( '2' ) \r\n" + 
@@ -99,14 +100,12 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 
 	@Modifying
 	@Transactional
-	@Query("update CSTickets c set c.trackingEvent = :description, c.trackingStatus = :status where c.articleID = :article_id")
-	void updateAUCSTrackingDetails(@Param("article_id") String article_id, @Param("description") String description, 
-			@Param("status") String status);
+	@Query("update CSTickets c set c.trackingEvent = :description, c.trackingStatus = :status, trackingEventDateOccured = :eventDate where c.articleID = :article_id")
+	void updateAUCSTrackingDetails(@Param("article_id") String article_id, @Param("description") String description, @Param("status") String status, @Param("eventDate") Timestamp eventDate);
 	
-//	@Modifying
-//	@Transactional
-//	@Query("update CSTickets c set c.trackingEvent = :status, c.trackingStatus = :status_code where c.articleID = :article_id")
-//	void updatePFLCSTrackingDetails(@Param("barcodeLabel") String barcodeLabel, @Param("status") String status, 
-//			@Param("status_code") String status_code);
+	@Modifying
+	@Transactional
+	@Query("update CSTickets c set c.trackingEvent = :status, c.trackingStatus = :status_code, trackingEventDateOccured = :eventDate where c.barcodelabelNumber = :barcodeLabel")
+	void updatePFLCSTrackingDetails(@Param("barcodeLabel") String barcodeLabel, @Param("status") String status, @Param("status_code") String status_code, @Param("eventDate") Timestamp eventDate);
 
 }

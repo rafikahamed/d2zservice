@@ -13,10 +13,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
+
+import com.d2z.d2zservice.controller.D2ZAPIController;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.AUPostResponse;
@@ -74,6 +79,8 @@ import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
 @Repository
 public class D2ZDaoImpl implements ID2ZDao{
+	
+	//private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	SenderDataRepository senderDataRepository;
@@ -999,8 +1006,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		List<CSTickets> csTctList = new ArrayList<CSTickets>();
 		for(CreateEnquiryRequest enquiryRequest:createEnquiry) {
 			CSTickets tickets = new CSTickets();
-			String incSeqId = "INC"+D2ZCommonUtil.getday()+csticketsRepository.fetchNextSeq().toString();
 			if(enquiryRequest.getType().equalsIgnoreCase("Article Id")) {
+				System.out.println("Article Id --->"+enquiryRequest.getIdentifier());
 				SenderdataMaster senderArticleId = senderDataRepository.fetchDataArticleId(enquiryRequest.getIdentifier());
 				if(null != senderArticleId) {
 					tickets.setArticleID(senderArticleId.getArticleId());
@@ -1015,6 +1022,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setCarrier(senderArticleId.getCarrier());
 				}
 			}else if(enquiryRequest.getType().equalsIgnoreCase("Reference Number")) {
+				System.out.println("Reference Number --->"+enquiryRequest.getIdentifier());
 				SenderdataMaster senderRefId = senderDataRepository.fetchDataReferenceNum(enquiryRequest.getIdentifier());
 				if(null != senderRefId) {
 					tickets.setArticleID(senderRefId.getArticleId());
@@ -1029,18 +1037,17 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setCarrier(senderRefId.getCarrier());
 				}
 			}
-			tickets.setTicketID(incSeqId);
+			tickets.setTicketID("INC"+D2ZCommonUtil.getday()+csticketsRepository.fetchNextSeq().toString());
 			tickets.setComments(enquiryRequest.getComments());
 			tickets.setDeliveryEnquiry(enquiryRequest.getEnquiry());
 			tickets.setPod(enquiryRequest.getPod());
 			tickets.setStatus("open");
 			tickets.setUserId(enquiryRequest.getUserId());
-			tickets.setTrackingEventDateOccured(Timestamp.valueOf(LocalDateTime.now()));
+			tickets.setEnquiryOpenDate(Timestamp.valueOf(LocalDateTime.now()));
 			csTctList.add(tickets);
 		}
 		List<String> incomingRefNbr = csTctList.stream().map(obj -> {
-			return obj.getReferenceNumber(); })
-				.collect(Collectors.toList());
+			return obj.getReferenceNumber(); }).collect(Collectors.toList());
 		isReferenceNumberUniqueUI(incomingRefNbr);
 		for(CSTickets csTicket: csTctList) {
 			if(null ==  csTicket.getReferenceNumber()) {
