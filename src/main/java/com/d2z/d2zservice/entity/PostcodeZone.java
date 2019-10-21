@@ -22,9 +22,7 @@ public class PostcodeZone implements Serializable {
 	@EmbeddedId
 	private PostCodeId postcodeId;
 	
-	@Column(name="State")
-	private String state;
-
+	
 	public String getStateName() {
 		return stateName;
 	}
@@ -43,13 +41,7 @@ public class PostcodeZone implements Serializable {
 	public PostcodeZone() {
 	}
 
-	public String getState() {
-		return this.state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
+	
 
 	public PostCodeId getPostcodeId() {
 		return postcodeId;
