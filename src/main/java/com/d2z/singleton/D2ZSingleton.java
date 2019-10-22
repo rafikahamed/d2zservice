@@ -70,7 +70,7 @@ public class D2ZSingleton {
 	private void getPostCodeZone() {
 			List<PostcodeZone> postCodeZoneDaoObj = d2zDao.fetchAllPostCodeZone();
 			postCodeZoneList = postCodeZoneDaoObj.stream().map(daoObj -> {
-				return daoObj.getState().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
+				return daoObj.getPostcodeId().getState().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
 			}).collect(Collectors.toList());
 			postCodeStateNameList = postCodeZoneDaoObj.stream().map(daoObj -> {
 				return daoObj.getStateName().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
@@ -78,7 +78,7 @@ public class D2ZSingleton {
 			System.out.println(postCodeZoneList.size());
 			postCodeStateMap = new HashMap<String,String>();
 			postCodeZoneDaoObj.forEach(obj -> {
-				postCodeStateMap.put(obj.getPostcodeId().getPostcode(), obj.getState());
+				postCodeStateMap.put(obj.getPostcodeId().getPostcode(), obj.getPostcodeId().getState());
 			});	
 			postCodeZoneMap = new HashMap<String,String>();
 			postCodeZoneDaoObj.forEach(obj -> {
@@ -89,7 +89,7 @@ public class D2ZSingleton {
 	private void getFWPostCodeZone(){
 		List<FastwayPostcode> postCodeFWZoneDaoObj = d2zDao.fetchFWPostCodeZone();
 		FWPostCodeZoneList = postCodeFWZoneDaoObj.stream().map(daoObj -> {
-			return daoObj.getState().concat(daoObj.getFwPostCodeId().getSuburb().concat(daoObj.getFwPostCodeId().getPostcode()));
+			return daoObj.getFwPostCodeId().getState().concat(daoObj.getFwPostCodeId().getSuburb().concat(daoObj.getFwPostCodeId().getPostcode()));
 		}).collect(Collectors.toList());
 		
 		FWPostCodeStateNameList = postCodeFWZoneDaoObj.stream().map(daoObj -> {

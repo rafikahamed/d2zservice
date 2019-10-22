@@ -15,6 +15,17 @@ public class FWPostCodeId implements Serializable{
 	
 	@Column(name="Suburb")
 	private String suburb;
+	
+	@Column(name="State")
+	private String state;
+	
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
 
 	public String getPostcode() {
 		return postcode;
@@ -42,6 +53,7 @@ public class FWPostCodeId implements Serializable{
 		int result = 1;
 		result = prime * result + ((postcode == null) ? 0 : postcode.hashCode());
 		result = prime * result + ((suburb == null) ? 0 : suburb.hashCode());
+		result = prime * result + ((state == null) ? 0 : state.hashCode());
 		return result;
 	}
 
@@ -63,6 +75,11 @@ public class FWPostCodeId implements Serializable{
 			if (other.suburb != null)
 				return false;
 		} else if (!suburb.equals(other.suburb))
+			return false;
+		if (state == null) {
+			if (other.state != null)
+				return false;
+		} else if (!state.equals(other.state))
 			return false;
 		return true;
 	}

@@ -24,8 +24,7 @@ public class FastwayPostcode implements Serializable{
 	@EmbeddedId
 	private FWPostCodeId fwPostCodeId;
 	
-	@Column(name="State")
-	private String state;
+	
 	
 	@Column(name="StateName")
 	private String stateName;
@@ -47,13 +46,7 @@ public class FastwayPostcode implements Serializable{
 		this.stateName = stateName;
 	}
 
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
+	
 
 	public FWPostCodeId getFwPostCodeId() {
 		return fwPostCodeId;
