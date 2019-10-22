@@ -38,7 +38,7 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 			"				B.Consignee_Suburb,\r\n" + 
 			"				B.Consignee_State,\r\n" + 
 			"				B.Consignee_Postcode,\r\n" + 
-			"				B.Product_Description, B.TrackingEvent\r\n" + 
+			"				B.Product_Description, B.TrackingEvent, B.EnquiryOpenDate\r\n" + 
 			"FROM   (\r\n" + 
 			"	SELECT DISTINCT U.client_broker_id, \r\n" + 
 			"                        S.ticketid ,\r\n" + 
@@ -52,7 +52,7 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 			"						S.Consignee_Suburb,\r\n" + 
 			"						S.Consignee_State,\r\n" + 
 			"						S.Consignee_Postcode,\r\n" + 
-			"						S.Product_Description, S.TrackingEvent\r\n" + 
+			"						S.Product_Description, S.TrackingEvent, S.EnquiryOpenDate\r\n" + 
 			"        FROM CSTickets S \r\n" + 
 			"               INNER JOIN users U \r\n" + 
 			"                       ON U.role_id IN ( '3' ) \r\n" + 
@@ -71,7 +71,7 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 			"						S.Consignee_Suburb,\r\n" + 
 			"						S.Consignee_State,\r\n" + 
 			"						S.Consignee_Postcode,\r\n" + 
-			"						S.Product_Description, S.TrackingEvent \r\n" + 
+			"						S.Product_Description, S.TrackingEvent, S.EnquiryOpenDate \r\n" + 
 			"        FROM   CSTickets S \r\n" + 
 			"               INNER JOIN users U \r\n" + 
 			"                       ON U.role_id IN ( '2' ) \r\n" + 
@@ -79,7 +79,7 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 			"                          AND S.status = 'Open') B \r\n" + 
 			"       INNER JOIN users A \r\n" + 
 			"               ON A.user_id = B.client_broker_id \r\n" + 
-			"ORDER  BY B.TrackingEventDateOccured  DESC ;")
+			"ORDER  BY B.EnquiryOpenDate  DESC ;")
 	List<String> fetchOpenEnquiryDetails();
 	
 	
