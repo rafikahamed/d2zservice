@@ -1340,7 +1340,7 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 			for(TrackingResults data : trackingData ) {
 				if(data!=null && data.getTrackable_items()!=null) {
 					for(TrackableItems trackingLabel : data.getTrackable_items()) {
-						if(trackingLabel != null && trackingLabel.getEvents() != null && trackingLabel.getEvents().isEmpty()) {
+						if(trackingLabel != null && trackingLabel.getEvents() != null && !trackingLabel.getEvents().isEmpty()) {
 							DateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 							DateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 							Date date = null;
@@ -1369,7 +1369,7 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 			responseMsg.setResponseMessage("No Data from ETower");
 		} else {
 			for (TrackEventResponseData data : responseData) {
-				if (data != null && data.getEvents() != null) {
+				if (data != null && data.getEvents() != null && !data.getEvents().isEmpty()) {
 					DateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 				    DateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
 				    Date date = null;
