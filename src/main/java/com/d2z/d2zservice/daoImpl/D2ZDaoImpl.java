@@ -41,6 +41,7 @@ import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.CurrencyDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
+import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
@@ -1003,9 +1004,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return trackAndTraceRepository.getArticleIDForFreiPostTracking();
 	}
 	
-	public String createEnquiry(List<CreateEnquiryRequest> createEnquiry) throws ReferenceNumberNotUniqueException {
+	public String createEnquiry(Enquiry createEnquiry) throws ReferenceNumberNotUniqueException {
 		List<CSTickets> csTctList = new ArrayList<CSTickets>();
-		for(CreateEnquiryRequest enquiryRequest:createEnquiry) {
+		for(CreateEnquiryRequest enquiryRequest:createEnquiry.getEnquiryDetails()) {
 			CSTickets tickets = new CSTickets();
 			if(enquiryRequest.getType().equalsIgnoreCase("Article Id")) {
 				System.out.println("Article Id --->"+enquiryRequest.getIdentifier());
@@ -1043,12 +1044,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 			tickets.setDeliveryEnquiry(enquiryRequest.getEnquiry());
 			tickets.setPod(enquiryRequest.getPod());
 			tickets.setStatus("open");
-			tickets.setUserId(enquiryRequest.getUserId());
+			tickets.setUserId(createEnquiry.getUserId());
 			tickets.setEnquiryOpenDate(Timestamp.valueOf(LocalDateTime.now()));
 			csTctList.add(tickets);
 		}
-		List<String> incomingRefNbr = csTctList.stream().map(obj -> {
-			return obj.getReferenceNumber(); }).collect(Collectors.toList());
+		List<String> incomingRefNbr = csTctList.stream().map(obj -> { return obj.getReferenceNumber(); }).collect(Collectors.toList());
 		isReferenceNumberUniqueUI(incomingRefNbr);
 		for(CSTickets csTicket: csTctList) {
 			if(null ==  csTicket.getReferenceNumber()) {
