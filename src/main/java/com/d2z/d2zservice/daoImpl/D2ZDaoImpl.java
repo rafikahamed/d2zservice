@@ -1080,11 +1080,16 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, String userId) {
+		List<CSTickets> enquiryDetails = null;
 		Integer[] userIds = Arrays.stream(userId.split(","))
 		        .map(String::trim)
 		        .map(Integer::valueOf)
 		        .toArray(Integer[]::new);
-		List<CSTickets> enquiryDetails = csticketsRepository.fetchEnquiry(status, fromDate, toDate, userIds);
+		if(!fromDate.equals("null") && !toDate.equals("null") ) {
+			enquiryDetails = csticketsRepository.fetchEnquiry(status, fromDate, toDate, userIds);
+		}else {
+			enquiryDetails = csticketsRepository.fetchEnquiry(status, userIds);
+		}
 		return enquiryDetails;
 	}
 
@@ -1152,7 +1157,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public List<Returns> returnsOutstanding(String fromDate, String toDate, String userId) {
 		Integer[] userIds = Arrays.stream(userId.split(",")).map(String::trim).map(Integer::valueOf).toArray(Integer[]::new);
 		List<Returns> returnsDetails = new ArrayList<Returns>();
-		if( fromDate.equals(null)  && toDate.equals(null)) {
+		if(!fromDate.equals("null")  && !toDate.equals("null")) {
 			returnsDetails = returnsRepository.fetchOutstandingDetails(fromDate,toDate,userIds);
 		}else {
 			returnsDetails = returnsRepository.fetchOutstandingCompleteDetails(userIds);

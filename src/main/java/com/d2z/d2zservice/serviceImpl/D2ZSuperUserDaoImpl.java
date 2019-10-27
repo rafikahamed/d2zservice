@@ -1,4 +1,4 @@
-package com.d2z.d2zservice.daoImpl;
+package com.d2z.d2zservice.serviceImpl;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
