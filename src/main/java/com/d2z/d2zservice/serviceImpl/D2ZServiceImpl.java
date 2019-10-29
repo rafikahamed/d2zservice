@@ -364,8 +364,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderData> fastwayData = new ArrayList<SenderData>();
 		List<SenderData> fastway_S_Data = new ArrayList<SenderData>();
 		List<SenderData> whiteLabelData = new ArrayList<SenderData>();
-		
-			
+		List<SenderData> eParcelNewData = new ArrayList<SenderData>();
 
 		
 		boolean setGS1Type=false;
@@ -378,6 +377,8 @@ public class D2ZServiceImpl implements ID2ZService {
 			}
 			else if("MCM3".equalsIgnoreCase(data.getServiceType())) {
 				whiteLabelData.add(data);
+			}else if("1PM".equalsIgnoreCase(data.getServiceType())) {
+				eParcelNewData.add(data);
 			}else  if(data.getCarrier().equalsIgnoreCase("eParcel")) {
 				setGS1Type= true;
 				eParcelData.add(data);
@@ -408,6 +409,9 @@ public class D2ZServiceImpl implements ID2ZService {
 		JasperReport fastway_S_Label = null;
 		JRBeanCollectionDataSource whiteLabelDataSource;
 		JasperReport whiteLabel = null;
+		JRBeanCollectionDataSource eParcelNewDataSource;
+		JasperReport eParcelNew = null;
+		
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 			if (!eParcelData.isEmpty()) {
@@ -455,7 +459,14 @@ public class D2ZServiceImpl implements ID2ZService {
 				JRSaver.saveObject(whiteLabel, "whiteLabel.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(whiteLabel, parameters, whiteLabelDataSource));
 			}
-
+			if (!eParcelNewData.isEmpty()) {
+				System.out.println("Generating EParcel new..." + eParcelNewData.size());
+				eParcelNewDataSource = new JRBeanCollectionDataSource(eParcelNewData);
+				eParcelNew = JasperCompileManager
+						.compileReport(getClass().getResource("/eParcelNew.jrxml").openStream());
+				JRSaver.saveObject(eParcelNew, "eParcelNew.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(eParcelNew, parameters, eParcelNewDataSource));
+			}
 			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
 			JRPdfExporter exporter = new JRPdfExporter();
@@ -611,6 +622,8 @@ if(!pcalabel)
 		List<SenderData> fastwayData = new ArrayList<SenderData>();
 		List<SenderData> fastway_S_Data = new ArrayList<SenderData>();
 		List<SenderData> whiteLabelData = new ArrayList<SenderData>();
+		List<SenderData> eParcelNewData = new ArrayList<SenderData>();
+
 		for (SenderData data : trackingLabelList) {
 			if ("MCM1".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				whiteLabelData.add(data);
@@ -620,6 +633,8 @@ if(!pcalabel)
 			}
 			else if("MCM3".equalsIgnoreCase(data.getServiceType())) {
 				whiteLabelData.add(data);
+			}else if("1PM".equalsIgnoreCase(data.getServiceType())) {
+				eParcelNewData.add(data);
 			}else  if(data.getCarrier().equalsIgnoreCase("eParcel")) {
 				eParcelData.add(data);
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
@@ -644,6 +659,8 @@ if(!pcalabel)
 		JasperReport fastway_S_Label = null;
 		JRBeanCollectionDataSource whiteLabelDataSource;
 		JasperReport whiteLabel = null;
+		JRBeanCollectionDataSource eParcelNewDataSource;
+		JasperReport eParcelNew = null;
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 			if (!eParcelData.isEmpty()) {
@@ -685,6 +702,14 @@ if(!pcalabel)
 						.compileReport(getClass().getResource("/WhiteLabel.jrxml").openStream());
 				JRSaver.saveObject(whiteLabel, "whiteLabel.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(whiteLabel, parameters, whiteLabelDataSource));
+			}
+			if (!eParcelNewData.isEmpty()) {
+				System.out.println("Generating EParcel new..." + eParcelNewData.size());
+				eParcelNewDataSource = new JRBeanCollectionDataSource(eParcelNewData);
+				eParcelNew = JasperCompileManager
+						.compileReport(getClass().getResource("/eParcelNew.jrxml").openStream());
+				JRSaver.saveObject(eParcelNew, "eParcelNew.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(eParcelNew, parameters, eParcelNewDataSource));
 			}
 			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
@@ -1127,7 +1152,8 @@ else
 	}
 	
 	public void makeCalltoAusPost(List<String> referenceNumbers) {
-	
+	System.out.println(referenceNumbers.get(0));
+	System.out.println(referenceNumbers.get(1));
 		List<SenderdataMaster> senderMasterData = d2zDao.fetchDataForAusPost(referenceNumbers);
 		System.out.println("Sender Data:" + senderMasterData.size());
 
@@ -1741,7 +1767,7 @@ else
 					 //ftpUploader.fdmFileCreation(request);
 					 System.out.println("FDM Request ---->");
 					 System.out.println(request);
-					 ftpUploader.ftpUpload(targetStream);
+					// ftpUploader.ftpUpload(targetStream);
 					 //ffresponseRepository.saveAll(FFResponseList);
 					// ftpUploader.fdmFileCreation(request);
 					// ffresponseRepository.saveAll(FFResponseList);
