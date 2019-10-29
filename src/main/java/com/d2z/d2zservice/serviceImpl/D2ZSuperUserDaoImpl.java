@@ -1,11 +1,10 @@
-package com.d2z.d2zservice.daoImpl;
+package com.d2z.d2zservice.serviceImpl;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,8 +16,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
@@ -51,14 +48,12 @@ import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
-import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.ZoneDetails;
 import com.d2z.d2zservice.model.ZoneRates;
 import com.d2z.d2zservice.model.auspost.TrackableItems;
-import com.d2z.d2zservice.model.auspost.TrackingEvents;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.auspost.TrackingResults;
 import com.d2z.d2zservice.model.etower.ETowerTrackingDetails;
@@ -147,16 +142,13 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	TransitTimeRepository transitTimeRepository;
 	
 	@Autowired
-
 	IncomingJobsLogicRepository incomingJobRepository;
-	
 	
 	@Autowired
 	IncomingJobsRepository incomingRepository;
 
 	@Autowired
 	ReturnsRepository returnsRepository; 
-
 
 	@Override
 	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -1484,6 +1476,11 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 		System.out.println("updated"+count);
 		//senderdata_InvoicingRepository.selectinvoicing(toAllocate.split(","));
 		return "Updated Succesfully";
+	}
+
+	@Override
+	public void updateReturnInvoice(Returns returnVal) {
+		senderdata_InvoicingRepository.updateReturnInvoice("Return-"+D2ZCommonUtil.getday(),"RES", returnVal.getArticleId());
 	}
 		
 }

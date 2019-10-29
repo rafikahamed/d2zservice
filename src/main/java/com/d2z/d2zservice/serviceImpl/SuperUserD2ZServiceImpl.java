@@ -1201,6 +1201,13 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		String clientDetails = d2zDao.createReturns(returnsList);
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage(clientDetails);
+		
+		Runnable r = new Runnable( ) {			
+		        public void run() {
+		        	for(Returns returnVal: returnsList) {
+		        		d2zDao.updateReturnInvoice(returnVal);
+		        	} }};
+		new Thread(r).start();
 		return usrMsg;
 	}
 

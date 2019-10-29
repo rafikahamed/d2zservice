@@ -59,6 +59,7 @@ import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_Shipment;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
+import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.FDMManifestDetails;
 import com.d2z.d2zservice.model.PCACancelRequest;
 import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
@@ -1848,7 +1849,7 @@ else
 	}
 
 	@Override
-	public UserMessage createEnquiry(List<CreateEnquiryRequest> createEnquiry) throws ReferenceNumberNotUniqueException {
+	public UserMessage createEnquiry(Enquiry createEnquiry) throws ReferenceNumberNotUniqueException {
 		String enquiryInfo = d2zDao.createEnquiry(createEnquiry);
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage(enquiryInfo);

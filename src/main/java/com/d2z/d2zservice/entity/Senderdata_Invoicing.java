@@ -15,7 +15,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name="Senderdata_Invoicing")
 @NamedQuery(name="Senderdata_Invoicing.findAll", query="SELECT s FROM Senderdata_Invoicing s")
-
 @NamedStoredProcedureQueries({
 		   @NamedStoredProcedureQuery(name = "InvoiceUpdate", 
 			  procedureName = "InvoiceUpdate",

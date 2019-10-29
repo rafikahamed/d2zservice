@@ -7,7 +7,6 @@ public class CreateEnquiryRequest {
 	private String enquiry;
 	private String pod;
 	private String comments;
-	private int userId;
 	
 	public String getType() {
 		return type;
@@ -38,12 +37,6 @@ public class CreateEnquiryRequest {
 	}
 	public void setComments(String comments) {
 		this.comments = comments;
-	}
-	public int getUserId() {
-		return userId;
-	}
-	public void setUserId(int userId) {
-		this.userId = userId;
 	}
 	
 }

@@ -17,11 +17,14 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 	Integer fetchNextSeq();
 	
 	@Query( nativeQuery = true, value="SELECT * FROM CSTickets where status = :status and "
-			+ "trackingEventDateOccured between :fromDate and :toDate and userId in (:userId)") 
+			+ "enquiryOpenDate between :fromDate and :toDate and userId in (:userId)") 
 	List<CSTickets> fetchEnquiry(@Param("status") String status, @Param("fromDate") String fromDate, @Param("toDate") String toDate,
 									@Param("userId") Integer[] userIds);
 	
-	@Query( nativeQuery = true, value="SELECT * FROM CSTickets where userId in (:userId) and status = 'closed' and trackingEventDateOccured >= getdate() -14") 
+	@Query( nativeQuery = true, value="SELECT * FROM CSTickets where status = :status and userId in (:userId)") 
+	List<CSTickets> fetchEnquiry( @Param("status") String status, @Param("userId") Integer[] userIds);
+	
+	@Query( nativeQuery = true, value="SELECT * FROM CSTickets where userId in (:userId) and status = 'closed' and enquiryOpenDate >= getdate() -14") 
 	List<CSTickets> fetchCompletedEnquiry(@Param("userId") Integer[] userIds);
 	
 	@Query( nativeQuery = true, value=" SELECT DISTINCT A.user_name, \r\n" + 
@@ -107,5 +110,5 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 	@Transactional
 	@Query("update CSTickets c set c.trackingEvent = :status, c.trackingStatus = :status_code, trackingEventDateOccured = :eventDate where c.barcodelabelNumber = :barcodeLabel")
 	void updatePFLCSTrackingDetails(@Param("barcodeLabel") String barcodeLabel, @Param("status") String status, @Param("status_code") String status_code, @Param("eventDate") Timestamp eventDate);
-
+	
 }

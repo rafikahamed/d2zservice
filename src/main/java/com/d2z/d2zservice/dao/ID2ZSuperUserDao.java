@@ -213,5 +213,7 @@ public interface ID2ZSuperUserDao {
 	public List<String> fetchDataForEtowerForeCastCall(String[] refNbrs);
 
 	String updateinvoicing(String toAllocate, String shipmentNumber);
+
+	void updateReturnInvoice(Returns returnVal);
 }
 
