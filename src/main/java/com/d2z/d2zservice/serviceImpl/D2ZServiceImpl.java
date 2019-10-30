@@ -418,14 +418,10 @@ public class D2ZServiceImpl implements ID2ZService {
 			if (!eParcelData.isEmpty()) {
 				System.out.println("Generating eParcel..." + eParcelData.size());
 				eParcelDataSource = new JRBeanCollectionDataSource(eParcelData);
-				System.out.println("Generating eParcel..." + eParcelData.size());
 				eParcelLabel = JasperCompileManager
 						.compileReport(getClass().getResource("/eparcelLabel.jrxml").openStream());
-				System.out.println("Generating eParcel..." + eParcelData.size());
 				JRSaver.saveObject(eParcelLabel, "label.jasper");
-				System.out.println("Generating eParcel..." + eParcelData.size());
 				jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, eParcelDataSource));
-				System.out.println("Generating eParcel..." + eParcelData.size());
 
 			}
 			if (!expressData.isEmpty()) {
@@ -476,7 +472,6 @@ public class D2ZServiceImpl implements ID2ZService {
 			exporter.exportReport();
 			// return the PDF in bytes
 			bytes = outputStream.toByteArray();
-			System.out.println("Generating eParcel..." + eParcelData.size());
 			// bytes = JasperExportManager.exportReportToPdf(jasperPrint);
 			// blob = new javax.sql.rowset.serial.SerialBlob(bytes);
 		} catch (JRException | IOException e) {
