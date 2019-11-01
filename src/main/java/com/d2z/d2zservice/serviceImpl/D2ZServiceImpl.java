@@ -366,6 +366,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderData> fastway_S_Data = new ArrayList<SenderData>();
 		List<SenderData> whiteLabelData = new ArrayList<SenderData>();
 		List<SenderData> eParcelNewData = new ArrayList<SenderData>();
+		List<SenderData> expressNewData = new ArrayList<SenderData>();
 
 		
 		boolean setGS1Type=false;
@@ -380,6 +381,8 @@ public class D2ZServiceImpl implements ID2ZService {
 				whiteLabelData.add(data);
 			}else if("1PM".equalsIgnoreCase(data.getServiceType())) {
 				eParcelNewData.add(data);
+			}else if("1PME".equalsIgnoreCase(data.getServiceType())) {
+				expressNewData.add(data);
 			}else  if(data.getCarrier().equalsIgnoreCase("eParcel")) {
 				setGS1Type= true;
 				eParcelData.add(data);
@@ -412,7 +415,8 @@ public class D2ZServiceImpl implements ID2ZService {
 		JasperReport whiteLabel = null;
 		JRBeanCollectionDataSource eParcelNewDataSource;
 		JasperReport eParcelNew = null;
-		
+		JRBeanCollectionDataSource expressNewDataSource;
+		JasperReport expressNew = null;
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 			if (!eParcelData.isEmpty()) {
@@ -431,6 +435,15 @@ public class D2ZServiceImpl implements ID2ZService {
 						.compileReport(getClass().getResource("/ExpressLabel.jrxml").openStream());
 				JRSaver.saveObject(expressLabel, "express.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(expressLabel, parameters, expressDataSource));
+			}
+			
+			if (!expressNewData.isEmpty()) {
+				System.out.println("Generating Express new..." + expressNewData.size());
+				expressNewDataSource = new JRBeanCollectionDataSource(expressNewData);
+				expressNew = JasperCompileManager
+						.compileReport(getClass().getResource("/ExpressNew.jrxml").openStream());
+				JRSaver.saveObject(expressNew, "expressNew.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(expressNew, parameters, expressNewDataSource));
 			}
 			if (!fastwayData.isEmpty()) {
 				System.out.println("Generating Fastway..." + fastwayData.size());
@@ -619,6 +632,7 @@ if(!pcalabel)
 		List<SenderData> fastway_S_Data = new ArrayList<SenderData>();
 		List<SenderData> whiteLabelData = new ArrayList<SenderData>();
 		List<SenderData> eParcelNewData = new ArrayList<SenderData>();
+		List<SenderData> expressNewData = new ArrayList<SenderData>();
 
 		for (SenderData data : trackingLabelList) {
 			if ("MCM1".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
@@ -631,6 +645,8 @@ if(!pcalabel)
 				whiteLabelData.add(data);
 			}else if("1PM".equalsIgnoreCase(data.getServiceType())) {
 				eParcelNewData.add(data);
+			}else if("1PME".equalsIgnoreCase(data.getServiceType())) {
+				expressNewData.add(data);
 			}else  if(data.getCarrier().equalsIgnoreCase("eParcel")) {
 				eParcelData.add(data);
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
@@ -657,6 +673,8 @@ if(!pcalabel)
 		JasperReport whiteLabel = null;
 		JRBeanCollectionDataSource eParcelNewDataSource;
 		JasperReport eParcelNew = null;
+		JRBeanCollectionDataSource expressNewDataSource;
+		JasperReport expressNew = null;
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 			if (!eParcelData.isEmpty()) {
@@ -674,6 +692,14 @@ if(!pcalabel)
 						.compileReport(getClass().getResource("/ExpressLabel.jrxml").openStream());
 				JRSaver.saveObject(expressLabel, "express.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(expressLabel, parameters, expressDataSource));
+			}
+			if (!expressNewData.isEmpty()) {
+				System.out.println("Generating Express new..." + expressNewData.size());
+				expressNewDataSource = new JRBeanCollectionDataSource(expressNewData);
+				expressNew = JasperCompileManager
+						.compileReport(getClass().getResource("/ExpressNew.jrxml").openStream());
+				JRSaver.saveObject(expressNew, "expressNew.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(expressNew, parameters, expressNewDataSource));
 			}
 			if (!fastwayData.isEmpty()) {
 				System.out.println("Generating Fastway..." + fastwayData.size());

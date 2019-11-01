@@ -96,10 +96,10 @@
 		<band height="167" splitType="Stretch">
 			<image hAlign="Center" vAlign="Middle">
 				<reportElement x="-1" y="-5" width="379" height="59" uuid="63d0b5f7-568e-4dc4-9fd5-5db50af1ce6f"/>
-				<imageExpression><![CDATA["eParcel.jpg"]]></imageExpression>
+				<imageExpression><![CDATA["eParcelRedHeader.jpg"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="8" y="47" width="88" height="17" uuid="2e26354a-dcb3-4618-8c40-881364ae1d2f"/>
+				<reportElement x="8" y="51" width="88" height="15" uuid="2e26354a-dcb3-4618-8c40-881364ae1d2f"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -112,42 +112,42 @@
 				<text><![CDATA[DELIVER TO]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="9" y="65" width="264" height="15" uuid="a601a683-c7db-4d24-9aec-0d2005557fd2"/>
+				<reportElement x="9" y="70" width="264" height="15" uuid="a601a683-c7db-4d24-9aec-0d2005557fd2"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeName}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="9" y="80" width="264" height="15" uuid="92138a07-6798-4dab-9ca1-66628b76bb71"/>
+				<reportElement x="9" y="85" width="264" height="15" uuid="92138a07-6798-4dab-9ca1-66628b76bb71"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[(($F{consigneeAddr2} == null) || $F{consigneeAddr2}.trim().isEmpty())?"":$F{consigneeAddr1}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="9" y="111" width="264" height="19" uuid="4001379f-9f34-4cb8-85b8-dff1c158b25a"/>
+				<reportElement x="9" y="116" width="264" height="19" uuid="4001379f-9f34-4cb8-85b8-dff1c158b25a"/>
 				<textElement>
 					<font fontName="MyArial" size="13"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeSuburb}.concat(" ").concat($F{consigneeState}).concat(" ").concat( $F{consigneePostcode}).toUpperCase()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="227" y="47" width="47" height="17" uuid="5961d0cb-d6b9-4e83-8603-e0dcbad1f16d"/>
+				<reportElement x="227" y="51" width="47" height="17" uuid="5961d0cb-d6b9-4e83-8603-e0dcbad1f16d"/>
 				<textElement>
 					<font fontName="MyArial" size="11" isBold="true"/>
 				</textElement>
 				<text><![CDATA[PHONE:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="275" y="47" width="100" height="15" uuid="39e1a67b-326c-459a-b06e-ce69a3a459a8"/>
+				<reportElement x="275" y="51" width="100" height="15" uuid="39e1a67b-326c-459a-b06e-ce69a3a459a8"/>
 				<textElement textAlignment="Left" verticalAlignment="Top">
 					<font fontName="MyArial" size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneePhone}.equals(null) ? "" : $F{consigneePhone}]]></textFieldExpression>
 			</textField>
 			<image hAlign="Center" vAlign="Middle">
-				<reportElement x="291" y="64" width="68" height="68" uuid="6bea52eb-2308-425d-b45b-e8f87db99b37"/>
+				<reportElement x="291" y="67" width="68" height="68" uuid="6bea52eb-2308-425d-b45b-e8f87db99b37"/>
 				<imageExpression><![CDATA[$F{datamatrixImage}]]></imageExpression>
 			</image>
 			<textField isBlankWhenNull="true">
@@ -161,7 +161,7 @@
 				<textFieldExpression><![CDATA[$F{injectionState}.substring( 0, 3 )]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="9" y="95" width="264" height="15" uuid="c77e6fec-6afa-4310-90fa-9564ce4b2f76"/>
+				<reportElement x="9" y="100" width="264" height="15" uuid="c77e6fec-6afa-4310-90fa-9564ce4b2f76"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
@@ -283,87 +283,78 @@
 	<pageFooter>
 		<band height="66" splitType="Immediate">
 			<staticText>
-				<reportElement x="141" y="-97" width="237" height="43" uuid="5e7e8bb0-50c6-443b-a308-f1cee1a1ad91"/>
+				<reportElement x="141" y="-91" width="237" height="43" uuid="5e7e8bb0-50c6-443b-a308-f1cee1a1ad91"/>
 				<textElement>
 					<font fontName="MyArial" size="7"/>
 				</textElement>
 				<text><![CDATA[Aviation Security and Dangerous Goods Declaration: The sender acknowledges that this article may be carried by air and will be subject to aviation security and clearing procedures; and the sender declares that the article does not contain any dangerous or prohibited goods, explosive or incendiary devices. A false declaration is a criminal offence.]]></text>
 			</staticText>
 			<line>
-				<reportElement x="138" y="-97" width="1" height="160" uuid="9283bbad-0880-4df9-bba2-6eea5aba015c"/>
+				<reportElement x="138" y="-97" width="1" height="93" uuid="9283bbad-0880-4df9-bba2-6eea5aba015c"/>
 			</line>
 			<staticText>
-				<reportElement x="2" y="-44" width="135" height="15" uuid="10f9c6c8-ddb8-4d0a-a178-d84d51e31c0a"/>
+				<reportElement x="2" y="-90" width="135" height="15" uuid="10f9c6c8-ddb8-4d0a-a178-d84d51e31c0a"/>
 				<textElement>
 					<font fontName="MyArial" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Return Address (If undeliverable)]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="2" y="-29" width="129" height="15" uuid="fd473895-7f65-4525-a18d-12237e140300"/>
+				<reportElement x="2" y="-75" width="129" height="15" uuid="fd473895-7f65-4525-a18d-12237e140300"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[(($F{labelSenderName} == null) || ($F{labelSenderName}.isEmpty()))?"SW1".concat("001"):$F{labelSenderName}.length()>3?$F{labelSenderName}.substring( 0,3 ).concat("001"):$F{labelSenderName}.concat("001")]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="3" y="-14" width="128" height="15" uuid="74384646-f320-4f97-b252-5446ab2b0273"/>
+				<reportElement x="3" y="-60" width="128" height="15" uuid="74384646-f320-4f97-b252-5446ab2b0273"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[(($F{returnAddress1} == null) || ($F{returnAddress1}.isEmpty()))?"PO BOX 4025":$F{returnAddress1}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="3" y="18" width="128" height="15" uuid="7fd1e4c2-8511-4e79-bd2c-292dfd3b0b70"/>
+				<reportElement x="3" y="-22" width="128" height="15" uuid="7fd1e4c2-8511-4e79-bd2c-292dfd3b0b70"/>
 				<textElement>
 					<font fontName="MyArial" size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[(($F{returnAddress2}==null) || ($F{returnAddress2}.isEmpty()))?"DANDENONG SOUTH VIC 3164":$F{returnAddress2}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="138" y="35" width="238" height="1" uuid="fc0f367d-a0be-4d9b-b0ca-8aecc6f7ee5c"/>
+				<reportElement x="138" y="-42" width="238" height="1" uuid="fc0f367d-a0be-4d9b-b0ca-8aecc6f7ee5c"/>
 			</line>
 			<staticText>
-				<reportElement x="141" y="37" width="44" height="11" uuid="c6b92165-89fc-4b03-b7b8-ed2df3c5bdee"/>
+				<reportElement x="141" y="-33" width="44" height="11" uuid="c6b92165-89fc-4b03-b7b8-ed2df3c5bdee"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Order No:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="186" y="37" width="149" height="11" uuid="8a4b12e3-a01e-40fe-b4f5-2e626ce1e552"/>
+				<reportElement x="186" y="-33" width="149" height="11" uuid="8a4b12e3-a01e-40fe-b4f5-2e626ce1e552"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{referenceNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="141" y="47" width="45" height="12" uuid="bed2a0d1-e188-4cf8-930c-9722cdb00f1b"/>
+				<reportElement x="141" y="-23" width="45" height="12" uuid="bed2a0d1-e188-4cf8-930c-9722cdb00f1b"/>
 				<textElement>
 					<font fontName="MyArial" size="8"/>
 				</textElement>
 				<text><![CDATA[SKU No:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="187" y="47" width="150" height="12" uuid="7c9c8dd3-77f7-46c6-980b-ff0c3f3125e2"/>
+				<reportElement x="187" y="-23" width="150" height="12" uuid="7c9c8dd3-77f7-46c6-980b-ff0c3f3125e2"/>
 				<textElement>
 					<font fontName="MyArial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{sku}]]></textFieldExpression>
 			</textField>
-			<componentElement>
-				<reportElement stretchType="RelativeToTallestObject" x="148" y="-40" width="222" height="106" uuid="116ec055-854a-4be1-bfa2-034e05e39482"/>
-				<c:Code128 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" moduleWidth="2.0" textPosition="none" verticalQuietZone="0.0">
-					<c:codeExpression><![CDATA[$F{barcodeLabelNumber}.substring( 18 )]]></c:codeExpression>
-				</c:Code128>
-			</componentElement>
-			<staticText>
-				<reportElement x="173" y="-57" width="171" height="15" uuid="dbf9dc22-7f03-4f3d-ae46-4b8293b51a35"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="11"/>
-				</textElement>
-				<text><![CDATA[Customer Use Only]]></text>
-			</staticText>
+			<image>
+				<reportElement x="0" y="-4" width="377" height="70" uuid="b5071ca0-d8ab-4f89-af47-58df00a0b730"/>
+				<imageExpression><![CDATA["ExpressPostFooter.jpg"]]></imageExpression>
+			</image>
 		</band>
 	</pageFooter>
 </jasperReport>
