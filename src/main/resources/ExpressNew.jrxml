@@ -311,14 +311,14 @@
 				<textElement>
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[(($F{returnAddress1} == null) || ($F{returnAddress1}.isEmpty()))?"PO BOX 4025":$F{returnAddress1}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[PO BOX 4025]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="3" y="-22" width="128" height="15" uuid="7fd1e4c2-8511-4e79-bd2c-292dfd3b0b70"/>
 				<textElement>
 					<font fontName="MyArial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[(($F{returnAddress2}==null) || ($F{returnAddress2}.isEmpty()))?"DANDENONG SOUTH VIC 3164":$F{returnAddress2}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[DANDENONG SOUTH VIC 3164]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="138" y="-42" width="238" height="1" uuid="fc0f367d-a0be-4d9b-b0ca-8aecc6f7ee5c"/>
