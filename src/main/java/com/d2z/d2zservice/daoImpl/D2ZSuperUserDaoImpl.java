@@ -32,6 +32,7 @@ import com.d2z.d2zservice.entity.IncomingJobs;
 import com.d2z.d2zservice.entity.IncomingJobsLogic;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
+import com.d2z.d2zservice.entity.Parcels;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.Returns;
@@ -46,9 +47,11 @@ import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
+import com.d2z.d2zservice.model.ParcelResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderDataResponse;
@@ -75,6 +78,8 @@ import com.d2z.d2zservice.repository.IncomingJobsLogicRepository;
 import com.d2z.d2zservice.repository.IncomingJobsRepository;
 import com.d2z.d2zservice.repository.MlidRepository;
 import com.d2z.d2zservice.repository.NonD2ZDataRepository;
+import com.d2z.d2zservice.repository.ParcelRepository;
+
 import com.d2z.d2zservice.repository.ReconcileNDRepository;
 import com.d2z.d2zservice.repository.ReconcileRepository;
 import com.d2z.d2zservice.repository.ReturnsRepository;
@@ -156,6 +161,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 
 	@Autowired
 	ReturnsRepository returnsRepository; 
+	
+	@Autowired
+	ParcelRepository parcelRepository;
 
 
 	@Override
@@ -1485,5 +1493,112 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 		//senderdata_InvoicingRepository.selectinvoicing(toAllocate.split(","));
 		return "Updated Succesfully";
 	}
+
+	@Override
+	public String createParcel(List<HeldParcel> createJob) {
+		// TODO Auto-generated method stub
+		
+List<Parcels> parcelist = new ArrayList<Parcels>();
+		
+		for(HeldParcel jobRequest :createJob)
+		{
+			
+			Parcels p = new Parcels();
+			p.setHawb(jobRequest.getHawb());
+			p.setMawb(jobRequest.getMawb());
+			p.setNote(jobRequest.getNote());
+			p.setStatus(jobRequest.getStat());
+			p.setOutput("C");
+			
+			parcelist.add(p);
+			
+
+		}
+		System.out.println("size:"+parcelist.size());
+		parcelRepository.saveAll(parcelist);
+					return "Parcel created Successfully";
+	}
+
+	@Override
+	public List<ParcelResponse> getParcelList() {
+		
+		List<Parcels> js = (List<Parcels>)parcelRepository.fetchheldparcel();
+		List<ParcelResponse> parcellist = new ArrayList<ParcelResponse>();
+		
+		for(Parcels par : js)
+		{
+			ParcelResponse p = new ParcelResponse();
+			p.setParcelid(par.getID());
+			p.setHawb(par.getHawb());
+			p.setMawb(par.getMawb());
+			p.setNote(par.getNote());
+			DropDownModel model = new DropDownModel();
+			model.setName(par.getStatus());
+			model.setValue(par.getStatus());
+			p.setStat(model);
+			parcellist.add(p);
+		}
+		// TODO Auto-generated method stub
+		return parcellist;
+	}
+
+	@Override
+	public String updateParcel(List<ParcelResponse> parcel) {
+		List<Parcels> js = new ArrayList<Parcels>();
+		String msg = "";
+	for(ParcelResponse p : parcel)
+	{
+		Parcels par = new Parcels();
+		par.setHawb(p.getHawb());
+		par.setMawb(p.getMawb());
+		par.setNote(p.getNote());
+		par.setOutput(p.getOutput());
+		DropDownModel model = p.getStat();
+		par.setStatus(model.getName());
+		par.setID(p.getParcelid());
+		js.add(par);
+	}
+	parcelRepository.saveAll(js);
+		// TODO Auto-generated method stub
+	if(parcel.get(0).getOutput().equalsIgnoreCase("C"))
+	{
+		msg = "Updated Successfully";
+	}
+	else if(parcel.get(0).getOutput().equalsIgnoreCase("D"))
+	{
+		msg = "Deleted Successfully";
+	}
+	else
+	{ msg = "Exported Successfully";
+		
+	}
+		return msg;
+	}
+
+	@Override
+	public List<ParcelResponse> getParcelReleaseList() {
+		// TODO Auto-generated method stub
+		List<Parcels> js = (List<Parcels>)parcelRepository.fetchreleaseparcel();
+		List<ParcelResponse> parcellist = new ArrayList<ParcelResponse>();
+		
+		for(Parcels par : js)
+		{
+			ParcelResponse p = new ParcelResponse();
+			p.setParcelid(par.getID());
+			p.setHawb(par.getHawb());
+			p.setMawb(par.getMawb());
+			p.setNote(par.getNote());
+			DropDownModel model = new DropDownModel();
+			model.setName(par.getStatus());
+			model.setValue(par.getStatus());
+			p.setStat(model);
+			parcellist.add(p);
+		}
+		// TODO Auto-generated method stub
+		return parcellist;
+	}
+	
+	
+	
 		
 }

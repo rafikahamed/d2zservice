@@ -37,6 +37,7 @@ import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
+import com.d2z.d2zservice.model.ParcelResponse;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
@@ -47,6 +48,7 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
+import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 
@@ -313,9 +315,21 @@ public class D2ZSuperUserController {
 		return jobInfo;
 	}
 	
+	@RequestMapping(method = RequestMethod.POST, path = "/held-parcel")
+	public UserMessage createParcel(@RequestBody List<HeldParcel> createJob) {
+		UserMessage jobInfo = superUserD2zService.createParcel(createJob);
+		return jobInfo;
+	}
+	
 	@RequestMapping(method = RequestMethod.POST, path = "/update-job")
 	public UserMessage updateJob(@RequestBody List<IncomingJobResponse> Job) {
 		UserMessage jobInfo = superUserD2zService.updateJob(Job);
+		return jobInfo;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, path = "/update-parcel")
+	public UserMessage updateParcel(@RequestBody List<ParcelResponse> Job) {
+		UserMessage jobInfo = superUserD2zService.updateParcel(Job);
 		return jobInfo;
 	}
 	@RequestMapping(method = RequestMethod.POST, path = "/delete-job")
@@ -332,6 +346,18 @@ public class D2ZSuperUserController {
 	@RequestMapping(method = RequestMethod.GET, path = "/incoming-job-list")
 	public List<IncomingJobResponse> createJobList() {
 		List<IncomingJobResponse> jobInfo = superUserD2zService.getJobList();
+		return jobInfo;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/incoming-parcel-list")
+	public List<ParcelResponse> createParcelList() {
+		List<ParcelResponse> jobInfo = superUserD2zService.getParcelList();
+		return jobInfo;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/incoming-parcel-releaselist")
+	public List<ParcelResponse> createParcelreleaseList() {
+		List<ParcelResponse> jobInfo = superUserD2zService.getParcelreleaseList();
 		return jobInfo;
 	}
 	@RequestMapping(method = RequestMethod.GET, path = "/closing-job-list")

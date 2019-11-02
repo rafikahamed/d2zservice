@@ -24,6 +24,7 @@ import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
+import com.d2z.d2zservice.model.ParcelResponse;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
@@ -34,6 +35,7 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
+import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
 
 public interface ISuperUserD2ZService{
@@ -161,5 +163,13 @@ public interface ISuperUserD2ZService{
 	public UserMessage uploadWeight(List<WeightUpload> weight);
 
 	public ResponseMessage allocateShipment(String articleid, String shipmentNumber);
+
+	public UserMessage createParcel(List<HeldParcel> createJob);
+
+	public List<ParcelResponse> getParcelList();
+	
+	public UserMessage updateParcel(List<ParcelResponse> parcel);
+
+	public List<ParcelResponse> getParcelreleaseList();
 
 }

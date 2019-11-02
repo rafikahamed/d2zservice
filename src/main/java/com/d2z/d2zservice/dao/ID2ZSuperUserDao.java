@@ -22,9 +22,11 @@ import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
+import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
+import com.d2z.d2zservice.model.ParcelResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
@@ -213,5 +215,13 @@ public interface ID2ZSuperUserDao {
 	public List<String> fetchDataForEtowerForeCastCall(String[] refNbrs);
 
 	String updateinvoicing(String toAllocate, String shipmentNumber);
+
+	String createParcel(List<HeldParcel> createJob);
+
+	List<ParcelResponse> getParcelList();
+
+	String updateParcel(List<ParcelResponse> parcel);
+
+	List<ParcelResponse> getParcelReleaseList();
 }
 

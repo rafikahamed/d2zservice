@@ -60,6 +60,7 @@ import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PCADim;
 import com.d2z.d2zservice.model.PFLTrackingResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
+import com.d2z.d2zservice.model.ParcelResponse;
 import com.d2z.d2zservice.model.PflTrackEventRequest;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -106,6 +107,7 @@ import uk.org.okapibarcode.backend.DataMatrix.ForceMode;
 import uk.org.okapibarcode.backend.Symbol.DataType;
 import uk.org.okapibarcode.output.Java2DRenderer;
 import com.d2z.d2zservice.model.ExportShipment;
+import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
 
 @Service
@@ -1533,6 +1535,38 @@ String[] articleNbrs = articleid.split(",");
 		
 		return userMsg;
 
+	}
+
+	@Override
+	public UserMessage createParcel(List<HeldParcel> createJob) {
+		// TODO Auto-generated method stub
+		String jobInfo = d2zDao.createParcel(createJob);
+		UserMessage usrMsg = new UserMessage();
+		usrMsg.setMessage(jobInfo);
+		return usrMsg;
+	}
+
+	@Override
+	public List<ParcelResponse> getParcelList() {
+		// TODO Auto-generated method stub
+		return d2zDao.getParcelList();
+	}
+
+	@Override
+	public UserMessage updateParcel(List<ParcelResponse> parcel) {
+		// TODO Auto-generated method stub
+		
+		String jobInfo = d2zDao.updateParcel(parcel);
+		UserMessage usrMsg = new UserMessage();
+		usrMsg.setMessage(jobInfo);
+		return usrMsg;
+
+	}
+
+	@Override
+	public List<ParcelResponse> getParcelreleaseList() {
+		// TODO Auto-generated method stub
+		return d2zDao.getParcelReleaseList();
 	}
 
 
