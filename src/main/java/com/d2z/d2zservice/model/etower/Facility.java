@@ -9,7 +9,8 @@ public enum Facility {
     SYD("33G7K"),
     BNE2("33G7M"),
     MEL("33G7L"),
-    PER("33G7P");
+    PER("33G7P"),
+	MEL2("33QU7");
 	
  
     private String mlid;

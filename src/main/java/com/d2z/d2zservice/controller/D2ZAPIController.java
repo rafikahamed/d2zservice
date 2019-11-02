@@ -20,8 +20,10 @@ import com.d2z.d2zservice.exception.PCAlabelException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
+import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
+import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -113,4 +115,10 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 		return d2zService.allocateShipmentArticleid(articleid.toString(), shipmentNumber);
 	}
 
+	@RequestMapping(method = RequestMethod.POST, path = "/create-enquiry")
+	public UserMessage createEnquiry(@RequestBody Enquiry createEnquiry) throws ReferenceNumberNotUniqueException {
+		UserMessage enquiryInfo = d2zService.createEnquiry(createEnquiry);
+		return enquiryInfo;
+	}
+	
 }

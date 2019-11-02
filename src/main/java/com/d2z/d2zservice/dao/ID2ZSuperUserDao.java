@@ -216,6 +216,7 @@ public interface ID2ZSuperUserDao {
 
 	String updateinvoicing(String toAllocate, String shipmentNumber);
 
+
 	String createParcel(List<HeldParcel> createJob);
 
 	List<ParcelResponse> getParcelList();
@@ -223,5 +224,8 @@ public interface ID2ZSuperUserDao {
 	String updateParcel(List<ParcelResponse> parcel);
 
 	List<ParcelResponse> getParcelReleaseList();
+	
+	void updateReturnInvoice(Returns returnVal);
+
 }
 
