@@ -33,9 +33,11 @@ import com.d2z.d2zservice.entity.FastwayPostcode;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.entity.SystemRefCount;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
+import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateEnquiryRequest;
@@ -69,12 +71,16 @@ import com.d2z.d2zservice.repository.FastwayPostcodeRepository;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
 import com.d2z.d2zservice.repository.ReturnsRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
+import com.d2z.d2zservice.repository.SystemRefCountRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
+import com.d2z.d2zservice.wrapper.ETowerWrapper;
 import com.d2z.d2zservice.wrapper.FreipostWrapper;
+import com.d2z.d2zservice.wrapper.PCAWrapper;
+import com.d2z.d2zservice.wrapper.PFLWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
@@ -85,6 +91,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	SenderDataRepository senderDataRepository;
+	
+	@Autowired
+	SystemRefCountRepository systemRefCountRepository;
 	
 	@Autowired
 	CSTicketsRepository csticketsRepository;
@@ -132,6 +141,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	@Lazy
 	private D2ZValidator d2zValidator;
 
+	
+	
+	
 	@Override
 	public String exportParcel(List<SenderData> orderDetailList,Map<String, LabelData> barcodeMap) {
 		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
@@ -229,7 +241,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 		senderDataRepository.saveAll(senderDataList);
 		System.out.println("create consignment UI object construction Done data got inserted--->"+senderDataList.size());
 		storProcCall(fileSeqId);
-		updateTrackAndTrace(fileSeqId,userInfo.getUser_Id(),null);
+		updateTrackAndTrace(fileSeqId,userInfo.getUser_Id());
 		return fileSeqId;
 	}
 
@@ -295,9 +307,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		LabelData provider = null;
-		List<String> autoShipRefNbrs = new ArrayList<String>();
 		User userInfo = userRepository.findByUsername(userName);
-		boolean autoShipment =("Y").equals( userInfo.getAutoShipment());
+		
 		String fileSeqId = "D2ZAPI"+senderDataRepository.fetchNextSeq();
 		System.out.println("create consignment API object construction --->"+orderDetailList.size());
 		for(SenderDataApi senderDataValue: orderDetailList) {
@@ -349,8 +360,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 				else if(senderDataValue.getBarcodeLabelNumber().length() == 39)
 				senderDataObj.setMlid(senderDataValue.getBarcodeLabelNumber().substring(18,21));
 				senderDataObj.setDatamatrix(senderDataValue.getDatamatrix());
-				if(autoShipment)
-					autoShipRefNbrs.add(senderDataValue.getReferenceNumber());
+				
 			}
 			if(senderDataValue.getInjectionState()!=null){
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
@@ -400,7 +410,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 				|| orderDetailList.get(0).getDatamatrix()==null || orderDetailList.get(0).getDatamatrix().trim().isEmpty()){
 			storProcCall(fileSeqId);
 		}
-		updateTrackAndTrace(fileSeqId,userId,autoShipRefNbrs);
+		updateTrackAndTrace(fileSeqId,userId);
 		return fileSeqId;
 	}
 	
@@ -408,7 +418,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	 * @param senderDataList
 	 */
 
-	public void updateTrackAndTrace(String fileSeqId,int userId,List<String> autoShipRefNbrs) {
+	public void updateTrackAndTrace(String fileSeqId,int userId) {
 		Runnable r = new Runnable() {			
 	        public void run() {
 	        	
@@ -437,17 +447,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	    			trackAndTraceList.add(trackAndTrace);
 	    		}
 	    		List<Trackandtrace> trackAndTraceInsert = (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackAndTraceList);
-	    		if(null!=autoShipRefNbrs && !autoShipRefNbrs.isEmpty()) {
-	    			System.out.println("Auto-Shipment Allocation");
-	    			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-	    			String shipmentNumber = userId+simpleDateFormat.format(new Date());
-	    			allocateShipment(String.join(",", autoShipRefNbrs), shipmentNumber);
-	    			List<SenderdataMaster> senderMasterData = fetchDataBasedonSupplier(autoShipRefNbrs,"Freipost");
-		        	if(!senderMasterData.isEmpty()) {
-		        		freipostWrapper.uploadManifestService(senderMasterData);
-		        	}
-		        	
-	    		}
+	    		
 	        }};
 	        new Thread(r).start();
 	}
@@ -1200,6 +1200,27 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage("Return Action Updated Successfully");
 		return usrMsg;
+	}
+
+	@Override
+	public List<SystemRefCount> fetchAllSystemRefCount() {
+		// TODO Auto-generated method stub
+		List<SystemRefCount> systemRefCount = (List<SystemRefCount>) systemRefCountRepository.findAll();
+		System.out.println(systemRefCount.size());
+		return systemRefCount;
+	}
+
+	@Override
+	public void updateSystemRefCount(Map<String, Integer> currentSysRefCount) {
+		List<SystemRefCount> systemRefCountList = new ArrayList<SystemRefCount>();
+		for(String supplier : currentSysRefCount.keySet() ) {
+			SystemRefCount sysRefCount = new SystemRefCount();
+			sysRefCount.setSupplier(supplier);
+			sysRefCount.setSystemRefNo(currentSysRefCount.get(supplier));
+			systemRefCountList.add(sysRefCount);
+		}
+		systemRefCountRepository.saveAll(systemRefCountList);
+		
 	}
 
 }

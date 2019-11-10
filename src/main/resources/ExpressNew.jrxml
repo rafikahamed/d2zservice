@@ -307,18 +307,18 @@
 				<textFieldExpression><![CDATA[(($F{labelSenderName} == null) || ($F{labelSenderName}.isEmpty()))?"SW1".concat("001"):$F{labelSenderName}.length()>3?$F{labelSenderName}.substring( 0,3 ).concat("001"):$F{labelSenderName}.concat("001")]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="3" y="-60" width="128" height="15" uuid="74384646-f320-4f97-b252-5446ab2b0273"/>
+				<reportElement x="2" y="-60" width="128" height="15" uuid="74384646-f320-4f97-b252-5446ab2b0273"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[PO BOX 4025]]></textFieldExpression>
+				<textFieldExpression><![CDATA["PO BOX 4025"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="3" y="-22" width="128" height="15" uuid="7fd1e4c2-8511-4e79-bd2c-292dfd3b0b70"/>
+				<reportElement x="2" y="-22" width="134" height="15" uuid="7fd1e4c2-8511-4e79-bd2c-292dfd3b0b70"/>
 				<textElement>
 					<font fontName="MyArial" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[DANDENONG SOUTH VIC 3164]]></textFieldExpression>
+				<textFieldExpression><![CDATA["DANDENONG SOUTH VIC 3164"]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="138" y="-42" width="238" height="1" uuid="fc0f367d-a0be-4d9b-b0ca-8aecc6f7ee5c"/>

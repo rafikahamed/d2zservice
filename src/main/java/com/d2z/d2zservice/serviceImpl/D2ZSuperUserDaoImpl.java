@@ -1487,7 +1487,6 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 	}
 
 	@Override
-<<<<<<< HEAD:src/main/java/com/d2z/d2zservice/daoImpl/D2ZSuperUserDaoImpl.java
 	public String createParcel(List<HeldParcel> createJob) {
 		// TODO Auto-generated method stub
 		

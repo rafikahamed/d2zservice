@@ -108,6 +108,7 @@ import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.d2zservice.wrapper.PCAWrapper;
 import com.d2z.d2zservice.wrapper.PFLWrapper;
 import com.d2z.singleton.D2ZSingleton;
+import com.d2z.singleton.SingletonCounter;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 import com.google.gson.Gson;
 import net.sf.jasperreports.engine.JRException;
@@ -892,7 +893,7 @@ else
 	}
 
 	@Override
-	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail) throws 
+	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail,List<String> autoShipRefNbrs) throws 
 		ReferenceNumberNotUniqueException, EtowerFailureResponseException {
 		Integer userId = userRepository.fetchUserIdbyUserName(orderDetail.getUserName());
 		if (userId == null) {
@@ -910,7 +911,7 @@ else
 		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
-
+		boolean autoShipment = false;
 		String barcodeLabelNumber = orderDetail.getConsignmentData().get(0).getBarcodeLabelNumber();
 		String datamatrix = orderDetail.getConsignmentData().get(0).getDatamatrix();
 	    if(null==barcodeLabelNumber || barcodeLabelNumber.trim().isEmpty() || null==datamatrix || datamatrix.trim().isEmpty()) {
@@ -982,12 +983,20 @@ else
 				}
 			}
 			return senderDataResponseList;
-		}}
+		}
+		
+		}else if (barcodeLabelNumber!=null && !barcodeLabelNumber.trim().isEmpty()
+				&& datamatrix!=null && !datamatrix.trim().isEmpty()){
+		autoShipment =("Y").equals(userRepository.fetchAutoShipmentIndicator(userId));
+		}
 		
 		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(), userId, orderDetail.getUserName(), null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
+		
+
 		Iterator itr = insertedOrder.iterator();
 		while (itr.hasNext()) {
+			
 			Object[] obj = (Object[]) itr.next();
 			senderDataResponse = new SenderDataResponse();
 			senderDataResponse.setReferenceNumber(obj[0].toString());
@@ -997,7 +1006,11 @@ else
 			senderDataResponse.setCarrier(obj[4].toString());
 			senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 			senderDataResponseList.add(senderDataResponse);
+			if(autoShipment)
+				autoShipRefNbrs.add(senderDataResponse.getReferenceNumber());
 		}
+		
+		
 		return senderDataResponseList;
 	}
 
@@ -1008,9 +1021,9 @@ else
 		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
 		for (SenderDataApi orderDetail : data) {
 			PflCreateShippingOrderInfo request = new PflCreateShippingOrderInfo();
-			 Random rnd = new Random();
-			 int uniqueNumber = 1000000 + rnd.nextInt(9000000);
-    		 String sysRefNbr = "RTFG"+uniqueNumber;
+			 //Random rnd = new Random();
+			 int uniqueNumber = SingletonCounter.getInstance().getPFLCount();
+    		 String sysRefNbr = "RTFGA"+uniqueNumber;
     		 request.setCustom_ref(sysRefNbr);
   			systemRefNbrMap.put(request.getCustom_ref(), orderDetail.getReferenceNumber());
 
@@ -1042,9 +1055,9 @@ else
 		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
 		for (SenderData orderDetail : data) {
 			PflCreateShippingOrderInfo request = new PflCreateShippingOrderInfo();
-			 Random rnd = new Random();
-			 int uniqueNumber = 1000000 + rnd.nextInt(9000000);
-    		 String sysRefNbr = "RTFG"+uniqueNumber;
+			 //Random rnd = new Random();
+			 int uniqueNumber = SingletonCounter.getInstance().getPFLCount();
+    		 String sysRefNbr = "RTFGA"+uniqueNumber;
     		 request.setCustom_ref(sysRefNbr);
   			systemRefNbrMap.put(request.getCustom_ref(), orderDetail.getReferenceNumber());
 		//	request.setCustom_ref(orderDetail.getReferenceNumber());
@@ -1198,9 +1211,9 @@ else
 					email = data.getConsignee_Email().trim();
 				}
 				ShipmentRequest shipmentRequest = new ShipmentRequest();
-				 Random rnd = new Random();
-				 int uniqueNumber = 100000000 + rnd.nextInt(900000000);
-	    		 String sysRefNbr = "D"+uniqueNumber;
+				 //Random rnd = new Random();
+				 int uniqueNumber = SingletonCounter.getInstance().getAuPostCount();
+	    		 String sysRefNbr = "DA"+uniqueNumber;
 				//shipmentRequest.setSender_references(data.getReference_number());
 	    		 shipmentRequest.setSender_references(sysRefNbr);
 				shipmentRequest.setEmail_tracking_enabled(email != null);

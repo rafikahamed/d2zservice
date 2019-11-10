@@ -34,6 +34,7 @@ import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.model.etower.ResponseData;
 import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.singleton.D2ZSingleton;
+import com.d2z.singleton.SingletonCounter;
 
 @Service
 public class ETowerWrapper {
@@ -159,9 +160,9 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 		while (iterator.hasNext()) {
 			SenderData orderDetail = iterator.next();
 			com.d2z.d2zservice.model.etower.CreateShippingRequest request = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
-			Random rnd = new Random();
-			int uniqueNumber = 100000 + rnd.nextInt(900000);
-			request.setReferenceNo("SW10S" + uniqueNumber);
+			//Random rnd = new Random();
+			int uniqueNumber = SingletonCounter.getInstance().getEtowerCount();
+			request.setReferenceNo("SW10A" + uniqueNumber);
 			systemRefNbrMap.put(request.getReferenceNo(), orderDetail.getReferenceNumber());
 			//request.setReferenceNo(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
@@ -483,9 +484,9 @@ s);
 		List<SenderDataApi> updatedOrderDetail = new ArrayList<SenderDataApi>();
 		for (SenderDataApi orderDetail : data.getConsignmentData()) {
 			com.d2z.d2zservice.model.etower.CreateShippingRequest request = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
-			Random rnd = new Random();
-			int uniqueNumber = 100000 + rnd.nextInt(900000);
-			request.setReferenceNo("SW10S" + uniqueNumber);
+			//Random rnd = new Random();
+			int uniqueNumber = SingletonCounter.getInstance().getEtowerCount();
+			request.setReferenceNo("SW10A" + uniqueNumber);
 			systemRefNbrMap.put(request.getReferenceNo(), orderDetail.getReferenceNumber());
 			//request.setReferenceNo(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
@@ -749,9 +750,9 @@ s);
 				CreateShippingRequest request = new CreateShippingRequest();
 				System.out.println(orderDetail.getArticleId());
 				request.setTrackingNo(orderDetail.getArticleId());
-				Random rnd = new Random();
-				int uniqueNumber = 100000 + rnd.nextInt(900000);
-				request.setReferenceNo("SW10S" + uniqueNumber);
+				//Random rnd = new Random();
+				int uniqueNumber = SingletonCounter.getInstance().getEtowerCount();
+				request.setReferenceNo("SW10A" + uniqueNumber);
 				request.setRecipientCompany(orderDetail.getConsigneeCompany());
 				String recpName = orderDetail.getConsignee_name().length() > 34
 						? orderDetail.getConsignee_name().substring(0, 34)

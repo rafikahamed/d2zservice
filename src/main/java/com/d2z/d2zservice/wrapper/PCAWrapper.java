@@ -32,6 +32,7 @@ import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.proxy.PcaProxy;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
+import com.d2z.singleton.SingletonCounter;
 
 @Service
 public class PCAWrapper {
@@ -58,9 +59,9 @@ public class PCAWrapper {
 		Map<String, String> matrixMap = new HashMap<String, String>();
 		for (SenderDataApi orderDetail : consignmentData) {
 			PCACreateShipmentRequestInfo request = new PCACreateShipmentRequestInfo();
-			 Random rnd = new Random();
-			 int uniqueNumber = 1000000 + rnd.nextInt(9000000);
-    		 String sysRefNbr = "CR"+uniqueNumber;
+			 //Random rnd = new Random();
+			 int uniqueNumber = SingletonCounter.getInstance().getPCACount();
+    		 String sysRefNbr = "CRA"+uniqueNumber;
     		 request.setCust_ref(sysRefNbr);
  			systemRefNbrMap.put(request.getCust_ref(), orderDetail.getReferenceNumber());
 
@@ -147,9 +148,9 @@ public class PCAWrapper {
 			PCACreateShipmentRequestInfo request = new PCACreateShipmentRequestInfo();
 			request.setNo(orderDetail.getArticleId().substring(0, 10));
 			request.setDirect("1");
-			 Random rnd = new Random();
-			 int uniqueNumber = 1000000 + rnd.nextInt(9000000);
-    		 String sysRefNbr = "CR"+uniqueNumber;
+			 //Random rnd = new Random();
+			 int uniqueNumber = SingletonCounter.getInstance().getPCACount();
+    		 String sysRefNbr = "CRA"+uniqueNumber;
     		 request.setCust_ref(sysRefNbr);
 
 			//request.setCust_ref(orderDetail.getReference_number());
@@ -335,9 +336,9 @@ public class PCAWrapper {
 		Map<String, String> matrixMap = new HashMap<String, String>();
 		for (SenderData orderDetail : orderDetailList) {
 			PCACreateShipmentRequestInfo request = new PCACreateShipmentRequestInfo();
-			Random rnd = new Random();
-			 int uniqueNumber = 1000000 + rnd.nextInt(9000000);
-			 String sysRefNbr = "CR"+uniqueNumber;
+			//Random rnd = new Random();
+			 int uniqueNumber = SingletonCounter.getInstance().getPCACount();
+			 String sysRefNbr = "CRA"+uniqueNumber;
 			 request.setCust_ref(sysRefNbr);
 			systemRefNbrMap.put(request.getCust_ref(), orderDetail.getReferenceNumber());
 

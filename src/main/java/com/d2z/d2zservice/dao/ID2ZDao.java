@@ -10,6 +10,7 @@ import com.d2z.d2zservice.entity.FastwayPostcode;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.entity.SystemRefCount;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
@@ -161,5 +162,11 @@ public interface ID2ZDao {
 			String type);
 
 	public UserMessage returnAction(List<ReturnsAction> returnsAction);
+
+	public List<SystemRefCount> fetchAllSystemRefCount();
+
+	public void updateSystemRefCount(Map<String, Integer> currentSysRefCount);
+
+
 
 }

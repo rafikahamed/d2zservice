@@ -2,16 +2,10 @@ package com.d2z.d2zservice.serviceImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.Set;
 
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +15,7 @@ import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.MaxSizeCountException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
+import com.d2z.d2zservice.model.ErrorDetails;
 import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.PflCreateShippingOrderInfo;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
@@ -29,11 +24,11 @@ import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZAPIService;
 import com.d2z.d2zservice.util.ValidationUtils;
-import com.d2z.d2zservice.model.ErrorDetails;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.wrapper.ETowerWrapper;
 import com.d2z.d2zservice.wrapper.PCAWrapper;
 import com.d2z.d2zservice.wrapper.PFLWrapper;
+import com.d2z.singleton.SingletonCounter;
 
 @Service
 public class D2ZAPIServiceImpl implements ID2ZAPIService{
@@ -184,9 +179,9 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
 		for (SenderDataApi orderDetail : data) {
 			PflCreateShippingOrderInfo request = new PflCreateShippingOrderInfo();
-			 Random rnd = new Random();
-			 int uniqueNumber = 1000000 + rnd.nextInt(9000000);
-    		 String sysRefNbr = "RTFG"+uniqueNumber;
+			 //Random rnd = new Random();
+			 int uniqueNumber = SingletonCounter.getInstance().getPFLCount();
+    		 String sysRefNbr = "RTFGA"+uniqueNumber;
     		 request.setCustom_ref(sysRefNbr);
     		 
 			systemRefNbrMap.put(request.getCustom_ref(), orderDetail.getReferenceNumber());

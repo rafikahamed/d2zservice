@@ -52,7 +52,7 @@ public interface ID2ZService {
 
 	List<TrackParcel> trackParcelByRefNbr(List<String> referenceNumbers);
 
-	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail) 
+	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail, List<String> autoShipRefNbrs) 
 			throws ReferenceNumberNotUniqueException, EtowerFailureResponseException;
 
 	public List<TrackParcel> trackParcelByArticleID(List<String> articleIDs);
@@ -127,5 +127,6 @@ public interface ID2ZService {
 	public List<ShipmentDetails> downloadShipmentDataTemplatebyType(List<String> number, Integer userId, String type);
 
 	public UserMessage returnAction(List<ReturnsAction> returnsAction);
+
 
 }
