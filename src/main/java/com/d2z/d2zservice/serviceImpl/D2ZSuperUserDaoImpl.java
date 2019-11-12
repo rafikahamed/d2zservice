@@ -903,9 +903,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	@Override
 	public String updateEnquiryDetails(List<OpenEnquiryResponse> openEnquiryDetails) {
 		for(OpenEnquiryResponse enquiryDetails:openEnquiryDetails) {
-			if(enquiryDetails.getD2zComments() != null) {
 				csticketsRepository.updateTicketInfo(enquiryDetails.getD2zComments(), enquiryDetails.getStatus(), enquiryDetails.getSendUpdate(), enquiryDetails.getArticleID());
-			}
 		}
 		return "Enquiry Updated Successfully";
 	}

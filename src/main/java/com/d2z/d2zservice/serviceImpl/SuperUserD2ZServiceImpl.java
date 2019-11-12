@@ -1085,7 +1085,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			enquiryData.setD2zComments(csTicketDetails.getD2zComments());
 			enquiryData.setTrackingStatus(csTicketDetails.getTrackingStatus());
 			enquiryData.setTrackingEvent(csTicketDetails.getTrackingEvent());
-			enquiryData.setTrackingEventDateOccured(csTicketDetails.getTrackingEventDateOccured().toString());
+			if(csTicketDetails.getTrackingEventDateOccured() != null)
+				enquiryData.setTrackingEventDateOccured(csTicketDetails.getTrackingEventDateOccured().toString());
 			enquiryListDetails.add(enquiryData);
 		}
 		return enquiryListDetails;
