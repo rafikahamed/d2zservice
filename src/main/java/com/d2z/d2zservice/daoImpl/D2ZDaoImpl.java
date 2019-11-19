@@ -1218,10 +1218,12 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public void updateSystemRefCount(Map<String, Integer> currentSysRefCount) {
 		List<SystemRefCount> systemRefCountList = new ArrayList<SystemRefCount>();
 		for(String supplier : currentSysRefCount.keySet() ) {
+			if(currentSysRefCount.get(supplier)>0) {
 			SystemRefCount sysRefCount = new SystemRefCount();
 			sysRefCount.setSupplier(supplier);
 			sysRefCount.setSystemRefNo(currentSysRefCount.get(supplier));
 			systemRefCountList.add(sysRefCount);
+			}
 		}
 		systemRefCountRepository.saveAll(systemRefCountList);
 		

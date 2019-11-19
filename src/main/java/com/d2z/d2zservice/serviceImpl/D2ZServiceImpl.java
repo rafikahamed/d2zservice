@@ -368,6 +368,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderData> whiteLabelData = new ArrayList<SenderData>();
 		List<SenderData> eParcelNewData = new ArrayList<SenderData>();
 		List<SenderData> expressNewData = new ArrayList<SenderData>();
+		List<SenderData> fwData = new ArrayList<SenderData>();
 
 		
 		boolean setGS1Type=false;
@@ -390,6 +391,8 @@ public class D2ZServiceImpl implements ID2ZService {
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
 				setGS1Type = true;
 				expressData.add(data);
+			}else if ("FW".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
+				fwData.add(data);
 			}else if(data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				fastwayData.add(data);
 			}else if(data.getCarrier().equalsIgnoreCase("FastwayS")) {
@@ -418,6 +421,8 @@ public class D2ZServiceImpl implements ID2ZService {
 		JasperReport eParcelNew = null;
 		JRBeanCollectionDataSource expressNewDataSource;
 		JasperReport expressNew = null;
+		JRBeanCollectionDataSource fwDataSource;
+		JasperReport fwLabel = null;
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 			if (!eParcelData.isEmpty()) {
@@ -477,6 +482,14 @@ public class D2ZServiceImpl implements ID2ZService {
 						.compileReport(getClass().getResource("/eParcelNew.jrxml").openStream());
 				JRSaver.saveObject(eParcelNew, "eParcelNew.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(eParcelNew, parameters, eParcelNewDataSource));
+			}
+			if (!fwData.isEmpty()) {
+				System.out.println("Generating Fastway FW..." + fwData.size());
+				fwDataSource = new JRBeanCollectionDataSource(fwData);
+				fwLabel = JasperCompileManager
+						.compileReport(getClass().getResource("/FWLabel.jrxml").openStream());
+				JRSaver.saveObject(fastwayLabel, "FWLabel.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(fwLabel, parameters, fwDataSource));
 			}
 			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
@@ -634,6 +647,7 @@ if(!pcalabel)
 		List<SenderData> whiteLabelData = new ArrayList<SenderData>();
 		List<SenderData> eParcelNewData = new ArrayList<SenderData>();
 		List<SenderData> expressNewData = new ArrayList<SenderData>();
+		List<SenderData> fwData = new ArrayList<SenderData>();
 
 		for (SenderData data : trackingLabelList) {
 			if ("MCM1".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
@@ -652,6 +666,8 @@ if(!pcalabel)
 				eParcelData.add(data);
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
 				expressData.add(data);
+			}else if ("FW".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
+				fwData.add(data);
 			}else if(data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				fastwayData.add(data);
 			}else if(data.getCarrier().equalsIgnoreCase("FastwayS")) {
@@ -676,6 +692,8 @@ if(!pcalabel)
 		JasperReport eParcelNew = null;
 		JRBeanCollectionDataSource expressNewDataSource;
 		JasperReport expressNew = null;
+		JRBeanCollectionDataSource fwDataSource;
+		JasperReport fwLabel = null;
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 			if (!eParcelData.isEmpty()) {
@@ -709,6 +727,14 @@ if(!pcalabel)
 						.compileReport(getClass().getResource("/FastWayLabel.jrxml").openStream());
 				JRSaver.saveObject(fastwayLabel, "FastWayLabel.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(fastwayLabel, parameters, fastwayDataSource));
+			}
+			if (!fwData.isEmpty()) {
+				System.out.println("Generating Fastway FW..." + fwData.size());
+				fwDataSource = new JRBeanCollectionDataSource(fwData);
+				fwLabel = JasperCompileManager
+						.compileReport(getClass().getResource("/FWLabel.jrxml").openStream());
+				JRSaver.saveObject(fastwayLabel, "FWLabel.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(fwLabel, parameters, fwDataSource));
 			}
 			if (!fastway_S_Data.isEmpty()) {
 				System.out.println("Generating FastwayS..." + fastway_S_Data.size());
