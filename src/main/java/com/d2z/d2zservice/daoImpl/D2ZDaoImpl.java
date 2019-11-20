@@ -1048,7 +1048,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 			tickets.setDeliveryEnquiry(enquiryRequest.getEnquiry());
 			tickets.setPod(enquiryRequest.getPod());
 			tickets.setStatus("open");
-			tickets.setUserId(createEnquiry.getUserId());
+			tickets.setUserId( userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
 			tickets.setEnquiryOpenDate(Timestamp.valueOf(LocalDateTime.now()));
 			csTctList.add(tickets);
 		}

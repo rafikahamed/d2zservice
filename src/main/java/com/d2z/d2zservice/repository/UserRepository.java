@@ -20,7 +20,7 @@ public interface UserRepository extends CrudRepository<User, Long>{
 	 @Query("SELECT u FROM User u where u.companyName = :companyName and u.role_Id= :roleId") 
 	 User fetchUserbyCompanyName(@Param("companyName") String companyName, @Param("roleId") int roleId);
 
-	 @Query("Select user_Id from User t where t.username = :userName and t.user_IsDeleted = false") 
+	 @Query("Select user_Id from User t where t.username = :userName") 
 	 Integer fetchUserIdbyUserName(@Param("userName") String userName);
 	
 	 @Query("SELECT u.companyName FROM User u where u.role_Id=2") 
