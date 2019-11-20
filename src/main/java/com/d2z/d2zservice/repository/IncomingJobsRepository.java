@@ -17,4 +17,7 @@ public interface IncomingJobsRepository extends CrudRepository<IncomingJobs,Long
 	
 	@Query( nativeQuery = true, value="SELECT * FROM incomingjobs where   ISSubmitted IS NULL and ISDeleted = 'N' Order by ETA asc") 
 	List<IncomingJobs> fetchincomingJobs();
+	
+	@Query( nativeQuery = true, value="SELECT * FROM incomingjobs where ISSubmitted = 'Y' and broker in ('NEXB', 'VELB', 'RMFB')")
+	List<IncomingJobs> shipmentCharges();
 }

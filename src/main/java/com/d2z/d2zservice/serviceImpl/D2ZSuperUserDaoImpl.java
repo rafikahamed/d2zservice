@@ -51,6 +51,7 @@ import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
+import com.d2z.d2zservice.model.ShipmentCharges;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
@@ -1589,10 +1590,47 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 		return parcellist;
 	}
 	
-	
-	
 	public void updateReturnInvoice(Returns returnVal) {
 		senderdata_InvoicingRepository.updateReturnInvoice("Return-"+D2ZCommonUtil.getday(),"RES", returnVal.getArticleId());
+	}
+
+	@Override
+	public List<ShipmentCharges> shipmentCharges() {
+		List<IncomingJobs> incomingJob = incomingRepository.shipmentCharges();
+		List<ShipmentCharges> shipmentChargesList = new ArrayList<ShipmentCharges>();
+		for(IncomingJobs incomingJobDetails:incomingJob){
+			ShipmentCharges shipmemntCharge = new ShipmentCharges();
+			shipmemntCharge.setBroker(incomingJobDetails.getBroker());
+			shipmemntCharge.setConsignee(incomingJobDetails.getConsignee());
+			shipmemntCharge.setMawb(incomingJobDetails.getMawb());
+			shipmemntCharge.setPod(incomingJobDetails.getDestination());
+			shipmemntCharge.setPcs(incomingJobDetails.getPiece());
+			shipmemntCharge.setWeight(incomingJobDetails.getWeight());
+			shipmemntCharge.setHawb(incomingJobDetails.getHawb());
+			if(incomingJobDetails.getBroker().equalsIgnoreCase("NEXB") && incomingJobDetails.getConsignee().equalsIgnoreCase("BLUE")){
+				shipmemntCharge.setProcess(Double.valueOf(incomingJobDetails.getWeight())*(0.20));
+				Double pickUpCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.16)) > 82.50 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.16)) : 82.50;
+				shipmemntCharge.setPickUp(pickUpCharge);
+				shipmemntCharge.setDocs(52.50);
+				shipmemntCharge.setAirport(Double.valueOf(incomingJobDetails.getWeight())*(0.51));
+				shipmemntCharge.setTotal(shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport());
+			}else if(incomingJobDetails.getBroker().equalsIgnoreCase("VELB") && incomingJobDetails.getConsignee().equalsIgnoreCase("BLUE")){
+				shipmemntCharge.setProcess((double) 0);
+				Double pickUpCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.15)) > 70 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.15)) : 70;
+				shipmemntCharge.setPickUp(pickUpCharge);
+				shipmemntCharge.setDocs(60.00);
+				shipmemntCharge.setAirport(Double.valueOf(incomingJobDetails.getWeight())*(0.60));
+				shipmemntCharge.setTotal(shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport());
+			}else if(incomingJobDetails.getBroker().equalsIgnoreCase("RMFB") && incomingJobDetails.getConsignee().equalsIgnoreCase("D2Z")) {
+				shipmemntCharge.setProcess((double) 25);
+				shipmemntCharge.setPickUp((double) 0);
+				shipmemntCharge.setDocs((double) 0);
+				shipmemntCharge.setAirport((double) 0);
+				shipmemntCharge.setTotal(shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport());
+			}
+			shipmentChargesList.add(shipmemntCharge);
+		}
+		return shipmentChargesList;
 	}
 
 		

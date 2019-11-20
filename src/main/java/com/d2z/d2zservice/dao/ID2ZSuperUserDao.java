@@ -29,6 +29,7 @@ import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
+import com.d2z.d2zservice.model.ShipmentCharges;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
@@ -216,7 +217,6 @@ public interface ID2ZSuperUserDao {
 
 	String updateinvoicing(String toAllocate, String shipmentNumber);
 
-
 	String createParcel(List<HeldParcel> createJob);
 
 	List<ParcelResponse> getParcelList();
@@ -226,6 +226,8 @@ public interface ID2ZSuperUserDao {
 	List<ParcelResponse> getParcelReleaseList();
 	
 	void updateReturnInvoice(Returns returnVal);
+
+	List<ShipmentCharges> shipmentCharges();
 
 }
 

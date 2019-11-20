@@ -29,6 +29,7 @@ import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ReturnsClientResponse;
+import com.d2z.d2zservice.model.ShipmentCharges;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
@@ -171,5 +172,7 @@ public interface ISuperUserD2ZService{
 	public UserMessage updateParcel(List<ParcelResponse> parcel);
 
 	public List<ParcelResponse> getParcelreleaseList();
+
+	public List<ShipmentCharges> shipmentCharges();
 
 }

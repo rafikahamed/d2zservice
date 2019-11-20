@@ -42,6 +42,7 @@ import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ReturnsClientResponse;
+import com.d2z.d2zservice.model.ShipmentCharges;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
@@ -228,6 +229,11 @@ public class D2ZSuperUserController {
     public List<DownloadInvice> downloadInvoice(@RequestParam("broker") List<String> broker, @RequestParam("airwayBill") List<String> airwayBill,
     		@RequestParam("billed") String billed, @RequestParam("invoiced") String invoiced) {
 		return superUserD2zService.downloadInvoice(broker, airwayBill, billed, invoiced);
+    }
+	
+	@RequestMapping( method = RequestMethod.GET, path = "/shipment-Charge")
+    public List<ShipmentCharges> shipmentCharges() {
+		return superUserD2zService.shipmentCharges();
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/download-nonD2z-Invoice")

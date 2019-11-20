@@ -67,6 +67,7 @@ import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.SenderData;
+import com.d2z.d2zservice.model.ShipmentCharges;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
@@ -1575,6 +1576,11 @@ String[] articleNbrs = articleid.split(",");
 	public List<ParcelResponse> getParcelreleaseList() {
 		// TODO Auto-generated method stub
 		return d2zDao.getParcelReleaseList();
+	}
+
+	@Override
+	public List<ShipmentCharges> shipmentCharges() {
+		return d2zDao.shipmentCharges();
 	}
 
 
