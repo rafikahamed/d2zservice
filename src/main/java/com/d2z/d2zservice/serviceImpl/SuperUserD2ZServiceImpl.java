@@ -901,8 +901,18 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		List<SenderData> fastwayData = new ArrayList<SenderData>();
 		List<SenderData> fastway_S_Data = new ArrayList<SenderData>();
 
+		List<SenderData> eParcelNewData = new ArrayList<SenderData>();
+		List<SenderData> expressNewData = new ArrayList<SenderData>();
+		List<SenderData> fwData = new ArrayList<SenderData>();
+
 		for (SenderData data : trackingLabelList) {
-			if (data.getCarrier().equalsIgnoreCase("eParcel")) {
+			 if("1PM".equalsIgnoreCase(data.getServiceType())) {
+				eParcelNewData.add(data);
+			}else if("1PME".equalsIgnoreCase(data.getServiceType())) {
+				expressNewData.add(data);
+			}else if ("FW".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
+				fwData.add(data);
+			}else if (data.getCarrier().equalsIgnoreCase("eParcel")) {
 				eParcelData.add(data);
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
 				expressData.add(data);
@@ -925,6 +935,12 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		JasperReport fastwayLabel = null;
 		JRBeanCollectionDataSource fastway_S_DataSource;
 		JasperReport fastway_S_Label = null;
+		JRBeanCollectionDataSource eParcelNewDataSource;
+		JasperReport eParcelNew = null;
+		JRBeanCollectionDataSource expressNewDataSource;
+		JasperReport expressNew = null;
+		JRBeanCollectionDataSource fwDataSource;
+		JasperReport fwLabel = null;
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 			if (!eParcelData.isEmpty()) {
@@ -960,6 +976,31 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				JRSaver.saveObject(fastway_S_Label, "FastwayPCA.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(fastway_S_Label, parameters, fastway_S_DataSource));
 			}
+			if (!eParcelNewData.isEmpty()) {
+				System.out.println("Generating EParcel new..." + eParcelNewData.size());
+				eParcelNewDataSource = new JRBeanCollectionDataSource(eParcelNewData);
+				eParcelNew = JasperCompileManager
+						.compileReport(getClass().getResource("/eParcelNew.jrxml").openStream());
+				JRSaver.saveObject(eParcelNew, "eParcelNew.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(eParcelNew, parameters, eParcelNewDataSource));
+			}
+			if (!expressNewData.isEmpty()) {
+				System.out.println("Generating Express new..." + expressNewData.size());
+				expressNewDataSource = new JRBeanCollectionDataSource(expressNewData);
+				expressNew = JasperCompileManager
+						.compileReport(getClass().getResource("/ExpressNew.jrxml").openStream());
+				JRSaver.saveObject(expressNew, "expressNew.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(expressNew, parameters, expressNewDataSource));
+			}
+			if (!fwData.isEmpty()) {
+				System.out.println("Generating Fastway FW..." + fwData.size());
+				fwDataSource = new JRBeanCollectionDataSource(fwData);
+				fwLabel = JasperCompileManager
+						.compileReport(getClass().getResource("/FWLabel.jrxml").openStream());
+				JRSaver.saveObject(fastwayLabel, "FWLabel.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(fwLabel, parameters, fwDataSource));
+			}
+			
 			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
 			JRPdfExporter exporter = new JRPdfExporter();
