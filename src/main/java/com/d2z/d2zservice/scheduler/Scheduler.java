@@ -67,15 +67,15 @@ public class Scheduler {
 		}
 	}
 	
-	@Scheduled(cron = "0 0 0/2 * * ?", zone = "GMT")
-	public void triggerCSSchedule() {
-		try {
-			System.out.println("Calling - CS Schedule Tracking Event");
-			superUserD2zService.triggerSC();
-		} catch (Exception e) {
-			System.out.println(e.getLocalizedMessage());
-		}
-	}
+	//@Scheduled(cron = "0 0 0/2 * * ?", zone = "GMT")
+//	public void triggerCSSchedule() {
+//		try {
+//			System.out.println("Calling - CS Schedule Tracking Event");
+//			superUserD2zService.triggerSC();
+//		} catch (Exception e) {
+//			System.out.println(e.getLocalizedMessage());
+//		}
+//	}
 
 	@Scheduled(cron = "0 0 2,8,14 * * ?", zone = "GMT")
 	public void updateRates() {

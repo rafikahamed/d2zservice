@@ -1828,7 +1828,7 @@ else
 					 //ftpUploader.fdmFileCreation(request);
 					 System.out.println("FDM Request ---->");
 					 System.out.println(request);
-					// ftpUploader.ftpUpload(targetStream);
+					 ftpUploader.ftpUpload(targetStream);
 					 //ffresponseRepository.saveAll(FFResponseList);
 					// ftpUploader.fdmFileCreation(request);
 					// ffresponseRepository.saveAll(FFResponseList);
