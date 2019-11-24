@@ -194,7 +194,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setUser_ID(senderDataValue.getUserID());
 			senderDataObj.setSku(senderDataValue.getSku());
 			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
-			senderDataObj.setDeliveryInstructions(senderDataValue.getDeliveryInstructions().length() > 250	
+			senderDataObj.setDeliveryInstructions((senderDataValue.getDeliveryInstructions()!=null && senderDataValue.getDeliveryInstructions().length() > 250)	
 			        ? senderDataValue.getDeliveryInstructions().substring(0,250)
 					:senderDataValue.getDeliveryInstructions());
 			senderDataObj.setCarrier(senderDataValue.getCarrier());
@@ -352,7 +352,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 			//senderDataObj.setFilename(senderDataValue.getFileName());
 			senderDataObj.setSku(senderDataValue.getSku());
 			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
-			senderDataObj.setDeliveryInstructions(senderDataValue.getDeliveryInstructions().length() > 250	
+			senderDataObj.setDeliveryInstructions((senderDataValue.getDeliveryInstructions()!=null && senderDataValue.getDeliveryInstructions().length() > 250)	
 			        ? senderDataValue.getDeliveryInstructions().substring(0,250)
 					:senderDataValue.getDeliveryInstructions());
 			if(senderDataValue.getBarcodeLabelNumber()!=null && !senderDataValue.getBarcodeLabelNumber().trim().isEmpty()
