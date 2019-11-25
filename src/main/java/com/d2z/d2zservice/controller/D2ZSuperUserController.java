@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.d2z.d2zservice.entity.IncomingJobs;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -412,6 +410,14 @@ public class D2ZSuperUserController {
 	@RequestMapping(method = RequestMethod.GET, path = "/allocate-shipment")
 	 public ResponseMessage allocateShipment(@RequestParam("articleid") String articleid, @RequestParam("shipment")String shipmentNumber)  {
 		return  superUserD2zService.allocateShipment(articleid,shipmentNumber);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/tracking-status")
+	public UserMessage updateTrackingStatus() {
+		superUserD2zService.triggerSC();
+		UserMessage userMsg = new UserMessage();
+		userMsg.setMessage("Tracking Status Updated Successfully");
+		return userMsg;
 	}
 	
 }
