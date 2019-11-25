@@ -8,7 +8,6 @@ public class HeldParcel {
 	private String client;
 	private String pod;
 	
-	
 	public String getClient() {
 		return client;
 	}
