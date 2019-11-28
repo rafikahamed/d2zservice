@@ -1597,9 +1597,9 @@ String[] articleNbrs = articleid.split(",");
 	}
 
 	@Override
-	public List<ParcelResponse> getParcelList() {
+	public List<ParcelResponse> getParcelList(String client) {
 		// TODO Auto-generated method stub
-		return d2zDao.getParcelList();
+		return d2zDao.getParcelList(client);
 	}
 
 	@Override
@@ -1614,9 +1614,9 @@ String[] articleNbrs = articleid.split(",");
 	}
 
 	@Override
-	public List<ParcelResponse> getParcelreleaseList() {
+	public List<ParcelResponse> getParcelreleaseList(String client) {
 		// TODO Auto-generated method stub
-		return d2zDao.getParcelReleaseList();
+		return d2zDao.getParcelReleaseList(client);
 	}
 
 	@Override

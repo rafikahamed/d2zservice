@@ -353,15 +353,15 @@ public class D2ZSuperUserController {
 		return jobInfo;
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, path = "/incoming-parcel-list")
-	public List<ParcelResponse> createParcelList() {
-		List<ParcelResponse> jobInfo = superUserD2zService.getParcelList();
+	@RequestMapping(method = RequestMethod.GET, path = "/incoming-parcel-list/{client}")
+	public List<ParcelResponse> createParcelList(@PathVariable String client) {
+		List<ParcelResponse> jobInfo = superUserD2zService.getParcelList(client);
 		return jobInfo;
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, path = "/incoming-parcel-releaselist")
-	public List<ParcelResponse> createParcelreleaseList() {
-		List<ParcelResponse> jobInfo = superUserD2zService.getParcelreleaseList();
+	@RequestMapping(method = RequestMethod.GET, path = "/incoming-parcel-releaselist/{client}")
+	public List<ParcelResponse> createParcelreleaseList(@PathVariable String client) {
+		List<ParcelResponse> jobInfo = superUserD2zService.getParcelreleaseList(client);
 		return jobInfo;
 	}
 	@RequestMapping(method = RequestMethod.GET, path = "/closing-job-list")

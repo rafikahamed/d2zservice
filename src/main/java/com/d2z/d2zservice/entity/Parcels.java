@@ -26,24 +26,30 @@ public class Parcels implements Serializable{
 	
 
 	@Column(name = "MAWB")
-	private String Mawb;
+	private String mawb;
 	
 
 	
 	@Column(name = "HAWB")
-	private String Hawb;
+	private String hawb;
 	
 	
 	
 	@Column(name = "NOTE")
-	private String Note;
+	private String note;
 	
 	@Column(name = "STATUS")
-	private String Status;
+	private String status;
 	
 	@Column(name = "OUTPUT")
-	private String Output;
+	private String output;
 
+	@Column(name = "Client")
+	private String client;
+	
+	@Column(name = "POD")
+	private String pod;
+	
 	public String getID() {
 		return ID;
 	}
@@ -53,44 +59,60 @@ public class Parcels implements Serializable{
 	}
 
 	public String getMawb() {
-		return Mawb;
+		return mawb;
 	}
 
 	public void setMawb(String mawb) {
-		Mawb = mawb;
+		this.mawb = mawb;
 	}
 
 	public String getHawb() {
-		return Hawb;
+		return hawb;
 	}
 
 	public void setHawb(String hawb) {
-		Hawb = hawb;
+		this.hawb = hawb;
 	}
 
 	public String getNote() {
-		return Note;
+		return note;
 	}
 
 	public void setNote(String note) {
-		Note = note;
+		this.note = note;
 	}
 
 	public String getStatus() {
-		return Status;
+		return status;
 	}
 
 	public void setStatus(String status) {
-		Status = status;
+		this.status = status;
 	}
 
 	public String getOutput() {
-		return Output;
+		return output;
 	}
 
 	public void setOutput(String output) {
-		Output = output;
+		this.output = output;
 	}
-	
+
+	public String getClient() {
+		return client;
+	}
+
+	public void setClient(String client) {
+		this.client = client;
+	}
+
+	public String getPod() {
+		return pod;
+	}
+
+	public void setPod(String pod) {
+		this.pod = pod;
+	}
+
 
 }
