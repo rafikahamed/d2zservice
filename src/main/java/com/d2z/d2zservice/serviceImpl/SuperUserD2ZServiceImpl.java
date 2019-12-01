@@ -510,7 +510,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 					reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getCost()));
 					reconcileObj.setSupplierWeight(reconcile.getChargedWeight());
 					reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
-				} else if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("PFL")) {
+				} else if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("PFL") || reconcileData.get(0).getSupplierType().equalsIgnoreCase("APG")) {
 					reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getCost()));
 					reconcileObj.setSupplierWeight(reconcile.getChargedWeight());
 					reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
