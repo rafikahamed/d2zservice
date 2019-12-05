@@ -58,6 +58,9 @@ public class User implements Serializable {
 
 	@Column(name="ModifiedTimestamp")
 	private Timestamp modifiedTimestamp;
+	
+	@Column(name="PostcodeValidate")
+	private String postcodeValidate;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -95,6 +98,14 @@ public class User implements Serializable {
 	public User() {
 	}
 	
+	public String getPostcodeValidate() {
+		return postcodeValidate;
+	}
+
+	public void setPostcodeValidate(String postcodeValidate) {
+		this.postcodeValidate = postcodeValidate;
+	}
+
 	public Set<UserService> getUserService() {
 		return userService;
 	}

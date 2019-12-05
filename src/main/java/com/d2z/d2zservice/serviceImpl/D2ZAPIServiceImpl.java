@@ -64,9 +64,15 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 					+ orderDetail.getConsignmentData().size() + " Records");
 		
 		}
+		boolean isPostcodeValidationReq = true;
+		if(("Y").equals(userRepository.fetchPostcodeValidationIndicator(orderDetail.getUserName()))) {
+			isPostcodeValidationReq = false;
+		}
 		d2zValidator.isReferenceNumberUnique(orderDetail,errorMap);
 		d2zValidator.isServiceValid(orderDetail,errorMap);
+		if(isPostcodeValidationReq) {
 		d2zValidator.isPostCodeValid(orderDetail,errorMap);
+		}
 		ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 				
 		String barcodeLabelNumber = orderDetail.getConsignmentData().get(0).getBarcodeLabelNumber();
@@ -84,14 +90,18 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			return;
 			
 		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType)) {
+			if(isPostcodeValidationReq) {
 			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData(),errorMap);
+			}
 			ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 			if(orderDetail.getConsignmentData().size()>0) {
 			makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(), serviceType);
 			}
 			return;// senderDataResponseList;
 		}else if("FWS".equalsIgnoreCase(serviceType)) {
+			if(isPostcodeValidationReq) {
 			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData(),errorMap);
+			}
 			ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 			if(orderDetail.getConsignmentData().size()>0) {
 			pcaWrapper.makeCreateShippingOrderPFACall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(),serviceType);

@@ -566,6 +566,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				notBilled.setReferenceNumber(obj[3].toString());
 			if (obj[4] != null)
 				notBilled.setD2zRate(Double.parseDouble(obj[4].toString()));
+			if (obj[5] != null)
+					notBilled.setDateAllocated(obj[5].toString());
 			notBilledList.add(notBilled);
 		}
 		return notBilledList;

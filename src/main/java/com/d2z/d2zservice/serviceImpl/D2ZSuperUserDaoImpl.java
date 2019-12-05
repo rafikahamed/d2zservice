@@ -1550,7 +1550,7 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 		String msg = "";
 	for(ParcelResponse p : parcel)
 	{
-		Parcels par = parcelRepository.findByMAWB(p.getMawb());
+		Parcels par = parcelRepository.findByHAWB(p.getHawb());
 		if(null!=par) {
 		par.setHawb(p.getHawb());
 		par.setMawb(p.getMawb());

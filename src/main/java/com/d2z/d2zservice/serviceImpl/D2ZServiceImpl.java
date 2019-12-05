@@ -20,13 +20,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.validation.Valid;
+
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
@@ -34,6 +35,7 @@ import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.stereotype.Service;
+
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
@@ -53,7 +55,6 @@ import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
-import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_Shipment;
@@ -61,7 +62,6 @@ import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.FDMManifestDetails;
-import com.d2z.d2zservice.model.PCACancelRequest;
 import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
 import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.ParcelStatus;
@@ -70,7 +70,6 @@ import com.d2z.d2zservice.model.PflCreateShippingRequest;
 import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
-import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
@@ -111,6 +110,7 @@ import com.d2z.singleton.D2ZSingleton;
 import com.d2z.singleton.SingletonCounter;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 import com.google.gson.Gson;
+
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -188,9 +188,16 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<String> incomingRefNbr = orderDetailList.stream().map(obj -> {
 			return obj.getReferenceNumber(); })
 				.collect(Collectors.toList());
+		boolean isPostcodeValidationReq = true;
+		if(("N").equals(userRepository.fetchPostcodeValidationIndicator(orderDetailList.get(0).getUserName()))){
+			isPostcodeValidationReq = false;
+		}
+
 		d2zValidator.isReferenceNumberUniqueUI(incomingRefNbr);
 		d2zValidator.isServiceValidUI(orderDetailList);
+		if(isPostcodeValidationReq) {
 		d2zValidator.isPostCodeValidUI(orderDetailList);
+		}
 		d2zValidator.isAddressValidUI(orderDetailList);
 
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
@@ -199,15 +206,19 @@ public class D2ZServiceImpl implements ID2ZService {
 		if("1PM3E".equalsIgnoreCase(serviceType) 
 				|| "1PS3".equalsIgnoreCase(serviceType) 
 				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
-			d2zValidator.isPostCodeValidUI(orderDetailList);
+			//d2zValidator.isPostCodeValidUI(orderDetailList);
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(orderDetailList,senderDataResponseList);
 			return senderDataResponseList;
 		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType)) {
+			if(isPostcodeValidationReq) {
 			d2zValidator.isFWPostCodeUIValid(orderDetailList);
+			}
 			makeCreateShippingOrderFilePFLCall(orderDetailList,senderDataResponseList,null,serviceType);
 			return senderDataResponseList;
 		}else if("FWS".equalsIgnoreCase(serviceType)) {
+			if(isPostcodeValidationReq) {
 			d2zValidator.isFWPostCodeUIValid(orderDetailList);
+			}
 			pcaWrapper.makeCreateShippingOrderFilePCACall(orderDetailList,senderDataResponseList,null,serviceType);
 			return senderDataResponseList;
 		}else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) 
@@ -226,7 +237,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			}
 			
 			if(consignmentData.getNonPflSenderDataApi().size() > 0 && !"STS".equalsIgnoreCase(serviceType)) {
-				d2zValidator.isPostCodeValidUI(orderDetailList);
+				//d2zValidator.isPostCodeValidUI(orderDetailList);
 				String senderFileID  = d2zDao.exportParcel(consignmentData.getNonPflSenderDataApi(),null);
 				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 				Iterator itr = insertedOrder.iterator();
@@ -929,12 +940,18 @@ else
 			throw new MaxSizeCountException("We are allowing max 300 records, Your Request contains - "
 					+ orderDetail.getConsignmentData().size() + " Records");
 		}
+		boolean isPostcodeValidationReq =true;
+		if(("N").equals(userRepository.fetchPostcodeValidationIndicator(orderDetail.getUserName()))){
+			isPostcodeValidationReq=false;
+		}
 		List<String> incomingRefNbr = orderDetail.getConsignmentData().stream().map(obj -> {
 			return obj.getReferenceNumber(); })
 				.collect(Collectors.toList());
 		d2zValidator.isReferenceNumberUnique(incomingRefNbr);
 		d2zValidator.isServiceValid(orderDetail);
+		if(isPostcodeValidationReq) {
 		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+		}
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 		boolean autoShipment = false;
@@ -951,11 +968,15 @@ else
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			return senderDataResponseList;
 		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType)) {
+			if(isPostcodeValidationReq) {
 			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
+			}
 			makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(),serviceType);
 			return senderDataResponseList;
 		}else if("FWS".equalsIgnoreCase(serviceType)) {
+			if(isPostcodeValidationReq) {
 			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
+			}
 			pcaWrapper.makeCreateShippingOrderPFACall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(),serviceType);
 			return senderDataResponseList;
 		}else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) 

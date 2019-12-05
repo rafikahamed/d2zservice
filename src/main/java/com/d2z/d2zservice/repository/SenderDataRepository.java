@@ -650,12 +650,16 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Procedure(name = "reconcilerates")
 	void reconcilerates(@Param("Reference_number") String Reference_number);
 	
-	@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwayBill, B.ArticleId, B.reference_number, B.D2ZRate FROM\n" + 
+	/*@Query(nativeQuery = true, value="SELECT DISTINCT A.user_name, B.airwayBill, B.ArticleId, B.reference_number, B.D2ZRate,S.dateallocated 	 FROM\n" + 
 			"( \n" + 
 			"SELECT DISTINCT U.client_broker_id, S.airwaybill, S.ArticleId, S.reference_number, S.D2ZRate FROM Senderdata_Invoicing S INNER JOIN users U  \n" + 
 			"ON s.reference_number not in ( select distinct reference_number from reconcile where Reference_number is not null ) AND U.role_id = '3' AND S.user_id = U.user_id \n" + 
 			") \n" + 
-			"B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name")
+			"B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name")*/
+	@Query(nativeQuery = true, value = "SELECT DISTINCT U.Client_BrokerName,S.airwaybill,S.articleid,S.reference_number,S.d2zrate,S.dateallocated\n" + 
+			"        FROM   senderdata_invoicing S INNER JOIN users U ON s.reference_number NOT IN \n" + 
+			"             (SELECT DISTINCT reference_number FROM   reconcile WHERE reference_number IS NOT NULL) \n" + 
+			"                          AND U.role_id = '3' AND S.user_id = U.user_id ORDER  BY U.Client_BrokerName")
 	List<String> fetchNotBilled();
 	
 //	@Query(nativeQuery = true, value="SELECT DISTINCT S.articleid  AS TrackingNumber, S.reference_number AS reference, S.consignee_postcode AS postcode, S.weight AS Weight,\n" + 

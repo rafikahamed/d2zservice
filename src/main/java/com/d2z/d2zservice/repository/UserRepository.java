@@ -49,4 +49,7 @@ public interface UserRepository extends CrudRepository<User, Long>{
 	 @Query ("Select u.username from User u where u.user_Id = :user_Id")
 	String fetchUserById(Integer user_Id);
 
+	 @Query ("Select u.postcodeValidate from User u where u.username = :userName")
+	Object fetchPostcodeValidationIndicator(String  userName);
+
 }
