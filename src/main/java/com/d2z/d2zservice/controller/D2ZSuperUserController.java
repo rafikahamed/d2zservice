@@ -20,6 +20,7 @@ import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.AddShipmentModel;
@@ -45,6 +46,7 @@ import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
+import com.d2z.d2zservice.model.ZoneRequest;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
 import com.d2z.d2zservice.model.HeldParcel;
@@ -420,4 +422,15 @@ public class D2ZSuperUserController {
 		return userMsg;
 	}
 	
+	@RequestMapping(method = RequestMethod.GET, path = "/broker")
+	public List<User> broker() {
+		return superUserD2zService.broker();
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, path = "/zone-report")
+	public String zoneReport(@RequestBody List<ZoneRequest> zoneRequest) {
+		System.out.println("Sample records ===>");
+		superUserD2zService.zoneReport(zoneRequest);
+		return null;
+	}
 }

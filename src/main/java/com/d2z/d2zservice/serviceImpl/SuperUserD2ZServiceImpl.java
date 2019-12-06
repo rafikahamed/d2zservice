@@ -72,6 +72,7 @@ import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
+import com.d2z.d2zservice.model.ZoneRequest;
 import com.d2z.d2zservice.model.auspost.TrackableItems;
 import com.d2z.d2zservice.model.auspost.TrackingEvents;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
@@ -1615,13 +1616,22 @@ String[] articleNbrs = articleid.split(",");
 
 	@Override
 	public List<ParcelResponse> getParcelreleaseList() {
-		// TODO Auto-generated method stub
 		return d2zDao.getParcelReleaseList();
 	}
 
 	@Override
 	public List<ShipmentCharges> shipmentCharges() {
 		return d2zDao.shipmentCharges();
+	}
+
+	@Override
+	public List<User> broker() {
+		return d2zDao.broker();
+	}
+
+	@Override
+	public void zoneReport(List<ZoneRequest> zoneRequest) {
+		d2zDao.zoneReport(zoneRequest);
 	}
 
 

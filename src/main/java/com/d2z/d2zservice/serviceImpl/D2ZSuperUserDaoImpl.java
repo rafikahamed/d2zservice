@@ -57,6 +57,9 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.ZoneDetails;
 import com.d2z.d2zservice.model.ZoneRates;
+import com.d2z.d2zservice.model.ZoneReport;
+import com.d2z.d2zservice.model.ZoneReportDetails;
+import com.d2z.d2zservice.model.ZoneRequest;
 import com.d2z.d2zservice.model.auspost.TrackableItems;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.auspost.TrackingResults;
@@ -1608,11 +1611,11 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 			shipmemntCharge.setWeight(incomingJobDetails.getWeight());
 			shipmemntCharge.setHawb(incomingJobDetails.getHawb());
 			if(incomingJobDetails.getBroker().equalsIgnoreCase("NEXB") && incomingJobDetails.getConsignee().equalsIgnoreCase("BLUE")){
-				shipmemntCharge.setProcess(Double.valueOf(incomingJobDetails.getWeight())*(0.20));
-				Double pickUpCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.16)) > 82.50 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.16)) : 82.50;
+				shipmemntCharge.setProcess(Double.valueOf(incomingJobDetails.getWeight())*(0.22));
+				Double pickUpCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.175)) > 90.75 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.175)) : 90.75;
 				shipmemntCharge.setPickUp(pickUpCharge);
-				shipmemntCharge.setDocs(52.50);
-				shipmemntCharge.setAirport(Double.valueOf(incomingJobDetails.getWeight())*(0.51));
+				shipmemntCharge.setDocs(57.75);
+				shipmemntCharge.setAirport(Double.valueOf(incomingJobDetails.getWeight())*(0.5775));
 				shipmemntCharge.setTotal(shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport());
 			}else if(incomingJobDetails.getBroker().equalsIgnoreCase("VELB") && incomingJobDetails.getConsignee().equalsIgnoreCase("BLUE")){
 				shipmemntCharge.setProcess((double) 0);
@@ -1633,5 +1636,32 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 		return shipmentChargesList;
 	}
 
-		
+	@Override
+	public List<User> broker() {
+		return userRepository.broker();
+	}
+
+	@Override
+	public void zoneReport(List<ZoneRequest> zoneRequest) {
+		for(ZoneRequest zoneObj:zoneRequest) {
+			List<String> zoneData = senderdata_InvoicingRepository.zoneReport(zoneObj.getUserId(), zoneObj.getFromDate(), zoneObj.getToDate());
+			Map<String, ZoneReport> zoneMap = new HashMap<String, ZoneReport>();
+			if(zoneData.size() > 0) {
+				Iterator itr = zoneData.iterator();
+				while (itr.hasNext()) {
+					Object[] obj = (Object[]) itr.next();
+					ZoneReport zone = new ZoneReport();
+					zone.setZone(obj[0].toString());
+					zone.setCategory(obj[1].toString());
+					zone.setCategoryVal((int) obj[2]);
+					zone.setZoneSumVal((int) obj[3]);
+					zone.setZonePerc((int) obj[4]);
+					zone.setCatSumVal((int) obj[5]);
+					zone.setCatPerc((int) obj[6]);
+					zoneMap.put(obj[0].toString()+obj[1].toString(), zone);
+				}
+			}	
+			System.out.println(zoneMap);
+		}
+	}
 }

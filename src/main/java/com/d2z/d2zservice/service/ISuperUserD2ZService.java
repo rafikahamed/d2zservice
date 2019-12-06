@@ -9,6 +9,7 @@ import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.AddShipmentModel;
@@ -34,6 +35,7 @@ import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
+import com.d2z.d2zservice.model.ZoneRequest;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
 import com.d2z.d2zservice.model.HeldParcel;
@@ -174,5 +176,9 @@ public interface ISuperUserD2ZService{
 	public List<ParcelResponse> getParcelreleaseList();
 
 	public List<ShipmentCharges> shipmentCharges();
+
+	public List<User> broker();
+
+	public void zoneReport(List<ZoneRequest> zoneRequest);
 
 }
