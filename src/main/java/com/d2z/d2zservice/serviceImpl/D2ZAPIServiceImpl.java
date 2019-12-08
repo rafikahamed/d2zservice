@@ -64,34 +64,48 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 					+ orderDetail.getConsignmentData().size() + " Records");
 		
 		}
+		boolean isPostcodeValidationReq = true;
+		if(("Y").equals(userRepository.fetchPostcodeValidationIndicator(orderDetail.getUserName()))) {
+			isPostcodeValidationReq = false;
+		}
 		d2zValidator.isReferenceNumberUnique(orderDetail,errorMap);
 		d2zValidator.isServiceValid(orderDetail,errorMap);
+		if(isPostcodeValidationReq) {
 		d2zValidator.isPostCodeValid(orderDetail,errorMap);
+		}
 		ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
-				
-		String barcodeLabelNumber = orderDetail.getConsignmentData().get(0).getBarcodeLabelNumber();
-		String datamatrix = orderDetail.getConsignmentData().get(0).getDatamatrix();
+		String barcodeLabelNumber =null;
+		String datamatrix=null;
+		String serviceType = null;
+		if(orderDetail.getConsignmentData().size()>0) {	
+			barcodeLabelNumber = orderDetail.getConsignmentData().get(0).getBarcodeLabelNumber();
+			datamatrix= orderDetail.getConsignmentData().get(0).getDatamatrix();
+		    serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
+
+		}
 		if(null==barcodeLabelNumber || barcodeLabelNumber.trim().isEmpty() || null==datamatrix || datamatrix.trim().isEmpty()) {
-	    String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
-	    if("1PS".equalsIgnoreCase(serviceType) || "1PS2".equalsIgnoreCase(serviceType) || "1PM3E".equalsIgnoreCase(serviceType) 
-				|| "1PS3".equalsIgnoreCase(serviceType) || "1PS5".equalsIgnoreCase(serviceType) || "2PSP".equalsIgnoreCase(serviceType)
+	    if( "1PM3E".equalsIgnoreCase(serviceType) 
+				|| "1PS3".equalsIgnoreCase(serviceType) 
 				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
 			//d2zValidator.isPostCodeValid(orderDetail,errorMap);
 			//ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
-			if(orderDetail.getConsignmentData().size()>0) {
+			
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
-			}
 			return;
 			
 		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType)) {
+			if(isPostcodeValidationReq) {
 			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData(),errorMap);
+			}
 			ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 			if(orderDetail.getConsignmentData().size()>0) {
 			makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(), serviceType);
 			}
 			return;// senderDataResponseList;
 		}else if("FWS".equalsIgnoreCase(serviceType)) {
+			if(isPostcodeValidationReq) {
 			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData(),errorMap);
+			}
 			ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 			if(orderDetail.getConsignmentData().size()>0) {
 			pcaWrapper.makeCreateShippingOrderPFACall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(),serviceType);
@@ -186,7 +200,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
     		 
 			systemRefNbrMap.put(request.getCustom_ref(), orderDetail.getReferenceNumber());
 
-			request.setCustom_ref(orderDetail.getReferenceNumber());
+			//request.setCustom_ref(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
 			String recpName = orderDetail.getConsigneeName().length() > 34
 					? orderDetail.getConsigneeName().substring(0, 34)

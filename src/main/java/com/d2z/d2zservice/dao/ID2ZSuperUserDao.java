@@ -220,11 +220,11 @@ public interface ID2ZSuperUserDao {
 
 	String createParcel(List<HeldParcel> createJob);
 
-	List<ParcelResponse> getParcelList();
+	List<ParcelResponse> getParcelList(String client);
 
 	String updateParcel(List<ParcelResponse> parcel);
 
-	List<ParcelResponse> getParcelReleaseList();
+	List<ParcelResponse> getParcelReleaseList(String client);
 	
 	void updateReturnInvoice(Returns returnVal);
 

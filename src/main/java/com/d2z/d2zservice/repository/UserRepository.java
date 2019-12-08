@@ -52,4 +52,7 @@ public interface UserRepository extends CrudRepository<User, Long>{
 	@Query("SELECT u FROM User u where u.role_Id = 2") 
 	List<User> broker();
 
+	 @Query ("Select u.postcodeValidate from User u where u.username = :userName")
+	Object fetchPostcodeValidationIndicator(String  userName);
+
 }

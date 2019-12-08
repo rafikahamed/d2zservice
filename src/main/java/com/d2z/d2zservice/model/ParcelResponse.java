@@ -6,6 +6,20 @@ private String hawb;
 private String mawb;
 private String note;
 private String output;
+private DropDownModel client;
+private DropDownModel pod;
+public DropDownModel getClient() {
+	return client;
+}
+public void setClient(DropDownModel client) {
+	this.client = client;
+}
+public DropDownModel getPod() {
+	return pod;
+}
+public void setPod(DropDownModel pod) {
+	this.pod = pod;
+}
 public String getOutput() {
 	return output;
 }

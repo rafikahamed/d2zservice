@@ -7,7 +7,17 @@ public class NotBilled {
 	private String articleId;
 	private String referenceNumber;
 	private Double d2zRate;
+	private String dateAllocated;
 	
+	
+	
+
+	public String getDateAllocated() {
+		return dateAllocated;
+	}
+	public void setDateAllocated(String dateAllocated) {
+		this.dateAllocated = dateAllocated;
+	}
 	public String getUserName() {
 		return userName;
 	}

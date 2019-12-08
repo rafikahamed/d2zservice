@@ -96,8 +96,27 @@ public class SenderData {
 	private String carrier;
 	private String returnAddress1;
 	private String returnAddress2;
+	private boolean dangerousGoods;
+	private String vendorId;
 	
 	
+	
+	public String getVendorId() {
+		return vendorId;
+	}
+
+	public void setVendorId(String vendorId) {
+		this.vendorId = vendorId;
+	}
+
+	public boolean isDangerousGoods() {
+		return dangerousGoods;
+	}
+
+	public void setDangerousGoods(boolean dangerousGoods) {
+		this.dangerousGoods = dangerousGoods;
+	}
+
 	public String getConsigneeAddr2() {
 		return consigneeAddr2;
 	}

@@ -169,11 +169,11 @@ public interface ISuperUserD2ZService{
 
 	public UserMessage createParcel(List<HeldParcel> createJob);
 
-	public List<ParcelResponse> getParcelList();
+	public List<ParcelResponse> getParcelList(String client);
 	
 	public UserMessage updateParcel(List<ParcelResponse> parcel);
 
-	public List<ParcelResponse> getParcelreleaseList();
+	public List<ParcelResponse> getParcelreleaseList(String client);
 
 	public List<ShipmentCharges> shipmentCharges();
 

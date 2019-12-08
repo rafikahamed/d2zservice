@@ -1504,7 +1504,8 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 			p.setNote(jobRequest.getNote());
 			p.setStatus(jobRequest.getStat());
 			p.setOutput("C");
-			
+			p.setClient(jobRequest.getClient());
+			p.setPod(jobRequest.getPod());
 			parcelist.add(p);
 			
 
@@ -1515,9 +1516,9 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 	}
 
 	@Override
-	public List<ParcelResponse> getParcelList() {
+	public List<ParcelResponse> getParcelList(String client) {
 		
-		List<Parcels> js = (List<Parcels>)parcelRepository.fetchheldparcel();
+		List<Parcels> js = (List<Parcels>)parcelRepository.fetchheldparcel(client);
 		List<ParcelResponse> parcellist = new ArrayList<ParcelResponse>();
 		
 		for(Parcels par : js)
@@ -1531,6 +1532,15 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 			model.setName(par.getStatus());
 			model.setValue(par.getStatus());
 			p.setStat(model);
+			DropDownModel model1 = new DropDownModel();
+			model1.setName(par.getClient());
+			model1.setValue(par.getClient());
+			p.setClient(model1);
+			DropDownModel model2 = new DropDownModel();
+			model2.setName(par.getPod());
+			model2.setValue(par.getPod());
+			p.setPod(model2);
+			
 			parcellist.add(p);
 		}
 		// TODO Auto-generated method stub
@@ -1543,15 +1553,21 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 		String msg = "";
 	for(ParcelResponse p : parcel)
 	{
-		Parcels par = new Parcels();
+		Parcels par = parcelRepository.findByHAWB(p.getHawb());
+		if(null!=par) {
 		par.setHawb(p.getHawb());
 		par.setMawb(p.getMawb());
 		par.setNote(p.getNote());
 		par.setOutput(p.getOutput());
 		DropDownModel model = p.getStat();
 		par.setStatus(model.getName());
-		par.setID(p.getParcelid());
+		DropDownModel model1 = p.getClient();
+		DropDownModel model2 = p.getPod();
+		par.setClient(model1.getName());
+		par.setPod(model2.getName());
+		//par.setID(p.getParcelid());
 		js.add(par);
+		}
 	}
 	parcelRepository.saveAll(js);
 		// TODO Auto-generated method stub
@@ -1571,9 +1587,9 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 	}
 
 	@Override
-	public List<ParcelResponse> getParcelReleaseList() {
+	public List<ParcelResponse> getParcelReleaseList(String client) {
 		// TODO Auto-generated method stub
-		List<Parcels> js = (List<Parcels>)parcelRepository.fetchreleaseparcel();
+		List<Parcels> js = (List<Parcels>)parcelRepository.fetchreleaseparcel(client);
 		List<ParcelResponse> parcellist = new ArrayList<ParcelResponse>();
 		
 		for(Parcels par : js)
@@ -1587,6 +1603,16 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 			model.setName(par.getStatus());
 			model.setValue(par.getStatus());
 			p.setStat(model);
+			DropDownModel model1 = new DropDownModel();
+			model1.setName(par.getClient());
+			model1.setValue(par.getClient());
+			p.setClient(model1);
+			DropDownModel model2 = new DropDownModel();
+			model2.setName(par.getPod());
+			model2.setValue(par.getPod());
+			p.setPod(model2);
+			
+		
 			parcellist.add(p);
 		}
 		// TODO Auto-generated method stub

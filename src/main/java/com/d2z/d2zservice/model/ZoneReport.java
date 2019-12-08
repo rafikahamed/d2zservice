@@ -5,9 +5,9 @@ public class ZoneReport {
 	private String zone;
 	private String category;
 	private int categoryVal;
-	private int zoneSumVal;
+	private double zoneSumVal;
 	private float zonePerc;
-	private int catSumVal;
+	private double catSumVal;
 	private float catPerc;
 	
 	public String getZone() {
@@ -28,10 +28,10 @@ public class ZoneReport {
 	public void setCategoryVal(int categoryVal) {
 		this.categoryVal = categoryVal;
 	}
-	public int getZoneSumVal() {
+	public double getZoneSumVal() {
 		return zoneSumVal;
 	}
-	public void setZoneSumVal(int zoneSumVal) {
+	public void setZoneSumVal(double zoneSumVal) {
 		this.zoneSumVal = zoneSumVal;
 	}
 	public float getZonePerc() {
@@ -40,10 +40,10 @@ public class ZoneReport {
 	public void setZonePerc(float zonePerc) {
 		this.zonePerc = zonePerc;
 	}
-	public int getCatSumVal() {
+	public double getCatSumVal() {
 		return catSumVal;
 	}
-	public void setCatSumVal(int catSumVal) {
+	public void setCatSumVal(double catSumVal) {
 		this.catSumVal = catSumVal;
 	}
 	public float getCatPerc() {
@@ -52,5 +52,5 @@ public class ZoneReport {
 	public void setCatPerc(float catPerc) {
 		this.catPerc = catPerc;
 	}
-
+	
 }

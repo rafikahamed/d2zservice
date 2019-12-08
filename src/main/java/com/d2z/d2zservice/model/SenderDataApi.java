@@ -101,6 +101,27 @@ public class SenderDataApi {
 	private String deliveryInstructions;
 	private String carrier;
 	private String zoneID;
+	private boolean dangerousGoods;
+	private String vendorId;
+
+
+
+public String getVendorId() {
+	return vendorId;
+}
+
+public void setVendorId(String vendorId) {
+	this.vendorId = vendorId;
+}
+	
+	public boolean isDangerousGoods() {
+		return dangerousGoods;
+	}
+
+	public void setDangerousGoods(boolean dangerousGoods) {
+		this.dangerousGoods = dangerousGoods;
+	}
+
 	public String getZoneID() {
 		return zoneID;
 	}

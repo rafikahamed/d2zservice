@@ -5,6 +5,21 @@ public class HeldParcel {
 	private String mawb;
 	private String stat;
 	private String note;
+	private String client;
+	private String pod;
+	
+	public String getClient() {
+		return client;
+	}
+	public void setClient(String client) {
+		this.client = client;
+	}
+	public String getPod() {
+		return pod;
+	}
+	public void setPod(String pod) {
+		this.pod = pod;
+	}
 	public String getHawb() {
 		return hawb;
 	}

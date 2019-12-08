@@ -511,7 +511,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 					reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getCost()));
 					reconcileObj.setSupplierWeight(reconcile.getChargedWeight());
 					reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
-				} else if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("PFL")) {
+				} else if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("PFL") || reconcileData.get(0).getSupplierType().equalsIgnoreCase("APG")) {
 					reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getCost()));
 					reconcileObj.setSupplierWeight(reconcile.getChargedWeight());
 					reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
@@ -567,6 +567,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				notBilled.setReferenceNumber(obj[3].toString());
 			if (obj[4] != null)
 				notBilled.setD2zRate(Double.parseDouble(obj[4].toString()));
+			if (obj[5] != null)
+					notBilled.setDateAllocated(obj[5].toString());
 			notBilledList.add(notBilled);
 		}
 		return notBilledList;
@@ -1598,9 +1600,9 @@ String[] articleNbrs = articleid.split(",");
 	}
 
 	@Override
-	public List<ParcelResponse> getParcelList() {
+	public List<ParcelResponse> getParcelList(String client) {
 		// TODO Auto-generated method stub
-		return d2zDao.getParcelList();
+		return d2zDao.getParcelList(client);
 	}
 
 	@Override
@@ -1615,8 +1617,9 @@ String[] articleNbrs = articleid.split(",");
 	}
 
 	@Override
-	public List<ParcelResponse> getParcelreleaseList() {
-		return d2zDao.getParcelReleaseList();
+	public List<ParcelResponse> getParcelreleaseList(String client) {
+		// TODO Auto-generated method stub
+		return d2zDao.getParcelReleaseList(client);
 	}
 
 	@Override

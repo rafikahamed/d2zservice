@@ -4,16 +4,21 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import com.d2z.d2zservice.entity.IncomingJobs;
 import com.d2z.d2zservice.entity.Parcels;
 
 public interface ParcelRepository extends CrudRepository<Parcels,Long>{
 
-	@Query( nativeQuery = true, value="SELECT * FROM parcels where   output = 'C'") 
-	List<Parcels> fetchheldparcel();
+	@Query("SELECT p FROM Parcels p where p.output = 'C' and p.client = :client and p.status != 'CLEAR' ") 
+	List<Parcels> fetchheldparcel(String client);
 	
-	@Query( nativeQuery = true, value="SELECT * FROM parcels where   output = 'C' and status = 'CLEAR'") 
-	List<Parcels>fetchreleaseparcel();
+	@Query("SELECT p FROM Parcels p where  p.output = 'C' and p.status = 'CLEAR' and p.client = :client") 
+	List<Parcels>fetchreleaseparcel(String client);
+
+
+	@Query("SELECT p FROM Parcels p where p.hawb = :hawb ")
+	Parcels findByHAWB(String hawb);
 }
 

@@ -244,6 +244,29 @@ public class SenderdataMaster implements Serializable {
 	@Column(name="ReturnAddress2")
 	private String returnAddress2;
 	
+	/*@Column(name="DangerousGoods")
+	private boolean dangerousGoods;*/
+	
+	@Column(name="VendorId")
+	private String vendorId;
+	
+	public String getVendorId() {
+		return vendorId;
+	}
+
+	public void setVendorId(String vendorId) {
+		this.vendorId = vendorId;
+	}
+	
+	
+	/*public boolean isDangerousGoods() {
+		return dangerousGoods;
+	}
+
+	public void setDangerousGoods(boolean dangerousGoods) {
+		this.dangerousGoods = dangerousGoods;
+	}*/
+
 	public String getMlid() {
 		return mlid;
 	}

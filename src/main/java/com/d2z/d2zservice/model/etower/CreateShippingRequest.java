@@ -20,13 +20,50 @@ public class CreateShippingRequest {
 	private Double weight;
 	private Double invoiceValue;
 	private String invoiceCurrency = "AUD";
-	private String description = "bags";
-	private String shipperName = "Test company";
-	private String shipperAddressLine1 = "1 fake st";
-	private String shipperCity = "Petaling Jaya";
-	private String shipperState = "Selangor";
-	private String shipperCountry = "MY";
+	private String description;
+	private String shipperName;
+	private String shipperAddressLine1;
+	private String shipperCity;
+	private String shipperState;
+	private String shipperCountry;
 	private String email;
+	private String returnOption;
+	private boolean authorityToleave;
+	private String vendorid;
+	
+	public String getVendorid() {
+		return vendorid;
+	}
+
+	public void setVendorid(String vendorid) {
+		this.vendorid = vendorid;
+	}
+
+	public String getReturnOption() {
+		return returnOption;
+	}
+
+	public void setReturnOption(String returnOption) {
+		this.returnOption = returnOption;
+	}
+
+	public boolean isAuthorityToleave() {
+		return authorityToleave;
+	}
+
+	public void setAuthorityToleave(boolean authorityToleave) {
+		this.authorityToleave = authorityToleave;
+	}
+	private boolean dangerousGoods;
+	
+	public boolean isDangerousGoods() {
+		return dangerousGoods;
+	}
+
+	public void setDangerousGoods(boolean dangerousGoods) {
+		this.dangerousGoods = dangerousGoods;
+	}
+
 	
 	public String getEmail() {
 		return email;
