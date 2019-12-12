@@ -35,7 +35,7 @@ public interface Senderdata_InvoicingRepository extends CrudRepository<Senderdat
 	void updateReturnInvoice(@Param("airwayBill") String airwayBill, @Param("servicetype") String servicetype,  @Param("articleId") String articleId);
 	
 	@Query(nativeQuery = true ,value="with detl(zone, category, count_val) as \r\n" + 
-			"(select zone as zone, category,count(category) as count_val \r\n" + 
+			"(select zone as zone, category, count(category) as count_val \r\n" + 
 			"from\r\n" + 
 			"(select Reference_number, Weight as weight, zone as zone,\r\n" + 
 			"	case when Weight between 0.00 and 0.50 THEN 'category1'\r\n" + 
@@ -50,10 +50,10 @@ public interface Senderdata_InvoicingRepository extends CrudRepository<Senderdat
 			"		 when Weight between 15.01 and 22.00 THEN 'category10'	 \r\n" + 
 			"	 END as category\r\n" + 
 			"FROM [D2Z].[dbo].[Senderdata_Invoicing] \r\n" + 
-			"where user_id = 156 and Timestamp between \r\n" + 
-			" convert(datetime, '2019-10-01 00:00:00.000' , 121)\r\n" + 
+			"where user_id = :userId and Timestamp between \r\n" + 
+			" convert(datetime, :fromDate, 121)\r\n" + 
 			"  and \r\n" + 
-			" convert(datetime, '2019-11-30 23:59:59.997' , 121)\r\n" + 
+			" convert(datetime, :toDate, 121)\r\n" + 
 			"and zone is not null ) tbl\r\n" + 
 			"group by zone,category),\r\n" + 
 			"ttl(zone,t_cnt) as \r\n" + 

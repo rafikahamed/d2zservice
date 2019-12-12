@@ -47,6 +47,7 @@ import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.ZoneRequest;
+import com.d2z.d2zservice.model.ZoneResponse;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
 import com.d2z.d2zservice.model.HeldParcel;
@@ -428,9 +429,7 @@ public class D2ZSuperUserController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/zone-report")
-	public String zoneReport(@RequestBody List<ZoneRequest> zoneRequest) {
-		System.out.println("Sample records ===>");
-		superUserD2zService.zoneReport(zoneRequest);
-		return null;
+	public List<ZoneResponse> zoneReport(@RequestBody List<ZoneRequest> zoneRequest) {
+		return superUserD2zService.zoneReport(zoneRequest);
 	}
 }

@@ -34,6 +34,7 @@ import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.ZoneRequest;
+import com.d2z.d2zservice.model.ZoneResponse;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 
@@ -232,7 +233,7 @@ public interface ID2ZSuperUserDao {
 
 	List<User> broker();
 
-	void zoneReport(List<ZoneRequest> zoneRequest);
+	List<ZoneResponse> zoneReport(List<ZoneRequest> zoneRequest);
 
 }
 
