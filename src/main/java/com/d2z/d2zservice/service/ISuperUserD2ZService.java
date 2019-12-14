@@ -35,6 +35,7 @@ import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
+import com.d2z.d2zservice.model.Zone;
 import com.d2z.d2zservice.model.ZoneRequest;
 import com.d2z.d2zservice.model.ZoneResponse;
 import com.d2z.d2zservice.model.ExportDelete;
@@ -180,6 +181,6 @@ public interface ISuperUserD2ZService{
 
 	public List<User> broker();
 
-	public List<ZoneResponse> zoneReport(List<ZoneRequest> zoneRequest);
+	public Zone zoneReport(List<ZoneRequest> zoneRequest);
 
 }

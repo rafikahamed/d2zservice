@@ -50,7 +50,7 @@ public interface Senderdata_InvoicingRepository extends CrudRepository<Senderdat
 			"		 when Weight between 15.01 and 22.00 THEN 'category10'	 \r\n" + 
 			"	 END as category\r\n" + 
 			"FROM [D2Z].[dbo].[Senderdata_Invoicing] \r\n" + 
-			"where user_id = :userId and Timestamp between \r\n" + 
+			"where user_id IN (:userId) and Timestamp between \r\n" + 
 			" convert(datetime, :fromDate, 121)\r\n" + 
 			"  and \r\n" + 
 			" convert(datetime, :toDate, 121)\r\n" + 
@@ -78,5 +78,5 @@ public interface Senderdata_InvoicingRepository extends CrudRepository<Senderdat
 			"(select * from section_category)cat_result\r\n" + 
 			"on summation.category=cat_result.category\r\n" + 
 			"order by zone,category")
-		List<String>zoneReport(@Param("userId") int userId, @Param("fromDate") String fromDate, @Param("toDate") String toDate);
+		List<String>zoneReport(@Param("userId") List<Integer> userId, @Param("fromDate") String fromDate, @Param("toDate") String toDate);
 }

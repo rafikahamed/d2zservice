@@ -20,6 +20,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.BrokerRates;
@@ -43,6 +45,7 @@ import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
+import com.d2z.d2zservice.model.CategoryResponse;
 import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
@@ -57,6 +60,7 @@ import com.d2z.d2zservice.model.ShipmentCharges;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
+import com.d2z.d2zservice.model.Zone;
 import com.d2z.d2zservice.model.ZoneDetails;
 import com.d2z.d2zservice.model.ZoneRates;
 import com.d2z.d2zservice.model.ZoneReport;
@@ -125,6 +129,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 
 	@Autowired
 	MlidRepository mlidRepository;
+	
+	@Autowired
+	private ID2ZBrokerDao d2zBrokerDao;
 
 	@Autowired
 	ServiceTypeListRepository serviceTypeListRepository;
@@ -1678,27 +1685,31 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 	}
 
 	@Override
-	public List<ZoneResponse> zoneReport(List<ZoneRequest> zoneRequest) {
+	public Zone zoneReport(List<ZoneRequest> zoneRequest) {
 		List<ZoneResponse> zoneResponseList = new ArrayList<ZoneResponse>();
+		Zone zoneFinal = new Zone();
 		for(ZoneRequest zoneObj:zoneRequest) {
-			List<String> zoneData = senderdata_InvoicingRepository.zoneReport(zoneObj.getUserId(), zoneObj.getFromDate(), zoneObj.getToDate());
+			List<Integer> listOfClientId = d2zBrokerDao.getClientId(zoneObj.getUserId());
 			Map<String, ZoneReport> zoneMap = new HashMap<String, ZoneReport>();
 			Map<String, ZoneReport> categoryMap = new HashMap<String, ZoneReport>();
-			if(zoneData.size() > 0) {
-				Iterator itr = zoneData.iterator();
-				while (itr.hasNext()) {
-					Object[] obj = (Object[]) itr.next();
-					ZoneReport zone = new ZoneReport();
-					zone.setZone(obj[0].toString());
-					zone.setCategory(obj[1].toString());
-					zone.setCategoryVal((int) obj[2]);
-					zone.setZoneSumVal( (int) obj[3]);
-					zone.setTotal( (int) obj[4]);
-					zone.setZonePerc(new Double((double) obj[5]).floatValue());
-					zone.setCatSumVal( (int) obj[6]);
-					zone.setCatPerc(new Double((double) obj[7]).floatValue());
-					zoneMap.put(obj[0].toString()+"-"+obj[1].toString(), zone);
-					categoryMap.put(obj[1].toString(), zone);
+			if(listOfClientId.size() > 0) {
+				List<String> zoneData = senderdata_InvoicingRepository.zoneReport(listOfClientId, zoneObj.getFromDate(), zoneObj.getToDate());
+				if(zoneData.size() > 0) {
+					Iterator itr = zoneData.iterator();
+					while (itr.hasNext()) {
+						Object[] obj = (Object[]) itr.next();
+						ZoneReport zone = new ZoneReport();
+						zone.setZone(obj[0].toString());
+						zone.setCategory(obj[1].toString());
+						zone.setCategoryVal((int) obj[2]);
+						zone.setZoneSumVal( (int) obj[3]);
+						zone.setTotal( (int) obj[4]);
+						zone.setZonePerc(new Double((double) obj[5]).floatValue());
+						zone.setCatSumVal( (int) obj[6]);
+						zone.setCatPerc(new Double((double) obj[7]).floatValue());
+						zoneMap.put(obj[0].toString()+"-"+obj[1].toString(), zone);
+						categoryMap.put(obj[1].toString(), zone);
+					}
 				}
 			}
 			
@@ -1786,37 +1797,38 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 					  categoryResponse.setCategory9(val.getCatSumVal());
 				  else if(key.contains("category10"))
 					  categoryResponse.setCategory10(val.getCatSumVal());
+				  categoryResponse.setTotal(val.getTotal());
 			  });
 			  zoneResponseList.add(categoryResponse);
-			  
-			  ZoneResponse categoryPercentage = new ZoneResponse();
+			  zoneFinal.setZoneResponse(zoneResponseList);
+			  CategoryResponse categoryPercentage = new CategoryResponse();
 			  categoryMap.forEach((key,val)->{
 				  categoryPercentage.setZone("%");
 				  if(key.contains("category1"))
-					  categoryPercentage.setCategory1((int) val.getCatPerc());
+					  categoryPercentage.setCategory1(val.getCatPerc());
 				  else if(key.contains("category2"))
-					  categoryPercentage.setCategory2((int) val.getCatPerc());
+					  categoryPercentage.setCategory2(val.getCatPerc());
 				  else if(key.contains("category3"))
-					  categoryPercentage.setCategory3((int) val.getCatPerc());
+					  categoryPercentage.setCategory3(val.getCatPerc());
 				  else if(key.contains("category4"))
-					  categoryPercentage.setCategory4((int) val.getCatPerc());
+					  categoryPercentage.setCategory4(val.getCatPerc());
 				  else if(key.contains("category5"))
-					  categoryPercentage.setCategory5((int) val.getCatPerc());
+					  categoryPercentage.setCategory5(val.getCatPerc());
 				  else if(key.contains("category6"))
-					  categoryPercentage.setCategory6((int) val.getCatPerc());
+					  categoryPercentage.setCategory6(val.getCatPerc());
 				  else if(key.contains("category7"))
-					  categoryPercentage.setCategory7((int) val.getCatPerc());
+					  categoryPercentage.setCategory7(val.getCatPerc());
 				  else if(key.contains("category8"))
-					  categoryPercentage.setCategory8((int) val.getCatPerc());
+					  categoryPercentage.setCategory8(val.getCatPerc());
 				  else if(key.contains("category9"))
-					  categoryPercentage.setCategory9((int) val.getCatPerc());
+					  categoryPercentage.setCategory9(val.getCatPerc());
 				  else if(key.contains("category10"))
-					  categoryPercentage.setCategory10((int) val.getCatPerc());
+					  categoryPercentage.setCategory10(val.getCatPerc());
 			  });
-			  zoneResponseList.add(categoryPercentage);
+			  zoneFinal.setCategoryResponse(categoryPercentage);
 			}
 		}
-	  return zoneResponseList;
+	  return zoneFinal;
 	}
 	
 }

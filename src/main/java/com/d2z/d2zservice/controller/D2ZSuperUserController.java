@@ -46,6 +46,7 @@ import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
+import com.d2z.d2zservice.model.Zone;
 import com.d2z.d2zservice.model.ZoneRequest;
 import com.d2z.d2zservice.model.ZoneResponse;
 import com.d2z.d2zservice.model.ExportDelete;
@@ -429,7 +430,7 @@ public class D2ZSuperUserController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/zone-report")
-	public List<ZoneResponse> zoneReport(@RequestBody List<ZoneRequest> zoneRequest) {
+	public Zone zoneReport(@RequestBody List<ZoneRequest> zoneRequest) {
 		return superUserD2zService.zoneReport(zoneRequest);
 	}
 }
