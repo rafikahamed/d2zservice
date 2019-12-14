@@ -27,8 +27,6 @@ import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
-import com.d2z.d2zservice.entity.FFResponse;
-import com.d2z.d2zservice.entity.IncomingJobs;
 import com.d2z.d2zservice.entity.IncomingJobsLogic;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
@@ -38,7 +36,6 @@ import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
-import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
@@ -49,7 +46,6 @@ import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerList;
 import com.d2z.d2zservice.model.BrokerRatesData;
 import com.d2z.d2zservice.model.BrokerShipmentList;
-import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DownloadInvice;
@@ -57,7 +53,6 @@ import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
-import com.d2z.d2zservice.model.PCADim;
 import com.d2z.d2zservice.model.PFLTrackingResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
@@ -67,6 +62,7 @@ import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.SenderData;
+import com.d2z.d2zservice.model.ShipmentApproval;
 import com.d2z.d2zservice.model.ShipmentCharges;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
@@ -74,26 +70,19 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.Zone;
 import com.d2z.d2zservice.model.ZoneRequest;
-import com.d2z.d2zservice.model.ZoneResponse;
-import com.d2z.d2zservice.model.auspost.TrackableItems;
-import com.d2z.d2zservice.model.auspost.TrackingEvents;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
-import com.d2z.d2zservice.model.auspost.TrackingResults;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.proxy.AusPostProxy;
 import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.proxy.PFLProxy;
 import com.d2z.d2zservice.proxy.PcaProxy;
-import com.d2z.d2zservice.repository.CSTicketsRepository;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
-import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.wrapper.ETowerWrapper;
 import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.d2zservice.wrapper.PCAWrapper;
 import com.d2z.d2zservice.wrapper.PFLWrapper;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -1639,5 +1628,9 @@ String[] articleNbrs = articleid.split(",");
 		return d2zDao.zoneReport(zoneRequest);
 	}
 
+	@Override
+	public UserMessage approveShiment(List<ShipmentApproval> shipmentApproval) {
+		return d2zDao.approveShiment(shipmentApproval);
+	}
 
 }

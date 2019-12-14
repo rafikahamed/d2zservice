@@ -2,7 +2,6 @@ package com.d2z.d2zservice.service;
 
 import java.util.List;
 import java.util.Map;
-
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -30,6 +29,7 @@ import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ReturnsClientResponse;
+import com.d2z.d2zservice.model.ShipmentApproval;
 import com.d2z.d2zservice.model.ShipmentCharges;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
@@ -37,7 +37,6 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.Zone;
 import com.d2z.d2zservice.model.ZoneRequest;
-import com.d2z.d2zservice.model.ZoneResponse;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
 import com.d2z.d2zservice.model.HeldParcel;
@@ -182,5 +181,7 @@ public interface ISuperUserD2ZService{
 	public List<User> broker();
 
 	public Zone zoneReport(List<ZoneRequest> zoneRequest);
+
+	public UserMessage approveShiment(List<ShipmentApproval> shipmentApproval);
 
 }

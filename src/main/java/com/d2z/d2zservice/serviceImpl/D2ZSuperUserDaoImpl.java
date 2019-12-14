@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
@@ -56,6 +55,7 @@ import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
+import com.d2z.d2zservice.model.ShipmentApproval;
 import com.d2z.d2zservice.model.ShipmentCharges;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
@@ -64,7 +64,6 @@ import com.d2z.d2zservice.model.Zone;
 import com.d2z.d2zservice.model.ZoneDetails;
 import com.d2z.d2zservice.model.ZoneRates;
 import com.d2z.d2zservice.model.ZoneReport;
-import com.d2z.d2zservice.model.ZoneReportDetails;
 import com.d2z.d2zservice.model.ZoneRequest;
 import com.d2z.d2zservice.model.ZoneResponse;
 import com.d2z.d2zservice.model.auspost.TrackableItems;
@@ -85,7 +84,6 @@ import com.d2z.d2zservice.repository.IncomingJobsRepository;
 import com.d2z.d2zservice.repository.MlidRepository;
 import com.d2z.d2zservice.repository.NonD2ZDataRepository;
 import com.d2z.d2zservice.repository.ParcelRepository;
-
 import com.d2z.d2zservice.repository.ReconcileNDRepository;
 import com.d2z.d2zservice.repository.ReconcileRepository;
 import com.d2z.d2zservice.repository.ReturnsRepository;
@@ -1829,6 +1827,16 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 			}
 		}
 	  return zoneFinal;
+	}
+
+	@Override
+	public UserMessage approveShiment(List<ShipmentApproval> shipmentApproval) {
+		for (ShipmentApproval shipment : shipmentApproval) {
+			incomingRepository.approveShiment(shipment.getMawb());
+		}
+		UserMessage userMsg = new UserMessage();
+		userMsg.setMessage("Shipment Charges updated Successfully");
+		return userMsg;
 	}
 	
 }
