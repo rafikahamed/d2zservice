@@ -76,5 +76,26 @@ public interface Senderdata_InvoicingRepository extends CrudRepository<Senderdat
 			"(select * from section_category)cat_result\r\n" + 
 			"on summation.category=cat_result.category\r\n" + 
 			"order by zone,category")
-		List<String>zoneReport(@Param("userId") List<Integer> userId, @Param("fromDate") String fromDate, @Param("toDate") String toDate);
+	List<String>zoneReport(@Param("userId") List<Integer> userId, @Param("fromDate") String fromDate, @Param("toDate") String toDate);
+	
+	@Query(nativeQuery = true ,value="SELECT \r\n" + 
+			"DISTINCT \r\n" + 
+			"				S. brokerusername    AS BrokerName, \r\n" + 
+			"                S.articleid          AS TrackingNumber, \r\n" + 
+			"                S.reference_number   AS reference, \r\n" + 
+			"                S.consignee_postcode AS postcode, \r\n" + 
+			"                S.weight             AS Weight, \r\n" + 
+			"                S.postage            AS postage, \r\n" + 
+			"                S.fuelsurcharge      AS Fuelsurcharge, \r\n" + 
+			"                S.brokerrate         AS total, \r\n" + 
+			"                S.servicetype        AS servicetype, \r\n" + 
+			"                S.airwaybill         AS ShipmentNumber \r\n" + 
+			"FROM   [D2Z].[dbo].[senderdata_invoicing] S \r\n" + 
+			"WHERE  S.airwaybill IN ( :airwayBill ) \r\n" + 
+			"       AND S.brokerusername IN ( :broker ) \r\n" + 
+			"       AND S.billed = :billed \r\n" + 
+			"       AND S.invoiced = :invoiced")
+	List<String> downloadInvoice(@Param("broker") List<String> broker, @Param("airwayBill")  List<String> airwayBill, 
+											@Param("billed") String billed, @Param("invoiced") String invoiced);
+	
 }

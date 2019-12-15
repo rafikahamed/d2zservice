@@ -573,24 +573,26 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		while (itr.hasNext()) {
 			Object[] obj = (Object[]) itr.next();
 			DownloadInvice downloadInvoice = new DownloadInvice();
-			if (obj[0] != null)
-				downloadInvoice.setTrackingNumber(obj[0].toString());
-			if (obj[1] != null)
-				downloadInvoice.setReferenceNuber(obj[1].toString());
-			if (obj[2] != null)
-				downloadInvoice.setPostcode(obj[2].toString());
-			if (obj[3] != null)
-				downloadInvoice.setWeight(obj[3].toString());
-			if (obj[4] != null)
-				downloadInvoice.setPostage(obj[4].toString());
-			if (obj[5] != null)
-				downloadInvoice.setFuelsurcharge(obj[5].toString());
-			if (obj[6] != null)
-				downloadInvoice.setTotal(obj[6].toString());
-			if (obj[7] != null)
-				downloadInvoice.setServiceType(obj[7].toString());
-			if (obj[8] != null)
-				downloadInvoice.setAirwaybill(obj[8].toString());
+			if(obj[0] != null)
+				downloadInvoice.setBrokerName(obj[0].toString());
+			if(obj[1] != null)
+				downloadInvoice.setTrackingNumber(obj[1].toString());
+			if(obj[2] != null)
+				downloadInvoice.setReferenceNuber(obj[2].toString());
+			if(obj[3] != null)
+				downloadInvoice.setPostcode(obj[3].toString());
+			if(obj[4] != null)
+				downloadInvoice.setWeight(obj[4].toString());
+			if(obj[5] != null)
+				downloadInvoice.setPostage(obj[5].toString());
+			if(obj[6] != null)
+				downloadInvoice.setFuelsurcharge(obj[6].toString());
+			if(obj[7] != null)
+				downloadInvoice.setTotal(obj[7].toString());
+			if(obj[8] != null)
+				downloadInvoice.setServiceType(obj[8].toString());
+			if(obj[9] != null)
+				downloadInvoice.setAirwaybill(obj[9].toString());
 			downloadInvoiceList.add(downloadInvoice);
 		}
 		return downloadInvoiceList;

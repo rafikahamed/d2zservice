@@ -574,7 +574,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 
 	@Override
 	public List<String> downloadInvoice(List<String> broker, List<String> airwayBill, String billed, String invoiced) {
-		List<String> downloadInvoice = senderDataRepository.downloadInvoice(broker, airwayBill, billed, invoiced);
+		List<String> downloadInvoice = senderdata_InvoicingRepository.downloadInvoice(broker, airwayBill, billed, invoiced);
 		return downloadInvoice;
 	}
 
