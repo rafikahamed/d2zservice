@@ -1690,4 +1690,10 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 			System.out.println(zoneMap);
 		}
 	}
+
+	@Override
+	public void updateAirwayBill(String referenceNumbers, String shipmentNumber) {
+		 senderDataRepository.updateAirwayBill(referenceNumbers.split(","), shipmentNumber,D2ZCommonUtil.getAETCurrentTimestamp());
+		
+	}
 }

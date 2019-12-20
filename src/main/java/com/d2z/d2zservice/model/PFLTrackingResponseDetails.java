@@ -1,5 +1,7 @@
 package com.d2z.d2zservice.model;
 
+import java.util.List;
+
 public class PFLTrackingResponseDetails {
 	
 	private String date;
@@ -7,7 +9,15 @@ public class PFLTrackingResponseDetails {
 	private String location;
 	private String status_code;
 	private String barcodeLabel;
+	private List<PFLTrackEvent> trackEvent;
 	
+	
+	public List<PFLTrackEvent> getTrackEvent() {
+		return trackEvent;
+	}
+	public void setTrackEvent(List<PFLTrackEvent> trackEvent) {
+		this.trackEvent = trackEvent;
+	}
 	public String getDate() {
 		return date;
 	}

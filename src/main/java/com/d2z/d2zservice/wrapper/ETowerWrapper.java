@@ -3,6 +3,7 @@ package com.d2z.d2zservice.wrapper;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -56,7 +57,7 @@ public class ETowerWrapper {
 System.out.println("ttt"+eTowerRequest.isEmpty());
 		if (!eTowerRequest.isEmpty()) {
 			
-			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest);
+			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest,null);
 			status = parseCreateShippingOrderResponse(response, senderDataResponseList, barcodeMap,
 					gainLabelTrackingNo);
 		}
@@ -112,7 +113,7 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 		List<String> gainLabelTrackingNo = new ArrayList<String>();
 
 		if (!eTowerRequest.isEmpty()) {
-			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest);
+			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest,null);
 			status = parseCreateShippingOrderResponse(response, senderDataResponseList, barcodeMap,
 					gainLabelTrackingNo);
 		}
@@ -175,12 +176,16 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 					String address = (orderDetail.getConsigneeAddr1()).replaceAll("[^a-zA-Z0-9\\s+]", "");
 							address = address.length()>39 ? address.substring(0, 39):address ;
 							request.setAddressLine1(address);
+					if(null!=orderDetail.getConsigneeAddr2()) {
 					String address2 = (orderDetail.getConsigneeAddr2()).replaceAll("[^a-zA-Z0-9\\s+]", "");
 							address2 = address2.length()>60 ? address2.substring(0, 60):address2 ;
 							request.setAddressLine2(address2);
+					}
+					if(null!=orderDetail.getProductDescription()) {
 			 		String description = (orderDetail.getProductDescription()).replaceAll("[^a-zA-Z0-9\\s+]", "");
 							description = description.length()>50 ? description.substring(0, 50):description ;
 							request.setDescription(description);
+					}
 			request.setDangerousGoods(orderDetail.isDangerousGoods());
 			request.setEmail(orderDetail.getConsigneeEmail());
 			request.setCity(orderDetail.getConsigneeSuburb());
@@ -512,13 +517,16 @@ s);
 				String address = (orderDetail.getConsigneeAddr1()).replaceAll("[^a-zA-Z0-9\\s+]", "");
 				address = address.length()>39 ? address.substring(0, 39):address ;
 				request.setAddressLine1(address);
-				String address2 = (orderDetail.getConsigneeAddr2()).replaceAll("[^a-zA-Z0-9\\s+]", "");
-				address2 = address2.length()>60 ? address2.substring(0, 60):address2 ;
-				request.setAddressLine2(address2);
-				request.setDangerousGoods(orderDetail.isDangerousGoods());
-				String description = (orderDetail.getProductDescription()).replaceAll("[^a-zA-Z0-9\\s+]", "");
-				description = description.length()>50 ? description.substring(0, 50):description ;
-				request.setDescription(description);
+				if(null!=orderDetail.getConsigneeAddr2()) {
+					String address2 = (orderDetail.getConsigneeAddr2()).replaceAll("[^a-zA-Z0-9\\s+]", "");
+							address2 = address2.length()>60 ? address2.substring(0, 60):address2 ;
+							request.setAddressLine2(address2);
+					}
+					if(null!=orderDetail.getProductDescription()) {
+			 		String description = (orderDetail.getProductDescription()).replaceAll("[^a-zA-Z0-9\\s+]", "");
+							description = description.length()>50 ? description.substring(0, 50):description ;
+							request.setDescription(description);
+					}
 			request.setEmail(orderDetail.getConsigneeEmail());
 			request.setCity(orderDetail.getConsigneeSuburb());
 			request.setState(orderDetail.getConsigneeState());
@@ -770,9 +778,12 @@ s);
 	public void makeCalltoEtower(List<SenderdataMaster> eTowerOrders) {
 		System.out.println("Background Thread created.....");
 		System.out.println(eTowerOrders.size());
+		String serviceName ="";
 		if (!eTowerOrders.isEmpty()) {
 			List<CreateShippingRequest> eTowerRequest = new ArrayList<CreateShippingRequest>();
-
+			if(eTowerOrders.get(0).getServicetype().equals("HKG")) {
+				serviceName = "STI AUSTRALIA";
+			}
 			for (SenderdataMaster orderDetail : eTowerOrders) {
 				CreateShippingRequest request = new CreateShippingRequest();
 				System.out.println(orderDetail.getArticleId());
@@ -789,12 +800,16 @@ s);
 				String address = (orderDetail.getConsignee_addr1()).replaceAll("[^a-zA-Z0-9\\s+]", "");
 				address = address.length()>39 ? address.substring(0, 39):address ;
 				request.setAddressLine1(address);
+				if(null!=orderDetail.getConsignee_addr2()) {
 				String address2 = (orderDetail.getConsignee_addr2()).replaceAll("[^a-zA-Z0-9\\s+]", "");
 				address2 = address2.length()>60 ? address2.substring(0, 60):address2 ;
 				request.setAddressLine2(address2);
-				String description = (orderDetail.getProduct_Description()).replaceAll("[^a-zA-Z0-9\\s+]", "");
+				}
+				if(null!=orderDetail.getProduct_Description()) {
+				String description = "Desc "+(orderDetail.getProduct_Description()).replaceAll("[^a-zA-Z0-9\\s+]", "");
 				description = description.length()>50 ? description.substring(0, 50):description ;
 				request.setDescription(description);
+				}
 				request.setDangerousGoods(true);
 				request.setEmail(orderDetail.getConsignee_Email());
 				request.setCity(orderDetail.getConsignee_Suburb());
@@ -813,13 +828,18 @@ s);
 					request.setServiceOption("E-Parcel");
 
 				}
+				if(Arrays.stream(Facility.values()).anyMatch((t) -> t.name().equals(orderDetail.getMlid()))) {
 				request.setFacility(Facility.get(orderDetail.getMlid()).toString());
+				}
 				request.setWeight(Double.valueOf(orderDetail.getWeight()));
 				request.setInvoiceValue(orderDetail.getValue());
 				request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
+				if("STI AUSTRALIA".equals(serviceName)) {
+					request.setServiceCode("STI.CN2AU.AUPOST");
+				}
 				eTowerRequest.add(request);
 			}
-			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest);
+			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest,serviceName);
 			parseEtowerCreateShippingResponse(response);
 
 		}

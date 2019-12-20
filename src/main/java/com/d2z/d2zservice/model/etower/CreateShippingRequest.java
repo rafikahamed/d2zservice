@@ -20,7 +20,7 @@ public class CreateShippingRequest {
 	private Double weight;
 	private Double invoiceValue;
 	private String invoiceCurrency = "AUD";
-	private String description;
+	private String description = "Bags";
 	private String shipperName;
 	private String shipperAddressLine1;
 	private String shipperCity;

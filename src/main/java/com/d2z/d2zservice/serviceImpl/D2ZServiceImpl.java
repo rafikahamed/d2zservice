@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,7 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
@@ -36,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.stereotype.Service;
 
+import com.d2z.d2zservice.async.AsyncService;
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
@@ -64,6 +69,8 @@ import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.FDMManifestDetails;
 import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
 import com.d2z.d2zservice.model.PFLSenderDataRequest;
+import com.d2z.d2zservice.model.PFLTrackEvent;
+import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.PflCreateShippingOrderInfo;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
@@ -75,6 +82,7 @@ import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
 import com.d2z.d2zservice.model.TrackParcel;
+import com.d2z.d2zservice.model.TrackParcelResponse;
 import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.TrackingEvents;
 import com.d2z.d2zservice.model.UserDetails;
@@ -84,7 +92,12 @@ import com.d2z.d2zservice.model.auspost.FromAddress;
 import com.d2z.d2zservice.model.auspost.Items;
 import com.d2z.d2zservice.model.auspost.ShipmentRequest;
 import com.d2z.d2zservice.model.auspost.ToAddress;
+import com.d2z.d2zservice.model.auspost.TrackableItems;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
+import com.d2z.d2zservice.model.auspost.TrackingResults;
+import com.d2z.d2zservice.model.etower.ETowerTrackingDetails;
+import com.d2z.d2zservice.model.etower.TrackEventResponseData;
+import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.model.fdm.ArrayOfConsignment;
 import com.d2z.d2zservice.model.fdm.ArrayofDetail;
 import com.d2z.d2zservice.model.fdm.Consignment;
@@ -181,6 +194,9 @@ public class D2ZServiceImpl implements ID2ZService {
 	
 	@Autowired
 	PcaProxy pcaProxy;
+	
+	@Autowired
+	AsyncService aysncService;
 
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) 
@@ -2281,6 +2297,173 @@ else
 	public UserMessage returnAction(List<ReturnsAction> returnsAction) {
 		UserMessage usrMsg =  d2zDao.returnAction(returnsAction);
 		return usrMsg;
+	}
+
+	@Override
+	public List<TrackParcelResponse> trackParcels(List<String> articleIds) throws InterruptedException, ExecutionException {
+		List<String> eTowerArticleIds = new ArrayList<String>();
+		List<String> auPostArticleIds = new ArrayList<String>();
+		List<String> pcaArticleIds = new ArrayList<String>();
+		List<String> pflArticleIds = new ArrayList<String>();
+		List<String> eParcelMlids = Stream.of("33G7K", "33G7L", "33G7M", "33G7N", "33G7P", "SJU","ZK6")
+				.collect(Collectors.toList());
+		List<String> auPostMlids =  Stream.of("33PE9", "33PET", "33PEN", "33PEH")
+				.collect(Collectors.toList());
+	    
+		CompletableFuture<TrackingEventResponse> eTowerResponse = new CompletableFuture<TrackingEventResponse>();
+		CompletableFuture<TrackingResponse> auPostResponse = new CompletableFuture<TrackingResponse>();
+		CompletableFuture<String> pcaResponse = new CompletableFuture<String>(); 
+		CompletableFuture<List<PFLTrackingResponseDetails>> pflResponse  = new CompletableFuture<List<PFLTrackingResponseDetails>>();
+		
+		for(String articleId : articleIds) {
+			if(articleId.length()==21 || articleId.length() == 23) {
+				String mlid = articleId.length() == 23 ? articleId.substring(0,5) : articleId.substring(0,3);
+				boolean isEParcel = eParcelMlids.stream().anyMatch(mlid::equalsIgnoreCase);
+				boolean isAuPost = auPostMlids.stream().anyMatch(mlid::equalsIgnoreCase);
+				if(isEParcel) {
+					eTowerArticleIds.add(articleId);
+				}else if(isAuPost) {
+					auPostArticleIds.add(articleId);
+				}else {
+					pcaArticleIds.add(articleId);
+				}
+			}else if(articleId.startsWith("BN")) {
+				pflArticleIds.add(articleId);
+			}
+			else {
+				//pcaArticleIds.add(articleId);
+			}
+		}
+		
+		if(eTowerArticleIds.size() > 0) {
+			eTowerResponse = aysncService.makeCalltoEtower(eTowerArticleIds);
+		}else {
+			eTowerResponse.complete(null);
+		}
+		if(auPostArticleIds.size() > 0) {
+			auPostResponse = aysncService.makeCalltoAuPost(auPostArticleIds);
+		}else {
+			auPostResponse.complete(null);
+		}
+		if(pcaArticleIds.size() > 0) {
+			pcaResponse = aysncService.makeCalltoPCA(pcaArticleIds);
+		}
+		else {
+			pcaResponse.complete(null);
+		}
+		if(pflArticleIds.size() > 0) {
+				pflResponse = aysncService.makeCalltoPFL(pflArticleIds);
+			}
+		else {
+			pflResponse.complete(null);
+		}
+		CompletableFuture.allOf(eTowerResponse, auPostResponse, pcaResponse,pflResponse).join();
+		
+		List<TrackParcelResponse> trackPracelsResponse = aggreateTrackParcelResponse(eTowerResponse.get(),auPostResponse.get(),pcaResponse.get(),pflResponse.get());
+		return trackPracelsResponse;
+	}
+
+	private List<TrackParcelResponse> aggreateTrackParcelResponse(TrackingEventResponse eTowerResponse,
+			TrackingResponse auPostResponse, String pcaResponse, List<PFLTrackingResponseDetails> pflResponse) {
+			
+		List<TrackParcelResponse> trackParcelResponse = new ArrayList<TrackParcelResponse>();
+		if(null != eTowerResponse) {
+			parseEtowerTrackingResponse(trackParcelResponse,eTowerResponse);	
+		}
+		if(null!=auPostResponse) {
+			parseAuPostTrackingResponse(trackParcelResponse,auPostResponse);
+		}
+		if(null != pcaResponse) {
+			parsePCAResponse(trackParcelResponse,pcaResponse);
+		}
+		if(null!=pflResponse) {
+			parsePFLResponse(trackParcelResponse,pflResponse);
+		}
+		return null;	
+	}
+
+	private void parsePFLResponse(List<TrackParcelResponse> trackParcelResponse,
+			List<PFLTrackingResponseDetails> pflResponse) {
+			if(!pflResponse.isEmpty()) {
+				for(PFLTrackingResponseDetails response : pflResponse) {
+					TrackParcelResponse parcelStatus = new TrackParcelResponse();
+					parcelStatus.setArticleId(response.getBarcodeLabel());
+					List<TrackingEvents> events = new ArrayList<TrackingEvents>();
+					for(PFLTrackEvent trackEvent:response.getTrackEvent()) {
+						TrackingEvents  event= new TrackingEvents();
+						event.setTrackEventDateOccured(trackEvent.getDate());
+						event.setEventDetails(trackEvent.getStatus());
+						events.add(event);
+					}
+					
+					parcelStatus.setTrackingEvents(events);
+					trackParcelResponse.add(parcelStatus);
+
+				}
+			}
+	}
+
+	private void parsePCAResponse(List<TrackParcelResponse> trackParcelResponse, String pcaResponse) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void parseAuPostTrackingResponse(List<TrackParcelResponse> trackParcelResponse,
+			TrackingResponse auPostResponse) {
+	    List<TrackingResults> trackingData = auPostResponse.getTracking_results();
+		if(!trackingData.isEmpty()) {
+			
+			for(TrackingResults data : trackingData ) {
+				if(data!=null && data.getTrackable_items()!=null) {
+					for(TrackableItems trackingLabel : data.getTrackable_items()) {
+						TrackParcelResponse parcelStatus = new TrackParcelResponse();
+						List<TrackingEvents> events = new ArrayList<TrackingEvents>();
+
+						parcelStatus.setArticleId(trackingLabel.getArticle_id());
+						if(trackingLabel != null && trackingLabel.getEvents() != null) {
+							for(com.d2z.d2zservice.model.auspost.TrackingEvents trackingEvents: trackingLabel.getEvents()) {
+								TrackingEvents event = new TrackingEvents();
+								event.setTrackEventDateOccured(trackingEvents.getDate());
+								event.setEventDetails(trackingEvents.getDescription());
+								events.add(event);
+								}
+							parcelStatus.setTrackingEvents(events);
+							}
+						trackParcelResponse.add(parcelStatus);
+						}
+				}
+			}
+		}
+	}
+
+	private void parseEtowerTrackingResponse(List<TrackParcelResponse> trackParcelResponse,
+			TrackingEventResponse eTowerResponse) {
+		List<TrackEventResponseData> responseData = eTowerResponse.getData();
+
+		if (!responseData.isEmpty()) {
+
+			for (TrackEventResponseData data : responseData) {
+
+				if (data != null && data.getEvents() != null) {
+					
+					List<TrackingEvents> trackingEvents = new ArrayList<TrackingEvents>();
+					TrackParcelResponse parcelStatus = new TrackParcelResponse();
+					
+					for (ETowerTrackingDetails trackingDetails : data.getEvents()) {
+					
+						parcelStatus.setArticleId(trackingDetails.getTrackingNo());
+						
+						TrackingEvents event = new TrackingEvents();
+						event.setTrackEventDateOccured(trackingDetails.getEventTime());
+						event.setEventDetails(trackingDetails.getActivity());
+						trackingEvents.add(event);
+						}
+					
+					parcelStatus.setTrackingEvents(trackingEvents);
+					trackParcelResponse.add(parcelStatus);
+					}
+				}
+	}
 	}
 
 }

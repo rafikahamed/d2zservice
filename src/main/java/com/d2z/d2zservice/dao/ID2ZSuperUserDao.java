@@ -234,5 +234,7 @@ public interface ID2ZSuperUserDao {
 
 	void zoneReport(List<ZoneRequest> zoneRequest);
 
+	void updateAirwayBill(String referenceNumbers, String shipmentNumber);
+
 }
 

@@ -31,6 +31,7 @@ import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderDataResponse;
+import com.d2z.d2zservice.model.TrackParcelResponse;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.service.ID2ZService;
 
@@ -43,11 +44,24 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 	@Autowired
     private  ID2ZService d2zService;
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/trackParcels")
+    public List<TrackParcelResponse> trackParcels(@RequestBody List<String> articleIds) {
+		List<TrackParcelResponse> trackParcelResponse = new ArrayList<TrackParcelResponse>();
+		try{
+			trackParcelResponse = d2zService.trackParcels(articleIds);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return trackParcelResponse;
+    }
+	
 	@RequestMapping( method = RequestMethod.GET, path = "/trackParcel/referenceNumber/{referenceNumbers}")
     public List<ParcelStatus> trackParcel(@PathVariable List<String> referenceNumbers) {
 		List<ParcelStatus> trackParcelResponse = d2zService.getStatusByRefNbr(referenceNumbers);
 		return trackParcelResponse;
     }
+	
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/trackParcel/articleID/{articleIDs}")
     public List<ParcelStatus> trackParcelByArticleID(@PathVariable List<String> articleIDs) {
