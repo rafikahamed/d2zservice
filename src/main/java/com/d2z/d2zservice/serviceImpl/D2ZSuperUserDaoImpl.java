@@ -3,6 +3,7 @@ package com.d2z.d2zservice.serviceImpl;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -15,9 +16,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.BrokerRates;
@@ -41,6 +44,7 @@ import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.ApprovedInvoice;
 import com.d2z.d2zservice.model.ArrivalReportFileData;
 import com.d2z.d2zservice.model.BrokerRatesData;
+import com.d2z.d2zservice.model.CategoryResponse;
 import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
@@ -51,15 +55,17 @@ import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
+import com.d2z.d2zservice.model.ShipmentApproval;
 import com.d2z.d2zservice.model.ShipmentCharges;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
+import com.d2z.d2zservice.model.Zone;
 import com.d2z.d2zservice.model.ZoneDetails;
 import com.d2z.d2zservice.model.ZoneRates;
 import com.d2z.d2zservice.model.ZoneReport;
-import com.d2z.d2zservice.model.ZoneReportDetails;
 import com.d2z.d2zservice.model.ZoneRequest;
+import com.d2z.d2zservice.model.ZoneResponse;
 import com.d2z.d2zservice.model.auspost.TrackableItems;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.auspost.TrackingResults;
@@ -78,7 +84,6 @@ import com.d2z.d2zservice.repository.IncomingJobsRepository;
 import com.d2z.d2zservice.repository.MlidRepository;
 import com.d2z.d2zservice.repository.NonD2ZDataRepository;
 import com.d2z.d2zservice.repository.ParcelRepository;
-
 import com.d2z.d2zservice.repository.ReconcileNDRepository;
 import com.d2z.d2zservice.repository.ReconcileRepository;
 import com.d2z.d2zservice.repository.ReturnsRepository;
@@ -122,6 +127,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 
 	@Autowired
 	MlidRepository mlidRepository;
+	
+	@Autowired
+	private ID2ZBrokerDao d2zBrokerDao;
 
 	@Autowired
 	ServiceTypeListRepository serviceTypeListRepository;
@@ -566,7 +574,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 
 	@Override
 	public List<String> downloadInvoice(List<String> broker, List<String> airwayBill, String billed, String invoiced) {
-		List<String> downloadInvoice = senderDataRepository.downloadInvoice(broker, airwayBill, billed, invoiced);
+		List<String> downloadInvoice = senderdata_InvoicingRepository.downloadInvoice(broker, airwayBill, billed, invoiced);
 		return downloadInvoice;
 	}
 
@@ -1627,6 +1635,7 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 	public List<ShipmentCharges> shipmentCharges() {
 		List<IncomingJobs> incomingJob = incomingRepository.shipmentCharges();
 		List<ShipmentCharges> shipmentChargesList = new ArrayList<ShipmentCharges>();
+		 DecimalFormat twoDForm = new DecimalFormat("#.##");
 		for(IncomingJobs incomingJobDetails:incomingJob){
 			ShipmentCharges shipmemntCharge = new ShipmentCharges();
 			shipmemntCharge.setBroker(incomingJobDetails.getBroker());
@@ -1637,25 +1646,31 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 			shipmemntCharge.setWeight(incomingJobDetails.getWeight());
 			shipmemntCharge.setHawb(incomingJobDetails.getHawb());
 			if(incomingJobDetails.getBroker().equalsIgnoreCase("NEXB") && incomingJobDetails.getConsignee().equalsIgnoreCase("BLUE")){
-				shipmemntCharge.setProcess(Double.valueOf(incomingJobDetails.getWeight())*(0.22));
+				Double processNexb = Double.valueOf(incomingJobDetails.getWeight())*(0.22);
+				shipmemntCharge.setProcess(Double.valueOf(twoDForm.format(processNexb)));
 				Double pickUpCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.175)) > 90.75 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.175)) : 90.75;
-				shipmemntCharge.setPickUp(pickUpCharge);
+				shipmemntCharge.setPickUp(Double.valueOf(twoDForm.format(pickUpCharge)));
 				shipmemntCharge.setDocs(57.75);
-				shipmemntCharge.setAirport(Double.valueOf(incomingJobDetails.getWeight())*(0.5775));
-				shipmemntCharge.setTotal(shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport());
+				Double airportChargeNexb = Double.valueOf(incomingJobDetails.getWeight())*(0.5775);
+				shipmemntCharge.setAirport(Double.valueOf(twoDForm.format(airportChargeNexb)));
+				Double totalNexb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
+				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalNexb)));
 			}else if(incomingJobDetails.getBroker().equalsIgnoreCase("VELB") && incomingJobDetails.getConsignee().equalsIgnoreCase("BLUE")){
 				shipmemntCharge.setProcess((double) 0);
-				Double pickUpCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.15)) > 70 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.15)) : 70;
-				shipmemntCharge.setPickUp(pickUpCharge);
+				Double pickUpChargeVelb = (Double.valueOf(incomingJobDetails.getWeight())*(0.15)) > 70 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.15)) : 70;
+				shipmemntCharge.setPickUp(Double.valueOf(twoDForm.format(pickUpChargeVelb)));
 				shipmemntCharge.setDocs(60.00);
-				shipmemntCharge.setAirport(Double.valueOf(incomingJobDetails.getWeight())*(0.60));
-				shipmemntCharge.setTotal(shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport());
+				Double airportChargeVelb = Double.valueOf(incomingJobDetails.getWeight())*(0.60);
+				shipmemntCharge.setAirport(Double.valueOf(twoDForm.format(airportChargeVelb)));
+				Double totalVelb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
+				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalVelb)));
 			}else if(incomingJobDetails.getBroker().equalsIgnoreCase("RMFB") && incomingJobDetails.getConsignee().equalsIgnoreCase("D2Z")) {
 				shipmemntCharge.setProcess((double) 25);
 				shipmemntCharge.setPickUp((double) 0);
 				shipmemntCharge.setDocs((double) 0);
 				shipmemntCharge.setAirport((double) 0);
-				shipmemntCharge.setTotal(shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport());
+				Double totalRmfb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
+				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalRmfb)));
 			}
 			shipmentChargesList.add(shipmemntCharge);
 		}
@@ -1668,27 +1683,150 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 	}
 
 	@Override
-	public void zoneReport(List<ZoneRequest> zoneRequest) {
+	public Zone zoneReport(List<ZoneRequest> zoneRequest) {
+		List<ZoneResponse> zoneResponseList = new ArrayList<ZoneResponse>();
+		Zone zoneFinal = new Zone();
 		for(ZoneRequest zoneObj:zoneRequest) {
-			List<String> zoneData = senderdata_InvoicingRepository.zoneReport(zoneObj.getUserId(), zoneObj.getFromDate(), zoneObj.getToDate());
+			List<Integer> listOfClientId = d2zBrokerDao.getClientId(zoneObj.getUserId());
 			Map<String, ZoneReport> zoneMap = new HashMap<String, ZoneReport>();
-			if(zoneData.size() > 0) {
-				Iterator itr = zoneData.iterator();
-				while (itr.hasNext()) {
-					Object[] obj = (Object[]) itr.next();
-					ZoneReport zone = new ZoneReport();
-					zone.setZone(obj[0].toString());
-					zone.setCategory(obj[1].toString());
-					zone.setCategoryVal((int) obj[2]);
-					zone.setZoneSumVal((int) obj[3]);
-					zone.setZonePerc((int) obj[4]);
-					zone.setCatSumVal((int) obj[5]);
-					zone.setCatPerc((int) obj[6]);
-					zoneMap.put(obj[0].toString()+obj[1].toString(), zone);
+			Map<String, ZoneReport> categoryMap = new HashMap<String, ZoneReport>();
+			if(listOfClientId.size() > 0) {
+				List<String> zoneData = senderdata_InvoicingRepository.zoneReport(listOfClientId, zoneObj.getFromDate(), zoneObj.getToDate());
+				if(zoneData.size() > 0) {
+					Iterator itr = zoneData.iterator();
+					while (itr.hasNext()) {
+						Object[] obj = (Object[]) itr.next();
+						ZoneReport zone = new ZoneReport();
+						zone.setZone(obj[0].toString());
+						zone.setCategory(obj[1].toString());
+						zone.setCategoryVal((int) obj[2]);
+						zone.setZoneSumVal( (int) obj[3]);
+						zone.setTotal( (int) obj[4]);
+						zone.setZonePerc(new Double((double) obj[5]).floatValue());
+						zone.setCatSumVal( (int) obj[6]);
+						zone.setCatPerc(new Double((double) obj[7]).floatValue());
+						zoneMap.put(obj[0].toString()+"-"+obj[1].toString(), zone);
+						categoryMap.put(obj[1].toString(), zone);
+					}
 				}
-			}	
-			System.out.println(zoneMap);
+			}
+			
+			if(zoneMap.size() > 0) {
+				zoneMap.forEach((k,v)->{
+					boolean zoneCheck = zoneResponseList.stream().
+									filter(o -> o.getZone().equals(k.substring(0, k.indexOf("-")))).findFirst().isPresent();
+					if(zoneCheck) {
+						Optional<ZoneResponse> matchingObject = zoneResponseList.stream().
+									filter(p -> p.getZone().equals(k.substring(0, k.indexOf("-")))).findFirst();
+						ZoneResponse zone = matchingObject.get();
+						if(v.getCategory().contains("category1"))
+							zone.setCategory1(v.getCategoryVal());
+						else if(v.getCategory().contains("category2"))
+							zone.setCategory2(v.getCategoryVal());
+						else if(v.getCategory().contains("category3"))
+							zone.setCategory3(v.getCategoryVal());
+						else if(v.getCategory().contains("category4"))
+							zone.setCategory4(v.getCategoryVal());
+						else if(v.getCategory().contains("category5"))
+							zone.setCategory5(v.getCategoryVal());
+						else if(v.getCategory().contains("category6"))
+							zone.setCategory6(v.getCategoryVal());
+						else if(v.getCategory().contains("category7"))
+							zone.setCategory7(v.getCategoryVal());
+						else if(v.getCategory().contains("category8"))
+							zone.setCategory8(v.getCategoryVal());
+						else if(v.getCategory().contains("category9"))
+							zone.setCategory9(v.getCategoryVal());
+						else if(v.getCategory().contains("category10"))
+							zone.setCategory10(v.getCategoryVal());
+					}else {
+						ZoneResponse zoneResponse = new ZoneResponse();
+						zoneResponse.setZone(k.substring(0, k.indexOf("-")));
+						if(v.getCategory().contains("category1"))
+							zoneResponse.setCategory1(v.getCategoryVal());
+						else if(v.getCategory().contains("category2"))
+							zoneResponse.setCategory2(v.getCategoryVal());
+						else if(v.getCategory().contains("category3"))
+							zoneResponse.setCategory3(v.getCategoryVal());
+						else if(v.getCategory().contains("category4"))
+							zoneResponse.setCategory4(v.getCategoryVal());
+						else if(v.getCategory().contains("category5"))
+							zoneResponse.setCategory5(v.getCategoryVal());
+						else if(v.getCategory().contains("category6"))
+							zoneResponse.setCategory6(v.getCategoryVal());
+						else if(v.getCategory().contains("category7"))
+							zoneResponse.setCategory7(v.getCategoryVal());
+						else if(v.getCategory().contains("category8"))
+							zoneResponse.setCategory8(v.getCategoryVal());
+						else if(v.getCategory().contains("category9"))
+							zoneResponse.setCategory9(v.getCategoryVal());
+						else if(v.getCategory().contains("category10"))
+							zoneResponse.setCategory10(v.getCategoryVal());
+						zoneResponse.setTotalCnt(v.getZoneSumVal());
+						zoneResponse.setZonePerctange(v.getZonePerc());
+						zoneResponse.setTotal(v.getTotal());
+						zoneResponseList.add(zoneResponse);
+					}
+				}
+			  );
+			}
+		 
+		if(categoryMap.size() > 0) {
+			 ZoneResponse categoryResponse = new ZoneResponse();
+			  categoryMap.forEach((key,val)->{
+				  categoryResponse.setZone("Total");
+				  if(key.contains("category1"))
+					  categoryResponse.setCategory1(val.getCatSumVal());
+				  else if(key.contains("category2"))
+					  categoryResponse.setCategory2(val.getCatSumVal());
+				  else if(key.contains("category3"))
+					  categoryResponse.setCategory3(val.getCatSumVal());
+				  else if(key.contains("category4"))
+					  categoryResponse.setCategory4(val.getCatSumVal());
+				  else if(key.contains("category5"))
+					  categoryResponse.setCategory5(val.getCatSumVal());
+				  else if(key.contains("category6"))
+					  categoryResponse.setCategory6(val.getCatSumVal());
+				  else if(key.contains("category7"))
+					  categoryResponse.setCategory7(val.getCatSumVal());
+				  else if(key.contains("category8"))
+					  categoryResponse.setCategory8(val.getCatSumVal());
+				  else if(key.contains("category9"))
+					  categoryResponse.setCategory9(val.getCatSumVal());
+				  else if(key.contains("category10"))
+					  categoryResponse.setCategory10(val.getCatSumVal());
+				  categoryResponse.setTotal(val.getTotal());
+			  });
+			  zoneResponseList.add(categoryResponse);
+			  zoneFinal.setZoneResponse(zoneResponseList);
+			  CategoryResponse categoryPercentage = new CategoryResponse();
+			  categoryMap.forEach((key,val)->{
+				  categoryPercentage.setZone("%");
+				  if(key.contains("category1"))
+					  categoryPercentage.setCategory1(val.getCatPerc());
+				  else if(key.contains("category2"))
+					  categoryPercentage.setCategory2(val.getCatPerc());
+				  else if(key.contains("category3"))
+					  categoryPercentage.setCategory3(val.getCatPerc());
+				  else if(key.contains("category4"))
+					  categoryPercentage.setCategory4(val.getCatPerc());
+				  else if(key.contains("category5"))
+					  categoryPercentage.setCategory5(val.getCatPerc());
+				  else if(key.contains("category6"))
+					  categoryPercentage.setCategory6(val.getCatPerc());
+				  else if(key.contains("category7"))
+					  categoryPercentage.setCategory7(val.getCatPerc());
+				  else if(key.contains("category8"))
+					  categoryPercentage.setCategory8(val.getCatPerc());
+				  else if(key.contains("category9"))
+					  categoryPercentage.setCategory9(val.getCatPerc());
+				  else if(key.contains("category10"))
+					  categoryPercentage.setCategory10(val.getCatPerc());
+			  });
+			  zoneFinal.setCategoryResponse(categoryPercentage);
+			}
 		}
+	  return zoneFinal;
 	}
 
 	@Override
@@ -1696,4 +1834,15 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 		 senderDataRepository.updateAirwayBill(referenceNumbers.split(","), shipmentNumber,D2ZCommonUtil.getAETCurrentTimestamp());
 		
 	}
+
+	public UserMessage approveShiment(List<ShipmentApproval> shipmentApproval) {
+		for (ShipmentApproval shipment : shipmentApproval) {
+			incomingRepository.approveShiment(shipment.getMawb());
+		}
+		UserMessage userMsg = new UserMessage();
+		userMsg.setMessage("Shipment Charges updated Successfully");
+		return userMsg;
+	}
+	
+
 }

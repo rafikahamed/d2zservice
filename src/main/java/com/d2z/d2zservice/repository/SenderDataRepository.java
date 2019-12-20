@@ -671,68 +671,68 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 //	List<String> downloadInvoice(@Param("broker") List<String> broker, @Param("airwayBill")  List<String> airwayBill, @Param("billed") String billed,
 //									@Param("invoiced") String invoiced);
 
-	@Query(nativeQuery = true, value="SELECT \r\n" + 
-			"  DISTINCT S.articleid AS TrackingNumber, \r\n" + 
-			"  S.reference_number AS reference, \r\n" + 
-			"  S.consignee_postcode AS postcode, \r\n" + 
-			"  S.weight AS Weight, \r\n" + 
-			"  B.rate AS postage, \r\n" + 
-			"  S.fuelsurcharge AS Fuelsurcharge, \r\n" + 
-			"  S.brokerrate AS total, \r\n" + 
-			"  S.servicetype AS servicetype, \r\n" + 
-			"  S.airwaybill AS ShipmentNumber \r\n" + 
-			"FROM \r\n" + 
-			"  senderdata_invoicing S \r\n" + 
-			"  INNER JOIN fastwaypostcode P ON P.postcode = S.consignee_postcode \r\n" + 
-			"  AND P.suburb = S.consignee_suburb \r\n" + 
-			"  INNER JOIN brokerrates B ON S.airwaybill IN (:airwayBill) \r\n" + 
-			"  AND B.brokerusername IN (:broker) \r\n" + 
-			"  AND (\r\n" + 
-			"    S.weight BETWEEN Cast(\r\n" + 
-			"      B.minweight AS DECIMAL(18, 4)\r\n" + 
-			"    ) \r\n" + 
-			"    AND Cast(\r\n" + 
-			"      B.maxweight AS DECIMAL(18, 4)\r\n" + 
-			"    )\r\n" + 
-			"  ) \r\n" + 
-			"  AND S.servicetype = B.servicetype \r\n" + 
-			"  AND S.consignee_postcode = P.postcode \r\n" + 
-			"  AND B.zoneid = P.zoneid \r\n" + 
-			"  AND S.billed = :billed \r\n" + 
-			"  AND S.invoiced = :invoiced\r\n" + 
-			"UNION \r\n" + 
-			"SELECT \r\n" + 
-			"  DISTINCT S.articleid AS TrackingNumber, \r\n" + 
-			"  S.reference_number AS reference, \r\n" + 
-			"  S.consignee_postcode AS postcode, \r\n" + 
-			"  S.weight AS Weight, \r\n" + 
-			"  B.rate AS postage, \r\n" + 
-			"  S.fuelsurcharge AS Fuelsurcharge, \r\n" + 
-			"  S.brokerrate AS total, \r\n" + 
-			"  S.servicetype AS servicetype, \r\n" + 
-			"  S.airwaybill AS ShipmentNumber \r\n" + 
-			"FROM \r\n" + 
-			"  senderdata_invoicing S \r\n" + 
-			"  INNER JOIN postcodezones P ON P.postcode = S.consignee_postcode \r\n" + 
-			"  AND P.suburb = S.consignee_suburb \r\n" + 
-			"  INNER JOIN brokerrates B ON S.airwaybill IN (:airwayBill) \r\n" + 
-			"  AND B.brokerusername IN (:broker) \r\n" + 
-			"  AND (\r\n" + 
-			"    S.weight BETWEEN Cast(\r\n" + 
-			"      B.minweight AS DECIMAL(18, 4)\r\n" + 
-			"    ) \r\n" + 
-			"    AND Cast(\r\n" + 
-			"      B.maxweight AS DECIMAL(18, 4)\r\n" + 
-			"    )\r\n" + 
-			"  ) \r\n" + 
-			"  AND S.servicetype = B.servicetype \r\n" + 
-			"  AND S.consignee_postcode = P.postcode \r\n" + 
-			"  AND B.zoneid = P.zone \r\n" + 
-			"  AND S.billed = :billed\r\n" + 
-			"  AND S.invoiced = :invoiced\r\n" + 
-			"")
-	List<String> downloadInvoice(@Param("broker") List<String> broker, @Param("airwayBill")  List<String> airwayBill, @Param("billed") String billed,
-									@Param("invoiced") String invoiced);
+//	@Query(nativeQuery = true, value="SELECT \r\n" + 
+//			"  DISTINCT S.articleid AS TrackingNumber, \r\n" + 
+//			"  S.reference_number AS reference, \r\n" + 
+//			"  S.consignee_postcode AS postcode, \r\n" + 
+//			"  S.weight AS Weight, \r\n" + 
+//			"  B.rate AS postage, \r\n" + 
+//			"  S.fuelsurcharge AS Fuelsurcharge, \r\n" + 
+//			"  S.brokerrate AS total, \r\n" + 
+//			"  S.servicetype AS servicetype, \r\n" + 
+//			"  S.airwaybill AS ShipmentNumber \r\n" + 
+//			"FROM \r\n" + 
+//			"  senderdata_invoicing S \r\n" + 
+//			"  INNER JOIN fastwaypostcode P ON P.postcode = S.consignee_postcode \r\n" + 
+//			"  AND P.suburb = S.consignee_suburb \r\n" + 
+//			"  INNER JOIN brokerrates B ON S.airwaybill IN (:airwayBill) \r\n" + 
+//			"  AND B.brokerusername IN (:broker) \r\n" + 
+//			"  AND (\r\n" + 
+//			"    S.weight BETWEEN Cast(\r\n" + 
+//			"      B.minweight AS DECIMAL(18, 4)\r\n" + 
+//			"    ) \r\n" + 
+//			"    AND Cast(\r\n" + 
+//			"      B.maxweight AS DECIMAL(18, 4)\r\n" + 
+//			"    )\r\n" + 
+//			"  ) \r\n" + 
+//			"  AND S.servicetype = B.servicetype \r\n" + 
+//			"  AND S.consignee_postcode = P.postcode \r\n" + 
+//			"  AND B.zoneid = P.zoneid \r\n" + 
+//			"  AND S.billed = :billed \r\n" + 
+//			"  AND S.invoiced = :invoiced\r\n" + 
+//			"UNION \r\n" + 
+//			"SELECT \r\n" + 
+//			"  DISTINCT S.articleid AS TrackingNumber, \r\n" + 
+//			"  S.reference_number AS reference, \r\n" + 
+//			"  S.consignee_postcode AS postcode, \r\n" + 
+//			"  S.weight AS Weight, \r\n" + 
+//			"  B.rate AS postage, \r\n" + 
+//			"  S.fuelsurcharge AS Fuelsurcharge, \r\n" + 
+//			"  S.brokerrate AS total, \r\n" + 
+//			"  S.servicetype AS servicetype, \r\n" + 
+//			"  S.airwaybill AS ShipmentNumber \r\n" + 
+//			"FROM \r\n" + 
+//			"  senderdata_invoicing S \r\n" + 
+//			"  INNER JOIN postcodezones P ON P.postcode = S.consignee_postcode \r\n" + 
+//			"  AND P.suburb = S.consignee_suburb \r\n" + 
+//			"  INNER JOIN brokerrates B ON S.airwaybill IN (:airwayBill) \r\n" + 
+//			"  AND B.brokerusername IN (:broker) \r\n" + 
+//			"  AND (\r\n" + 
+//			"    S.weight BETWEEN Cast(\r\n" + 
+//			"      B.minweight AS DECIMAL(18, 4)\r\n" + 
+//			"    ) \r\n" + 
+//			"    AND Cast(\r\n" + 
+//			"      B.maxweight AS DECIMAL(18, 4)\r\n" + 
+//			"    )\r\n" + 
+//			"  ) \r\n" + 
+//			"  AND S.servicetype = B.servicetype \r\n" + 
+//			"  AND S.consignee_postcode = P.postcode \r\n" + 
+//			"  AND B.zoneid = P.zone \r\n" + 
+//			"  AND S.billed = :billed\r\n" + 
+//			"  AND S.invoiced = :invoiced\r\n" + 
+//			"")
+//	List<String> downloadInvoice(@Param("broker") List<String> broker, @Param("airwayBill")  List<String> airwayBill, @Param("billed") String billed,
+//									@Param("invoiced") String invoiced);
 	
 	@Query("SELECT t.user_ID FROM SenderdataMaster t where  t.reference_number = :reference_number")
 	 Integer fetchUserIdByReferenceNumber( String reference_number);

@@ -2,7 +2,6 @@ package com.d2z.d2zservice.dao;
 
 import java.util.List;
 import java.util.Map;
-
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
@@ -29,10 +28,12 @@ import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
+import com.d2z.d2zservice.model.ShipmentApproval;
 import com.d2z.d2zservice.model.ShipmentCharges;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
+import com.d2z.d2zservice.model.Zone;
 import com.d2z.d2zservice.model.ZoneRequest;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
@@ -232,7 +233,9 @@ public interface ID2ZSuperUserDao {
 
 	List<User> broker();
 
-	void zoneReport(List<ZoneRequest> zoneRequest);
+	Zone zoneReport(List<ZoneRequest> zoneRequest);
+
+	UserMessage approveShiment(List<ShipmentApproval> shipmentApproval);
 
 	void updateAirwayBill(String referenceNumbers, String shipmentNumber);
 

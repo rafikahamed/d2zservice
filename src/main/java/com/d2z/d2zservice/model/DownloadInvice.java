@@ -2,6 +2,7 @@ package com.d2z.d2zservice.model;
 
 public class DownloadInvice {
 	
+	private String brokerName;
 	private String trackingNumber;
 	private String referenceNuber;
 	private String postcode;
@@ -12,6 +13,12 @@ public class DownloadInvice {
 	private String serviceType;
 	private String airwaybill;
 	
+	public String getBrokerName() {
+		return brokerName;
+	}
+	public void setBrokerName(String brokerName) {
+		this.brokerName = brokerName;
+	}
 	public String getAirwaybill() {
 		return airwaybill;
 	}

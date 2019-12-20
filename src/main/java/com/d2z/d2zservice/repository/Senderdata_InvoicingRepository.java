@@ -1,7 +1,6 @@
 package com.d2z.d2zservice.repository;
 
 import java.util.List;
-
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
@@ -9,7 +8,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import com.d2z.d2zservice.entity.Senderdata_Invoicing;
-import com.d2z.d2zservice.model.ZoneReport;
 
 public interface Senderdata_InvoicingRepository extends CrudRepository<Senderdata_Invoicing, Long>{
 	
@@ -35,7 +33,7 @@ public interface Senderdata_InvoicingRepository extends CrudRepository<Senderdat
 	void updateReturnInvoice(@Param("airwayBill") String airwayBill, @Param("servicetype") String servicetype,  @Param("articleId") String articleId);
 	
 	@Query(nativeQuery = true ,value="with detl(zone, category, count_val) as \r\n" + 
-			"(select zone as zone, category,count(category) as count_val \r\n" + 
+			"(select zone as zone, category, count(category) as count_val \r\n" + 
 			"from\r\n" + 
 			"(select Reference_number, Weight as weight, zone as zone,\r\n" + 
 			"	case when Weight between 0.00 and 0.50 THEN 'category1'\r\n" + 
@@ -50,10 +48,10 @@ public interface Senderdata_InvoicingRepository extends CrudRepository<Senderdat
 			"		 when Weight between 15.01 and 22.00 THEN 'category10'	 \r\n" + 
 			"	 END as category\r\n" + 
 			"FROM [D2Z].[dbo].[Senderdata_Invoicing] \r\n" + 
-			"where user_id = 156 and Timestamp between \r\n" + 
-			" convert(datetime, '2019-10-01 00:00:00.000' , 121)\r\n" + 
+			"where user_id IN (:userId) and Timestamp between \r\n" + 
+			" convert(datetime, :fromDate, 121)\r\n" + 
 			"  and \r\n" + 
-			" convert(datetime, '2019-11-30 23:59:59.997' , 121)\r\n" + 
+			" convert(datetime, :toDate, 121)\r\n" + 
 			"and zone is not null ) tbl\r\n" + 
 			"group by zone,category),\r\n" + 
 			"ttl(zone,t_cnt) as \r\n" + 
@@ -78,5 +76,26 @@ public interface Senderdata_InvoicingRepository extends CrudRepository<Senderdat
 			"(select * from section_category)cat_result\r\n" + 
 			"on summation.category=cat_result.category\r\n" + 
 			"order by zone,category")
-		List<String>zoneReport(@Param("userId") int userId, @Param("fromDate") String fromDate, @Param("toDate") String toDate);
+	List<String>zoneReport(@Param("userId") List<Integer> userId, @Param("fromDate") String fromDate, @Param("toDate") String toDate);
+	
+	@Query(nativeQuery = true ,value="SELECT \r\n" + 
+			"DISTINCT \r\n" + 
+			"				S. brokerusername    AS BrokerName, \r\n" + 
+			"                S.articleid          AS TrackingNumber, \r\n" + 
+			"                S.reference_number   AS reference, \r\n" + 
+			"                S.consignee_postcode AS postcode, \r\n" + 
+			"                S.weight             AS Weight, \r\n" + 
+			"                S.postage            AS postage, \r\n" + 
+			"                S.fuelsurcharge      AS Fuelsurcharge, \r\n" + 
+			"                S.brokerrate         AS total, \r\n" + 
+			"                S.servicetype        AS servicetype, \r\n" + 
+			"                S.airwaybill         AS ShipmentNumber \r\n" + 
+			"FROM   [D2Z].[dbo].[senderdata_invoicing] S \r\n" + 
+			"WHERE  S.airwaybill IN ( :airwayBill ) \r\n" + 
+			"       AND S.brokerusername IN ( :broker ) \r\n" + 
+			"       AND S.billed = :billed \r\n" + 
+			"       AND S.invoiced = :invoiced")
+	List<String> downloadInvoice(@Param("broker") List<String> broker, @Param("airwayBill")  List<String> airwayBill, 
+											@Param("billed") String billed, @Param("invoiced") String invoiced);
+	
 }

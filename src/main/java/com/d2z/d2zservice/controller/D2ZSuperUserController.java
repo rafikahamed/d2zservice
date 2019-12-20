@@ -41,11 +41,13 @@ import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ReturnsClientResponse;
+import com.d2z.d2zservice.model.ShipmentApproval;
 import com.d2z.d2zservice.model.ShipmentCharges;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
+import com.d2z.d2zservice.model.Zone;
 import com.d2z.d2zservice.model.ZoneRequest;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
@@ -234,6 +236,12 @@ public class D2ZSuperUserController {
 	@RequestMapping( method = RequestMethod.GET, path = "/shipment-Charge")
     public List<ShipmentCharges> shipmentCharges() {
 		return superUserD2zService.shipmentCharges();
+    }
+	
+	@RequestMapping( method = RequestMethod.PUT, path = "/approve-shipment")
+    public UserMessage approveShiment(@RequestBody List<ShipmentApproval> shipmentApproval) {
+		UserMessage approvedMsg = superUserD2zService.approveShiment(shipmentApproval);
+		return approvedMsg;
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/download-nonD2z-Invoice")
@@ -428,9 +436,7 @@ public class D2ZSuperUserController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/zone-report")
-	public String zoneReport(@RequestBody List<ZoneRequest> zoneRequest) {
-		System.out.println("Sample records ===>");
-		superUserD2zService.zoneReport(zoneRequest);
-		return null;
+	public Zone zoneReport(@RequestBody List<ZoneRequest> zoneRequest) {
+		return superUserD2zService.zoneReport(zoneRequest);
 	}
 }

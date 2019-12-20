@@ -18,6 +18,4 @@ public class ApprovedInvoice {
 		this.indicator = indicator;
 	}
 	
-	
-	
 }
