@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang.enums.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -828,7 +829,7 @@ s);
 					request.setServiceOption("E-Parcel");
 
 				}
-				if(Arrays.stream(Facility.values()).anyMatch((t) -> t.name().equals(orderDetail.getMlid()))) {
+				if(Facility.contains(orderDetail.getMlid())) {
 				request.setFacility(Facility.get(orderDetail.getMlid()).toString());
 				}
 				request.setWeight(Double.valueOf(orderDetail.getWeight()));
