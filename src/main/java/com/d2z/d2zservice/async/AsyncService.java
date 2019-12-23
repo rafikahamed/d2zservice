@@ -55,7 +55,7 @@ public class AsyncService {
 	@Async("asyncExecutor")
 	public CompletableFuture<List<PFLTrackingResponseDetails>> makeCalltoPFL(List<String> articleIds) throws InterruptedException 
     {
-		log.info("PCA Tracking");
+		log.info("PFL Tracking");
 		List<PFLTrackingResponseDetails> pflTrackingDetails = new ArrayList<PFLTrackingResponseDetails>();
 		for(String pflValue:articleIds) {
 			PflTrackEventRequest pflTrackEvent = new PflTrackEventRequest();
@@ -72,6 +72,7 @@ public class AsyncService {
 				event.setDate(response.getDate());
 				pflTrackEventList.add(event);
 				}
+				pflResp.setTrackEvent(pflTrackEventList);
 				pflTrackingDetails.add(pflResp);
 			}
 		}
