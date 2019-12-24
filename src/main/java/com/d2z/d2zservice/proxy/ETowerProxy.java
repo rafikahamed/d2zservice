@@ -34,7 +34,10 @@ public class ETowerProxy {
 	private String key;
 	@Value("${eTower.token}")
 	private String token;
-	
+	@Value("${eTower.stiKey}")
+	private String stiKey;
+	@Value("${eTower.stiToken}")
+	private String stiToken;
 	public TrackingEventResponse makeCallForTrackingEvents(List<String> trackingNumber) {
 
 
@@ -89,7 +92,7 @@ public class ETowerProxy {
 		}
 		return jsonToList;
 	}
-	public CreateShippingResponse makeCallForCreateShippingOrder(List<CreateShippingRequest> request) {
+	public CreateShippingResponse makeCallForCreateShippingOrder(List<CreateShippingRequest> request,String serviceName) {
 
 
 		String url = baseURL+"services/shipper/orders/";
@@ -98,8 +101,11 @@ public class ETowerProxy {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		requestFactory.setOutputStreaming(false);
         RestTemplate restTemplate = new RestTemplate(requestFactory);
-        restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(key,token)));
-    
+        if("STI AUSTRALIA".equals(serviceName)) {
+            restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(stiKey,stiToken)));
+        }else {
+        	restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(key,token)));
+        }
 		HttpEntity<List<CreateShippingRequest>> httpEntity = new HttpEntity<List<CreateShippingRequest>>(request);
 
         System.out.println("Making call to etower");

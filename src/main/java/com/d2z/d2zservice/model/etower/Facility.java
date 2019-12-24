@@ -12,6 +12,7 @@ public enum Facility {
     PER("33G7P"),
 	MEL2("33QU7");
 	
+	
  
     private String mlid;
  
@@ -19,6 +20,8 @@ public enum Facility {
         this.mlid = mlid;
     }
  
+    
+    
     public String getFacility() {
         return mlid;
     }
@@ -39,4 +42,13 @@ public enum Facility {
     {
         return lookup.get(mlid);
     }
+    public static boolean contains(String s)
+	  {
+	      
+	           if (lookup.containsKey(s)){ 
+	              return true;
+	           }else {
+	      return false;
+	           }
+	  } 
 }

@@ -1486,16 +1486,16 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		return d2zDao.uploadweight(weight);
 	}
 
-	@Override
+	/*@Override
 	public ResponseMessage allocateShipment(String articleid, String shipmentNumber) {
 		// TODO Auto-generated method stub
-String[] articleNbrs = articleid.split(",");
+			String[] articleNbrs = articleid.split(",");
 		
 		
 		
 		ResponseMessage userMsg = new ResponseMessage();
-		/* String[] refNbrs = referenceNumbers.split(",");
-		List<String> refNumbers = Arrays.asList(refNbrs);*/
+		 String[] refNbrs = referenceNumbers.split(",");
+		List<String> refNumbers = Arrays.asList(refNbrs);
 		List<String> refNumbers = d2zDao.fetchRefnobyArticle(Arrays.asList(articleNbrs));
 	System.out.println("refno"+refNumbers.size());
 		List<SenderdataMaster> consignments = d2zDao.fetchConsignmentsByRefNbr(refNumbers);
@@ -1510,15 +1510,15 @@ String[] articleNbrs = articleid.split(",");
 			
 				String msg = a.getReference_number();
 			
-			/*if (a.getIsDeleted().equalsIgnoreCase("Y")) {
+			if (a.getIsDeleted().equalsIgnoreCase("Y")) {
 				msg = new StringBuffer(a.getReference_number());
 				msg.append(" : Consignment already deleted");
-			}*/
+			}
 			return msg;
 		}).collect(Collectors.toList());
-		/*if (!invalidData.isEmpty()) {
+		if (!invalidData.isEmpty()) {
 			throw new ReferenceNumberNotUniqueException("Request failed", invalidData);
-		}*/
+		}
 		List<String> toAllocate = refNumbers;
 		toAllocate.removeAll(allocateddata);
 		
@@ -1565,7 +1565,7 @@ String[] articleNbrs = articleid.split(",");
 	        }};
 	        new Thread(freipost).start();
 	        
-		/* Runnable pfl = new Runnable( ) {			
+		 Runnable pfl = new Runnable( ) {			
 		        public void run() {
 		        }
 		    };
@@ -1576,13 +1576,90 @@ String[] articleNbrs = articleid.split(",");
 	        	
 	        }
 	     };
-		 new Thread(r).start();*/
+		 new Thread(r).start();
 		 
 		
 		return userMsg;
 
-	}
+	}*/
 
+	public ResponseMessage allocateShipment(String articleid, String shipmentNumber) {
+
+		String[] articleNbrs = articleid.split(",");
+		ResponseMessage userMsg = new ResponseMessage();
+	    List<String> articleIds = Arrays.asList(articleNbrs);
+		List<String> refNumbers = d2zDao.fetchRefnobyArticle(articleIds);
+	    System.out.println("refno"+refNumbers.size());
+		List<SenderdataMaster> consignments = d2zDao.fetchConsignmentsByRefNbr(refNumbers);
+		if(consignments.isEmpty()) {
+			userMsg.setResponseMessage("Invalid Article ids");
+			return userMsg;
+		}
+		
+		if(refNumbers.size()<articleNbrs.length) {
+			List<String> articleIdsDb = consignments.stream().map(a -> {
+				return a.getArticleId();
+			}).collect(Collectors.toList());
+			articleIds.removeAll(articleIdsDb);
+			userMsg.setResponseMessage("Invalid Article id" + String.join(",", articleIds));
+		}
+		List<String> allocateddata = consignments.stream().filter(obj -> null!=obj.getAirwayBill())
+				.map(a -> {
+			return a.getReference_number();
+		}).collect(Collectors.toList());
+		
+		//Updating Airbill number
+		d2zDao.updateAirwayBill(allocateddata.stream().collect(Collectors.joining(",")), shipmentNumber);
+		
+		List<String> toAllocate = refNumbers;
+		toAllocate.removeAll(allocateddata);
+		
+        //Updating new Airbill number and inserting into track and trace
+		  
+		d2zDao.allocateShipment(toAllocate.stream().collect(Collectors.joining(",")), shipmentNumber);
+		
+		//Updating invoicing table
+		String msg  = d2zDao.updateinvoicing(articleid,shipmentNumber);
+		  
+		if(userMsg.getResponseMessage()==null) {
+			userMsg.setResponseMessage(msg);
+		}
+		 
+		Runnable freipost = new Runnable( ) {			
+	        public void run() {
+	        	String[] refNbrs = toAllocate.stream().toArray(String[] ::new);
+	        	List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(toAllocate,"Freipost");
+	        	if(!senderMasterData.isEmpty()) {
+	        		freipostWrapper.uploadManifestService(senderMasterData);
+	        	}
+	        	
+	        	List<SenderdataMaster> pcaData = d2zDao.fetchDataBasedonSupplier(toAllocate,"PCA");
+	        	if(!pcaData.isEmpty()) {
+	        		try {
+						pcaWrapper.makeCreateShippingOrderPCACall(pcaData);
+					} catch (EtowerFailureResponseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	        	}
+	        	
+	        	List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
+	        	 if(!fastwayOrderId.isEmpty()) {
+	        		 try {
+						pflWrapper.createSubmitOrderPFL(fastwayOrderId);
+					} catch (EtowerFailureResponseException e) {
+						e.printStackTrace();
+					}
+	        	 }
+	        
+	        	 List<String> articleIDS = d2zDao.fetchDataForEtowerForeCastCall(refNbrs);
+	        	 if(!articleIDS.isEmpty()) {
+	        		 eTowerWrapper.makeEtowerForecastCall(articleIDS);
+	        	 }
+	        }};
+	        new Thread(freipost).start();
+	    return userMsg;
+	    }
 	@Override
 	public UserMessage createParcel(List<HeldParcel> createJob) {
 		// TODO Auto-generated method stub

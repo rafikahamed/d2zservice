@@ -1830,6 +1830,11 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 	}
 
 	@Override
+	public void updateAirwayBill(String referenceNumbers, String shipmentNumber) {
+		 senderDataRepository.updateAirwayBill(referenceNumbers.split(","), shipmentNumber,D2ZCommonUtil.getAETCurrentTimestamp());
+		
+	}
+
 	public UserMessage approveShiment(List<ShipmentApproval> shipmentApproval) {
 		for (ShipmentApproval shipment : shipmentApproval) {
 			incomingRepository.approveShiment(shipment.getMawb());
@@ -1839,4 +1844,5 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 		return userMsg;
 	}
 	
+
 }

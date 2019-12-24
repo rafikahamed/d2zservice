@@ -237,5 +237,7 @@ public interface ID2ZSuperUserDao {
 
 	UserMessage approveShiment(List<ShipmentApproval> shipmentApproval);
 
+	void updateAirwayBill(String referenceNumbers, String shipmentNumber);
+
 }
 
