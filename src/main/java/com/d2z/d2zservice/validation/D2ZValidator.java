@@ -43,6 +43,7 @@ public class D2ZValidator {
 			String state = obj.getConsigneeState().trim().toUpperCase();
 			String suburb = obj.getConsigneeSuburb().trim().toUpperCase();
 			String postcode = obj.getConsigneePostcode().trim();
+			
 			String combination = state.concat(suburb).concat(postcode);
 			if(!postCodeZoneList.contains(combination) && !postCodeStateNameList.contains(combination)) {
 				incorrectPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim());
