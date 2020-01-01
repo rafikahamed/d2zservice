@@ -1,5 +1,6 @@
 package com.d2z.d2zservice.daoImpl;
 
+import java.sql.Blob;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -1226,7 +1227,15 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 			}
 		}
 		systemRefCountRepository.saveAll(systemRefCountList);
-		
+	}
+
+	@Override
+	public UserMessage enquiryFileUpload(Blob blob, String ticketNumber, String comments, String d2zComments, String sendUpdate, String status,
+			String fileName) {
+		csticketsRepository.enquiryFileUpload(blob, ticketNumber, comments, d2zComments, sendUpdate, status, fileName);
+		UserMessage usrMsg = new UserMessage();
+		usrMsg.setMessage("Enquiry Data Updated Successfully");
+		return usrMsg;
 	}
 
 }

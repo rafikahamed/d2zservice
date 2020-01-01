@@ -1,10 +1,12 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
+import java.sql.Blob;
 import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 @Entity
@@ -85,6 +87,13 @@ public class CSTickets implements Serializable {
 	
 	@Column(name="BarcodelabelNumber")
 	private String barcodelabelNumber;
+	
+	@Lob
+	@Column(name="proof")
+	private Blob proof;
+	
+	@Column(name="fileName")
+	private String fileName;
 	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
@@ -280,6 +289,22 @@ public class CSTickets implements Serializable {
 
 	public void setEnquiryOpenDate(Timestamp enquiryOpenDate) {
 		this.enquiryOpenDate = enquiryOpenDate;
+	}
+
+	public Blob getProof() {
+		return proof;
+	}
+
+	public void setProof(Blob blob) {
+		this.proof = blob;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 	
 }

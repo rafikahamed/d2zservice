@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Blob;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -1865,9 +1866,9 @@ else
 					 //ftpUploader.fdmFileCreation(request);
 					 System.out.println("FDM Request ---->");
 					 System.out.println(request);
-					 ftpUploader.ftpUpload(targetStream);
+					 //ftpUploader.ftpUpload(targetStream);
 					 //ffresponseRepository.saveAll(FFResponseList);
-					// ftpUploader.fdmFileCreation(request);
+					 ftpUploader.fdmFileCreation(request);
 					// ffresponseRepository.saveAll(FFResponseList);
 					// String response = fdmProxy.makeCallToFDMManifestMapping(request);
 					/* List <FFResponse> FFresponsequery =
@@ -2464,6 +2465,13 @@ else
 					}
 				}
 	}
+	}
+
+	@Override
+	public UserMessage enquiryFileUpload(Blob blob, String ticketNumber, String comments, String d2zComments, String sendUpdate,
+			String status, String fileName) {
+		UserMessage usrMsg = d2zDao.enquiryFileUpload(blob,ticketNumber,comments,d2zComments,sendUpdate,status,fileName);
+		return usrMsg;
 	}
 
 }

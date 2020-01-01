@@ -1,5 +1,6 @@
 package com.d2z.d2zservice.repository;
 
+import java.sql.Blob;
 import java.util.List;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

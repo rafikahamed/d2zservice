@@ -1,5 +1,6 @@
 package com.d2z.d2zservice.service;
 
+import java.sql.Blob;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -132,6 +133,9 @@ public interface ID2ZService {
 	public UserMessage returnAction(List<ReturnsAction> returnsAction);
 
 	public List<TrackParcelResponse> trackParcels(List<String> articleIds) throws InterruptedException, ExecutionException;
+
+	public UserMessage enquiryFileUpload(Blob blob, String ticketNumber, String comments, String d2zComments, String sendUpdate,
+											String status, String filename);
 
 
 }

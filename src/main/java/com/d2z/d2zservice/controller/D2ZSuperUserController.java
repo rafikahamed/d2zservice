@@ -1,8 +1,11 @@
 package com.d2z.d2zservice.controller;
 
+import java.sql.Blob;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.sql.rowset.serial.SerialBlob;
 import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -49,10 +54,12 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.Zone;
 import com.d2z.d2zservice.model.ZoneRequest;
+import com.d2z.d2zservice.repository.CSTicketsRepository;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
 import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
+import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 
 @RestController
@@ -63,6 +70,12 @@ public class D2ZSuperUserController {
 	
 	@Autowired
     private  ISuperUserD2ZService superUserD2zService;
+	
+	@Autowired
+	private ID2ZService d2zService;
+
+	@Autowired
+	private CSTicketsRepository csTicketsRepository;
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/track-fileUpload", consumes=MediaType.APPLICATION_JSON)
     public UserMessage uploadTrackingFile(@RequestBody List<UploadTrackingFileData> fileData) {
@@ -439,4 +452,24 @@ public class D2ZSuperUserController {
 	public Zone zoneReport(@RequestBody List<ZoneRequest> zoneRequest) {
 		return superUserD2zService.zoneReport(zoneRequest);
 	}
+	
+	@RequestMapping(value = "/enquiryPodFile/{ticketNumber}/{comments}/{d2zComments}/{sendUpdate}/{status}", method = RequestMethod.POST)
+	public UserMessage enquiryFileUpload(@RequestParam("file") MultipartFile file, 
+			@PathVariable String ticketNumber, @PathVariable String comments,
+			@PathVariable String d2zComments, @PathVariable String sendUpdate, @PathVariable String status) throws Exception {
+		Blob blob = null;
+		byte[] myArray = file.getBytes();
+        blob = new SerialBlob(myArray);
+        UserMessage successMsg = d2zService.enquiryFileUpload(blob, ticketNumber,comments,d2zComments,sendUpdate,status,file.getOriginalFilename());
+	    return successMsg;
+	}  
+	
+	@RequestMapping(value = "/enquiryPod/{ticketNumber}/{comments}/{d2zComments}/{sendUpdate}/{status}", method = RequestMethod.POST)
+	public UserMessage enquiryFileUpload(
+			@PathVariable String ticketNumber, @PathVariable String comments,
+			@PathVariable String d2zComments, @PathVariable String sendUpdate, @PathVariable String status) throws Exception {
+        UserMessage successMsg = d2zService.enquiryFileUpload(null, ticketNumber,comments,d2zComments,sendUpdate,status,null);
+	    return successMsg;
+	}  
+	
 }

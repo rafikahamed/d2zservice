@@ -1,5 +1,6 @@
 package com.d2z.d2zservice.dao;
 
+import java.sql.Blob;
 import java.util.List;
 import java.util.Map;
 import com.d2z.d2zservice.entity.APIRates;
@@ -16,7 +17,6 @@ import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
-import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -167,6 +167,7 @@ public interface ID2ZDao {
 
 	public void updateSystemRefCount(Map<String, Integer> currentSysRefCount);
 
-
+	public UserMessage enquiryFileUpload(Blob blob, String ticketNumber, String comments, String d2zComments, String sendUpdate,
+			String status, String fileName);
 
 }

@@ -25,7 +25,14 @@ public class OpenEnquiryResponse {
 	private String consigneePostcode;
 	private String productDescription;
 	private String sendUpdate;
+	private String fileName;
 	
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 	public String getSendUpdate() {
 		return sendUpdate;
 	}

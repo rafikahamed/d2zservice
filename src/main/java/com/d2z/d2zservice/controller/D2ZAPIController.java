@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.d2z.d2zservice.exception.EtowerFailureResponseException;
@@ -23,7 +24,6 @@ import com.d2z.d2zservice.exception.PCAlabelException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
-import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
@@ -33,6 +33,7 @@ import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.TrackParcelResponse;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.repository.CSTicketsRepository;
 import com.d2z.d2zservice.service.ID2ZService;
 
 @RestController
@@ -43,6 +44,9 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 	
 	@Autowired
     private  ID2ZService d2zService;
+	
+	@Autowired
+	private CSTicketsRepository csTicketsRepository;
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/trackParcels")
     public List<TrackParcelResponse> trackParcels(@RequestBody List<String> articleIds) {
@@ -150,6 +154,16 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 	public UserMessage createEnquiry(@RequestBody Enquiry createEnquiry) throws ReferenceNumberNotUniqueException {
 		UserMessage enquiryInfo = d2zService.createEnquiry(createEnquiry);
 		return enquiryInfo;
+	}
+	
+	@RequestMapping(value = "/generatePod", method = RequestMethod.POST)
+	public ResponseEntity<byte[]> fetchPod (@RequestParam("ticketId") String ticketId) throws Exception {
+		byte[] poddata = csTicketsRepository.fetchPod(ticketId);
+		return ResponseEntity.ok()
+				.header("Content-Type", "application/pdf; charset=UTF-8")
+				.header("Content-Disposition", "inline; filename=\"Label.pdf\"").body(poddata);
+//		String encodedString = Base64.getEncoder().encodeToString(poddata);
+//		return encodedString;
 	}
 	
 }

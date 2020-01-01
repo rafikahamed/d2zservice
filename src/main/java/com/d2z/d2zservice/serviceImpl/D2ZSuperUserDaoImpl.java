@@ -892,13 +892,15 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				openEnquiryResponse.setConsigneeName(obj[6] != null ? obj[6].toString() : "");
 				openEnquiryResponse.setStatus(obj[7] != null ? obj[7].toString() : "");
 				openEnquiryResponse.setComments(obj[8] != null ? obj[8].toString() : "");
-				openEnquiryResponse.setAttachment(obj[9] != null ? obj[9].toString() : "");
+				openEnquiryResponse.setD2zComments(obj[9] != null ? obj[9].toString() : "");
 				openEnquiryResponse.setConsigneeaddr1(obj[10] != null ? obj[10].toString() : "");
 				openEnquiryResponse.setConsigneeSuburb(obj[11] != null ? obj[11].toString() : "");
 				openEnquiryResponse.setConsigneeState(obj[12] != null ? obj[12].toString() : "");
 				openEnquiryResponse.setConsigneePostcode(obj[13] != null ? obj[13].toString() : "");
 				openEnquiryResponse.setProductDescription(obj[14] != null ? obj[14].toString() : "");
 				openEnquiryResponse.setTrackingEvent(obj[15] != null ? obj[15].toString() : "");
+				openEnquiryResponse.setSendUpdate(obj[17] != null ? obj[17].toString() : "");
+				openEnquiryResponse.setFileName(obj[18] != null ? obj[18].toString() : "");
 				TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(openEnquiryResponse.getConsigneePostcode());
 				if( null != transitTimeResponse && null != transitTimeResponse.getTransitTime() && null !=openEnquiryResponse.getTrackingEventDateOccured()) {
 					deliveryDate = D2ZCommonUtil.getIncreasedTime(openEnquiryResponse.getTrackingEventDateOccured(),transitTimeResponse.getTransitTime());
