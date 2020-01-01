@@ -2380,7 +2380,7 @@ else
 		if(null!=pflResponse) {
 			parsePFLResponse(trackParcelResponse,pflResponse);
 		}
-		return null;	
+		return trackParcelResponse;	
 	}
 
 	private void parsePFLResponse(List<TrackParcelResponse> trackParcelResponse,
