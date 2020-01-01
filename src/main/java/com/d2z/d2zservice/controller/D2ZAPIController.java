@@ -27,6 +27,7 @@ import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
+import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -34,6 +35,7 @@ import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.TrackParcelResponse;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.repository.CSTicketsRepository;
+import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
 
 @RestController
@@ -47,6 +49,9 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 	
 	@Autowired
 	private CSTicketsRepository csTicketsRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/trackParcels")
     public List<TrackParcelResponse> trackParcels(@RequestBody List<String> articleIds) {
@@ -151,8 +156,15 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 	}
 
 	@RequestMapping(method = RequestMethod.POST, path = "/create-enquiry")
-	public UserMessage createEnquiry(@RequestBody Enquiry createEnquiry) throws ReferenceNumberNotUniqueException {
-		UserMessage enquiryInfo = d2zService.createEnquiry(createEnquiry);
+	public EnquiryResponse createEnquiry(@RequestBody Enquiry createEnquiry) throws ReferenceNumberNotUniqueException {
+		Integer userId = userRepository.fetchUserIdbyUserName(createEnquiry.getUserName());
+		EnquiryResponse enquiryInfo;
+		if(userId !=null) {
+			enquiryInfo = d2zService.createEnquiry(createEnquiry);
+		}else {
+			enquiryInfo = new EnquiryResponse();
+			enquiryInfo.setMessage("UserName is Not Avilale in the system");
+		}
 		return enquiryInfo;
 	}
 	
@@ -162,8 +174,6 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 		return ResponseEntity.ok()
 				.header("Content-Type", "application/pdf; charset=UTF-8")
 				.header("Content-Disposition", "inline; filename=\"Label.pdf\"").body(poddata);
-//		String encodedString = Base64.getEncoder().encodeToString(poddata);
-//		return encodedString;
 	}
 	
 }

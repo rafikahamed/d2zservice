@@ -45,6 +45,7 @@ import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.CurrencyDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
+import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
@@ -1009,12 +1010,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return trackAndTraceRepository.getArticleIDForFreiPostTracking();
 	}
 	
-	public String createEnquiry(Enquiry createEnquiry) throws ReferenceNumberNotUniqueException {
+	public EnquiryResponse createEnquiry(Enquiry createEnquiry) throws ReferenceNumberNotUniqueException {
 		List<CSTickets> csTctList = new ArrayList<CSTickets>();
 		for(CreateEnquiryRequest enquiryRequest:createEnquiry.getEnquiryDetails()) {
 			CSTickets tickets = new CSTickets();
 			if(enquiryRequest.getType().equalsIgnoreCase("Article Id")) {
-				System.out.println("Article Id --->"+enquiryRequest.getIdentifier());
 				SenderdataMaster senderArticleId = senderDataRepository.fetchDataArticleId(enquiryRequest.getIdentifier());
 				if(null != senderArticleId) {
 					tickets.setArticleID(senderArticleId.getArticleId());
@@ -1029,7 +1029,6 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setCarrier(senderArticleId.getCarrier());
 				}
 			}else if(enquiryRequest.getType().equalsIgnoreCase("Reference Number")) {
-				System.out.println("Reference Number --->"+enquiryRequest.getIdentifier());
 				SenderdataMaster senderRefId = senderDataRepository.fetchDataReferenceNum(enquiryRequest.getIdentifier());
 				if(null != senderRefId) {
 					tickets.setArticleID(senderRefId.getArticleId());
@@ -1061,7 +1060,14 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 			}
 		}
 		csticketsRepository.saveAll(csTctList);
-		return "Enquiry created Successfully";
+		List<String> tickets = new ArrayList<String>();
+		for(CSTickets csTicket:csTctList) {
+			tickets.add(csTicket.getTicketID());
+		}
+		EnquiryResponse usrMsg = new EnquiryResponse();
+		usrMsg.setMessage("Enquiry created Successfully");
+		usrMsg.setTicketId(tickets);
+		return usrMsg;
 	}
 	
 	
@@ -1142,13 +1148,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public Double getAudcurrency(String country) {
-		// TODO Auto-generated method stub
 		return currencyRepository.getaud(country);
 	}
 
 	@Override
 	public List<SenderdataMaster> fetchDataBasedonrefnbr(List<String> incomingRefNbr) {
-		// TODO Auto-generated method stub
 		return senderDataRepository.fetchConsignmentsByRefNbr(incomingRefNbr);
 	}
 
@@ -1174,26 +1178,15 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public List<SenderdataMaster> fetchShipmentDatabyType(List<String> number, List<Integer> listOfClientId,
 			String type) {
 		List<SenderdataMaster> senderData;
-		
-		
-		
-		if(type.equals("articleid"))
-		{
+		if(type.equals("articleid")){
 			senderData = senderDataRepository.fetchShipmentDatabyArticleId(number, listOfClientId);
 		}
-		else if (type.equals("barcodelabel"))
-				{
+		else if(type.equals("barcodelabel")){
 			senderData = senderDataRepository.fetchShipmentDatabyBarcode(number, listOfClientId);
-				}
-			
-			
-		else
-		{
+		}else{
 			System.out.print("in else");
 			senderData = senderDataRepository.fetchShipmentDatabyReference(number, listOfClientId);
 		}
-		
-		// TODO Auto-generated method stub
 		return senderData;
 	}
 

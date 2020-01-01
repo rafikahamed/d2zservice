@@ -19,6 +19,7 @@ import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
+import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
@@ -140,7 +141,7 @@ public interface ID2ZDao {
 
 	public List<String> getArticleIDForFreiPostTracking();
 
-	public String createEnquiry(Enquiry createEnquiry) throws ReferenceNumberNotUniqueException;
+	public EnquiryResponse createEnquiry(Enquiry createEnquiry) throws ReferenceNumberNotUniqueException;
 
 	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, String userId);
 

@@ -67,6 +67,7 @@ import com.d2z.d2zservice.model.Ebay_Shipment;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
+import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.FDMManifestDetails;
 import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
 import com.d2z.d2zservice.model.PFLSenderDataRequest;
@@ -1947,11 +1948,9 @@ else
 	}
 
 	@Override
-	public UserMessage createEnquiry(Enquiry createEnquiry) throws ReferenceNumberNotUniqueException {
-		String enquiryInfo = d2zDao.createEnquiry(createEnquiry);
-		UserMessage usrMsg = new UserMessage();
-		usrMsg.setMessage(enquiryInfo);
-		return usrMsg;
+	public EnquiryResponse createEnquiry(Enquiry createEnquiry) throws ReferenceNumberNotUniqueException {
+		EnquiryResponse enquiryInfo = d2zDao.createEnquiry(createEnquiry);
+		return enquiryInfo;
 	}
 
 	@Override
@@ -1988,39 +1987,30 @@ else
 
 	@Override
 	public UserMessage addUserService(String username,String serviceType) {
-		// TODO Auto-generated method stub
 		UserMessage userMsg = new UserMessage();
 		User usr = userRepository.findByUsername(username);
-		if(usr!=null)
-		{
+		if(usr!=null){
 		 List<String> serviceTypeList = Arrays.asList(serviceType.split("\\s*,\\s*"));
-			List<UserService> savedUserService = d2zDao.addUserService(usr, serviceTypeList);
+		 List<UserService> savedUserService = d2zDao.addUserService(usr, serviceTypeList);
 		
-			
-				if (savedUserService.size() != 0) {
+		 if (savedUserService.size() != 0) {
 					userMsg.setMessage("User Service Added Successfully");
 					userMsg.setUserName(username);
-				}
-			 else {
+			}else {
 				userMsg.setMessage("Unable to Add User Service");
 				userMsg.setUserName(username);
 			}
 		}
-		else
-		{
+		else{
 			userMsg.setMessage("UserName doesnot Exist");
 			userMsg.setUserName(username);
 		}
-	
 		return userMsg;
-	
 	}
 
 	@Override
 	public void currencyRate() {
-		// TODO Auto-generated method stub
 		d2zDao.logcurrencyRate();
-		
 	}
 	
 	public void deleteEtowerPflPca(List<String> refnbr){

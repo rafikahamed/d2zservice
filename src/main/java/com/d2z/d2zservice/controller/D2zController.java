@@ -25,6 +25,7 @@ import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.Enquiry;
+import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
@@ -77,8 +78,8 @@ public class D2zController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/create-enquiry")
-	public UserMessage createEnquiry(@RequestBody Enquiry createEnquiry) throws ReferenceNumberNotUniqueException {
-		UserMessage enquiryInfo = d2zService.createEnquiry(createEnquiry);
+	public EnquiryResponse createEnquiry(@RequestBody Enquiry createEnquiry) throws ReferenceNumberNotUniqueException {
+		EnquiryResponse enquiryInfo = d2zService.createEnquiry(createEnquiry);
 		return enquiryInfo;
 	}
 	

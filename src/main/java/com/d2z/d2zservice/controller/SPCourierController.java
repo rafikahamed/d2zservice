@@ -15,17 +15,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.PCAlabelException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
-import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.Enquiry;
+import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
@@ -210,8 +209,8 @@ public class SPCourierController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/create-enquiry")
-	public UserMessage createEnquiry(@RequestBody Enquiry createEnquiry) throws ReferenceNumberNotUniqueException {
-		UserMessage enquiryInfo = d2zService.createEnquiry(createEnquiry);
+	public EnquiryResponse createEnquiry(@RequestBody Enquiry createEnquiry) throws ReferenceNumberNotUniqueException {
+		EnquiryResponse enquiryInfo = d2zService.createEnquiry(createEnquiry);
 		return enquiryInfo;
 	}
 	

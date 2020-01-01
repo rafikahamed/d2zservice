@@ -3,7 +3,6 @@ package com.d2z.d2zservice.service;
 import java.sql.Blob;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
 import javax.validation.Valid;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.Returns;
@@ -14,12 +13,12 @@ import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.APIRatesRequest;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
-import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.DeleteConsignmentRequest;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
+import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -108,7 +107,7 @@ public interface ID2ZService {
 
 	public void freipostTrackingEvent();
 
-	public UserMessage createEnquiry(Enquiry createEnquiry) throws ReferenceNumberNotUniqueException;
+	public EnquiryResponse createEnquiry(Enquiry createEnquiry) throws ReferenceNumberNotUniqueException;
 
 	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, String userId);
 
