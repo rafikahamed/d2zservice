@@ -460,7 +460,12 @@ public class D2ZSuperUserController {
 		Blob blob = null;
 		byte[] myArray = file.getBytes();
         blob = new SerialBlob(myArray);
-        UserMessage successMsg = d2zService.enquiryFileUpload(blob, ticketNumber,comments,d2zComments,sendUpdate,status,file.getOriginalFilename());
+        String ticketNum = ticketNumber != null ? ticketNumber : "";
+        String cmts = comments != null ? comments : "";
+        String d2zCmts = d2zComments != null ? d2zComments : "";
+        String update = sendUpdate != null ? sendUpdate : "";
+        String sts = status != null ? status : "";
+        UserMessage successMsg = d2zService.enquiryFileUpload(blob, ticketNum,cmts,d2zCmts,update,sts,file.getOriginalFilename());
 	    return successMsg;
 	}  
 	
@@ -468,7 +473,12 @@ public class D2ZSuperUserController {
 	public UserMessage enquiryFileUpload(
 			@PathVariable String ticketNumber, @PathVariable String comments,
 			@PathVariable String d2zComments, @PathVariable String sendUpdate, @PathVariable String status) throws Exception {
-        UserMessage successMsg = d2zService.enquiryFileUpload(null, ticketNumber,comments,d2zComments,sendUpdate,status,null);
+		 	String ticketNum = ticketNumber != null ? ticketNumber : "";
+	        String cmts = comments != null ? comments : "";
+	        String d2zCmts = d2zComments != null ? d2zComments : "";
+	        String update = sendUpdate != null ? sendUpdate : "";
+	        String sts = status != null ? status : "";
+        UserMessage successMsg = d2zService.enquiryFileUpload(null, ticketNum,cmts,d2zCmts,update,sts,null);
 	    return successMsg;
 	}  
 	
