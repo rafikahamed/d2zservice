@@ -132,7 +132,7 @@
 				</textElement>
 				<text><![CDATA[PHONE:]]></text>
 			</staticText>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="174" y="45" width="100" height="15" uuid="39e1a67b-326c-459a-b06e-ce69a3a459a8"/>
 				<textElement textAlignment="Left" verticalAlignment="Top">
 					<font fontName="MyArial" size="10" isBold="true"/>
