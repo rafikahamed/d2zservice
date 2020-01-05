@@ -899,6 +899,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 
 		List<SenderData> eParcelNewData = new ArrayList<SenderData>();
 		List<SenderData> expressNewData = new ArrayList<SenderData>();
+		List<SenderData> parcelPostData = new ArrayList<SenderData>();
 		List<SenderData> fwData = new ArrayList<SenderData>();
 
 		for (SenderData data : trackingLabelList) {
@@ -906,6 +907,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				eParcelNewData.add(data);
 			}else if("1PME".equalsIgnoreCase(data.getServiceType())) {
 				expressNewData.add(data);
+			}else if("HKG".equalsIgnoreCase(data.getServiceType())) {
+				parcelPostData.add(data);
 			}else if ("FW".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				fwData.add(data);
 			}else if (data.getCarrier().equalsIgnoreCase("eParcel")) {
@@ -935,6 +938,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		JasperReport eParcelNew = null;
 		JRBeanCollectionDataSource expressNewDataSource;
 		JasperReport expressNew = null;
+		JRBeanCollectionDataSource parcelPostDataSource;
+		JasperReport parcelPost = null;
 		JRBeanCollectionDataSource fwDataSource;
 		JasperReport fwLabel = null;
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
@@ -987,6 +992,14 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 						.compileReport(getClass().getResource("/ExpressNew.jrxml").openStream());
 				JRSaver.saveObject(expressNew, "expressNew.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(expressNew, parameters, expressNewDataSource));
+			}
+			if (!parcelPostData.isEmpty()) {
+				System.out.println("Generating Parcel Post..." + parcelPostData.size());
+				parcelPostDataSource = new JRBeanCollectionDataSource(parcelPostData);
+				parcelPost = JasperCompileManager
+						.compileReport(getClass().getResource("/ParcelPost.jrxml").openStream());
+				JRSaver.saveObject(parcelPost, "parcelPost.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(parcelPost, parameters, parcelPostDataSource));
 			}
 			if (!fwData.isEmpty()) {
 				System.out.println("Generating Fastway FW..." + fwData.size());

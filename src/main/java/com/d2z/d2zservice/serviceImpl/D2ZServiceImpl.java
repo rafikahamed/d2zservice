@@ -397,6 +397,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderData> whiteLabelData = new ArrayList<SenderData>();
 		List<SenderData> eParcelNewData = new ArrayList<SenderData>();
 		List<SenderData> expressNewData = new ArrayList<SenderData>();
+		List<SenderData> parcelPostData = new ArrayList<SenderData>();
 		List<SenderData> fwData = new ArrayList<SenderData>();
 
 		
@@ -414,6 +415,8 @@ public class D2ZServiceImpl implements ID2ZService {
 				eParcelNewData.add(data);
 			}else if("1PME".equalsIgnoreCase(data.getServiceType())) {
 				expressNewData.add(data);
+			}else if("HKG".equalsIgnoreCase(data.getServiceType())) {
+				parcelPostData.add(data);
 			}else  if(data.getCarrier().equalsIgnoreCase("eParcel")) {
 				setGS1Type= true;
 				eParcelData.add(data);
@@ -452,6 +455,9 @@ public class D2ZServiceImpl implements ID2ZService {
 		JasperReport expressNew = null;
 		JRBeanCollectionDataSource fwDataSource;
 		JasperReport fwLabel = null;
+		JRBeanCollectionDataSource parcelPostDataSource;
+		JasperReport parcelPost = null;
+		
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 			if (!eParcelData.isEmpty()) {
@@ -479,6 +485,14 @@ public class D2ZServiceImpl implements ID2ZService {
 						.compileReport(getClass().getResource("/ExpressNew.jrxml").openStream());
 				JRSaver.saveObject(expressNew, "expressNew.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(expressNew, parameters, expressNewDataSource));
+			}
+			if (!parcelPostData.isEmpty()) {
+				System.out.println("Generating Parcel Post..." + parcelPostData.size());
+				parcelPostDataSource = new JRBeanCollectionDataSource(parcelPostData);
+				parcelPost = JasperCompileManager
+						.compileReport(getClass().getResource("/ParcelPost.jrxml").openStream());
+				JRSaver.saveObject(parcelPost, "parcelPost.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(parcelPost, parameters, parcelPostDataSource));
 			}
 			if (!fastwayData.isEmpty()) {
 				System.out.println("Generating Fastway..." + fastwayData.size());
@@ -676,6 +690,7 @@ if(!pcalabel)
 		List<SenderData> whiteLabelData = new ArrayList<SenderData>();
 		List<SenderData> eParcelNewData = new ArrayList<SenderData>();
 		List<SenderData> expressNewData = new ArrayList<SenderData>();
+		List<SenderData> parcelPostData = new ArrayList<SenderData>();
 		List<SenderData> fwData = new ArrayList<SenderData>();
 
 		for (SenderData data : trackingLabelList) {
@@ -691,6 +706,8 @@ if(!pcalabel)
 				eParcelNewData.add(data);
 			}else if("1PME".equalsIgnoreCase(data.getServiceType())) {
 				expressNewData.add(data);
+			}else if("HKG".equalsIgnoreCase(data.getServiceType())) {
+				parcelPostData.add(data);
 			}else  if(data.getCarrier().equalsIgnoreCase("eParcel")) {
 				eParcelData.add(data);
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
@@ -721,6 +738,8 @@ if(!pcalabel)
 		JasperReport eParcelNew = null;
 		JRBeanCollectionDataSource expressNewDataSource;
 		JasperReport expressNew = null;
+		JRBeanCollectionDataSource parcelPostDataSource;
+		JasperReport parcelPost = null;
 		JRBeanCollectionDataSource fwDataSource;
 		JasperReport fwLabel = null;
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
@@ -729,7 +748,7 @@ if(!pcalabel)
 				System.out.println("Generating eParcel..." + eParcelData.size());
 				eParcelDataSource = new JRBeanCollectionDataSource(eParcelData);
 				eParcelLabel = JasperCompileManager
-						.compileReport(getClass().getResource("/eparcelLabel.jrxml").openStream());
+						.compileReport(getClass().getResource("/HKG.jrxml").openStream());
 				JRSaver.saveObject(eParcelLabel, "label.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, eParcelDataSource));
 			}
@@ -748,6 +767,14 @@ if(!pcalabel)
 						.compileReport(getClass().getResource("/ExpressNew.jrxml").openStream());
 				JRSaver.saveObject(expressNew, "expressNew.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(expressNew, parameters, expressNewDataSource));
+			}
+			if (!parcelPostData.isEmpty()) {
+				System.out.println("Generating Parcel Post..." + parcelPostData.size());
+				parcelPostDataSource = new JRBeanCollectionDataSource(parcelPostData);
+				parcelPost = JasperCompileManager
+						.compileReport(getClass().getResource("/ParcelPost.jrxml").openStream());
+				JRSaver.saveObject(parcelPost, "parcelPost.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(parcelPost, parameters, parcelPostDataSource));
 			}
 			if (!fastwayData.isEmpty()) {
 				System.out.println("Generating Fastway..." + fastwayData.size());

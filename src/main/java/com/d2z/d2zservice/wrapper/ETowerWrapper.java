@@ -192,11 +192,11 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 			request.setCity(orderDetail.getConsigneeSuburb());
 			request.setState(orderDetail.getConsigneeState());
 			request.setPostcode(orderDetail.getConsigneePostcode());
-			request.setShipperName(orderDetail.getShipperName());
+		/*	request.setShipperName(orderDetail.getShipperName());
 			request.setShipperAddressLine1(orderDetail.getShipperAddr1());
 			request.setShipperCity(orderDetail.getShipperCity());
 			request.setShipperState(orderDetail.getShipperState());
-			request.setShipperCountry(orderDetail.getShipperCountry());
+			request.setShipperCountry(orderDetail.getShipperCountry());*/
 			request.setReturnOption("Return");
 			request.setAuthorityToleave(false);
 			Double weight = Double.valueOf(orderDetail.getWeight());
@@ -532,11 +532,11 @@ s);
 			request.setCity(orderDetail.getConsigneeSuburb());
 			request.setState(orderDetail.getConsigneeState());
 			request.setPostcode(orderDetail.getConsigneePostcode());
-			request.setShipperName(orderDetail.getShipperName());
+			/*request.setShipperName(orderDetail.getShipperName());
 			request.setShipperAddressLine1(orderDetail.getShipperAddr1());
 			request.setShipperCity(orderDetail.getShipperCity());
 			request.setShipperState(orderDetail.getShipperState());
-			request.setShipperCountry(orderDetail.getShipperCountry());
+			request.setShipperCountry(orderDetail.getShipperCountry());*/
 			request.setReturnOption("Return");
 			request.setVendorid(orderDetail.getVendorId());
 			request.setAuthorityToleave(false);
@@ -816,11 +816,7 @@ s);
 				request.setCity(orderDetail.getConsignee_Suburb());
 				request.setState(orderDetail.getConsignee_State());
 				request.setPostcode(orderDetail.getConsignee_Postcode());
-				request.setShipperName(orderDetail.getShipper_Name());
-				request.setShipperAddressLine1(orderDetail.getShipper_Addr1());
-				request.setShipperCity(orderDetail.getShipper_City());
-				request.setShipperState(orderDetail.getShipper_State());
-				request.setShipperCountry(orderDetail.getShipper_Country());
+				
 				request.setReturnOption("Return");
 				request.setAuthorityToleave(false);
 				if (orderDetail.getCarrier().equalsIgnoreCase("Express")) {
@@ -837,6 +833,11 @@ s);
 				request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
 				if("STI AUSTRALIA".equals(serviceName)) {
 					request.setServiceCode("STI.CN2AU.AUPOST");
+					request.setShipperName(orderDetail.getShipper_Name());
+					request.setShipperAddressLine1(orderDetail.getShipper_Addr1());
+					request.setShipperCity(orderDetail.getShipper_City());
+					request.setShipperState(orderDetail.getShipper_State());
+					request.setShipperCountry(orderDetail.getShipper_Country());
 				}
 				eTowerRequest.add(request);
 			}
