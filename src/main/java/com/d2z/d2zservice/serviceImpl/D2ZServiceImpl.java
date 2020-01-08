@@ -748,7 +748,7 @@ if(!pcalabel)
 				System.out.println("Generating eParcel..." + eParcelData.size());
 				eParcelDataSource = new JRBeanCollectionDataSource(eParcelData);
 				eParcelLabel = JasperCompileManager
-						.compileReport(getClass().getResource("/HKG.jrxml").openStream());
+						.compileReport(getClass().getResource("/eparcelLabel.jrxml").openStream());
 				JRSaver.saveObject(eParcelLabel, "label.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, eParcelDataSource));
 			}
@@ -1234,9 +1234,10 @@ else
 	        	}
 	        	
 	        	List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
+	        	String serviceType = d2zDao.fetchServiceTypeByRefNbr(refNbrs[0]);
 	        	 if(!fastwayOrderId.isEmpty()) {
 	        		 try {
-						pflWrapper.createSubmitOrderPFL(fastwayOrderId);
+						pflWrapper.createSubmitOrderPFL(fastwayOrderId,serviceType);
 					} catch (EtowerFailureResponseException e) {
 						e.printStackTrace();
 					}

@@ -239,5 +239,7 @@ public interface ID2ZSuperUserDao {
 
 	void updateAirwayBill(String referenceNumbers, String shipmentNumber);
 
+	String fetchServiceTypeByRefNbr(String string);
+
 }
 

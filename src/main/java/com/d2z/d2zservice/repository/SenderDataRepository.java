@@ -770,4 +770,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT s.barcodelabelNumber FROM SenderdataMaster s where s.articleId = :articleID")
 	String fetchBarcodeDetails(@Param("articleID") String articleID);
 
+	@Query("SELECT s.servicetype FROM SenderdataMaster s where s.reference_number = :refNbr")
+	String fetchServiceTypeByRefNbr(String refNbr);
+
 } 

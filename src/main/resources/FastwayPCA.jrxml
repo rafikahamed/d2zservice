@@ -131,14 +131,14 @@
 				<textFieldExpression><![CDATA[$F{consigneeAddr1}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="1" y="45" width="188" height="19" uuid="4001379f-9f34-4cb8-85b8-dff1c158b25a"/>
+				<reportElement x="1" y="60" width="188" height="19" uuid="4001379f-9f34-4cb8-85b8-dff1c158b25a"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeSuburb}.concat(" ").concat($F{consigneeState}).concat(" ").concat( $F{consigneePostcode}).toUpperCase()]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="1" y="64" width="188" height="17" uuid="39e1a67b-326c-459a-b06e-ce69a3a459a8"/>
+				<reportElement x="1" y="80" width="188" height="17" uuid="39e1a67b-326c-459a-b06e-ce69a3a459a8"/>
 				<textElement>
 					<font fontName="MyArial" size="12"/>
 				</textElement>
@@ -185,6 +185,13 @@
 			<line>
 				<reportElement x="-1" y="-1" width="1" height="353" uuid="2b3ecbee-a424-4ad5-8159-c533fe698a00"/>
 			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1" y="46" width="189" height="15" uuid="6d1f638a-3760-4fb8-8dc5-5ffed8775d89"/>
+				<textElement>
+					<font fontName="MyArial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{consigneeAddr2}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 	<pageFooter>

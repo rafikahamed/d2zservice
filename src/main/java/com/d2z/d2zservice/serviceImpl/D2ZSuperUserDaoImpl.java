@@ -1846,5 +1846,10 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 		return userMsg;
 	}
 	
+	@Override
+	public String fetchServiceTypeByRefNbr(String refNbr) {
+		
+		return senderDataRepository.fetchServiceTypeByRefNbr(refNbr);
+	}
 
 }

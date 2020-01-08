@@ -171,4 +171,6 @@ public interface ID2ZDao {
 	public UserMessage enquiryFileUpload(Blob blob, String ticketNumber, String comments, String d2zComments, String sendUpdate,
 			String status, String fileName);
 
+	public String fetchServiceTypeByRefNbr(String string);
+
 }

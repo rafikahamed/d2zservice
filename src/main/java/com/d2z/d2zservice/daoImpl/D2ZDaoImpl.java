@@ -1231,4 +1231,10 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return usrMsg;
 	}
 
+	@Override
+	public String fetchServiceTypeByRefNbr(String refNbr) {
+		
+		return senderDataRepository.fetchServiceTypeByRefNbr(refNbr);
+	}
+
 }

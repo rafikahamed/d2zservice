@@ -1657,9 +1657,10 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	        	}
 	        	
 	        	List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
+	        	String serviceType = d2zDao.fetchServiceTypeByRefNbr(refNbrs[0]);
 	        	 if(!fastwayOrderId.isEmpty()) {
 	        		 try {
-						pflWrapper.createSubmitOrderPFL(fastwayOrderId);
+						pflWrapper.createSubmitOrderPFL(fastwayOrderId,serviceType);
 					} catch (EtowerFailureResponseException e) {
 						e.printStackTrace();
 					}

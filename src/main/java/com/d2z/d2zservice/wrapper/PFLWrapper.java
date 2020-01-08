@@ -139,10 +139,10 @@ public class PFLWrapper {
 		return barcodeMap;
 	}
 	
-	public void createSubmitOrderPFL(List<String> orderIds) throws EtowerFailureResponseException {
+	public void createSubmitOrderPFL(List<String> orderIds, String serviceType) throws EtowerFailureResponseException {
 		PFLSubmitOrderRequest pflSubmitOrder = new PFLSubmitOrderRequest();
 		pflSubmitOrder.setIds(orderIds);
-		PFLSubmitOrderResponse pflSubmitResponse = pflProxy.createSubmitOrderPFL(pflSubmitOrder);
+		PFLSubmitOrderResponse pflSubmitResponse = pflProxy.createSubmitOrderPFL(pflSubmitOrder,serviceType);
 		logPflSubmitResponse(pflSubmitResponse, orderIds);
 		if(pflSubmitResponse==null) {
 			throw new EtowerFailureResponseException("Error in file – please contact customer support");

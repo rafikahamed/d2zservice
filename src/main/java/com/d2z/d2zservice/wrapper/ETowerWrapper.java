@@ -172,13 +172,13 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 					String recpName = orderDetail.getConsigneeName().length() > 34
 							? orderDetail.getConsigneeName().substring(0, 34)
 							: orderDetail.getConsigneeName();
-							recpName = recpName.replaceAll("[^a-zA-Z0-9\\s+]", "");
+							recpName = recpName.replaceAll("[^:a-zA-Z0-9\\s+]", "");
 							request.setRecipientName(recpName);
-					String address = (orderDetail.getConsigneeAddr1()).replaceAll("[^a-zA-Z0-9\\s+]", "");
+					String address = (orderDetail.getConsigneeAddr1()).replaceAll("[^:a-zA-Z0-9\\s+]", "");
 							address = address.length()>39 ? address.substring(0, 39):address ;
 							request.setAddressLine1(address);
 					if(null!=orderDetail.getConsigneeAddr2()) {
-					String address2 = (orderDetail.getConsigneeAddr2()).replaceAll("[^a-zA-Z0-9\\s+]", "");
+					String address2 = (orderDetail.getConsigneeAddr2()).replaceAll("[^:a-zA-Z0-9\\s+]", "");
 							address2 = address2.length()>60 ? address2.substring(0, 60):address2 ;
 							request.setAddressLine2(address2);
 					}
@@ -513,13 +513,13 @@ s);
 			String recpName = orderDetail.getConsigneeName().length() > 34
 					? orderDetail.getConsigneeName().substring(0, 34)
 					: orderDetail.getConsigneeName();
-					recpName = recpName.replaceAll("[^a-zA-Z0-9\\s+]", "");
+					recpName = recpName.replaceAll("[^:a-zA-Z0-9\\s+]", "");
 				request.setRecipientName(recpName);
-				String address = (orderDetail.getConsigneeAddr1()).replaceAll("[^a-zA-Z0-9\\s+]", "");
+				String address = (orderDetail.getConsigneeAddr1()).replaceAll("[^:a-zA-Z0-9\\s+]", "");
 				address = address.length()>39 ? address.substring(0, 39):address ;
 				request.setAddressLine1(address);
 				if(null!=orderDetail.getConsigneeAddr2()) {
-					String address2 = (orderDetail.getConsigneeAddr2()).replaceAll("[^a-zA-Z0-9\\s+]", "");
+					String address2 = (orderDetail.getConsigneeAddr2()).replaceAll("[^:a-zA-Z0-9\\s+]", "");
 							address2 = address2.length()>60 ? address2.substring(0, 60):address2 ;
 							request.setAddressLine2(address2);
 					}
@@ -796,13 +796,13 @@ s);
 				String recpName = orderDetail.getConsignee_name().length() > 34
 						? orderDetail.getConsignee_name().substring(0, 34)
 						: orderDetail.getConsignee_name();
-						recpName = recpName.replaceAll("[^a-zA-Z0-9\\s+]", "");
+						recpName = recpName.replaceAll("[^:a-zA-Z0-9\\s+]", "");
 				request.setRecipientName(recpName);
-				String address = (orderDetail.getConsignee_addr1()).replaceAll("[^a-zA-Z0-9\\s+]", "");
+				String address = (orderDetail.getConsignee_addr1()).replaceAll("[^:a-zA-Z0-9\\s+]", "");
 				address = address.length()>39 ? address.substring(0, 39):address ;
 				request.setAddressLine1(address);
 				if(null!=orderDetail.getConsignee_addr2()) {
-				String address2 = (orderDetail.getConsignee_addr2()).replaceAll("[^a-zA-Z0-9\\s+]", "");
+				String address2 = (orderDetail.getConsignee_addr2()).replaceAll("[^:a-zA-Z0-9\\s+]", "");
 				address2 = address2.length()>60 ? address2.substring(0, 60):address2 ;
 				request.setAddressLine2(address2);
 				}
@@ -833,7 +833,11 @@ s);
 				request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
 				if("STI AUSTRALIA".equals(serviceName)) {
 					request.setServiceCode("STI.CN2AU.AUPOST");
-					request.setShipperName(orderDetail.getShipper_Name());
+					String shipperName = orderDetail.getShipper_Name().length() > 50
+							? orderDetail.getShipper_Name().substring(0, 50)
+							: orderDetail.getShipper_Name();
+							shipperName = shipperName.replaceAll("[^:a-zA-Z0-9\\s+]", "");
+					request.setShipperName(shipperName);
 					request.setShipperAddressLine1(orderDetail.getShipper_Addr1());
 					request.setShipperCity(orderDetail.getShipper_City());
 					request.setShipperState(orderDetail.getShipper_State());

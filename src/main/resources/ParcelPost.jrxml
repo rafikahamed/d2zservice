@@ -86,9 +86,9 @@
 		<band splitType="Stretch"/>
 	</background>
 	<pageHeader>
-		<band height="170" splitType="Stretch">
+		<band height="172" splitType="Stretch">
 			<image hAlign="Center" vAlign="Middle">
-				<reportElement x="-11" y="-11" width="401" height="64" uuid="63d0b5f7-568e-4dc4-9fd5-5db50af1ce6f"/>
+				<reportElement x="-11" y="-10" width="401" height="64" uuid="63d0b5f7-568e-4dc4-9fd5-5db50af1ce6f"/>
 				<imageExpression><![CDATA["ParcelPost-Logo.png"]]></imageExpression>
 			</image>
 			<staticText>
@@ -140,13 +140,13 @@
 				<textFieldExpression><![CDATA[$F{consigneePhone}.equals(null) ? "" : $F{consigneePhone}]]></textFieldExpression>
 			</textField>
 			<image hAlign="Center" vAlign="Middle">
-				<reportElement x="300" y="48" width="67" height="67" uuid="6bea52eb-2308-425d-b45b-e8f87db99b37"/>
+				<reportElement x="300" y="49" width="67" height="67" uuid="6bea52eb-2308-425d-b45b-e8f87db99b37"/>
 				<imageExpression><![CDATA[$F{datamatrixImage}]]></imageExpression>
 			</image>
 			<textField isBlankWhenNull="true">
-				<reportElement x="277" y="120" width="95" height="50" uuid="7c8b49d6-3136-474e-a9ae-20a5e2b2d776"/>
+				<reportElement x="277" y="130" width="95" height="42" uuid="7c8b49d6-3136-474e-a9ae-20a5e2b2d776"/>
 				<box>
-					<pen lineWidth="6.0"/>
+					<pen lineWidth="3.5"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="MyArial" size="26" isBold="true"/>
@@ -191,7 +191,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="268" splitType="Stretch">
+		<band height="266" splitType="Stretch">
 			<staticText>
 				<reportElement x="4" y="4" width="236" height="15" uuid="7088cf99-4141-473a-9754-3358a627ac9e"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -262,14 +262,14 @@
 	<pageFooter>
 		<band height="67" splitType="Immediate">
 			<staticText>
-				<reportElement x="137" y="-91" width="235" height="45" uuid="5e7e8bb0-50c6-443b-a308-f1cee1a1ad91"/>
+				<reportElement x="159" y="-56" width="213" height="59" uuid="5e7e8bb0-50c6-443b-a308-f1cee1a1ad91"/>
 				<textElement>
 					<font fontName="MyArial" size="7"/>
 				</textElement>
 				<text><![CDATA[Aviation Security and Dangerous Goods Declaration: The sender acknowledges that this article may be carried by air and will be subject to aviation security and clearing procedures; and the sender declares that the article does not contain any dangerous or prohibited goods, explosive or incendiary devices. A false declaration is a criminal offence.]]></text>
 			</staticText>
 			<line>
-				<reportElement x="152" y="-49" width="1" height="115" uuid="9283bbad-0880-4df9-bba2-6eea5aba015c"/>
+				<reportElement x="152" y="-72" width="1" height="115" uuid="9283bbad-0880-4df9-bba2-6eea5aba015c"/>
 			</line>
 			<staticText>
 				<reportElement x="8" y="-44" width="140" height="15" uuid="10f9c6c8-ddb8-4d0a-a178-d84d51e31c0a"/>
@@ -293,56 +293,46 @@
 				<textFieldExpression><![CDATA["PO BOX 1177"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="8" y="9" width="140" height="15" uuid="7fd1e4c2-8511-4e79-bd2c-292dfd3b0b70"/>
+				<reportElement x="8" y="-2" width="140" height="15" uuid="7fd1e4c2-8511-4e79-bd2c-292dfd3b0b70"/>
 				<textElement>
 					<font fontName="MyArial" size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA["CLAYTON VIC 3169"]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="154" y="43" width="223" height="1" uuid="fc0f367d-a0be-4d9b-b0ca-8aecc6f7ee5c"/>
+				<reportElement x="0" y="43" width="378" height="1" uuid="fc0f367d-a0be-4d9b-b0ca-8aecc6f7ee5c"/>
 			</line>
 			<staticText>
-				<reportElement x="159" y="45" width="38" height="11" uuid="c6b92165-89fc-4b03-b7b8-ed2df3c5bdee"/>
+				<reportElement x="4" y="45" width="38" height="11" uuid="c6b92165-89fc-4b03-b7b8-ed2df3c5bdee"/>
 				<textElement>
 					<font fontName="MyArial" size="8"/>
 				</textElement>
 				<text><![CDATA[Order No:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="196" y="45" width="149" height="11" uuid="8a4b12e3-a01e-40fe-b4f5-2e626ce1e552"/>
+				<reportElement x="41" y="45" width="149" height="11" uuid="8a4b12e3-a01e-40fe-b4f5-2e626ce1e552"/>
 				<textElement>
 					<font fontName="MyArial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{referenceNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="159" y="55" width="38" height="12" uuid="bed2a0d1-e188-4cf8-930c-9722cdb00f1b"/>
+				<reportElement x="4" y="55" width="38" height="12" uuid="bed2a0d1-e188-4cf8-930c-9722cdb00f1b"/>
 				<textElement>
 					<font fontName="MyArial" size="8"/>
 				</textElement>
 				<text><![CDATA[SKU No:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="196" y="55" width="150" height="12" uuid="7c9c8dd3-77f7-46c6-980b-ff0c3f3125e2"/>
+				<reportElement x="41" y="55" width="150" height="12" uuid="7c9c8dd3-77f7-46c6-980b-ff0c3f3125e2"/>
 				<textElement>
 					<font fontName="MyArial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{sku}]]></textFieldExpression>
 			</textField>
-			<componentElement>
-				<reportElement stretchType="RelativeToTallestObject" x="160" y="-33" width="212" height="88" uuid="116ec055-854a-4be1-bfa2-034e05e39482"/>
-				<c:Code128 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" moduleWidth="2.0" textPosition="none" verticalQuietZone="0.0">
-					<c:codeExpression><![CDATA[$F{referenceNumber}]]></c:codeExpression>
-				</c:Code128>
-			</componentElement>
-			<staticText>
-				<reportElement x="173" y="-49" width="171" height="15" uuid="dbf9dc22-7f03-4f3d-ae46-4b8293b51a35"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="11"/>
-				</textElement>
-				<text><![CDATA[Customer Use Only]]></text>
-			</staticText>
+			<line>
+				<reportElement x="1" y="-73" width="378" height="1" uuid="7af608af-9132-4f7b-967c-e650917f415b"/>
+			</line>
 		</band>
 	</pageFooter>
 </jasperReport>
