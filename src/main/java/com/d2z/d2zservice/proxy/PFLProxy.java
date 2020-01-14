@@ -49,7 +49,7 @@ public class PFLProxy {
 			SECRET_KEY = "3VXSOS7WUSF4DS6V5LXS8ER14KR2TMP6";
 			Token = "QT6P9I85LHETLYP43G7J440GD6W77TFX";
 		}
-		String authorizationHeader = hmacGenerator.calculatePFLHMAC(SECRET_KEY,"/app/services/multicourier/createorder");
+		String authorizationHeader = hmacGenerator.calculatePFLHMAC(SECRET_KEY,"/app/services/multicourier/createorder",Token);
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -108,7 +108,7 @@ public class PFLProxy {
 		 Token = "QT6P9I85LHETLYP43G7J440GD6W77TFX";
 		}
 		String authorizationHeader = hmacGenerator.calculatePFLHMAC(SECRET_KEY,
-				"/app/services/multicourier/submit");
+				"/app/services/multicourier/submit",Token);
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -169,7 +169,7 @@ public class PFLProxy {
 		}
 		
 		String authorizationHeader = hmacGenerator.calculatePFLHMAC(SECRET_KEY,
-				"/app/services/multicourier/deleteorder");
+				"/app/services/multicourier/deleteorder",Token);
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -221,7 +221,7 @@ public class PFLProxy {
 		String SECRET_KEY = "3VXSOS7WUSF4DS6V5LXS8ER14KR2TMP6";
 		String Token = "QT6P9I85LHETLYP43G7J440GD6W77TFX";
 		String authorizationHeader = hmacGenerator.calculatePFLHMAC(SECRET_KEY,
-				"/app/services/multicourier/track");
+				"/app/services/multicourier/track",Token);
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(MediaType.APPLICATION_JSON);

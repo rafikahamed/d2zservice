@@ -864,6 +864,10 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				trackingLabel.setReturnAddress1(trackingArray[23].toString());
 			if (trackingArray[24] != null)
 				trackingLabel.setReturnAddress2(trackingArray[24].toString());
+			if (trackingArray[25] != null)
+				trackingLabel.setProductDescription(trackingArray[25].toString());
+			if (trackingArray[26] != null)
+				trackingLabel.setServiceType(trackingArray[26].toString());
 			boolean setGS1DataType = false;
 			if(trackingLabel.getCarrier().equalsIgnoreCase("Express") || trackingLabel.getCarrier().equalsIgnoreCase("eParcel")) {
 				setGS1DataType = true;
