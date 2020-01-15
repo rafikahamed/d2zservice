@@ -35,7 +35,7 @@ public class PflHeaderRequestInterceptor implements ClientHttpRequestInterceptor
 	//	String SECRET_KEY = "79db9e5OEeOpvgAVXUFWSD";
 		String SECRET_KEY = "3VXSOS7WUSF4DS6V5LXS8ER14KR2TMP6";
 		String Token ="QT6P9I85LHETLYP43G7J440GD6W77TFX";
-		String authorizationHeader = hmacGenerator.calculatePFLHMAC(SECRET_KEY,"/app/services/multicourier/createorder");
+		String authorizationHeader = hmacGenerator.calculatePFLHMAC(SECRET_KEY,"/app/services/multicourier/createorder",Token);
         	System.out.println("Before calling");
         	 System.out.println(Token+":"+authorizationHeader);
     	 HttpHeaders headers = request.getHeaders();

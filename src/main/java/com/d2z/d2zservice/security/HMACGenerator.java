@@ -38,9 +38,9 @@ public class HMACGenerator {
 		}
 	
 	
-	public static String calculatePFLHMAC(String key,String url) {
+	public static String calculatePFLHMAC(String key,String url,String Token) {
 		String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
-		String Token ="QT6P9I85LHETLYP43G7J440GD6W77TFX";
+		//String Token ="QT6P9I85LHETLYP43G7J440GD6W77TFX";
 		
 	/*	 ZoneId singaporeZoneId = ZoneId.of("Australia/Sydney");
 	        System.out.println("TimeZone : " + singaporeZoneId);
