@@ -227,7 +227,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			//d2zValidator.isPostCodeValidUI(orderDetailList);
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(orderDetailList,senderDataResponseList);
 			return senderDataResponseList;
-		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType)) {
+		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType) || "1PS4".equalsIgnoreCase(serviceType)) {
 			if(isPostcodeValidationReq) {
 			d2zValidator.isFWPostCodeUIValid(orderDetailList);
 			}
@@ -1012,7 +1012,7 @@ else
 			 System.out.print("servicetype:"+serviceType);
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			return senderDataResponseList;
-		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType)) {
+		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType) || "1PS4".equalsIgnoreCase(serviceType)) {
 			if(isPostcodeValidationReq) {
 			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
 			}

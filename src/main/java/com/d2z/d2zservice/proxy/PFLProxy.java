@@ -37,7 +37,8 @@ public class PFLProxy {
 		String Token = null;
 		PFLCreateShippingResponse response = null;
 		String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
-		String url = baseURL + "/app/services/multicourier/createorder";
+		String uri = "/app/services/multicourier/createorder";
+		
 		SimpleDateFormat currentDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
 		currentDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String currentDate = currentDateFormat.format(new Date());
@@ -45,11 +46,17 @@ public class PFLProxy {
 		if("FW".equalsIgnoreCase(serviceType)) {
 			SECRET_KEY = "U00T659VKM1YBHJGFE9SC326EHFKWE7B";
 			Token = "FVJMJGYLC74QIAGRPJREJBAHOQZ3H0LM";
+		}
+		else if("1PS4".equalsIgnoreCase(serviceType)){
+			uri = "/app/services/eparcels/createorder";
+			SECRET_KEY = "U00T659VKM1YBHJGFE9SC326EHFKWE7B";
+			Token = "FVJMJGYLC74QIAGRPJREJBAHOQZ3H0LM";
 		}else {
 			SECRET_KEY = "3VXSOS7WUSF4DS6V5LXS8ER14KR2TMP6";
 			Token = "QT6P9I85LHETLYP43G7J440GD6W77TFX";
 		}
-		String authorizationHeader = hmacGenerator.calculatePFLHMAC(SECRET_KEY,"/app/services/multicourier/createorder",Token);
+		String url = baseURL + uri;
+		String authorizationHeader = hmacGenerator.calculatePFLHMAC(SECRET_KEY,uri,Token);
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -89,7 +96,8 @@ public class PFLProxy {
 	}
 
 	public PFLSubmitOrderResponse createSubmitOrderPFL(PFLSubmitOrderRequest orderIds, String serviceType) {
-		String url = baseURL + "/app/services/multicourier/submit";
+		
+		String uri = "/app/services/multicourier/submit";
 		RestTemplate template = new RestTemplate();
 		String jsonResponse = null;
 		PFLSubmitOrderResponse response = null;
@@ -103,12 +111,18 @@ public class PFLProxy {
 		if("FW".equalsIgnoreCase(serviceType)) {
 			SECRET_KEY = "U00T659VKM1YBHJGFE9SC326EHFKWE7B";
 			Token = "FVJMJGYLC74QIAGRPJREJBAHOQZ3H0LM";
+		}else if("1PS4".equalsIgnoreCase(serviceType)){
+			uri = "/app/services/eparcels/submit";
+			SECRET_KEY = "U00T659VKM1YBHJGFE9SC326EHFKWE7B";
+			Token = "FVJMJGYLC74QIAGRPJREJBAHOQZ3H0LM";
 		}else {
 		 SECRET_KEY = "3VXSOS7WUSF4DS6V5LXS8ER14KR2TMP6";
 		 Token = "QT6P9I85LHETLYP43G7J440GD6W77TFX";
 		}
+		String url = baseURL + uri;
+
 		String authorizationHeader = hmacGenerator.calculatePFLHMAC(SECRET_KEY,
-				"/app/services/multicourier/submit",Token);
+				uri,Token);
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentType(MediaType.APPLICATION_JSON);
