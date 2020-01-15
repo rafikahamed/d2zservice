@@ -1647,7 +1647,29 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 			shipmemntCharge.setPcs(incomingJobDetails.getPiece());
 			shipmemntCharge.setWeight(incomingJobDetails.getWeight());
 			shipmemntCharge.setHawb(incomingJobDetails.getHawb());
-			if(incomingJobDetails.getBroker().equalsIgnoreCase("NEXB") && incomingJobDetails.getConsignee().equalsIgnoreCase("BLUE")){
+			
+//			if(incomingJobDetails.getBroker().equalsIgnoreCase("NEXB") && incomingJobDetails.getConsignee().equalsIgnoreCase("BLUE")){
+//				Double processNexb = Double.valueOf(incomingJobDetails.getWeight())*(0.22);
+//				shipmemntCharge.setProcess(Double.valueOf(twoDForm.format(processNexb)));
+//				Double pickUpCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.175)) > 90.75 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.175)) : 90.75;
+//				shipmemntCharge.setPickUp(Double.valueOf(twoDForm.format(pickUpCharge)));
+//				shipmemntCharge.setDocs(57.75);
+//				Double airportChargeNexb = Double.valueOf(incomingJobDetails.getWeight())*(0.5775);
+//				shipmemntCharge.setAirport(Double.valueOf(twoDForm.format(airportChargeNexb)));
+//				Double totalNexb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
+//				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalNexb)));
+//			}else if(incomingJobDetails.getBroker().equalsIgnoreCase("VELB") && incomingJobDetails.getConsignee().equalsIgnoreCase("BLUE")){
+//				shipmemntCharge.setProcess((double) 0);
+//				Double pickUpChargeVelb = (Double.valueOf(incomingJobDetails.getWeight())*(0.15)) > 70 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.15)) : 70;
+//				shipmemntCharge.setPickUp(Double.valueOf(twoDForm.format(pickUpChargeVelb)));
+//				shipmemntCharge.setDocs(60.00);
+//				Double airportChargeVelb = Double.valueOf(incomingJobDetails.getWeight())*(0.60);
+//				shipmemntCharge.setAirport(Double.valueOf(twoDForm.format(airportChargeVelb)));
+//				Double totalVelb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
+//				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalVelb)));
+//			}
+			
+			if(incomingJobDetails.getBroker().equalsIgnoreCase("VELB") && incomingJobDetails.getConsignee().equalsIgnoreCase("PCA")) {
 				Double processNexb = Double.valueOf(incomingJobDetails.getWeight())*(0.22);
 				shipmemntCharge.setProcess(Double.valueOf(twoDForm.format(processNexb)));
 				Double pickUpCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.175)) > 90.75 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.175)) : 90.75;
@@ -1657,22 +1679,28 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 				shipmemntCharge.setAirport(Double.valueOf(twoDForm.format(airportChargeNexb)));
 				Double totalNexb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
 				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalNexb)));
-			}else if(incomingJobDetails.getBroker().equalsIgnoreCase("VELB") && incomingJobDetails.getConsignee().equalsIgnoreCase("BLUE")){
+			}else if(incomingJobDetails.getBroker().equalsIgnoreCase("VELB") && incomingJobDetails.getConsignee().equalsIgnoreCase("AMI")) {
 				shipmemntCharge.setProcess((double) 0);
-				Double pickUpChargeVelb = (Double.valueOf(incomingJobDetails.getWeight())*(0.15)) > 70 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.15)) : 70;
-				shipmemntCharge.setPickUp(Double.valueOf(twoDForm.format(pickUpChargeVelb)));
-				shipmemntCharge.setDocs(60.00);
-				Double airportChargeVelb = Double.valueOf(incomingJobDetails.getWeight())*(0.60);
-				shipmemntCharge.setAirport(Double.valueOf(twoDForm.format(airportChargeVelb)));
-				Double totalVelb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
-				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalVelb)));
+				shipmemntCharge.setPickUp((double) 160);
+				shipmemntCharge.setDocs((double) 60);
+				shipmemntCharge.setAirport((double) 60);
+				Double totalRmfb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
+				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalRmfb)));
 			}else if(incomingJobDetails.getBroker().equalsIgnoreCase("RMFB") && incomingJobDetails.getConsignee().equalsIgnoreCase("D2Z")) {
-				shipmemntCharge.setProcess((double) 25);
+				shipmemntCharge.setProcess((double)25);
 				shipmemntCharge.setPickUp((double) 0);
 				shipmemntCharge.setDocs((double) 0);
 				shipmemntCharge.setAirport((double) 0);
 				Double totalRmfb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
 				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalRmfb)));
+			}else if(incomingJobDetails.getBroker().equalsIgnoreCase("GPXB") && incomingJobDetails.getConsignee().equalsIgnoreCase("PCA")) {
+				Double processNexb = Double.valueOf(incomingJobDetails.getWeight())*(0.88);
+				shipmemntCharge.setProcess(Double.valueOf(twoDForm.format(processNexb)));
+				shipmemntCharge.setPickUp((double) 0);
+				shipmemntCharge.setDocs((double) 60);
+				shipmemntCharge.setAirport((double) 0);
+				Double totalNexb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
+				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalNexb)));
 			}
 			shipmentChargesList.add(shipmemntCharge);
 		}
