@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1604,7 +1605,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 
 		String[] articleNbrs = articleid.split(",");
 		ResponseMessage userMsg = new ResponseMessage();
-	    List<String> articleIds = Arrays.asList(articleNbrs);
+	    List<String> articleIds = new LinkedList<String>(Arrays.asList(articleNbrs));
 		List<String> refNumbers = d2zDao.fetchRefnobyArticle(articleIds);
 	    System.out.println("refno"+refNumbers.size());
 		List<SenderdataMaster> consignments = d2zDao.fetchConsignmentsByRefNbr(refNumbers);
@@ -1632,7 +1633,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		toAllocate.removeAll(allocateddata);
 		
         //Updating new Airbill number and inserting into track and trace
-		  
+		if(!toAllocate.isEmpty()) {
 		d2zDao.allocateShipment(toAllocate.stream().collect(Collectors.joining(",")), shipmentNumber);
 		
 		//Updating invoicing table
@@ -1676,6 +1677,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	        	 }
 	        }};
 	        new Thread(freipost).start();
+		}
 	    return userMsg;
 	    }
 	@Override
