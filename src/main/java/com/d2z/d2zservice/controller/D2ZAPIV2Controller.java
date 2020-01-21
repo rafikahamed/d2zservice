@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.d2z.d2zservice.exception.EtowerFailureResponseException;
+import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.MaxSizeCountException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
@@ -39,7 +39,7 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIV2Controller.class);
 private  ID2ZAPIService d2zApiService;
 
 @RequestMapping(method = RequestMethod.POST, path = "/consignments-create")
-public ResponseEntity<Object> createConsignments(@Valid @RequestBody CreateConsignmentRequest orderDetail,Errors errors) throws EtowerFailureResponseException {
+public ResponseEntity<Object> createConsignments(@Valid @RequestBody CreateConsignmentRequest orderDetail,Errors errors) throws FailureResponseException {
 	List<SenderDataResponse> responseList = new ArrayList<SenderDataResponse>();
 	CreateConsignmentResponse response = new CreateConsignmentResponse();
 	Map<String,List<ErrorDetails>> errorMap = new HashMap<String,List<ErrorDetails>>();

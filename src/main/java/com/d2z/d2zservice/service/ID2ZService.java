@@ -7,7 +7,7 @@ import javax.validation.Valid;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
-import com.d2z.d2zservice.exception.EtowerFailureResponseException;
+import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.exception.PCAlabelException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.APIRatesRequest;
@@ -35,7 +35,7 @@ import com.d2z.d2zservice.model.UserMessage;
 public interface ID2ZService {
 	
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) 
-			throws ReferenceNumberNotUniqueException, EtowerFailureResponseException;
+			throws ReferenceNumberNotUniqueException, FailureResponseException;
 
 	public List<DropDownModel> fileList(Integer userId);
 	
@@ -56,7 +56,7 @@ public interface ID2ZService {
 	List<TrackParcel> trackParcelByRefNbr(List<String> referenceNumbers);
 
 	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail, List<String> autoShipRefNbrs) 
-			throws ReferenceNumberNotUniqueException, EtowerFailureResponseException;
+			throws ReferenceNumberNotUniqueException, FailureResponseException;
 
 	public List<TrackParcel> trackParcelByArticleID(List<String> articleIDs);
 

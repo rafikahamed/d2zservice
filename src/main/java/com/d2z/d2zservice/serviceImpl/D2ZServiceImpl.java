@@ -53,7 +53,7 @@ import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
-import com.d2z.d2zservice.exception.EtowerFailureResponseException;
+import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.MaxSizeCountException;
 import com.d2z.d2zservice.exception.PCAlabelException;
@@ -202,7 +202,7 @@ public class D2ZServiceImpl implements ID2ZService {
 
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) 
-					throws ReferenceNumberNotUniqueException, EtowerFailureResponseException{
+					throws ReferenceNumberNotUniqueException, FailureResponseException{
 		List<String> incomingRefNbr = orderDetailList.stream().map(obj -> {
 			return obj.getReferenceNumber(); })
 				.collect(Collectors.toList());
@@ -213,9 +213,7 @@ public class D2ZServiceImpl implements ID2ZService {
 
 		d2zValidator.isReferenceNumberUniqueUI(incomingRefNbr);
 		d2zValidator.isServiceValidUI(orderDetailList);
-		if(isPostcodeValidationReq) {
-		d2zValidator.isPostCodeValidUI(orderDetailList);
-		}
+		
 		d2zValidator.isAddressValidUI(orderDetailList);
 
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
@@ -224,12 +222,19 @@ public class D2ZServiceImpl implements ID2ZService {
 		if("1PM3E".equalsIgnoreCase(serviceType) 
 				|| "1PS3".equalsIgnoreCase(serviceType) 
 				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
-			//d2zValidator.isPostCodeValidUI(orderDetailList);
+			if(isPostcodeValidationReq) {
+				d2zValidator.isPostCodeValidUI(orderDetailList);
+				}
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(orderDetailList,senderDataResponseList);
 			return senderDataResponseList;
 		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType) || "1PS4".equalsIgnoreCase(serviceType)) {
 			if(isPostcodeValidationReq) {
-			d2zValidator.isFWPostCodeUIValid(orderDetailList);
+				if("1PS4".equalsIgnoreCase(serviceType)) {
+						d2zValidator.isPostCodeValidUI(orderDetailList);
+						
+				}else {
+					d2zValidator.isFWPostCodeUIValid(orderDetailList);
+				}
 			}
 			makeCreateShippingOrderFilePFLCall(orderDetailList,senderDataResponseList,null,serviceType);
 			return senderDataResponseList;
@@ -255,7 +260,9 @@ public class D2ZServiceImpl implements ID2ZService {
 			}
 			
 			if(consignmentData.getNonPflSenderDataApi().size() > 0 && !"STS".equalsIgnoreCase(serviceType)) {
-				//d2zValidator.isPostCodeValidUI(orderDetailList);
+				if(isPostcodeValidationReq) {
+					d2zValidator.isPostCodeValidUI(orderDetailList);
+					}
 				String senderFileID  = d2zDao.exportParcel(consignmentData.getNonPflSenderDataApi(),null);
 				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 				Iterator itr = insertedOrder.iterator();
@@ -271,7 +278,9 @@ public class D2ZServiceImpl implements ID2ZService {
 			}
 			return senderDataResponseList;
 		}
-		//d2zValidator.isPostCodeValidUI(orderDetailList);
+		if(isPostcodeValidationReq) {
+			d2zValidator.isPostCodeValidUI(orderDetailList);
+			}
 		String senderFileID  = d2zDao.exportParcel(orderDetailList,null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		Iterator itr = insertedOrder.iterator();
@@ -976,7 +985,7 @@ else
 
 	@Override
 	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail,List<String> autoShipRefNbrs) throws 
-		ReferenceNumberNotUniqueException, EtowerFailureResponseException {
+		ReferenceNumberNotUniqueException, FailureResponseException {
 		Integer userId = userRepository.fetchUserIdbyUserName(orderDetail.getUserName());
 		if (userId == null) {
 			throw new InvalidUserException("User does not exist", orderDetail.getUserName());
@@ -994,9 +1003,7 @@ else
 				.collect(Collectors.toList());
 		d2zValidator.isReferenceNumberUnique(incomingRefNbr);
 		d2zValidator.isServiceValid(orderDetail);
-		if(isPostcodeValidationReq) {
-		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
-		}
+		
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 		boolean autoShipment = false;
@@ -1008,13 +1015,20 @@ else
 	    if( "1PM3E".equalsIgnoreCase(serviceType) 
 				|| "1PS3".equalsIgnoreCase(serviceType) 
 				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
-		//	d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+	    	if(isPostcodeValidationReq) {
+	    		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+	    		}
 			 System.out.print("servicetype:"+serviceType);
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			return senderDataResponseList;
 		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType) || "1PS4".equalsIgnoreCase(serviceType)) {
 			if(isPostcodeValidationReq) {
-			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
+				if("1PS4".equalsIgnoreCase(serviceType)) {
+						d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+						
+				}else {
+					d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
+				}
 			}
 			makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(),serviceType);
 			return senderDataResponseList;
@@ -1042,7 +1056,9 @@ else
 			}
 			
 			if(consignmentData.getNonPflSenderDataApi().size() > 0 && !"STS".equalsIgnoreCase(serviceType)) {
-			//	d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+				if(isPostcodeValidationReq) {
+		    		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+		    		}
 				String senderFileID = d2zDao.createConsignments(consignmentData.getNonPflSenderDataApi(), userId, orderDetail.getUserName(), null);
 				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 				Iterator itr = insertedOrder.iterator();
@@ -1081,7 +1097,9 @@ else
 				&& datamatrix!=null && !datamatrix.trim().isEmpty()){
 		autoShipment =("Y").equals(userRepository.fetchAutoShipmentIndicator(userId));
 		}
-		
+	    if(isPostcodeValidationReq) {
+    		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+    		}
 		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(), userId, orderDetail.getUserName(), null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		
@@ -1107,7 +1125,7 @@ else
 	}
 
 	private void makeCreateShippingOrderPFLCall (List<SenderDataApi> data,
-			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
+			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws FailureResponseException {
 		PflCreateShippingRequest pflRequest = new PflCreateShippingRequest();
 		Map<String, String> systemRefNbrMap = new HashMap<String, String>();
 		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
@@ -1141,7 +1159,7 @@ else
 	}
 	
 	private void makeCreateShippingOrderFilePFLCall (List<SenderData> data,
-			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
+			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws FailureResponseException {
 		PflCreateShippingRequest pflRequest = new PflCreateShippingRequest();
 		Map<String, String> systemRefNbrMap = new HashMap<String, String>();
 		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
@@ -1195,11 +1213,7 @@ else
 			
 				String msg = a.getReference_number()+" : Shippment is already allocated";
 			
-			/*if (a.getIsDeleted().equalsIgnoreCase("Y")) {
-				msg = new StringBuffer(a.getReference_number());
-				msg.append(" : Consignment already deleted");
-			}*/
-			return msg;
+				return msg;
 		}).collect(Collectors.toList());
 		if (!invalidData.isEmpty()) {
 			throw new ReferenceNumberNotUniqueException("Request failed", invalidData);
@@ -1218,6 +1232,12 @@ else
 		Runnable freipost = new Runnable( ) {			
 	        public void run() {
 	        	String[] refNbrArray = referenceNumbers.split(",");
+
+	        	 List<String> articleIDS = d2zDao.fetchDataForEtowerForeCastCall(refNbrs);
+	        	 if(!articleIDS.isEmpty()) {
+	        		 eTowerWrapper.makeEtowerForecastCall(articleIDS);
+	        	 }
+	        	
 	        	List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
 	        	if(!senderMasterData.isEmpty()) {
 	        		freipostWrapper.uploadManifestService(senderMasterData);
@@ -1227,26 +1247,22 @@ else
 	        	if(!pcaData.isEmpty()) {
 	        		try {
 						pcaWrapper.makeCreateShippingOrderPCACall(pcaData);
-					} catch (EtowerFailureResponseException e) {
+					} catch (FailureResponseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 	        	}
-	        	
+	        
 	        	List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
 	        	String serviceType = d2zDao.fetchServiceTypeByRefNbr(refNbrs[0]);
 	        	 if(!fastwayOrderId.isEmpty()) {
 	        		 try {
 						pflWrapper.createSubmitOrderPFL(fastwayOrderId,serviceType);
-					} catch (EtowerFailureResponseException e) {
+					} catch (FailureResponseException e) {
 						e.printStackTrace();
 					}
 	        	 }
 	        
-	        	 List<String> articleIDS = d2zDao.fetchDataForEtowerForeCastCall(refNbrs);
-	        	 if(!articleIDS.isEmpty()) {
-	        		 eTowerWrapper.makeEtowerForecastCall(articleIDS);
-	        	 }
 	        }};
 	        new Thread(freipost).start();
 	        
@@ -2084,7 +2100,7 @@ else
 			if(pcaArticleid.size() > 0) {
 				pcaWrapper.deletePcaOrder(pcaArticleid);
 			}
-		} catch (EtowerFailureResponseException e) {
+		} catch (FailureResponseException e) {
 			e.printStackTrace();
 		}
 	}

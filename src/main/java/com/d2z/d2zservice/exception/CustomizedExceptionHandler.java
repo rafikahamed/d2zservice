@@ -95,8 +95,8 @@ public class CustomizedExceptionHandler extends ResponseEntityExceptionHandler {
 			    return new ResponseEntity<Object>(
 			    		errorResponse, new HttpHeaders(), errorResponse.getStatus());
 	  }
-	 @ExceptionHandler(EtowerFailureResponseException.class)
-	  public final ResponseEntity<Object> handleEtowerFailureResponseException(InvalidDateException ex, WebRequest request) {
+	 @ExceptionHandler(FailureResponseException.class)
+	  public final ResponseEntity<Object> handleFailureResponseException(InvalidDateException ex, WebRequest request) {
 		 ErrorResponse errorResponse = 
 			      new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), null);
 			    return new ResponseEntity<Object>(

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.d2z.d2zservice.exception.EtowerFailureResponseException;
+import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.exception.PCAlabelException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.APIRatesRequest;
@@ -53,7 +53,7 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 	@Autowired
 	private UserRepository userRepository;
 	
-	@RequestMapping( method = RequestMethod.GET, path = "/trackParcels")
+	@RequestMapping( method = RequestMethod.PUT, path = "/trackParcels")
     public List<TrackParcelResponse> trackParcels(@RequestBody List<String> articleIds) {
 		List<TrackParcelResponse> trackParcelResponse = new ArrayList<TrackParcelResponse>();
 		try{
@@ -79,7 +79,7 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
     }
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/consignments-create")
-	 public List<SenderDataResponse> createConsignments(@Valid @RequestBody CreateConsignmentRequest orderDetail) throws ReferenceNumberNotUniqueException, EtowerFailureResponseException {
+	 public List<SenderDataResponse> createConsignments(@Valid @RequestBody CreateConsignmentRequest orderDetail) throws ReferenceNumberNotUniqueException, FailureResponseException {
 		List<String> autoShipRefNbrs = new ArrayList<String>();
 		List<SenderDataResponse> senderDataResponse = d2zService.createConsignments(orderDetail,autoShipRefNbrs);
 		 Runnable r = new Runnable( ) {			

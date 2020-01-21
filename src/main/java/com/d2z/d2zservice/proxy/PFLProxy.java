@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+
+import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.model.PFLCreateShippingResponse;
 import com.d2z.d2zservice.model.PFLSubmitOrderRequest;
 import com.d2z.d2zservice.model.PFLSubmitOrderResponse;
@@ -30,7 +32,7 @@ public class PFLProxy {
 	String baseURL = "http://103.225.160.46";
 	HMACGenerator hmacGenerator = new HMACGenerator();
 
-	public PFLCreateShippingResponse makeCallForCreateShippingOrder(PflCreateShippingRequest request,String serviceType) {
+	public PFLCreateShippingResponse makeCallForCreateShippingOrder(PflCreateShippingRequest request,String serviceType) throws FailureResponseException {
 		RestTemplate template = new RestTemplate();
 		String jsonResponse = null;
 		String SECRET_KEY = null;
@@ -90,6 +92,7 @@ public class PFLProxy {
 			System.out.println("error code :" + e.getStatusCode());
 			jsonResponse = e.getResponseBodyAsString();
 			System.out.println(jsonResponse);
+			 throw new FailureResponseException("Failed. Please contact D2Z");
 		}
 		System.out.println("Response :: " + jsonResponse);
 		return response;
