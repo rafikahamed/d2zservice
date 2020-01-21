@@ -1701,6 +1701,14 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 				shipmemntCharge.setAirport((double) 0);
 				Double totalNexb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
 				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalNexb)));
+			}else if(incomingJobDetails.getBroker().equalsIgnoreCase("5ULB") && incomingJobDetails.getConsignee().equalsIgnoreCase("PFL")) {
+				Double processNexb = Double.valueOf(incomingJobDetails.getWeight())*(0.85);
+				shipmemntCharge.setProcess(Double.valueOf(twoDForm.format(processNexb)));
+				shipmemntCharge.setPickUp((double) 0);
+				shipmemntCharge.setDocs((double) 60);
+				shipmemntCharge.setAirport((double) 0);
+				Double totalNexb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
+				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalNexb)));
 			}
 			shipmentChargesList.add(shipmemntCharge);
 		}
