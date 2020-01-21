@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.SenderdataMaster;
-import com.d2z.d2zservice.exception.EtowerFailureResponseException;
+import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.model.PCACancelRequest;
 import com.d2z.d2zservice.model.PCAConsignee;
 import com.d2z.d2zservice.model.PCACreateShipmentRequest;
@@ -50,7 +50,7 @@ public class PCAWrapper {
 	private ID2ZDao d2zDao;
 
 	public void makeCreateShippingOrderPFACall(List<SenderDataApi> consignmentData,
-			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
+			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws FailureResponseException {
 		System.out.println("comes in pfa call");
 		Map<String, String> systemRefNbrMap = new HashMap<String, String>();
 		PCACreateShipmentRequest pcaRequest = new PCACreateShipmentRequest();
@@ -138,7 +138,7 @@ public class PCAWrapper {
 		pcaRequest.setShipments(pcaOrderInfoRequest);
 		createShippingOrderPCA(consignmentData, pcaRequest, userName, senderDataResponseList, chargeType, matrixMap,systemRefNbrMap);
 	}
-	public void makeCreateShippingOrderPCACall(List<SenderdataMaster> consignmentData) throws EtowerFailureResponseException {
+	public void makeCreateShippingOrderPCACall(List<SenderdataMaster> consignmentData) throws FailureResponseException {
 		System.out.println("comes in pfa call");
 		PCACreateShipmentRequest pcaRequest = new PCACreateShipmentRequest();
 		List<PCACreateShipmentRequestInfo> pcaOrderInfoRequest = new ArrayList<PCACreateShipmentRequestInfo>();
@@ -221,13 +221,13 @@ public class PCAWrapper {
 		createShippingOrderPCA( pcaRequest);
 	}
 
-	private void createShippingOrderPCA(PCACreateShipmentRequest pcaRequest) throws EtowerFailureResponseException {
+	private void createShippingOrderPCA(PCACreateShipmentRequest pcaRequest) throws FailureResponseException {
 		List<PCACreateShippingResponse> pcaResponse = pcaProxy.makeCallForCreateShippingOrder(pcaRequest);
 		logPcaCreateResponse(pcaResponse);
 		
 	}
 	private void createShippingOrderPCA(List<SenderDataApi> consignmentData, PCACreateShipmentRequest pcaRequest,
-			String userName, List<SenderDataResponse> senderDataResponseList, String chargeType, Map<String, String> matrixMap,Map<String, String> systemRefNbrMap) throws EtowerFailureResponseException {
+			String userName, List<SenderDataResponse> senderDataResponseList, String chargeType, Map<String, String> matrixMap,Map<String, String> systemRefNbrMap) throws FailureResponseException {
 		System.out.print("comes in pcs");
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		List<PCACreateShippingResponse> pcaResponse = pcaProxy.makeCallForCreateShippingOrder(pcaRequest);
@@ -328,7 +328,7 @@ public class PCAWrapper {
 	}
 
 	public void makeCreateShippingOrderFilePCACall(List<SenderData> orderDetailList,
-			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
+			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType)  {
 		PCACreateShipmentRequest pcaRequest = new PCACreateShipmentRequest();
 		Map<String, String> systemRefNbrMap = new HashMap<String, String>();
 		List<PCACreateShipmentRequestInfo> pcaOrderInfoRequest = new ArrayList<PCACreateShipmentRequestInfo>();
@@ -417,7 +417,7 @@ public class PCAWrapper {
 	}
 
 	private void createShippingOrderFilePCA(List<SenderData> orderDetailList, PCACreateShipmentRequest pcaRequest,
-			String userName, List<SenderDataResponse> senderDataResponseList, String chargeType, Map<String, String> matrixMap, Map<String, String> systemRefNbrMap) throws EtowerFailureResponseException {
+			String userName, List<SenderDataResponse> senderDataResponseList, String chargeType, Map<String, String> matrixMap, Map<String, String> systemRefNbrMap) {
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		List<PCACreateShippingResponse> pcaResponse = pcaProxy.makeCallForCreateShippingOrder(pcaRequest);
 		logPcaCreateResponse(pcaResponse);
@@ -475,7 +475,7 @@ public class PCAWrapper {
 		}
 	}
 	
-	private void logPcaCreateResponse(List<PCACreateShippingResponse> pcaResponse)throws EtowerFailureResponseException {
+	private void logPcaCreateResponse(List<PCACreateShippingResponse> pcaResponse){
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 		if(pcaResponse != null) {
 			for(PCACreateShippingResponse pcaData: pcaResponse) {

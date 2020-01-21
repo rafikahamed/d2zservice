@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
-import com.d2z.d2zservice.exception.EtowerFailureResponseException;
+import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.MaxSizeCountException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
@@ -53,7 +53,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 
 	
 	@Override
-	public void createConsignments(CreateConsignmentRequest orderDetail,  List<SenderDataResponse> senderDataResponseList ,Map<String, List<ErrorDetails>> errorMap) throws EtowerFailureResponseException {
+	public void createConsignments(CreateConsignmentRequest orderDetail,  List<SenderDataResponse> senderDataResponseList ,Map<String, List<ErrorDetails>> errorMap) throws FailureResponseException {
 		
 		Integer userId = userRepository.fetchUserIdbyUserName(orderDetail.getUserName());
 		if (userId == null) {
@@ -87,15 +87,22 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 	    if( "1PM3E".equalsIgnoreCase(serviceType) 
 				|| "1PS3".equalsIgnoreCase(serviceType) 
 				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
-			//d2zValidator.isPostCodeValid(orderDetail,errorMap);
-			//ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
+	    	if(isPostcodeValidationReq) {
+	    		d2zValidator.isPostCodeValid(orderDetail,errorMap);
+	    		}			
+	    	ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 			
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			return;
 			
-		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType)) {
+		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType) || "1PS4".equalsIgnoreCase(serviceType)) {
 			if(isPostcodeValidationReq) {
-			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData(),errorMap);
+				if("1PS4".equalsIgnoreCase(serviceType)) {
+						d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+						
+				}else {
+					d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
+				}
 			}
 			ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 			if(orderDetail.getConsignmentData().size()>0) {
@@ -128,8 +135,10 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			}
 			
 			if(consignmentData.getNonPflSenderDataApi().size() > 0 && !"STS".equalsIgnoreCase(serviceType)) {
-				//d2zValidator.isPostCodeValid(orderDetail,errorMap);
-				//ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
+				if(isPostcodeValidationReq) {
+		    		d2zValidator.isPostCodeValid(orderDetail,errorMap);
+		    		}	
+				ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 				if(orderDetail.getConsignmentData().size()>0) {
 				String senderFileID = d2zDao.createConsignments(consignmentData.getNonPflSenderDataApi(), userId, orderDetail.getUserName(), null);
 				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
@@ -166,6 +175,10 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			}
 			return;
 		}}
+		if(isPostcodeValidationReq) {
+    		d2zValidator.isPostCodeValid(orderDetail,errorMap);
+    		}	
+		ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 		if(orderDetail.getConsignmentData().size()>0) {
 		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(), userId, orderDetail.getUserName(), null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
@@ -186,7 +199,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 	
 
 	private void makeCreateShippingOrderPFLCall (List<SenderDataApi> data,
-			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws EtowerFailureResponseException {
+			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws FailureResponseException {
 		PflCreateShippingRequest pflRequest = new PflCreateShippingRequest();
 		Map<String, String> systemRefNbrMap = new HashMap<String, String>();
 

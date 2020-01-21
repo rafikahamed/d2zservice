@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +38,7 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
-import com.d2z.d2zservice.exception.EtowerFailureResponseException;
+import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.AddShipmentModel;
@@ -1560,7 +1561,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	        	if(!pcaData.isEmpty()) {
 	        		try {
 						pcaWrapper.makeCreateShippingOrderPCACall(pcaData);
-					} catch (EtowerFailureResponseException e) {
+					} catch (FailureResponseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -1570,7 +1571,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	        	 if(!fastwayOrderId.isEmpty()) {
 	        		 try {
 						pflWrapper.createSubmitOrderPFL(fastwayOrderId);
-					} catch (EtowerFailureResponseException e) {
+					} catch (FailureResponseException e) {
 						e.printStackTrace();
 					}
 	        	 }
@@ -1604,7 +1605,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 
 		String[] articleNbrs = articleid.split(",");
 		ResponseMessage userMsg = new ResponseMessage();
-	    List<String> articleIds = Arrays.asList(articleNbrs);
+	    List<String> articleIds = new LinkedList<String>(Arrays.asList(articleNbrs));
 		List<String> refNumbers = d2zDao.fetchRefnobyArticle(articleIds);
 	    System.out.println("refno"+refNumbers.size());
 		List<SenderdataMaster> consignments = d2zDao.fetchConsignmentsByRefNbr(refNumbers);
@@ -1627,21 +1628,21 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		
 		//Updating Airbill number
 		d2zDao.updateAirwayBill(allocateddata.stream().collect(Collectors.joining(",")), shipmentNumber);
-		
+		//Updating invoicing table
+		String msg  = d2zDao.updateinvoicing(articleid,shipmentNumber);
+				  
+		if(userMsg.getResponseMessage()==null) {
+			userMsg.setResponseMessage(msg);
+		}
+				 
 		List<String> toAllocate = refNumbers;
 		toAllocate.removeAll(allocateddata);
 		
         //Updating new Airbill number and inserting into track and trace
-		  
+		if(!toAllocate.isEmpty()) {
 		d2zDao.allocateShipment(toAllocate.stream().collect(Collectors.joining(",")), shipmentNumber);
 		
-		//Updating invoicing table
-		String msg  = d2zDao.updateinvoicing(articleid,shipmentNumber);
-		  
-		if(userMsg.getResponseMessage()==null) {
-			userMsg.setResponseMessage(msg);
-		}
-		 
+		
 		Runnable freipost = new Runnable( ) {			
 	        public void run() {
 	        	String[] refNbrs = toAllocate.stream().toArray(String[] ::new);
@@ -1654,18 +1655,18 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	        	if(!pcaData.isEmpty()) {
 	        		try {
 						pcaWrapper.makeCreateShippingOrderPCACall(pcaData);
-					} catch (EtowerFailureResponseException e) {
+					} catch (FailureResponseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 	        	}
 	        	
 	        	List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
-	        	String serviceType = d2zDao.fetchServiceTypeByRefNbr(refNbrs[0]);
+	        	String serviceType = d2zDao.fetchServiceTypeByRefNbr(fastwayOrderId.get(0));
 	        	 if(!fastwayOrderId.isEmpty()) {
 	        		 try {
 						pflWrapper.createSubmitOrderPFL(fastwayOrderId,serviceType);
-					} catch (EtowerFailureResponseException e) {
+					} catch (FailureResponseException e) {
 						e.printStackTrace();
 					}
 	        	 }
@@ -1676,6 +1677,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	        	 }
 	        }};
 	        new Thread(freipost).start();
+		}
 	    return userMsg;
 	    }
 	@Override

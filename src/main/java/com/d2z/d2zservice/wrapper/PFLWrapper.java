@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.ETowerResponse;
-import com.d2z.d2zservice.exception.EtowerFailureResponseException;
+import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.model.PFLCreateShippingResponse;
 import com.d2z.d2zservice.model.PFLResponseData;
 import com.d2z.d2zservice.model.PFLSubmitOrderRequest;
@@ -34,12 +34,12 @@ public class PFLWrapper {
 	
 	public void createShippingOrderPFL(List<SenderDataApi> incomingRequest,
 			PflCreateShippingRequest PFLRequest, String userName, List<SenderDataResponse> senderDataResponseList, String serviceType, Map<String, String> systemRefNbrMap) 
-						throws EtowerFailureResponseException {
+						throws FailureResponseException {
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		PFLCreateShippingResponse pflResponse = pflProxy.makeCallForCreateShippingOrder(PFLRequest, serviceType);
 		logPflCreateResponse(pflResponse);
 		if(pflResponse==null) {
-			throw new EtowerFailureResponseException("Error in file – please contact customer support");
+			throw new FailureResponseException("Error in file – please contact customer support");
 		}else {
 			if(pflResponse.getResult() != null) {
 				processLabelsResponse(pflResponse, barcodeMap,systemRefNbrMap);
@@ -71,12 +71,12 @@ public class PFLWrapper {
 	
 	public void createShippingOrderPFLUI(List<SenderData> incomingRequest,
 			PflCreateShippingRequest PFLRequest, String userName, List<SenderDataResponse> senderDataResponseList, String serviceType, Map<String, String> systemRefNbrMap) 
-					throws EtowerFailureResponseException{
+					throws FailureResponseException{
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		PFLCreateShippingResponse pflResponse = pflProxy.makeCallForCreateShippingOrder(PFLRequest, serviceType);
 		logPflCreateResponse(pflResponse);
 		if(pflResponse==null) {
-			throw new EtowerFailureResponseException("Error in file – please contact customer support");
+			throw new FailureResponseException("Error in file – please contact customer support");
 		}else {
 			if(pflResponse.getResult() != null) {
 				processLabelsResponse(pflResponse, barcodeMap,systemRefNbrMap);
@@ -96,7 +96,7 @@ public class PFLWrapper {
 		}
 	}
 	
-	private void logPflCreateResponse(PFLCreateShippingResponse pflResponse) throws EtowerFailureResponseException {
+	private void logPflCreateResponse(PFLCreateShippingResponse pflResponse) throws FailureResponseException {
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 		if(pflResponse != null) {
 			for(PFLResponseData pflData: pflResponse.getResult()) {
@@ -109,7 +109,7 @@ public class PFLWrapper {
 					errorResponse.setStatus("Error");
 					responseEntity.add(errorResponse);
 					d2zDao.logEtowerResponse(responseEntity);
-					throw new EtowerFailureResponseException("Error in file – please contact customer support");
+					throw new FailureResponseException("Error in file – please contact customer support");
 				}else {
 					ETowerResponse errorResponse = new ETowerResponse();
 					errorResponse.setAPIName("PFL - Create order");
@@ -139,33 +139,33 @@ public class PFLWrapper {
 		return barcodeMap;
 	}
 	
-	public void createSubmitOrderPFL(List<String> orderIds, String serviceType) throws EtowerFailureResponseException {
+	public void createSubmitOrderPFL(List<String> orderIds, String serviceType) throws FailureResponseException {
 		PFLSubmitOrderRequest pflSubmitOrder = new PFLSubmitOrderRequest();
 		pflSubmitOrder.setIds(orderIds);
 		PFLSubmitOrderResponse pflSubmitResponse = pflProxy.createSubmitOrderPFL(pflSubmitOrder,serviceType);
 		logPflSubmitResponse(pflSubmitResponse, orderIds);
 		if(pflSubmitResponse==null) {
-			throw new EtowerFailureResponseException("Error in file – please contact customer support");
+			throw new FailureResponseException("Error in file – please contact customer support");
 		}else {
 			if(pflSubmitResponse.getResult() != null) {
 			}
 		}
 	}
 	
-	public void DeleteOrderPFL(List<String> orderIds, String ServiceType) throws EtowerFailureResponseException {
+	public void DeleteOrderPFL(List<String> orderIds, String ServiceType) throws FailureResponseException {
 		PFLSubmitOrderRequest pflSubmitOrder = new PFLSubmitOrderRequest();
 		pflSubmitOrder.setIds(orderIds);
 		PFLSubmitOrderResponse pflSubmitResponse = pflProxy.DeleteOrderPFL(pflSubmitOrder,ServiceType);
 		logPflDeleteResponse(pflSubmitResponse, orderIds);
 		if(pflSubmitResponse==null) {
-			throw new EtowerFailureResponseException("Error in file – please contact customer support");
+			throw new FailureResponseException("Error in file – please contact customer support");
 		}else {
 			if(pflSubmitResponse.getResult() != null) {
 			}
 		}
 	}
 
-	private void logPflSubmitResponse(PFLSubmitOrderResponse pflSubmitResponse, List<String> orderIds) throws EtowerFailureResponseException{
+	private void logPflSubmitResponse(PFLSubmitOrderResponse pflSubmitResponse, List<String> orderIds) throws FailureResponseException{
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 			if(pflSubmitResponse != null) {
 				if(pflSubmitResponse.getError() != null) {
@@ -180,7 +180,7 @@ public class PFLWrapper {
 						responseEntity.add(errorResponse);
 					}
 					d2zDao.logEtowerResponse(responseEntity);
-					throw new EtowerFailureResponseException("Error in file – please contact customer support");
+					throw new FailureResponseException("Error in file – please contact customer support");
 				}else {
 					for(String successOrder:orderIds) {
 						ETowerResponse errorResponse = new ETowerResponse();
@@ -195,7 +195,7 @@ public class PFLWrapper {
 			}
 	}
 	
-	private void logPflDeleteResponse(PFLSubmitOrderResponse pflSubmitResponse, List<String> orderIds) throws EtowerFailureResponseException{
+	private void logPflDeleteResponse(PFLSubmitOrderResponse pflSubmitResponse, List<String> orderIds) throws FailureResponseException{
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 			if(pflSubmitResponse != null) {
 				if(pflSubmitResponse.getError() != null) {
@@ -210,7 +210,7 @@ public class PFLWrapper {
 						responseEntity.add(errorResponse);
 					}
 					d2zDao.logEtowerResponse(responseEntity);
-					throw new EtowerFailureResponseException("Error in file – please contact customer support");
+					throw new FailureResponseException("Error in file – please contact customer support");
 				}else {
 					for(String successOrder:orderIds) {
 						ETowerResponse errorResponse = new ETowerResponse();

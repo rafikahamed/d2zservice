@@ -15,14 +15,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 
-import com.d2z.d2zservice.controller.D2ZAPIController;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.AUPostResponse;
@@ -38,7 +34,6 @@ import com.d2z.d2zservice.entity.SystemRefCount;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
-import com.d2z.d2zservice.exception.EtowerFailureResponseException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateEnquiryRequest;
@@ -79,10 +74,7 @@ import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
-import com.d2z.d2zservice.wrapper.ETowerWrapper;
 import com.d2z.d2zservice.wrapper.FreipostWrapper;
-import com.d2z.d2zservice.wrapper.PCAWrapper;
-import com.d2z.d2zservice.wrapper.PFLWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
@@ -142,7 +134,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 	@Autowired
 	@Lazy
 	private D2ZValidator d2zValidator;
-
+	
 	
 	
 	
@@ -206,7 +198,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
 			senderDataObj.setStatus("CONSIGNMENT CREATED");
 			senderDataObj.setInjectionType("Direct Injection");
-			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType()) || "1PME".equalsIgnoreCase(senderDataValue.getServiceType())){
+			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType()) || "1PME".equalsIgnoreCase(senderDataValue.getServiceType())
+					|| "1PSE".equalsIgnoreCase(senderDataValue.getServiceType())){
 				senderDataObj.setCarrier("Express");
 			}else{
 				senderDataObj.setCarrier("eParcel");
@@ -229,7 +222,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 				senderDataObj.setArticleId(pflLabel.getTrackingNo());
 				senderDataObj.setMlid(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
-				senderDataObj.setCarrier("FastwayM");
+				if(!"1PS4".equalsIgnoreCase(senderDataValue.getServiceType())) {
+					senderDataObj.setCarrier("FastwayM");
+					}
 			}else if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PCA") && 
 					barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData pflLabel= barcodeMap.get(senderDataValue.getReferenceNumber());
@@ -371,7 +366,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 			if(senderDataValue.getInjectionState()!=null){
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
 			}
-			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType()) || "1PME".equalsIgnoreCase(senderDataValue.getServiceType())){
+			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType()) || "1PME".equalsIgnoreCase(senderDataValue.getServiceType())
+					|| "1PSE".equalsIgnoreCase(senderDataValue.getServiceType())){
 				senderDataObj.setCarrier("Express");
 			}else{
 				senderDataObj.setCarrier("eParcel");
@@ -398,13 +394,16 @@ public class D2ZDaoImpl implements ID2ZDao{
 				senderDataObj.setArticleId(pflLabel.getTrackingNo());
 				senderDataObj.setMlid(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
+				if(!"1PS4".equalsIgnoreCase(senderDataValue.getServiceType())) {
 				senderDataObj.setCarrier("FastwayM");
+				}
 			}else if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PCA") && 
 						barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData pflLabel= barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setInjectionState(pflLabel.getHub());
 				senderDataObj.setBarcodelabelNumber(pflLabel.getTrackingNo());
-				senderDataObj.setArticleId(pflLabel.getArticleId());
+				senderDataObj.setArticleId(pflLabel.getTrackingNo());
+				senderDataObj.setMlid(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
 				senderDataObj.setCarrier(pflLabel.getCarrier());
 			}

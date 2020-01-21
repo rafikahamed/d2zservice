@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.SenderdataMaster;
-import com.d2z.d2zservice.exception.EtowerFailureResponseException;
+import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
@@ -48,7 +48,7 @@ public class ETowerWrapper {
 	private ETowerProxy eTowerProxy;
 
 	public void makeCreateShippingOrderEtowerCallForAPIData(CreateConsignmentRequest data,
-			List<SenderDataResponse> senderDataResponseList) throws EtowerFailureResponseException {
+			List<SenderDataResponse> senderDataResponseList) throws FailureResponseException {
 		Map<String, String> systemRefNbrMap = new HashMap<String, String>();
 		List<com.d2z.d2zservice.model.etower.CreateShippingRequest> eTowerRequest = constructEtowerRequestWithAPIData(data,systemRefNbrMap);
 		String status = null;
@@ -104,7 +104,7 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 	}
 
 	public void makeCreateShippingOrderEtowerCallForFileData(List<SenderData> data,
-			List<SenderDataResponse> senderDataResponseList) throws EtowerFailureResponseException {
+			List<SenderDataResponse> senderDataResponseList) throws FailureResponseException {
 		Map<String, String> systemRefNbrMap = new HashMap<String, String>();
 		List<com.d2z.d2zservice.model.etower.CreateShippingRequest> eTowerRequest = constructEtowerRequestWithFileData(
 				data,systemRefNbrMap);
@@ -413,12 +413,12 @@ s);
 
 	private String parseCreateShippingOrderResponse(CreateShippingResponse response,
 			List<SenderDataResponse> senderDataResponseList, Map<String, LabelData> barcodeMap,
-			List<String> gainLabelTrackingNo) throws EtowerFailureResponseException {
+			List<String> gainLabelTrackingNo) throws FailureResponseException {
 
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 
 		if (response == null) {
-			throw new EtowerFailureResponseException("Failed. Please contact D2Z");
+			throw new FailureResponseException("Failed. Please contact D2Z");
 		} else {
 			if (response.getStatus().equalsIgnoreCase("Success")) {
 				for (ResponseData data : response.getData()) {
@@ -489,7 +489,7 @@ s);
 					}
 				}
 				d2zDao.logEtowerResponse(responseEntity);
-				throw new EtowerFailureResponseException("Internal Server Error. Please contact D2Z");
+				throw new FailureResponseException("Internal Server Error. Please contact D2Z");
 			}
 
 		}

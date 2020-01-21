@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.SenderdataMaster;
-import com.d2z.d2zservice.exception.EtowerFailureResponseException;
+import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.exception.PCAlabelException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
@@ -53,7 +53,7 @@ public class SPCourierController {
     }
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/consignment-fileUpload")
-    public List<SenderDataResponse> consignmentFileUpload( @RequestBody List<@Valid SenderData> orderDetailList) throws ReferenceNumberNotUniqueException, EtowerFailureResponseException{
+    public List<SenderDataResponse> consignmentFileUpload( @RequestBody List<@Valid SenderData> orderDetailList) throws ReferenceNumberNotUniqueException, FailureResponseException{
 
 		List<SenderDataResponse> successMsg = d2zService.exportParcel(orderDetailList);
 		return successMsg;
