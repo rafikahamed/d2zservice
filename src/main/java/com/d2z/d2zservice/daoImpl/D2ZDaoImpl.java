@@ -198,7 +198,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
 			senderDataObj.setStatus("CONSIGNMENT CREATED");
 			senderDataObj.setInjectionType("Direct Injection");
-			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType()) || "1PME".equalsIgnoreCase(senderDataValue.getServiceType())){
+			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType()) || "1PME".equalsIgnoreCase(senderDataValue.getServiceType())
+					|| "1PSE".equalsIgnoreCase(senderDataValue.getServiceType())){
 				senderDataObj.setCarrier("Express");
 			}else{
 				senderDataObj.setCarrier("eParcel");
@@ -365,7 +366,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 			if(senderDataValue.getInjectionState()!=null){
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
 			}
-			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType()) || "1PME".equalsIgnoreCase(senderDataValue.getServiceType())){
+			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType()) || "1PME".equalsIgnoreCase(senderDataValue.getServiceType())
+					|| "1PSE".equalsIgnoreCase(senderDataValue.getServiceType())){
 				senderDataObj.setCarrier("Express");
 			}else{
 				senderDataObj.setCarrier("eParcel");
