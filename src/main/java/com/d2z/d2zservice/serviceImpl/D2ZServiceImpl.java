@@ -2340,9 +2340,7 @@ else
 		List<String> auPostArticleIds = new ArrayList<String>();
 		List<String> pcaArticleIds = new ArrayList<String>();
 		List<String> pflArticleIds = new ArrayList<String>();
-		List<String> eParcelMlids = d2zDao.fetchMlidsBasedOnSupplier("eTower");
-		List<String> auPostMlids =  d2zDao.fetchMlidsBasedOnSupplier("FDM");
-	    List<String> pcaMlids = d2zDao.fetchMlidsBasedOnSupplier("PCA");
+		
 		CompletableFuture<TrackingEventResponse> eTowerResponse = new CompletableFuture<TrackingEventResponse>();
 		CompletableFuture<TrackingResponse> auPostResponse = new CompletableFuture<TrackingResponse>();
 		CompletableFuture<String> pcaResponse = new CompletableFuture<String>(); 
@@ -2351,6 +2349,9 @@ else
 		for(String articleId : articleIds) {
 			if(articleId.length()==21 || articleId.length() == 23) {
 				String mlid = articleId.length() == 23 ? articleId.substring(0,5) : articleId.substring(0,3);
+				List<String> eParcelMlids = d2zDao.fetchMlidsBasedOnSupplier("eTower");
+				List<String> auPostMlids =  d2zDao.fetchMlidsBasedOnSupplier("FDM");
+			    List<String> pcaMlids = d2zDao.fetchMlidsBasedOnSupplier("PCA");
 				boolean isEParcel = eParcelMlids.stream().anyMatch(mlid::equalsIgnoreCase);
 				boolean isAuPost = auPostMlids.stream().anyMatch(mlid::equalsIgnoreCase);
 				boolean isPCA = pcaMlids.stream().anyMatch(mlid::equalsIgnoreCase);
@@ -2478,21 +2479,20 @@ else
 
 			for (TrackEventResponseData data : responseData) {
 
-				if (data != null && data.getEvents() != null) {
+				if (data != null) {
 					
 					List<TrackingEvents> trackingEvents = new ArrayList<TrackingEvents>();
 					TrackParcelResponse parcelStatus = new TrackParcelResponse();
-					
+					parcelStatus.setArticleId(data.getOrderId());
+					if(data.getEvents()!=null) {
 					for (ETowerTrackingDetails trackingDetails : data.getEvents()) {
-					
-						parcelStatus.setArticleId(trackingDetails.getTrackingNo());
-						
+											
 						TrackingEvents event = new TrackingEvents();
 						event.setTrackEventDateOccured(trackingDetails.getEventTime());
 						event.setEventDetails(trackingDetails.getActivity());
 						trackingEvents.add(event);
 						}
-					
+					}
 					parcelStatus.setTrackingEvents(trackingEvents);
 					trackParcelResponse.add(parcelStatus);
 					}
