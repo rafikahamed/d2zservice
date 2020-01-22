@@ -61,6 +61,7 @@ import com.d2z.d2zservice.proxy.CurrencyProxy;
 import com.d2z.d2zservice.repository.APIRatesRepository;
 import com.d2z.d2zservice.repository.AUPostResponseRepository;
 import com.d2z.d2zservice.repository.CSTicketsRepository;
+import com.d2z.d2zservice.repository.ConsigneeCountRepository;
 import com.d2z.d2zservice.repository.CurrencyRepository;
 import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
@@ -124,6 +125,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	CurrencyRepository currencyRepository;
+	
+	@Autowired
+	ConsigneeCountRepository consigneeCountRepository;
 	
 	@Autowired
 	CurrencyProxy currencyproxy;
@@ -1234,6 +1238,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public String fetchServiceTypeByRefNbr(String refNbr) {
 		
 		return senderDataRepository.fetchServiceTypeByRefNbr(refNbr);
+	}
+
+	@Override
+	public List<String> fetchMlidsBasedOnSupplier(String supplier) {
+		return consigneeCountRepository.getMlidBasedonSupplier(supplier);
 	}
 
 }

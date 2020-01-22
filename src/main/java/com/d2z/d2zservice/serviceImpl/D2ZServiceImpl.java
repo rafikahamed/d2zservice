@@ -2340,11 +2340,9 @@ else
 		List<String> auPostArticleIds = new ArrayList<String>();
 		List<String> pcaArticleIds = new ArrayList<String>();
 		List<String> pflArticleIds = new ArrayList<String>();
-		List<String> eParcelMlids = Stream.of("33G7K", "33G7L", "33G7M", "33G7N", "33G7P", "SJU","ZK6")
-				.collect(Collectors.toList());
-		List<String> auPostMlids =  Stream.of("33PE9", "33PET", "33PEN", "33PEH")
-				.collect(Collectors.toList());
-	    
+		List<String> eParcelMlids = d2zDao.fetchMlidsBasedOnSupplier("eTower");
+		List<String> auPostMlids =  d2zDao.fetchMlidsBasedOnSupplier("FDM");
+	    List<String> pcaMlids = d2zDao.fetchMlidsBasedOnSupplier("PCA");
 		CompletableFuture<TrackingEventResponse> eTowerResponse = new CompletableFuture<TrackingEventResponse>();
 		CompletableFuture<TrackingResponse> auPostResponse = new CompletableFuture<TrackingResponse>();
 		CompletableFuture<String> pcaResponse = new CompletableFuture<String>(); 
@@ -2355,18 +2353,19 @@ else
 				String mlid = articleId.length() == 23 ? articleId.substring(0,5) : articleId.substring(0,3);
 				boolean isEParcel = eParcelMlids.stream().anyMatch(mlid::equalsIgnoreCase);
 				boolean isAuPost = auPostMlids.stream().anyMatch(mlid::equalsIgnoreCase);
+				boolean isPCA = pcaMlids.stream().anyMatch(mlid::equalsIgnoreCase);
 				if(isEParcel) {
 					eTowerArticleIds.add(articleId);
 				}else if(isAuPost) {
 					auPostArticleIds.add(articleId);
-				}else {
+				}else if(isPCA) {
 					pcaArticleIds.add(articleId);
 				}
 			}else if(articleId.startsWith("BN")) {
 				pflArticleIds.add(articleId);
 			}
 			else {
-				//pcaArticleIds.add(articleId);
+				pcaArticleIds.add(articleId);
 			}
 		}
 		
