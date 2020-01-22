@@ -829,7 +829,6 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public List<String>  fetchArticleIDForFDMCall() {
 		List<String> referenceNumber = trackAndTraceRepository.fetchArticleIDForFDMCall();
-		//String[] refArray =referenceNumber.stream().toArray(String[]::new);
 		return referenceNumber;
 	}
 
