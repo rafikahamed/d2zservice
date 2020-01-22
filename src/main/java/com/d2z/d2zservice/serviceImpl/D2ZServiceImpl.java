@@ -2340,7 +2340,6 @@ else
 		List<String> auPostArticleIds = new ArrayList<String>();
 		List<String> pcaArticleIds = new ArrayList<String>();
 		List<String> pflArticleIds = new ArrayList<String>();
-		
 		List<String> eParcelMlids = d2zDao.fetchMlidsBasedOnSupplier("eTower");
 		List<String> auPostMlids =  d2zDao.fetchMlidsBasedOnSupplier("FDM");
 	    List<String> pcaMlids = d2zDao.fetchMlidsBasedOnSupplier("PCA");
