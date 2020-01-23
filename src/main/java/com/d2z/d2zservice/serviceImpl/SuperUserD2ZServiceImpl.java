@@ -81,7 +81,7 @@ import com.d2z.d2zservice.proxy.PcaProxy;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.wrapper.ETowerWrapper;
-import com.d2z.d2zservice.wrapper.FreipostWrapper;
+//import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.d2zservice.wrapper.PCAWrapper;
 import com.d2z.d2zservice.wrapper.PFLWrapper;
 import net.sf.jasperreports.engine.JRException;
@@ -134,9 +134,9 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	@Autowired
 	PCAWrapper pcaWrapper;
 	
-	@Autowired
+	/*@Autowired
 	FreipostWrapper freipostWrapper;
-
+*/
 	@Autowired
 	ETowerWrapper eTowerWrapper; 
 	
@@ -308,7 +308,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		for (List<String> trackingNumbers : trackingNbrList) {
 			System.out.println(count + ":::" + trackingNumbers.size());
 			count++;
-			TrackingEventResponse response = proxy.makeCallForTrackingEvents(trackingNumbers);
+			TrackingEventResponse response = proxy.makeCallForTrackingEvents(trackingNumbers,null);
 			respMsg = d2zDao.insertTrackingDetails(response,map);
 		}
 		// List<List<ETowerTrackingDetails>> response = proxy.stubETower();
@@ -1363,6 +1363,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		List<String> pflList = new ArrayList<String>();
 		List<String> etowerList = new ArrayList<String>();
 		List<String> auPostList = new ArrayList<String>();
+		String serviceType =null;
 		if(csTickets != null) {
 			for(CSTickets csTicketDetails:csTickets) {
 				if(csTicketDetails.getCarrier().equalsIgnoreCase("FastwayS") || csTicketDetails.getCarrier().equalsIgnoreCase("StarTrack")) {
@@ -1383,8 +1384,23 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 						"33G7M".contains(csTicketDetails.getArticleID().substring(0,5)) || "33G7N".contains(csTicketDetails.getArticleID().substring(0,5)) ||
 						"33G7P".contains(csTicketDetails.getArticleID().substring(0,5)) || "SJU".contains(csTicketDetails.getArticleID().substring(0,3)) ||
 						"ZK6".contains(csTicketDetails.getArticleID().substring(0,3))){
-						if(csTicketDetails.getArticleID() != null)
+						if(csTicketDetails.getArticleID() != null) {
 							etowerList.add(csTicketDetails.getArticleID());
+					}
+					}
+					if("33XCR".contains(csTicketDetails.getArticleID().substring(0,5))|| "33XCR".contains(csTicketDetails.getArticleID().substring(0,5)) ||
+							"33XCT".contains(csTicketDetails.getArticleID().substring(0,5)) || "33XH8".contains(csTicketDetails.getArticleID().substring(0,5))){
+								if(csTicketDetails.getArticleID() != null) {
+									etowerList.add(csTicketDetails.getArticleID());
+									serviceType = "HKG2";
+							}
+					}
+					if("33UXT".contains(csTicketDetails.getArticleID().substring(0,5))|| "33UXX".contains(csTicketDetails.getArticleID().substring(0,5)) ||
+							"33UY6".contains(csTicketDetails.getArticleID().substring(0,5)) || "33UYA".contains(csTicketDetails.getArticleID().substring(0,5))){
+										if(csTicketDetails.getArticleID() != null) {
+											etowerList.add(csTicketDetails.getArticleID());
+											serviceType = "HKG";
+									}
 					}
 					if("33PE9".contains(csTicketDetails.getArticleID().substring(0,5)) || "33PET".contains(csTicketDetails.getArticleID().substring(0,5)) ||
 							"33PEN".contains(csTicketDetails.getArticleID().substring(0,5)) || "33PEH".contains(csTicketDetails.getArticleID().substring(0,5))) {
@@ -1430,7 +1446,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		if(etowerList.size() > 0 ) {
 			System.out.println("Etower List");
 			System.out.println(etowerList.toString());
-			eTowerTrackingEvent(etowerList);
+			eTowerTrackingEvent(etowerList,serviceType);
 		}
 		if(auPostList.size() > 0 ) {
 			System.out.println("AUPost List");
@@ -1465,14 +1481,14 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	}
 	
 	
-	public ResponseMessage eTowerTrackingEvent(List<String> trackingNbrs) {
+	public ResponseMessage eTowerTrackingEvent(List<String> trackingNbrs,String serviceType) {
 		ResponseMessage respMsg = null;
 		List<List<String>> trackingNbrList = ListUtils.partition(trackingNbrs, 300);
 		int count = 1;
 		for (List<String> trackingNumbers : trackingNbrList) {
 			System.out.println(count + ":::" + trackingNumbers.size());
 			count++;
-			TrackingEventResponse response = proxy.makeCallForTrackingEvents(trackingNumbers);
+			TrackingEventResponse response = proxy.makeCallForTrackingEvents(trackingNumbers,serviceType);
 			respMsg = d2zDao.updateAUEtowerTrackingDetails(response);
 		}
 		return respMsg;
@@ -1646,10 +1662,10 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		Runnable freipost = new Runnable( ) {			
 	        public void run() {
 	        	String[] refNbrs = toAllocate.stream().toArray(String[] ::new);
-	        	List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(toAllocate,"Freipost");
+	        	/*List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(toAllocate,"Freipost");
 	        	if(!senderMasterData.isEmpty()) {
 	        		freipostWrapper.uploadManifestService(senderMasterData);
-	        	}
+	        	}*/
 	        	
 	        	List<SenderdataMaster> pcaData = d2zDao.fetchDataBasedonSupplier(toAllocate,"PCA");
 	        	if(!pcaData.isEmpty()) {

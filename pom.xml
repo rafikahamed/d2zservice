@@ -5,7 +5,7 @@
 
 	<groupId>com.d2z</groupId>
 	<artifactId>d2z-prodservice</artifactId>
-	<version>0.2.6-SNAPSHOT</version>
+	<version>0.2.12-SNAPSHOT</version>
 	<name>d2z-service</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -287,7 +287,7 @@
             	</configuration>
 			</plugin>
 		
-  <plugin>
+  <!-- <plugin>
     <groupId>org.jvnet.jaxb2.maven2</groupId>
     <artifactId>maven-jaxb2-plugin</artifactId>
     <version>0.13.2</version>
@@ -300,10 +300,10 @@
     </executions>
     <configuration>
   <generateDirectory>${project.basedir}/src/main/java</generateDirectory>
-     <!--  <schemaDirectory>${project.basedir}/src/main/resources/wsdl</schemaDirectory>
+      <schemaDirectory>${project.basedir}/src/main/resources/wsdl</schemaDirectory>
         <schemaIncludes>
             <include>*.wsdl</include>
-        </schemaIncludes> -->
+        </schemaIncludes>
         <schemaLanguage>WSDL</schemaLanguage>
     	<schemas>
         <schema>
@@ -311,7 +311,7 @@
         </schema>
     </schemas>
     </configuration>
-</plugin>
+</plugin> -->
 		</plugins>
 	</build>
 </project>

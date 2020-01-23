@@ -75,7 +75,7 @@ import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
-import com.d2z.d2zservice.wrapper.FreipostWrapper;
+//import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
@@ -114,8 +114,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 	@Autowired
 	APIRatesRepository apiRatesRepository;
 	
-	@Autowired
-	FreipostWrapper freipostWrapper;
+	/*@Autowired
+	FreipostWrapper freipostWrapper;*/
 	
 	@Autowired
 	AUPostResponseRepository aupostresponseRepository;

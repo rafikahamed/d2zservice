@@ -149,16 +149,48 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 
 
 	 @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.trackEventDateOccured between :fromTime and :toTime") 
+	 /*@Query("SELECT A.Client_BrokerName,   B.articleid,B.reference_number,  B.consignee_postcode,B.weight, B.servicetype, B.airwayBill ,   B.TrackEventDateOccured, \n"
+	 		+ " B.value,	 B.consignee_name, B.consignee_addr1,B.consignee_addr2, B.consignee_suburb, B.consignee_state, B.product_description\n" + 
+	 		"FROM   \n" + 
+	 		"(SELECT S.reference_number, S.value, S.consignee_name, S.consignee_addr1, S.consignee_addr2, S.consignee_suburb, S.consignee_state, "
+	 		+ "S.consignee_postcode, S.product_description, S.user_id, S.airwayBill, S.weight, S.servicetype, S.articleid, T.TrackEventDateOccured, \n" + 
+	 		"FROM  senderdata_master S INNER JOIN trackandtrace T ON S.reference_number = T.reference_number \n" + 
+	 		"WHERE  T.trackeventdetails = 'CONSIGNMENT CREATED' AND T.isdeleted <> 'Y' AND (T.trackEventDateOccured between :fromTime and :toTime)) B \n" + 
+	 		"INNER JOIN users A ON A.user_id = B.user_id AND A.role_id = '3'")*/
 	 List<SenderdataMaster> exportConsignments(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
 	 
 	 @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.reference_number in (:Ref)") 
-	                                                                                                                                             
+	/* @Query("SELECT A.Client_BrokerName,  B.reference_number, B.value, B.consignee_name, B.consignee_addr1,B.consignee_addr2, B.consignee_suburb, B.consignee_state,\n" +
+		 		" B.consignee_postcode, B.product_description, B.weight, B.servicetype, B.articleid, B.TrackEventDateOccured \n" + 
+		 		"FROM   \n" + 
+		 		"(SELECT S.reference_number, S.value, S.consignee_name, S.consignee_addr1, S.consignee_addr2, S.consignee_suburb, S.consignee_state, \n" +
+		 		"S.consignee_postcode, S.product_description, S.user_id, S.weight, S.servicetype, S.articleid, T.TrackEventDateOccured, \n" + 
+		 		"FROM  senderdata_master S INNER JOIN trackandtrace T ON S.reference_number = T.reference_number \n" + 
+		 		"WHERE  T.trackeventdetails = 'CONSIGNMENT CREATED' AND T.isdeleted <> 'Y' AND (T.reference_number in (:Ref))) B \n" + 
+		 		"INNER JOIN users A ON A.user_id = B.user_id AND A.role_id = '3'")*/                                                                                                                                          
 	 List<SenderdataMaster> exportConsignmentsRef(@Param("Ref") List<String> Reference);
 	 
 	 @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.articleID in (:Articleid)") 
+	/* @Query("SELECT A.Client_BrokerName,  B.reference_number, B.value, B.consignee_name, B.consignee_addr1,B.consignee_addr2, B.consignee_suburb, B.consignee_state,\n" +
+		 		" B.consignee_postcode, B.product_description, B.weight, B.servicetype, B.articleid, B.TrackEventDateOccured \n" + 
+		 		"FROM   \n" + 
+		 		"(SELECT S.reference_number, S.value, S.consignee_name, S.consignee_addr1, S.consignee_addr2, S.consignee_suburb, S.consignee_state, \n" +
+		 		"S.consignee_postcode, S.product_description, S.user_id, S.weight, S.servicetype, S.articleid, T.TrackEventDateOccured, \n" + 
+		 		"FROM  senderdata_master S INNER JOIN trackandtrace T ON S.reference_number = T.reference_number \n" + 
+		 		"WHERE  T.trackeventdetails = 'CONSIGNMENT CREATED' AND T.isdeleted <> 'Y' AND (T.articleID in (:Articleid))) B \n" + 
+		 		"INNER JOIN users A ON A.user_id = B.user_id AND A.role_id = '3'")  */ 
 	 List<SenderdataMaster> exportConsignmentsArticleid(@Param("Articleid") List<String> Article);
 	 
 	 @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.barcodelabelNumber in (:Barcode)") 
+	/* @Query("SELECT A.Client_BrokerName,  B.reference_number, B.value, B.consignee_name, B.consignee_addr1,B.consignee_addr2, B.consignee_suburb, B.consignee_state,\n" +
+		 		" B.consignee_postcode, B.product_description, B.weight, B.servicetype, B.articleid, B.TrackEventDateOccured \n" + 
+		 		"FROM   \n" + 
+		 		"(SELECT S.reference_number, S.value, S.consignee_name, S.consignee_addr1, S.consignee_addr2, S.consignee_suburb, S.consignee_state, \n" +
+		 		"S.consignee_postcode, S.product_description, S.user_id, S.weight, S.servicetype, S.articleid, T.TrackEventDateOccured, \n" + 
+		 		"FROM  senderdata_master S INNER JOIN trackandtrace T ON S.reference_number = T.reference_number \n" + 
+		 		"WHERE  T.trackeventdetails = 'CONSIGNMENT CREATED' AND T.isdeleted <> 'Y' AND (T.barcodelabelNumber in (:Barcode))) B \n" + 
+		 		"INNER JOIN users A ON A.user_id = B.user_id AND A.role_id = '3'")   
+	*/
 	 List<SenderdataMaster> exportConsignmentsBarcode(@Param("Barcode") List<String> Barcode);
 
 	/* @Query(nativeQuery = true, value = "SELECT D.user_name, \r\n" + 
@@ -198,7 +230,8 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"               B.value, \r\n" + 
 	 		"               B.shipped_quantity, \r\n" + 
 	 		"               B.consignee_name, \r\n" + 
-	 		"               B.consignee_addr1, \r\n" + 
+	 		"               B.consignee_addr1, \r\n" +
+	 		"				B.consignee_addr2, \r\n" +
 	 		"               B.consignee_suburb, \r\n" + 
 	 		"               B.consignee_state, \r\n" + 
 	 		"               B.consignee_postcode, \r\n" + 
@@ -217,6 +250,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"                       senderdata0_.shipped_quantity, \r\n" + 
 	 		"                       senderdata0_.consignee_name, \r\n" + 
 	 		"                       senderdata0_.consignee_addr1, \r\n" + 
+	 		"						senderdata0_.consignee_addr2, \r\n" +
 	 		"                       senderdata0_.consignee_suburb, \r\n" + 
 	 		"                       senderdata0_.consignee_state, \r\n" + 
 	 		"                       senderdata0_.consignee_postcode, \r\n" + 
@@ -283,7 +317,8 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"               B.value, \r\n" + 
 	 		"               B.shipped_quantity, \r\n" + 
 	 		"               B.consignee_name, \r\n" + 
-	 		"               B.consignee_addr1, \r\n" + 
+	 		"               B.consignee_addr1, \r\n" +
+	 		"				B.consignee_addr2, \r\n" +
 	 		"               B.consignee_suburb, \r\n" + 
 	 		"               B.consignee_state, \r\n" + 
 	 		"               B.consignee_postcode, \r\n" + 
@@ -302,6 +337,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"                       senderdata0_.shipped_quantity, \r\n" + 
 	 		"                       senderdata0_.consignee_name, \r\n" + 
 	 		"                       senderdata0_.consignee_addr1, \r\n" + 
+	 		"						senderdata0_.consignee_addr2, \r\n" +
 	 		"                       senderdata0_.consignee_suburb, \r\n" + 
 	 		"                       senderdata0_.consignee_state, \r\n" + 
 	 		"                       senderdata0_.consignee_postcode, \r\n" + 
@@ -366,7 +402,8 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"               B.value, \r\n" + 
 	 		"               B.shipped_quantity, \r\n" + 
 	 		"               B.consignee_name, \r\n" + 
-	 		"               B.consignee_addr1, \r\n" + 
+	 		"               B.consignee_addr1, \r\n" +
+	 		"				B.consignee_addr2, \r\n" +
 	 		"               B.consignee_suburb, \r\n" + 
 	 		"               B.consignee_state, \r\n" + 
 	 		"               B.consignee_postcode, \r\n" + 
@@ -385,6 +422,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"                       senderdata0_.shipped_quantity, \r\n" + 
 	 		"                       senderdata0_.consignee_name, \r\n" + 
 	 		"                       senderdata0_.consignee_addr1, \r\n" + 
+	 		"						senderdata0_.consignee_addr2, \r\n" +
 	 		"                       senderdata0_.consignee_suburb, \r\n" + 
 	 		"                       senderdata0_.consignee_state, \r\n" + 
 	 		"                       senderdata0_.consignee_postcode, \r\n" + 
@@ -449,6 +487,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"               B.shipped_quantity, \r\n" + 
 	 		"               B.consignee_name, \r\n" + 
 	 		"               B.consignee_addr1, \r\n" + 
+	 		"				B.consignee_addr2, \r\n" +
 	 		"               B.consignee_suburb, \r\n" + 
 	 		"               B.consignee_state, \r\n" + 
 	 		"               B.consignee_postcode, \r\n" + 
@@ -467,6 +506,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"                       senderdata0_.shipped_quantity, \r\n" + 
 	 		"                       senderdata0_.consignee_name, \r\n" + 
 	 		"                       senderdata0_.consignee_addr1, \r\n" + 
+	 		"						senderdata0_.consignee_addr2, \r\n" +
 	 		"                       senderdata0_.consignee_suburb, \r\n" + 
 	 		"                       senderdata0_.consignee_state, \r\n" + 
 	 		"                       senderdata0_.consignee_postcode, \r\n" + 

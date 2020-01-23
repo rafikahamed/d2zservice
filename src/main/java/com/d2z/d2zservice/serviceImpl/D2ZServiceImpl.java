@@ -118,7 +118,7 @@ import com.d2z.d2zservice.util.EmailUtil;
 import com.d2z.d2zservice.util.FTPUploader;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.wrapper.ETowerWrapper;
-import com.d2z.d2zservice.wrapper.FreipostWrapper;
+//import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.d2zservice.wrapper.PCAWrapper;
 import com.d2z.d2zservice.wrapper.PFLWrapper;
 import com.d2z.singleton.D2ZSingleton;
@@ -170,9 +170,9 @@ public class D2ZServiceImpl implements ID2ZService {
 	@Autowired
 	EmailUtil emailUtil;
 
-	@Autowired
+	/*@Autowired
 	FreipostWrapper freipostWrapper;
-
+*/
 	@Autowired
 	ETowerWrapper eTowerWrapper; 
 	
@@ -1238,10 +1238,10 @@ else
 	        		 eTowerWrapper.makeEtowerForecastCall(articleIDS);
 	        	 }
 	        	
-	        	List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
+	        /*	List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
 	        	if(!senderMasterData.isEmpty()) {
 	        		freipostWrapper.uploadManifestService(senderMasterData);
-	        	}
+	        	}*/
 	        	
 	        	List<SenderdataMaster> pcaData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"PCA");
 	        	if(!pcaData.isEmpty()) {
@@ -1809,9 +1809,9 @@ else
 		//d2zDao.makeFriePostUpdataManifestCall(referenceNumbers);
 		String[] refNbrArray = referenceNumbers.split(",");
     	List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
-    	if(!senderMasterData.isEmpty()) {
+    	/*if(!senderMasterData.isEmpty()) {
     		freipostWrapper.uploadManifestService(senderMasterData);
-    	}
+    	}*/
 		//freipostWrapper.trackingEventService("124538");
 	}
 
@@ -1986,9 +1986,9 @@ else
 	@Override
 	public void freipostTrackingEvent() {
 		List<String> articleIds = d2zDao.getArticleIDForFreiPostTracking();
-		for(String articleId : articleIds) {
+		/*for(String articleId : articleIds) {
 			freipostWrapper.trackingEventService(articleId);
-		}
+		}*/
 	}
 
 	@Override
@@ -2337,10 +2337,14 @@ else
 	@Override
 	public List<TrackParcelResponse> trackParcels(List<String> articleIds) throws InterruptedException, ExecutionException {
 		List<String> eTowerArticleIds = new ArrayList<String>();
+		List<String> eTowerHKGArticleIds = new ArrayList<String>();
+		List<String> eTowerHKG2ArticleIds = new ArrayList<String>();
 		List<String> auPostArticleIds = new ArrayList<String>();
 		List<String> pcaArticleIds = new ArrayList<String>();
 		List<String> pflArticleIds = new ArrayList<String>();
-		
+		List<String> eParcelMlids = d2zDao.fetchMlidsBasedOnSupplier("eTower");
+		List<String> auPostMlids =  d2zDao.fetchMlidsBasedOnSupplier("FDM");
+	    List<String> pcaMlids = d2zDao.fetchMlidsBasedOnSupplier("PCA");
 		CompletableFuture<TrackingEventResponse> eTowerResponse = new CompletableFuture<TrackingEventResponse>();
 		CompletableFuture<TrackingResponse> auPostResponse = new CompletableFuture<TrackingResponse>();
 		CompletableFuture<String> pcaResponse = new CompletableFuture<String>(); 
@@ -2349,14 +2353,18 @@ else
 		for(String articleId : articleIds) {
 			if(articleId.length()==21 || articleId.length() == 23) {
 				String mlid = articleId.length() == 23 ? articleId.substring(0,5) : articleId.substring(0,3);
-				List<String> eParcelMlids = d2zDao.fetchMlidsBasedOnSupplier("eTower");
-				List<String> auPostMlids =  d2zDao.fetchMlidsBasedOnSupplier("FDM");
-			    List<String> pcaMlids = d2zDao.fetchMlidsBasedOnSupplier("PCA");
+				
 				boolean isEParcel = eParcelMlids.stream().anyMatch(mlid::equalsIgnoreCase);
 				boolean isAuPost = auPostMlids.stream().anyMatch(mlid::equalsIgnoreCase);
 				boolean isPCA = pcaMlids.stream().anyMatch(mlid::equalsIgnoreCase);
 				if(isEParcel) {
-					eTowerArticleIds.add(articleId);
+					if(mlid.equalsIgnoreCase("33XH8") ||mlid.equalsIgnoreCase("33XCT")||mlid.equalsIgnoreCase("33XH7")||mlid.equalsIgnoreCase("33XCR") ) {
+						eTowerHKG2ArticleIds.add(articleId);
+					}else if(mlid.equalsIgnoreCase("33UXT") ||mlid.equalsIgnoreCase("33UXX")||mlid.equalsIgnoreCase("33UY6")||mlid.equalsIgnoreCase("33UYA") ) {
+						eTowerHKGArticleIds.add(articleId);}
+					else {
+						eTowerArticleIds.add(articleId);
+					}
 				}else if(isAuPost) {
 					auPostArticleIds.add(articleId);
 				}else if(isPCA) {
@@ -2371,7 +2379,17 @@ else
 		}
 		
 		if(eTowerArticleIds.size() > 0) {
-			eTowerResponse = aysncService.makeCalltoEtower(eTowerArticleIds);
+			eTowerResponse = aysncService.makeCalltoEtower(eTowerArticleIds,"");
+		}else {
+			eTowerResponse.complete(null);
+		}
+		if(eTowerHKGArticleIds.size() > 0) {
+			eTowerResponse = aysncService.makeCalltoEtower(eTowerHKGArticleIds,"HKG");
+		}else {
+			eTowerResponse.complete(null);
+		}
+		if(eTowerHKG2ArticleIds.size() > 0) {
+			eTowerResponse = aysncService.makeCalltoEtower(eTowerHKG2ArticleIds,"HKG2");
 		}else {
 			eTowerResponse.complete(null);
 		}
@@ -2392,29 +2410,32 @@ else
 		else {
 			pflResponse.complete(null);
 		}
-		CompletableFuture.allOf(eTowerResponse, auPostResponse, pcaResponse,pflResponse).join();
+		CompletableFuture.allOf(eTowerResponse,auPostResponse, pcaResponse,pflResponse).join();
+		List<TrackParcelResponse> trackPracelsResponse = new ArrayList<TrackParcelResponse>();
+
+		aggreateTrackParcelResponse(eTowerResponse.get(),auPostResponse.get(),pcaResponse.get(),pflResponse.get(),trackPracelsResponse);
 		
-		List<TrackParcelResponse> trackPracelsResponse = aggreateTrackParcelResponse(eTowerResponse.get(),auPostResponse.get(),pcaResponse.get(),pflResponse.get());
 		return trackPracelsResponse;
 	}
 
 	private List<TrackParcelResponse> aggreateTrackParcelResponse(TrackingEventResponse eTowerResponse,
-			TrackingResponse auPostResponse, String pcaResponse, List<PFLTrackingResponseDetails> pflResponse) {
+			TrackingResponse auPostResponse, String pcaResponse, List<PFLTrackingResponseDetails> pflResponse, List<TrackParcelResponse> trackPracelResponse) {
 			
-		List<TrackParcelResponse> trackParcelResponse = new ArrayList<TrackParcelResponse>();
 		if(null != eTowerResponse) {
-			parseEtowerTrackingResponse(trackParcelResponse,eTowerResponse);	
+			System.out.println("Normal");
+			parseEtowerTrackingResponse(trackPracelResponse,eTowerResponse);	
 		}
+		
 		if(null!=auPostResponse) {
-			parseAuPostTrackingResponse(trackParcelResponse,auPostResponse);
+			parseAuPostTrackingResponse(trackPracelResponse,auPostResponse);
 		}
 		if(null != pcaResponse) {
-			parsePCAResponse(trackParcelResponse,pcaResponse);
+			parsePCAResponse(trackPracelResponse,pcaResponse);
 		}
 		if(null!=pflResponse) {
-			parsePFLResponse(trackParcelResponse,pflResponse);
+			parsePFLResponse(trackPracelResponse,pflResponse);
 		}
-		return trackParcelResponse;	
+		return trackPracelResponse;	
 	}
 
 	private void parsePFLResponse(List<TrackParcelResponse> trackParcelResponse,
@@ -2473,6 +2494,7 @@ else
 
 	private void parseEtowerTrackingResponse(List<TrackParcelResponse> trackParcelResponse,
 			TrackingEventResponse eTowerResponse) {
+		System.out.println(eTowerResponse);
 		List<TrackEventResponseData> responseData = eTowerResponse.getData();
 
 		if (!responseData.isEmpty()) {
