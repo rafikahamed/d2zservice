@@ -38,10 +38,10 @@ public class AsyncService {
 	
 	private static Logger log = LoggerFactory.getLogger(AsyncService.class);
 	@Async("asyncExecutor")
-	public CompletableFuture<TrackingEventResponse> makeCalltoEtower(List<String> trackingNumber) throws InterruptedException 
+	public CompletableFuture<TrackingEventResponse> makeCalltoEtower(List<String> trackingNumber,String serviceType) throws InterruptedException 
     {
 		log.info("Etower Tracking");
-		TrackingEventResponse response = eTowerProxy.makeCallForTrackingEvents(trackingNumber);
+		TrackingEventResponse response = eTowerProxy.makeCallForTrackingEvents(trackingNumber,serviceType);
 		return CompletableFuture.completedFuture(response);
     }
 	@Async("asyncExecutor")

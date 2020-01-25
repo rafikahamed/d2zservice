@@ -10,4 +10,6 @@ public interface ConsigneeCountRepository extends CrudRepository<ConsignmentCoun
 	@Query("SELECT distinct(mlid) FROM ConsignmentCount") 
 	List<String> getMlidList();
 
+	@Query("SELECT distinct(mlid) FROM ConsignmentCount where supplier = :supplier") 
+	List<String> getMlidBasedonSupplier(String supplier);
 }

@@ -1,4 +1,4 @@
-package com.d2z.d2zservice.soapConfig;
+/*package com.d2z.d2zservice.soapConfig;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,3 +38,4 @@ public class FreiPostSoapConfig {
 	        return client;
 	    }
 }
+*/

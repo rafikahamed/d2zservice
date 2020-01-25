@@ -780,9 +780,10 @@ s);
 		System.out.println("Background Thread created.....");
 		System.out.println(eTowerOrders.size());
 		String serviceName ="";
+		String serviceType = eTowerOrders.get(0).getServicetype();
 		if (!eTowerOrders.isEmpty()) {
 			List<CreateShippingRequest> eTowerRequest = new ArrayList<CreateShippingRequest>();
-			if(eTowerOrders.get(0).getServicetype().equals("HKG")) {
+			if( serviceType.equals("HKG")|| serviceType.equals("HKG2")) {
 				serviceName = "STI AUSTRALIA";
 			}
 			for (SenderdataMaster orderDetail : eTowerOrders) {
@@ -845,7 +846,7 @@ s);
 				}
 				eTowerRequest.add(request);
 			}
-			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest,serviceName);
+			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest,serviceType);
 			parseEtowerCreateShippingResponse(response);
 
 		}

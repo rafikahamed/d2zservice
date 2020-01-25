@@ -173,4 +173,6 @@ public interface ID2ZDao {
 
 	public String fetchServiceTypeByRefNbr(String string);
 
+	public List<String> fetchMlidsBasedOnSupplier(String supplier);
+
 }

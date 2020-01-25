@@ -53,7 +53,7 @@ public class PcaProxy {
 	public void trackingEvent(List<String> articleIds) {
 		ObjectMapper mapper = new ObjectMapper();
 		PCATrackEventRequest pcaTracking = new PCATrackEventRequest();
-		pcaTracking.setConnote(articleIds.get(1));
+		pcaTracking.setConnote(articleIds.get(0));
 		String jsonString = null;
 		try {
 			jsonString = mapper.writeValueAsString(pcaTracking);

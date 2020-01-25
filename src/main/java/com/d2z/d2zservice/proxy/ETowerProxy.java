@@ -38,7 +38,11 @@ public class ETowerProxy {
 	private String stiKey;
 	@Value("${eTower.stiToken}")
 	private String stiToken;
-	public TrackingEventResponse makeCallForTrackingEvents(List<String> trackingNumber) {
+	@Value("${eTower.hkg2Key}")
+	private String hkg2Key;
+	@Value("${eTower.hkg2Token}")
+	private String hkg2Token;
+	public TrackingEventResponse makeCallForTrackingEvents(List<String> trackingNumber,String serviceType) {
 
 
 		String url = baseURL+"services/shipper/trackingEvents/";
@@ -48,7 +52,13 @@ public class ETowerProxy {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		requestFactory.setOutputStreaming(false);
         RestTemplate restTemplate = new RestTemplate(requestFactory);
-        restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(key,token)));
+        if("HKG".equals(serviceType)) {
+            restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(stiKey,stiToken)));
+        }else if("HKG2".equals(serviceType)) {
+            restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(hkg2Key,hkg2Token)));
+        }else {
+        	restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(key,token)));
+        }
 	
 		HttpEntity<List<String>> httpEntity = new HttpEntity<List<String>>(trackingNumber);
 
@@ -92,7 +102,7 @@ public class ETowerProxy {
 		}
 		return jsonToList;
 	}
-	public CreateShippingResponse makeCallForCreateShippingOrder(List<CreateShippingRequest> request,String serviceName) {
+	public CreateShippingResponse makeCallForCreateShippingOrder(List<CreateShippingRequest> request,String serviceType) {
 
 
 		String url = baseURL+"services/shipper/orders/";
@@ -101,8 +111,10 @@ public class ETowerProxy {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		requestFactory.setOutputStreaming(false);
         RestTemplate restTemplate = new RestTemplate(requestFactory);
-        if("STI AUSTRALIA".equals(serviceName)) {
+        if("HKG".equals(serviceType)) {
             restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(stiKey,stiToken)));
+        }else if("HKG2".equals(serviceType)) {
+            restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(hkg2Key,hkg2Token)));
         }else {
         	restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(key,token)));
         }

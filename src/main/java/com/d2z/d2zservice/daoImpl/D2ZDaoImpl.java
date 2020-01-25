@@ -61,6 +61,7 @@ import com.d2z.d2zservice.proxy.CurrencyProxy;
 import com.d2z.d2zservice.repository.APIRatesRepository;
 import com.d2z.d2zservice.repository.AUPostResponseRepository;
 import com.d2z.d2zservice.repository.CSTicketsRepository;
+import com.d2z.d2zservice.repository.ConsigneeCountRepository;
 import com.d2z.d2zservice.repository.CurrencyRepository;
 import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
@@ -74,7 +75,7 @@ import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
-import com.d2z.d2zservice.wrapper.FreipostWrapper;
+//import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
@@ -113,8 +114,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 	@Autowired
 	APIRatesRepository apiRatesRepository;
 	
-	@Autowired
-	FreipostWrapper freipostWrapper;
+	/*@Autowired
+	FreipostWrapper freipostWrapper;*/
 	
 	@Autowired
 	AUPostResponseRepository aupostresponseRepository;
@@ -124,6 +125,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	CurrencyRepository currencyRepository;
+	
+	@Autowired
+	ConsigneeCountRepository consigneeCountRepository;
 	
 	@Autowired
 	CurrencyProxy currencyproxy;
@@ -1233,6 +1237,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public String fetchServiceTypeByRefNbr(String refNbr) {
 		
 		return senderDataRepository.fetchServiceTypeByRefNbr(refNbr);
+	}
+
+	@Override
+	public List<String> fetchMlidsBasedOnSupplier(String supplier) {
+		return consigneeCountRepository.getMlidBasedonSupplier(supplier);
 	}
 
 }
