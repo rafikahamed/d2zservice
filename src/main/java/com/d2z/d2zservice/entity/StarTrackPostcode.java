@@ -8,13 +8,13 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
- * The persistent class for the PostcodeZones database table.
+ * The persistent class for the StarTrackPostcode database table.
  * 
  */
 @Entity
-@Table(name="FastwayPostcode")
-@NamedQuery(name="FastwayPostcode.findAll", query="SELECT p FROM FastwayPostcode p")
-public class FastwayPostcode implements Serializable{
+@Table(name="StarTrackPostcode")
+@NamedQuery(name="StarTrackPostcode.findAll", query="SELECT p FROM StarTrackPostcode p")
+public class StarTrackPostcode implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -22,11 +22,11 @@ public class FastwayPostcode implements Serializable{
 	private int rowId;
 	
 	@EmbeddedId
-	private FWPostCodeId fwPostCodeId;
+	private STPostCodeId stPostCodeId;
 	
 	@Column(name="StateName")
 	private String stateName;
-	
+
 	public int getRowId() {
 		return rowId;
 	}
@@ -34,7 +34,15 @@ public class FastwayPostcode implements Serializable{
 	public void setRowId(int rowId) {
 		this.rowId = rowId;
 	}
-	
+
+	public STPostCodeId getStPostCodeId() {
+		return stPostCodeId;
+	}
+
+	public void setStPostCodeId(STPostCodeId stPostCodeId) {
+		this.stPostCodeId = stPostCodeId;
+	}
+
 	public String getStateName() {
 		return stateName;
 	}
@@ -43,12 +51,8 @@ public class FastwayPostcode implements Serializable{
 		this.stateName = stateName;
 	}
 
-	public FWPostCodeId getFwPostCodeId() {
-		return fwPostCodeId;
-	}
-
-	public void setFwPostCodeId(FWPostCodeId fwPostCodeId) {
-		this.fwPostCodeId = fwPostCodeId;
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 	
 }

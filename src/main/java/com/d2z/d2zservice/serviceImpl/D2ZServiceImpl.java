@@ -244,43 +244,50 @@ public class D2ZServiceImpl implements ID2ZService {
 			}
 			pcaWrapper.makeCreateShippingOrderFilePCACall(orderDetailList,senderDataResponseList,null,serviceType);
 			return senderDataResponseList;
-		}else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) 
-				|| "MCM3".equalsIgnoreCase(serviceType) || "MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)){
-			PFLSenderDataFileRequest consignmentData = d2zValidator.isFWSubPostCodeUIValid(orderDetailList);
-			if(consignmentData.getPflSenderDataApi().size() > 0) {
-				if("MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)) {
-					pcaWrapper.makeCreateShippingOrderFilePCACall(consignmentData.getPflSenderDataApi(),senderDataResponseList,null,serviceType);
-				}else {
-					makeCreateShippingOrderFilePFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,null, serviceType);
-				}
+		}else if("STS".equalsIgnoreCase(serviceType)) {
+			if(isPostcodeValidationReq) {
+				d2zValidator.isSTPostCodeValid(orderDetailList);
 			}
-			
-			if("STS".equalsIgnoreCase(serviceType) && consignmentData.getNonPflSenderDataApi().size() > 0) {
-				pcaWrapper.makeCreateShippingOrderFilePCACall(consignmentData.getNonPflSenderDataApi(),senderDataResponseList,null,"STS-Sub");
-			}
-			
-			if(consignmentData.getNonPflSenderDataApi().size() > 0 && !"STS".equalsIgnoreCase(serviceType)) {
-				if(isPostcodeValidationReq) {
-					d2zValidator.isPostCodeValidUI(orderDetailList);
-					}
-				String senderFileID  = d2zDao.exportParcel(consignmentData.getNonPflSenderDataApi(),null);
-				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
-				Iterator itr = insertedOrder.iterator();
-				while (itr.hasNext()) {
-					Object[] obj = (Object[]) itr.next();
-					senderDataResponse = new SenderDataResponse();
-					senderDataResponse.setReferenceNumber(obj[0].toString());
-					senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
-					senderDataResponse.setCarrier(obj[4].toString());
-					senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
-					senderDataResponseList.add(senderDataResponse);
-				}
-			}
+			pcaWrapper.makeCreateShippingOrderFilePCACall(orderDetailList,senderDataResponseList,null,"STS-Sub");
 			return senderDataResponseList;
 		}
+//		else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) 
+//				|| "MCM3".equalsIgnoreCase(serviceType) || "MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)){
+//			PFLSenderDataFileRequest consignmentData = d2zValidator.isFWSubPostCodeUIValid(orderDetailList);
+//			if(consignmentData.getPflSenderDataApi().size() > 0) {
+//				if("MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)) {
+//					pcaWrapper.makeCreateShippingOrderFilePCACall(consignmentData.getPflSenderDataApi(),senderDataResponseList,null,serviceType);
+//				}else {
+//					makeCreateShippingOrderFilePFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,null, serviceType);
+//				}
+//			}
+//			
+//			if("STS".equalsIgnoreCase(serviceType) && consignmentData.getNonPflSenderDataApi().size() > 0) {
+//				pcaWrapper.makeCreateShippingOrderFilePCACall(consignmentData.getNonPflSenderDataApi(),senderDataResponseList,null,"STS-Sub");
+//			}
+//			
+//			if(consignmentData.getNonPflSenderDataApi().size() > 0 && !"STS".equalsIgnoreCase(serviceType)) {
+//				if(isPostcodeValidationReq) {
+//					d2zValidator.isPostCodeValidUI(orderDetailList);
+//					}
+//				String senderFileID  = d2zDao.exportParcel(consignmentData.getNonPflSenderDataApi(),null);
+//				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
+//				Iterator itr = insertedOrder.iterator();
+//				while (itr.hasNext()) {
+//					Object[] obj = (Object[]) itr.next();
+//					senderDataResponse = new SenderDataResponse();
+//					senderDataResponse.setReferenceNumber(obj[0].toString());
+//					senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
+//					senderDataResponse.setCarrier(obj[4].toString());
+//					senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
+//					senderDataResponseList.add(senderDataResponse);
+//				}
+//			}
+//			return senderDataResponseList;
+//		}
 		if(isPostcodeValidationReq) {
 			d2zValidator.isPostCodeValidUI(orderDetailList);
-			}
+		}
 		String senderFileID  = d2zDao.exportParcel(orderDetailList,null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		Iterator itr = insertedOrder.iterator();

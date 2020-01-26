@@ -11,6 +11,7 @@ import com.d2z.d2zservice.entity.FastwayPostcode;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.entity.StarTrackPostcode;
 import com.d2z.d2zservice.entity.SystemRefCount;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
@@ -174,5 +175,7 @@ public interface ID2ZDao {
 	public String fetchServiceTypeByRefNbr(String string);
 
 	public List<String> fetchMlidsBasedOnSupplier(String supplier);
+
+	public List<StarTrackPostcode> fetchSTPostCodeZone();
 
 }

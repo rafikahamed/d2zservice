@@ -381,4 +381,21 @@ public class D2ZValidator {
 		
 	}
 
+	public void isSTPostCodeValid(List<SenderData> orderDetailList) {
+		List<String> postCodeSTZoneList = D2ZSingleton.getInstance().getSTPostCodeZoneList();
+		List<String> incorrectSTPostcode_Suburb = new ArrayList<String>();
+		orderDetailList.forEach(obj -> {
+			String state = obj.getConsigneeState().trim().toUpperCase();
+			String suburb = obj.getConsigneeSuburb().trim().toUpperCase();
+			String postcode = obj.getConsigneePostcode().trim();
+			String combination = state.concat(suburb).concat(postcode);
+			if(!postCodeSTZoneList.contains(combination)) {
+				incorrectSTPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim());
+			}
+		});
+		if(!incorrectSTPostcode_Suburb.isEmpty()) {
+			throw new InvalidSuburbPostcodeException("Suburb is not in carrier serviced areas",incorrectSTPostcode_Suburb);
+		}
+	}
+
 }

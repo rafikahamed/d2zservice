@@ -30,6 +30,7 @@ import com.d2z.d2zservice.entity.FastwayPostcode;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.entity.StarTrackPostcode;
 import com.d2z.d2zservice.entity.SystemRefCount;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
@@ -69,6 +70,7 @@ import com.d2z.d2zservice.repository.FastwayPostcodeRepository;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
 import com.d2z.d2zservice.repository.ReturnsRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
+import com.d2z.d2zservice.repository.StarTrackPostcodeRepository;
 import com.d2z.d2zservice.repository.SystemRefCountRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
@@ -122,6 +124,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	FastwayPostcodeRepository fastwayPostcodeRepository;
+	
+	@Autowired
+	StarTrackPostcodeRepository starTrackPostcodeRepository;
 	
 	@Autowired
 	CurrencyRepository currencyRepository;
@@ -1242,6 +1247,12 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public List<String> fetchMlidsBasedOnSupplier(String supplier) {
 		return consigneeCountRepository.getMlidBasedonSupplier(supplier);
+	}
+
+	@Override
+	public List<StarTrackPostcode> fetchSTPostCodeZone() {
+		List<StarTrackPostcode> postCodeSTZoneList= (List<StarTrackPostcode>) starTrackPostcodeRepository.findAll();
+    	return postCodeSTZoneList;
 	}
 
 }
