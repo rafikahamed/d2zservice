@@ -21,6 +21,7 @@ import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.ExportConsignment;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
@@ -54,9 +55,9 @@ public interface ISuperUserD2ZService{
 
 	public List<ExportDelete> exportDeteledConsignments(String fromDate, String toDate);
 
-	List<SenderdataMaster> exportConsignmentData(String fromDate, String toDate);
+	List<ExportConsignment> exportConsignmentData(String fromDate, String toDate);
 	
-	List<SenderdataMaster> exportConsignmentDatafile(String type, List<String> Data);
+	List<ExportConsignment> exportConsignmentDatafile(String type, List<String> Data);
 
 	List<ExportShipment> exportShipmentData(String fromDate, String toDate);
 	

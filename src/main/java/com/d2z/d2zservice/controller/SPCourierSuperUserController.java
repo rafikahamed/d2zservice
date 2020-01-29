@@ -24,6 +24,7 @@ import com.d2z.d2zservice.model.BrokerShipmentList;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.ExportConsignment;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
 import com.d2z.d2zservice.model.InvoiceShipment;
@@ -80,7 +81,7 @@ public class SPCourierSuperUserController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "/export/consignment")
-	public List<SenderdataMaster> exportConsignmentData(@RequestParam("fromDate") String fromDate,
+	public List<ExportConsignment> exportConsignmentData(@RequestParam("fromDate") String fromDate,
 			@RequestParam("toDate") String toDate) {
 		return superUserD2zService.exportConsignmentData(fromDate, toDate);
 	}

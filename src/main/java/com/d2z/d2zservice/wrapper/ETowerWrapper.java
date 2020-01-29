@@ -780,8 +780,8 @@ s);
 		System.out.println("Background Thread created.....");
 		System.out.println(eTowerOrders.size());
 		String serviceName ="";
-		String serviceType = eTowerOrders.get(0).getServicetype();
 		if (!eTowerOrders.isEmpty()) {
+			String serviceType = eTowerOrders.get(0).getServicetype();
 			List<CreateShippingRequest> eTowerRequest = new ArrayList<CreateShippingRequest>();
 			if( serviceType.equals("HKG")|| serviceType.equals("HKG2")) {
 				serviceName = "STI AUSTRALIA";

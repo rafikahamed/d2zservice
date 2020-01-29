@@ -51,6 +51,7 @@ import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.ExportConsignment;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
@@ -227,10 +228,33 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	}
 
 	@Override
-	public List<SenderdataMaster> exportConsignmentData(String fromDate, String toDate) {
-		List<SenderdataMaster> output = d2zDao.exportConsignments(fromDate, toDate);
-		output.forEach(senderdata -> senderdata.setTimestamp(senderdata.getTimestamp().substring(0,10)));
-		return output;
+	public List<ExportConsignment> exportConsignmentData(String fromDate, String toDate) {
+		List<ExportConsignment> exportConsignmentData = new ArrayList<ExportConsignment>();
+		List<Object> output = d2zDao.exportConsignments(fromDate, toDate);
+		Iterator itr = output.iterator();
+		while (itr.hasNext()) {
+			Object[] obj = (Object[]) itr.next();
+			// System.out.println(obj.length);
+			// now you have one array of Object for each row
+			ExportConsignment exportval = new ExportConsignment();
+			exportval.setBroker_name(String.valueOf(obj[0]));
+			exportval.setArticleID(String.valueOf(obj[1]));
+			exportval.setReference_number(String.valueOf(obj[2]));
+			exportval.setConsignee_Postcode(String.valueOf(obj[3]));
+			exportval.setWeight(String.valueOf(obj[4]));
+			exportval.setServiceType(String.valueOf(obj[5]));
+			exportval.setManifest(obj[6]!=null?String.valueOf(obj[6]):null);
+			exportval.setDat(String.valueOf(obj[7]).substring(0, 10));
+			exportval.setValue(Double.valueOf("" + obj[8]));
+			exportval.setConsignee_name(String.valueOf(obj[9]));
+			exportval.setConsignee_addr1(String.valueOf(obj[10]));
+			exportval.setConsignee_addr2(String.valueOf(obj[11]));
+			exportval.setConsignee_Suburb(String.valueOf(obj[12]));
+			exportval.setConsignee_State(String.valueOf(obj[13]));
+			exportval.setProduct_Description(String.valueOf(obj[14]));
+			exportConsignmentData.add(exportval);
+		}
+		return exportConsignmentData;
 	}
 	
 	@Override
@@ -249,19 +273,20 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			exportval.setShippedQuantity(Integer.valueOf("" + obj[3]));
 			exportval.setConsignee_name(String.valueOf(obj[4]));
 			exportval.setConsignee_addr1(String.valueOf(obj[5]));
-			exportval.setConsignee_Suburb(String.valueOf(obj[6]));
-			exportval.setConsignee_State(String.valueOf(obj[7]));
-			exportval.setConsignee_Postcode(String.valueOf(obj[8]));
-			exportval.setConsignee_Phone(String.valueOf(obj[9]));
-			exportval.setProduct_Description(String.valueOf(obj[10]));
-			exportval.setShipper_Country(String.valueOf(obj[11]));
-			exportval.setWeight(Double.valueOf("" + obj[12]));
-			exportval.setBarcodelabelNumber(String.valueOf(obj[13]));
-			exportval.setServicetype(String.valueOf(obj[14]));
-			exportval.setCurrency(String.valueOf(obj[15]));
-			exportval.setArticleID(String.valueOf(obj[16]));
-			exportval.setDat(String.valueOf(obj[17]).substring(0, 10));
-			exportval.setManifest(String.valueOf(obj[18]));
+			exportval.setConsignee_addr2(String.valueOf(obj[6]));
+			exportval.setConsignee_Suburb(String.valueOf(obj[7]));
+			exportval.setConsignee_State(String.valueOf(obj[8]));
+			exportval.setConsignee_Postcode(String.valueOf(obj[9]));
+			exportval.setConsignee_Phone(String.valueOf(obj[10]));
+			exportval.setProduct_Description(String.valueOf(obj[11]));
+			exportval.setShipper_Country(String.valueOf(obj[12]));
+			exportval.setWeight(Double.valueOf("" + obj[13]));
+			exportval.setBarcodelabelNumber(String.valueOf(obj[14]));
+			exportval.setServicetype(String.valueOf(obj[15]));
+			exportval.setCurrency(String.valueOf(obj[16]));
+			exportval.setArticleID(String.valueOf(obj[17]));
+			exportval.setDat(String.valueOf(obj[18]).substring(0, 10));
+			exportval.setManifest(String.valueOf(obj[19]));
 			exportshipmentlist.add(exportval);
 		}
 		// ExportDeleteList.forEach(System.out::println);
@@ -1312,11 +1337,35 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	}
 
 	@Override
-	public List<SenderdataMaster> exportConsignmentDatafile(String type, List<String> Data) {
+	public List<ExportConsignment> exportConsignmentDatafile(String type, List<String> Data) {
 		// TODO Auto-generated method stub
-		List<SenderdataMaster> output = d2zDao.exportConsignmentsfile(type, Data);
-		output.forEach(senderdata -> senderdata.setTimestamp(senderdata.getTimestamp().substring(0,10)));
-		return output;
+	
+		List<ExportConsignment> exportConsignmentData = new ArrayList<ExportConsignment>();
+		List<Object> output = d2zDao.exportConsignmentsfile(type, Data);
+		Iterator itr = output.iterator();
+		while (itr.hasNext()) {
+			Object[] obj = (Object[]) itr.next();
+			// System.out.println(obj.length);
+			// now you have one array of Object for each row
+			ExportConsignment exportval = new ExportConsignment();
+			exportval.setBroker_name(String.valueOf(obj[0]));
+			exportval.setArticleID(String.valueOf(obj[1]));
+			exportval.setReference_number(String.valueOf(obj[2]));
+			exportval.setConsignee_Postcode(String.valueOf(obj[3]));
+			exportval.setWeight(String.valueOf(obj[4]));
+			exportval.setServiceType(String.valueOf(obj[5]));
+			exportval.setManifest(obj[6]!=null?String.valueOf(obj[6]):null);
+			exportval.setDat(String.valueOf(obj[7]).substring(0, 10));
+			exportval.setValue(Double.valueOf("" + obj[8]));
+			exportval.setConsignee_name(String.valueOf(obj[9]));
+			exportval.setConsignee_addr1(String.valueOf(obj[10]));
+			exportval.setConsignee_addr2(String.valueOf(obj[11]));
+			exportval.setConsignee_Suburb(String.valueOf(obj[12]));
+			exportval.setConsignee_State(String.valueOf(obj[13]));
+			exportval.setProduct_Description(String.valueOf(obj[14]));
+			exportConsignmentData.add(exportval);
+		}
+		return exportConsignmentData;
 	
 	}
 
@@ -1337,19 +1386,20 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			exportval.setShippedQuantity(Integer.valueOf("" + obj[3]));
 			exportval.setConsignee_name(String.valueOf(obj[4]));
 			exportval.setConsignee_addr1(String.valueOf(obj[5]));
-			exportval.setConsignee_Suburb(String.valueOf(obj[6]));
-			exportval.setConsignee_State(String.valueOf(obj[7]));
-			exportval.setConsignee_Postcode(String.valueOf(obj[8]));
-			exportval.setConsignee_Phone(String.valueOf(obj[9]));
-			exportval.setProduct_Description(String.valueOf(obj[10]));
-			exportval.setShipper_Country(String.valueOf(obj[11]));
-			exportval.setWeight(Double.valueOf("" + obj[12]));
-			exportval.setBarcodelabelNumber(String.valueOf(obj[13]));
-			exportval.setServicetype(String.valueOf(obj[14]));
-			exportval.setCurrency(String.valueOf(obj[15]));
-			exportval.setArticleID(String.valueOf(obj[16]));
-			exportval.setDat(String.valueOf(obj[17]).substring(0, 10));
-			exportval.setManifest(String.valueOf(obj[18]));
+			exportval.setConsignee_addr2(String.valueOf(obj[6]));
+			exportval.setConsignee_Suburb(String.valueOf(obj[7]));
+			exportval.setConsignee_State(String.valueOf(obj[8]));
+			exportval.setConsignee_Postcode(String.valueOf(obj[9]));
+			exportval.setConsignee_Phone(String.valueOf(obj[10]));
+			exportval.setProduct_Description(String.valueOf(obj[11]));
+			exportval.setShipper_Country(String.valueOf(obj[12]));
+			exportval.setWeight(Double.valueOf("" + obj[13]));
+			exportval.setBarcodelabelNumber(String.valueOf(obj[14]));
+			exportval.setServicetype(String.valueOf(obj[15]));
+			exportval.setCurrency(String.valueOf(obj[16]));
+			exportval.setArticleID(String.valueOf(obj[17]));
+			exportval.setDat(String.valueOf(obj[18]).substring(0, 10));
+			exportval.setManifest(String.valueOf(obj[19]));
 			exportshipmentlist.add(exportval);
 		}
 		// ExportDeleteList.forEach(System.out::println);

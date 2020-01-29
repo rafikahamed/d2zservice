@@ -8,6 +8,7 @@ public class ExportShipment {
 		  private int shippedQuantity;
 		  private String consignee_name;
 		  private String consignee_addr1;
+		  private String consignee_addr2;
 		  private String consignee_Suburb;
 		  private String consignee_State;
 		  private String consignee_Postcode;
@@ -18,7 +19,13 @@ public class ExportShipment {
 		  private String dat;
 		  private String manifest;
 		  
-		  public String getManifest() {
+		  public String getConsignee_addr2() {
+			return consignee_addr2;
+		}
+		public void setConsignee_addr2(String consignee_addr2) {
+			this.consignee_addr2 = consignee_addr2;
+		}
+		public String getManifest() {
 			return manifest;
 		}
 		public void setManifest(String manifest) {
