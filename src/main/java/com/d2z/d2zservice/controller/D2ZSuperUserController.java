@@ -4,7 +4,6 @@ import java.sql.Blob;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.sql.rowset.serial.SerialBlob;
 import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -42,6 +40,7 @@ import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ParcelResponse;
+import com.d2z.d2zservice.model.ProfitLossReport;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
@@ -54,7 +53,6 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.Zone;
 import com.d2z.d2zservice.model.ZoneRequest;
-import com.d2z.d2zservice.repository.CSTicketsRepository;
 import com.d2z.d2zservice.model.ExportDelete;
 import com.d2z.d2zservice.model.ExportShipment;
 import com.d2z.d2zservice.model.HeldParcel;
@@ -74,9 +72,6 @@ public class D2ZSuperUserController {
 	@Autowired
 	private ID2ZService d2zService;
 
-	@Autowired
-	private CSTicketsRepository csTicketsRepository;
-	
 	@RequestMapping( method = RequestMethod.POST, path = "/track-fileUpload", consumes=MediaType.APPLICATION_JSON)
     public UserMessage uploadTrackingFile(@RequestBody List<UploadTrackingFileData> fileData) {
 		UserMessage successMsg = superUserD2zService.uploadTrackingFile(fileData);
@@ -481,5 +476,11 @@ public class D2ZSuperUserController {
         UserMessage successMsg = d2zService.enquiryFileUpload(null, ticketNum,cmts,d2zCmts,update,sts,null);
 	    return successMsg;
 	}  
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/profit-loss")
+	public List<ProfitLossReport> profitLossReport(
+			@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) {
+		return superUserD2zService.profitLossReport(fromDate,toDate);
+	}
 	
 }

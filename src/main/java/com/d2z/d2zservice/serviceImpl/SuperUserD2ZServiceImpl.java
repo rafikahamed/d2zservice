@@ -58,6 +58,7 @@ import com.d2z.d2zservice.model.PFLTrackingResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
 import com.d2z.d2zservice.model.PflTrackEventRequest;
+import com.d2z.d2zservice.model.ProfitLossReport;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
@@ -1746,6 +1747,12 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	@Override
 	public UserMessage approveShiment(List<ShipmentApproval> shipmentApproval) {
 		return d2zDao.approveShiment(shipmentApproval);
+	}
+
+	@Override
+	public List<ProfitLossReport> profitLossReport(String fromDate, String toDate) {
+		List<ProfitLossReport> profitReport = d2zDao.profitLossReport(fromDate,toDate);
+		return profitReport;
 	}
 
 }

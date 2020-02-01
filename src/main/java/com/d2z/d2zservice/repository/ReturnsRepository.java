@@ -1,6 +1,5 @@
 package com.d2z.d2zservice.repository;
 
-import java.sql.Blob;
 import java.util.List;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,11 +17,11 @@ public interface ReturnsRepository extends CrudRepository<Returns, Long>{
 			"	  (\r\n" + 
 			"	  select User_ID, Consignee_name, carrier, Reference_number, BarcodelabelNumber, ArticleId FROM SENDERDATA_MASTER where \r\n" + 
 			"	 Reference_number = :referenceNumber or \r\n" + 
-			"  BarcodelabelNumber like %:barcodeLabel% or ArticleId = :articleId or datamatrix = :barcodeLabel)  b\r\n" + 
+			"  BarcodelabelNumber like %:barcodeLabel% or ArticleId = :articleId or datamatrix = :barcodeLabel or BarcodelabelNumber like %:dataMatrix% ) b \r\n" + 
 			"  ON A.User_ID = b.User_ID \r\n" + 
 			"  and A.Role_Id = 3")
 	List<String> fetchClientDetails(@Param("referenceNumber") String referenceNumber, @Param("barcodeLabel") String barcodeLabel, 
-			@Param("articleId") String articleId);
+			@Param("articleId") String articleId, @Param("dataMatrix") String dataMatrix);
 	
 	
 	@Query( nativeQuery = true, value="SELECT * FROM Returns where "
