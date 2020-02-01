@@ -36,6 +36,7 @@ import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.ExportConsignment;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
@@ -104,11 +105,11 @@ public class D2ZSuperUserController {
     }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/export/consignment")
-	 public List<SenderdataMaster> exportConsignmentData(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
+	 public List<ExportConsignment> exportConsignmentData(@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
 		return superUserD2zService.exportConsignmentData(fromDate, toDate);
    }
 	@RequestMapping( method = RequestMethod.GET, path = "/export/consignmentfile")
-	 public List<SenderdataMaster> exportConsignmentDataFile(@RequestParam("type") String type,@RequestParam("Data") List<String> Data) {
+	 public List<ExportConsignment> exportConsignmentDataFile(@RequestParam("type") String type,@RequestParam("Data") List<String> Data) {
 		System.out.println("in type:"+type);
 		
 		

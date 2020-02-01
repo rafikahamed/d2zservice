@@ -51,9 +51,9 @@ public interface ID2ZSuperUserDao {
 
 	List<String> exportDeteledConsignments(String fromDate, String toDate);
 
-	List<SenderdataMaster> exportConsignments(String fromDate, String toDate);
+	List<Object> exportConsignments(String fromDate, String toDate);
 	
-	List<SenderdataMaster> exportConsignmentsfile(String Type, List<String> Data);
+	List<Object> exportConsignmentsfile(String Type, List<String> Data);
 
 	List<Object> exportShipment(String fromDate, String toDate);
 	

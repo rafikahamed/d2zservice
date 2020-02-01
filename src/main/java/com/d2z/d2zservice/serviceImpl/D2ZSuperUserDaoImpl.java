@@ -272,10 +272,10 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
-	public List<SenderdataMaster> exportConsignments(String fromDate, String toDate) {
+	public List<Object> exportConsignments(String fromDate, String toDate) {
 		String fromTime = fromDate.concat(" ").concat("00:00:00");
 		String toTime = toDate.concat(" ").concat("23:59:59");
-		List<SenderdataMaster> exportedConsignments = senderDataRepository.exportConsignments(fromTime, toTime);
+		List<Object> exportedConsignments = senderDataRepository.exportConsignments(fromTime, toTime);
 		System.out.println(exportedConsignments.size());
 		return exportedConsignments;
 	}
@@ -1154,21 +1154,15 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
-	public List<SenderdataMaster> exportConsignmentsfile(String Type, List<String> Data) {
-		// TODO Auto-generated method stub
-		List<SenderdataMaster> exportedConsignments;
-		if(Type.equals("articleid"))
-		{
+	public List<Object> exportConsignmentsfile(String Type, List<String> Data) {
+		List<Object> exportedConsignments;
+		if(Type.equals("articleid")){
 			exportedConsignments = senderDataRepository.exportConsignmentsArticleid(Data);
 		}
-		else if (Type.equals("barcodelabel"))
-				{
+		else if (Type.equals("barcodelabel")){
+			Data.forEach(System.out::print);
 			exportedConsignments = senderDataRepository.exportConsignmentsBarcode(Data);
-				}
-			
-			
-		else
-		{
+		}else{
 			System.out.print("in else");
 			exportedConsignments = senderDataRepository.exportConsignmentsRef(Data);
 		}

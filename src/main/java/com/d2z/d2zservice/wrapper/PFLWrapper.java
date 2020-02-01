@@ -99,6 +99,9 @@ public class PFLWrapper {
 	private void logPflCreateResponse(PFLCreateShippingResponse pflResponse) throws FailureResponseException {
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 		if(pflResponse != null) {
+			if(null==pflResponse.getResult()) {
+				throw new FailureResponseException("Shipment Error. Please contact D2Z");
+			}else {
 			for(PFLResponseData pflData: pflResponse.getResult()) {
 				if(pflData.getCode() != null) {
 					ETowerResponse errorResponse = new ETowerResponse();
@@ -120,7 +123,7 @@ public class PFLWrapper {
 					errorResponse.setStatus("Success");
 					responseEntity.add(errorResponse);
 				}
-			}
+			}}
 			d2zDao.logEtowerResponse(responseEntity);
 		}
 	}
