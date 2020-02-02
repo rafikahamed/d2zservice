@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 public class ProfitLossReport {
 	
+	private String articleId;
 	private String broker;
 	private BigDecimal brokerRate;
 	private BigDecimal revenue;
@@ -53,6 +54,12 @@ public class ProfitLossReport {
 	}
 	public void setD2zRate(BigDecimal d2zRate) {
 		this.d2zRate = d2zRate;
+	}
+	public String getArticleId() {
+		return articleId;
+	}
+	public void setArticleId(String articleId) {
+		this.articleId = articleId;
 	}
 	
 }

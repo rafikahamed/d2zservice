@@ -2,8 +2,6 @@ package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,6 +13,11 @@ import javax.persistence.Table;
 @Table(name="IncomingJobs")
 public class IncomingJobs implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public String getIsSubmitted() {
 		return isSubmitted;
 	}
