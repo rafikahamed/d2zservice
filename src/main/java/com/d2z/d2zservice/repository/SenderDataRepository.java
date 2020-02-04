@@ -695,7 +695,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 			"ON s.reference_number not in ( select distinct reference_number from reconcile where Reference_number is not null ) AND U.role_id = '3' AND S.user_id = U.user_id \n" + 
 			") \n" + 
 			"B INNER JOIN users A ON A.user_id = B.client_broker_id ORDER  BY A.user_name")*/
-	@Query(nativeQuery = true, value = "SELECT DISTINCT U.Client_BrokerName,S.airwaybill,S.articleid,S.reference_number,S.d2zrate,S.dateallocated\n" + 
+	@Query(nativeQuery = true, value = "SELECT DISTINCT U.Client_BrokerName,S.airwaybill,S.articleid,S.reference_number,S.d2zrate,S.dateallocated,S.weight\n" + 
 			"        FROM   senderdata_invoicing S INNER JOIN users U ON s.reference_number NOT IN \n" + 
 			"             (SELECT DISTINCT reference_number FROM   reconcile WHERE reference_number IS NOT NULL) \n" + 
 			"                          AND U.role_id = '3' AND S.user_id = U.user_id ORDER  BY U.Client_BrokerName")
@@ -811,5 +811,8 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 
 	@Query("SELECT s.servicetype FROM SenderdataMaster s where s.reference_number = :refNbr")
 	String fetchServiceTypeByRefNbr(String refNbr);
+	
+	@Query("SELECT s.servicetype FROM SenderdataMaster s where s.mlid = :mlid")
+	String fetchServiceTypeByMlid(String mlid);
 
 } 

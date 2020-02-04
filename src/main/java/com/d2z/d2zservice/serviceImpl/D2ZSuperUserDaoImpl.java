@@ -1777,6 +1777,11 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
+
+	public String fetchServiceTypeByMlid(String mlid) {
+		// TODO Auto-generated method stub
+		return senderDataRepository.fetchServiceTypeByMlid(mlid);
+	}
 	public List<ProfitLossReport> profitLossReport(String fromDate,String toDate) {
 		//List<String> brokerList = incomingJobsLogicRepository.getIncomeBrokerList();
 		List<String> brokerProfit = senderdata_InvoicingRepository.getBrokerProfitDetails(fromDate,toDate);
@@ -1939,6 +1944,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		profitLossReport.add(profitTotal);
 		
 		return profitLossReport;
+
 	}
 
 }

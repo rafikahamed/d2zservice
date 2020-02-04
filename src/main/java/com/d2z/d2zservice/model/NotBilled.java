@@ -8,10 +8,18 @@ public class NotBilled {
 	private String referenceNumber;
 	private Double d2zRate;
 	private String dateAllocated;
+	private String weight;
+	
 	
 	
 	
 
+	public String getWeight() {
+		return weight;
+	}
+	public void setWeight(String weight) {
+		this.weight = weight;
+	}
 	public String getDateAllocated() {
 		return dateAllocated;
 	}

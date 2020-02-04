@@ -242,7 +242,10 @@ public interface ID2ZSuperUserDao {
 
 	String fetchServiceTypeByRefNbr(String string);
 
+	String fetchServiceTypeByMlid(String string);
+
 	List<ProfitLossReport> profitLossReport(String fromDate, String toDate);
+
 
 }
 
