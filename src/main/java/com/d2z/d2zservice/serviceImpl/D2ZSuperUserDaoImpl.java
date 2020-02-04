@@ -37,6 +37,7 @@ import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.entity.Senderdata_Invoicing;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.TransitTime;
 import com.d2z.d2zservice.entity.User;
@@ -53,6 +54,7 @@ import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
+import com.d2z.d2zservice.model.ProfitLossReport;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ShipmentApproval;
@@ -159,7 +161,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	TransitTimeRepository transitTimeRepository;
 	
 	@Autowired
-	IncomingJobsLogicRepository incomingJobRepository;
+	IncomingJobsLogicRepository incomingJobsLogicRepository;
 	
 	@Autowired
 	IncomingJobsRepository incomingRepository;
@@ -757,20 +759,16 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		List<Mlid> mlidlist = new ArrayList<Mlid>();
 		System.out.println("size:"+MlidData.size());
 		System.out.println("obj:"+MlidData.get(1).toString());
-		
-		
-		   ObjectMapper oMapper = new ObjectMapper();
-		
-		   Map<String, Object> map1 = oMapper.convertValue(MlidData.get(1), Map.class);
-		   String service = map1.get("ServiceType").toString();
+		ObjectMapper oMapper = new ObjectMapper();
+		Map<String, Object> map1 = oMapper.convertValue(MlidData.get(1), Map.class);
+		String service = map1.get("ServiceType").toString();
 			
 		System.out.println("service:"+service);
 		List<Mlid> mlidsearch = mlidRepository.downloadMlid(service);
 		UserMessage userMsg = new UserMessage();
 		System.out.println("mildsearchsize:"+mlidsearch.size()+".."+mlidsearch.isEmpty());
 		if(mlidsearch.isEmpty()) {
-		for(Object mild : MlidData )
-		{
+		for(Object mild : MlidData ){
 			/*JacksonJsonParser jsonParser = new JacksonJsonParser();
 			Map<String, Object> responses = jsonParser.parseMap(mild.toString());*/
 			 Map<String, Object> map = oMapper.convertValue(mild, Map.class);
@@ -782,11 +780,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			mldata.setMaxweight(map.get("Maxweight").toString());
 			mldata.setMlid(map.get("MLID").toString());
 			mldata.setInjectionState(map.get("InjectionState").toString());
-		
 			mlidlist.add(mldata);
-			
-			
-			
 		}
 		mlidRepository.saveAll(mlidlist);
 		userMsg.setMessage("Added Succesfully");
@@ -802,68 +796,54 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		//mlidRepository.saveAll(MlidData);
 		userMsg.setMessage("Added Succesfully");
 		}*/
-		else
-		{
+		else{
 			userMsg.setMessage("Service Type already exists");
 		}
-		
 		return userMsg;
-		
 	}
+	
 	@Override
-	public UserMessage deleteMlid(String service)
-	{
+	public UserMessage deleteMlid(String service){
 		UserMessage userMsg = new UserMessage();
 		System.out.println("servicenew:"+service+"delete");
-	int i =	mlidRepository.updateMlidList(service+"delete", service);
-	//System.out.println("count"+i);
-	userMsg.setMessage("Deleted Succesfully");
-		return userMsg;
-		
+		int i =	mlidRepository.updateMlidList(service+"delete", service);
+		//System.out.println("count"+i);
+		userMsg.setMessage("Deleted Succesfully");
+			return userMsg;
 	}
 
 	@Override
 	public List<String> fetchMlidDeleteList() {
-		
 			List<String> mlidList = mlidRepository.getServiceTypeList();
 			return mlidList;
-		
 	}
 
 	@Override
 	public List<AUWeight> downloadAUweight(List<Object> ArticleID) {
 		// TODO Auto-generated method stub
 		 ObjectMapper oMapper = new ObjectMapper();
-		
 		 System.out.print("inside AUWeight");
 		 List<AUWeight> auweightlist = new ArrayList<AUWeight>();
 		 List<String> articledata = new ArrayList<String>();
-		for(Object articleid : ArticleID )
-		{
+		for(Object articleid : ArticleID ){
 			 Map<String, Object> map = oMapper.convertValue(articleid, Map.class);
 			//AUWeight auwei = new AUWeight();
-			
 			 String ArticleId = map.get("ArticleID").toString();
 			 articledata.add(ArticleId);
 			// BigDecimal weight = senderDataRepository.fetchcubicweight(ArticleId);
-			
 			/* auwei.setArticleID(ArticleId);
 			 auwei.setCubicWeight(weight);
 			 auweightlist.add(auwei);*/
-			
 		}
 		System.out.print("articleid:"+articledata.size());
 		List<BigDecimal> weight = senderDataRepository.fetchcubicweight(articledata);
 		System.out.print(weight.size());
-		for(int i =0;i<weight.size();i++)
-		{AUWeight auwei = new AUWeight();
-			auwei.setArticleID(articledata.get(i));
+		for(int i =0;i<weight.size();i++){
+		 AUWeight auwei = new AUWeight();
+		 auwei.setArticleID(articledata.get(i));
 		 auwei.setCubicWeight(weight.get(i));
 		 auweightlist.add(auwei);
-			
 		}
-		
-				
 		return auweightlist;
 	}
 
@@ -929,22 +909,17 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
-
 	public List<IncomingJobsLogic> getBrokerMlidDetails() {
-		// TODO Auto-generated method stub
-		List<IncomingJobsLogic> jobs = (List<IncomingJobsLogic>) incomingJobRepository.findAll();
+		List<IncomingJobsLogic> jobs = (List<IncomingJobsLogic>) incomingJobsLogicRepository.findAll();
 		return jobs;
 	}
 
 	@Override
 	public String createEnquiry(List<CreateJobRequest> createJob) {
-		
 		List<IncomingJobs> joblist = new ArrayList<IncomingJobs>();
-		
-		for(CreateJobRequest jobRequest :createJob)
-		{String mlid = "";
-			for(DropDownModel model : jobRequest.getMlid())
-			{
+		for(CreateJobRequest jobRequest :createJob){
+			String mlid = "";
+			for(DropDownModel model : jobRequest.getMlid()){
 				 mlid = mlid + model.getName()+",";
 			}
 			mlid = mlid.substring(0, mlid.length() - 1);
@@ -960,23 +935,15 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				jobs.setWeight(jobRequest.getWeight());
 				jobs.setIsDeleted("N");
 				System.out.println("Date:"+":"+jobRequest.getEta().length());
-				if(jobRequest.getEta()!=null && jobRequest.getEta().length() > 0)
-				{
+				if(jobRequest.getEta()!=null && jobRequest.getEta().length() > 0){
 				LocalDate date1  = LocalDate.parse(jobRequest.getEta());
-				
-
-				
 				System.out.println("Date:"+":"+date1);
 				jobs.setEta(date1);
-				
 				}
 				joblist.add(jobs);
-			
-
 		}
 		incomingRepository.saveAll(joblist);
-					return "Job created Successfully";
-		
+	return "Job created Successfully";
 	}
 
 	@Override
@@ -984,20 +951,16 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		// TODO Auto-generated method stub
 		List<IncomingJobs> js = (List<IncomingJobs>)incomingRepository.fetchincomingJobs();
 		List<IncomingJobResponse> joblist = new ArrayList<IncomingJobResponse>();
-		for(IncomingJobs job :js)
-		{
+		for(IncomingJobs job :js){
 			IncomingJobResponse jobs = new IncomingJobResponse();
 			System.out.println("ATA:"+job.getAta()+"ETA:"+job.getEta());
 			jobs.setJobid(job.getID());
 			
-			if(job.getEta()!=null)
-			{
+			if(job.getEta()!=null){
 			jobs.setEta(job.getEta().toString());
 			}
-			if(job.getAta()!=null)
-			{
+			if(job.getAta()!=null){
 			jobs.setAta(job.getAta().toString());
-			
 			}
 			jobs.setBroker(job.getBroker());
 			jobs.setClear(job.getClear());
@@ -1021,7 +984,11 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 
 	@Override
 	public List<String> fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId) {
-		List<String> clientDetails = returnsRepository.fetchClientDetails(referenceNumber,barcodeLabel,articleId);
+		String dataMatrix = null;
+		if(!barcodeLabel.equalsIgnoreCase("null")) {
+			dataMatrix = barcodeLabel.substring(1,39);
+		}
+		List<String> clientDetails = returnsRepository.fetchClientDetails(referenceNumber,barcodeLabel,articleId,dataMatrix);
 		return clientDetails;
 	}
 
@@ -1033,14 +1000,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 
 	@Override
 	public String updateJob(List<IncomingJobResponse> js) {
-		// TODO Auto-generated method stub
-		
 		List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
-		
-		for(IncomingJobResponse job :js)
-		{
+		for(IncomingJobResponse job :js){
 			IncomingJobs jobs = new IncomingJobs();
-			
 			jobs.setBroker(job.getBroker());
 			jobs.setClear(job.getClear());
 			jobs.setConsignee(job.getConsignee());
@@ -1051,46 +1013,34 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			jobs.setMawb(job.getMawb());
 			jobs.setMLID(job.getMLID());
 			jobs.setNote(job.getNote());
-if(job.getEta()!=null && job.getEta().length() > 0)
-{
-
-			LocalDate date1  = LocalDate.parse(job.getEta());
-			
-			jobs.setEta(date1);
-			
-}
-if(job.getAta()!=null &&  job.getAta().length() > 0)
-{
-	System.out.print("Ata;"+job.getAta());
-			
-			if(job.getAta().contains("T04:"))
-			{
-			 LocalDate date2 = LocalDate.parse(job.getAta(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-			 jobs.setAta(date2);
+			if(job.getEta()!=null && job.getEta().length() > 0){
+				LocalDate date1  = LocalDate.parse(job.getEta());
+				jobs.setEta(date1);
 			}
-			else
-			{LocalDate date2  = LocalDate.parse(job.getAta());
-			jobs.setAta(date2);
-			}
-}
-		
+			if(job.getAta()!=null &&  job.getAta().length() > 0){
+				System.out.print("Ata;"+job.getAta());
 			
+			if(job.getAta().contains("T04:")){
+				 LocalDate date2 = LocalDate.parse(job.getAta(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+				 jobs.setAta(date2);
+			}
+			else{
+				LocalDate date2  = LocalDate.parse(job.getAta());
+				jobs.setAta(date2);
+				}
+			}
 			jobs.setPiece(job.getPiece());
 			jobs.setWeight(job.getWeight());
 			jobs.setID(job.getJobid());
-			
 		
-			if(job.getOutturn()!=null && (job.getOutturn().equalsIgnoreCase("True") || job.getOutturn().equalsIgnoreCase("Y")))
-			{
+			if(job.getOutturn()!=null && (job.getOutturn().equalsIgnoreCase("True") || job.getOutturn().equalsIgnoreCase("Y"))){
 				System.out.print("Outturn;"+job.getOutturn());	
-			jobs.setOutturn("Y");
+				jobs.setOutturn("Y");
 			}
-		jobs.setHeld(job.getHeld());
-		jobs.setIsDeleted("N");
+			jobs.setHeld(job.getHeld());
+			jobs.setIsDeleted("N");
 			joblist.add(jobs);
-			
 		}
-		
 		incomingRepository.saveAll(joblist);
 		return "Job Updated Succesfully";
 	}
@@ -1122,24 +1072,17 @@ if(job.getAta()!=null &&  job.getAta().length() > 0)
 
 	@Override
 	public List<IncomingJobResponse> getClosedJobList() {
-		// TODO Auto-generated method stub
-		
 			List<IncomingJobs> js = (List<IncomingJobs>)incomingRepository.fetchJobs();
 			List<IncomingJobResponse> joblist = new ArrayList<IncomingJobResponse>();
-			for(IncomingJobs job :js)
-			{
+			for(IncomingJobs job :js){
 				IncomingJobResponse jobs = new IncomingJobResponse();
 				System.out.println("ATA:"+job.getAta());
 				jobs.setJobid(job.getID());
-				
-				if(job.getEta()!=null)
-				{
-				jobs.setEta(job.getEta().toString());
+				if(job.getEta()!=null){
+					jobs.setEta(job.getEta().toString());
 				}
-				if(job.getAta()!=null)
-				{
-				jobs.setAta(job.getAta().toString());
-				
+				if(job.getAta()!=null){
+					jobs.setAta(job.getAta().toString());
 				}
 				jobs.setBroker(job.getBroker());
 				jobs.setClear(job.getClear());
@@ -1155,18 +1098,14 @@ if(job.getAta()!=null &&  job.getAta().length() > 0)
 				jobs.setPiece(job.getPiece());
 				jobs.setWeight(job.getWeight());
 				joblist.add(jobs);
-				
 			}
 			return  joblist;
 		}
 
 	@Override
 	public String deleteJob(List<IncomingJobResponse> js) {
-		// TODO Auto-generated method stub
-List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
-		
-		for(IncomingJobResponse job :js)
-		{
+		List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
+		for(IncomingJobResponse job :js){
 			IncomingJobs jobs = new IncomingJobs();
 			System.out.println("jkk"+job.getBroker()+"::"+job.getEta()+job.getClear());
 			jobs.setBroker(job.getBroker());
@@ -1198,23 +1137,17 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 						jobs.setAta(date2);
 						}
 			}
-					
-					
-			
 			jobs.setPiece(job.getPiece());
 			jobs.setWeight(job.getWeight());
 			jobs.setID(job.getJobid());
-			
 		
-			if(job.getOutturn()!=null && (job.getOutturn().equalsIgnoreCase("True") || job.getOutturn().equalsIgnoreCase("Y")))
-			{
+			if(job.getOutturn()!=null && (job.getOutturn().equalsIgnoreCase("True") || job.getOutturn().equalsIgnoreCase("Y"))){
 				System.out.print("Outturn;"+job.getOutturn());	
-			jobs.setOutturn("Y");
+				jobs.setOutturn("Y");
 			}
 		jobs.setHeld(job.getHeld());
 		jobs.setIsDeleted("Y");
-			joblist.add(jobs);
-			
+		joblist.add(jobs);
 		}
 		incomingRepository.saveAll(joblist);
 		return "Job Deleted Succesfully";
@@ -1222,23 +1155,14 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 
 	@Override
 	public List<Object> exportConsignmentsfile(String Type, List<String> Data) {
-		// TODO Auto-generated method stub
-		
-		
 		List<Object> exportedConsignments;
-		if(Type.equals("articleid"))
-		{
+		if(Type.equals("articleid")){
 			exportedConsignments = senderDataRepository.exportConsignmentsArticleid(Data);
 		}
-		else if (Type.equals("barcodelabel"))
-				{
+		else if (Type.equals("barcodelabel")){
 			Data.forEach(System.out::print);
 			exportedConsignments = senderDataRepository.exportConsignmentsBarcode(Data);
-				}
-			
-			
-		else
-		{
+		}else{
 			System.out.print("in else");
 			exportedConsignments = senderDataRepository.exportConsignmentsRef(Data);
 		}
@@ -1278,10 +1202,7 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 
 	@Override
 	public String submitJob(List<IncomingJobResponse> Job) {
-		// TODO Auto-generated method stub
-		
 		List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
-		
 		for(IncomingJobResponse job :Job){
 			IncomingJobs jobs = new IncomingJobs();
 			System.out.println("jkk"+job.getBroker()+"::"+job.getEta()+job.getClear());
@@ -1295,47 +1216,34 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 			jobs.setMawb(job.getMawb());
 			jobs.setMLID(job.getMLID());
 			jobs.setNote(job.getNote());
-			if(job.getEta()!=null && job.getEta().length() > 0)
-			{
+			if(job.getEta()!=null && job.getEta().length() > 0){
 						LocalDate date1  = LocalDate.parse(job.getEta());
 						jobs.setEta(date1);
-						
 			}
-			if(job.getAta()!=null &&  job.getAta().length() > 0)
-			{
-						
-						if(job.getAta().contains("T04:"))
-						{
+			if(job.getAta()!=null &&  job.getAta().length() > 0){
+						if(job.getAta().contains("T04:")){
 						 LocalDate date2 = LocalDate.parse(job.getAta(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 						 jobs.setAta(date2);
 						}
-						else
-						{LocalDate date2  = LocalDate.parse(job.getAta());
+						else{
+						LocalDate date2  = LocalDate.parse(job.getAta());
 						jobs.setAta(date2);
 						}
 			}
-					
-					
-			
 			jobs.setPiece(job.getPiece());
 			jobs.setWeight(job.getWeight());
 			jobs.setID(job.getJobid());
-			
-		
-			if(job.getOutturn()!=null && (job.getOutturn().equalsIgnoreCase("True") || job.getOutturn().equalsIgnoreCase("Y")))
-			{
+			if(job.getOutturn()!=null && (job.getOutturn().equalsIgnoreCase("True") || job.getOutturn().equalsIgnoreCase("Y"))){
 				System.out.print("Outturn;"+job.getOutturn());	
 			jobs.setOutturn("Y");
 			}
 		jobs.setHeld(job.getHeld());
 		jobs.setIsSubmitted("Y");
 		jobs.setIsDeleted("N");
-			joblist.add(jobs);
-			
+		joblist.add(jobs);
 		}
 		incomingRepository.saveAll(joblist);
 		return "Job Submitted Succesfully";
-		
 	}
 		
 	@Override
@@ -1502,13 +1410,8 @@ List<IncomingJobs> joblist =  new ArrayList<IncomingJobs>();
 
 	@Override
 	public String createParcel(List<HeldParcel> createJob) {
-		// TODO Auto-generated method stub
-		
-List<Parcels> parcelist = new ArrayList<Parcels>();
-		
-		for(HeldParcel jobRequest :createJob)
-		{
-			
+		List<Parcels> parcelist = new ArrayList<Parcels>();
+		for(HeldParcel jobRequest :createJob){
 			Parcels p = new Parcels();
 			p.setHawb(jobRequest.getHawb());
 			p.setMawb(jobRequest.getMawb());
@@ -1518,22 +1421,17 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 			p.setClient(jobRequest.getClient());
 			p.setPod(jobRequest.getPod());
 			parcelist.add(p);
-			
-
 		}
 		System.out.println("size:"+parcelist.size());
 		parcelRepository.saveAll(parcelist);
-					return "Parcel created Successfully";
+		return "Parcel created Successfully";
 	}
 
 	@Override
 	public List<ParcelResponse> getParcelList(String client) {
-		
 		List<Parcels> js = (List<Parcels>)parcelRepository.fetchheldparcel(client);
 		List<ParcelResponse> parcellist = new ArrayList<ParcelResponse>();
-		
-		for(Parcels par : js)
-		{
+		for(Parcels par : js){
 			ParcelResponse p = new ParcelResponse();
 			p.setParcelid(par.getID());
 			p.setHawb(par.getHawb());
@@ -1562,8 +1460,7 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 	public String updateParcel(List<ParcelResponse> parcel) {
 		List<Parcels> js = new ArrayList<Parcels>();
 		String msg = "";
-	for(ParcelResponse p : parcel)
-	{
+	for(ParcelResponse p : parcel){
 		Parcels par = parcelRepository.findByHAWB(p.getHawb());
 		if(null!=par) {
 		par.setHawb(p.getHawb());
@@ -1581,17 +1478,13 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 		}
 	}
 	parcelRepository.saveAll(js);
-		// TODO Auto-generated method stub
-	if(parcel.get(0).getOutput().equalsIgnoreCase("C"))
-	{
+	if(parcel.get(0).getOutput().equalsIgnoreCase("C")){
 		msg = "Updated Successfully";
 	}
-	else if(parcel.get(0).getOutput().equalsIgnoreCase("D"))
-	{
+	else if(parcel.get(0).getOutput().equalsIgnoreCase("D")){
 		msg = "Deleted Successfully";
 	}
-	else
-	{ msg = "Exported Successfully";
+	else{ msg = "Exported Successfully";
 		
 	}
 		return msg;
@@ -1602,9 +1495,7 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 		// TODO Auto-generated method stub
 		List<Parcels> js = (List<Parcels>)parcelRepository.fetchreleaseparcel(client);
 		List<ParcelResponse> parcellist = new ArrayList<ParcelResponse>();
-		
-		for(Parcels par : js)
-		{
+		for(Parcels par : js){
 			ParcelResponse p = new ParcelResponse();
 			p.setParcelid(par.getID());
 			p.setHawb(par.getHawb());
@@ -1622,11 +1513,8 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 			model2.setName(par.getPod());
 			model2.setValue(par.getPod());
 			p.setPod(model2);
-			
-		
 			parcellist.add(p);
 		}
-		// TODO Auto-generated method stub
 		return parcellist;
 	}
 	
@@ -1638,7 +1526,7 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 	public List<ShipmentCharges> shipmentCharges() {
 		List<IncomingJobs> incomingJob = incomingRepository.shipmentCharges();
 		List<ShipmentCharges> shipmentChargesList = new ArrayList<ShipmentCharges>();
-		 DecimalFormat twoDForm = new DecimalFormat("#.##");
+		DecimalFormat twoDForm = new DecimalFormat("#.##");
 		for(IncomingJobs incomingJobDetails:incomingJob){
 			ShipmentCharges shipmemntCharge = new ShipmentCharges();
 			shipmemntCharge.setBroker(incomingJobDetails.getBroker());
@@ -1885,14 +1773,178 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 	
 	@Override
 	public String fetchServiceTypeByRefNbr(String refNbr) {
-		
 		return senderDataRepository.fetchServiceTypeByRefNbr(refNbr);
 	}
 
 	@Override
+
 	public String fetchServiceTypeByMlid(String mlid) {
 		// TODO Auto-generated method stub
 		return senderDataRepository.fetchServiceTypeByMlid(mlid);
+	}
+	public List<ProfitLossReport> profitLossReport(String fromDate,String toDate) {
+		List<String> brokerList = incomingJobsLogicRepository.getIncomeBrokerList();
+		List<String> brokerProfit = senderdata_InvoicingRepository.getBrokerProfitDetails(fromDate,toDate,brokerList);
+		List<ProfitLossReport> profitLossReport = new ArrayList<ProfitLossReport>();
+		if(brokerProfit.size() > 0) {
+			Iterator itr = brokerProfit.iterator();
+			while (itr.hasNext()) {
+				Object[] obj = (Object[]) itr.next();
+				ProfitLossReport profit = new ProfitLossReport();
+				profit.setBroker(obj[0].toString());
+				profit.setParcel( (int) obj[1]);
+				profit.setRevenue((BigDecimal) obj[2]);
+				profit.setBrokerRate((BigDecimal) obj[2]);
+				profit.setD2zRate((BigDecimal) obj[3]);
+				profit.setProfit(profit.getBrokerRate().subtract(profit.getD2zRate()));
+				profit.setProfitPerParcel(profit.getProfit().divide(new BigDecimal(profit.getParcel()), 4));
+				profitLossReport.add(profit);
+			}
+		}
+		
+		/*Supplier Profit and loss Report*/
+		List<Senderdata_Invoicing> supplierDetila = senderdata_InvoicingRepository.getSupplierDetails(fromDate,toDate,brokerList);
+		List<ProfitLossReport> pflProfitList = new ArrayList<ProfitLossReport>();
+		List<ProfitLossReport> pcaProfitList = new ArrayList<ProfitLossReport>();
+		List<ProfitLossReport> ubiProfitList = new ArrayList<ProfitLossReport>();
+		List<ProfitLossReport> fdmProfitList = new ArrayList<ProfitLossReport>();
+		List<String> etowerMlid = consigneeCountRepository.getMlidBasedonSupplier("etower");
+		List<String> fdmMlid = consigneeCountRepository.getMlidBasedonSupplier("FDM");
+		supplierDetila.forEach(obj -> {
+			if((obj.getArticleId().length() == 12) && (obj.getServicetype().equalsIgnoreCase("FWM") || obj.getServicetype().equalsIgnoreCase("MCM") ||
+					obj.getServicetype().equalsIgnoreCase("FW"))) {
+				ProfitLossReport pflProfit = new ProfitLossReport();
+				pflProfit.setArticleId(obj.getArticleId());
+				pflProfit.setBrokerRate(obj.getBrokerRate());
+				pflProfit.setD2zRate(obj.getD2zRate());
+				pflProfitList.add(pflProfit);
+			}else if((obj.getArticleId().length() == 12) && (obj.getServicetype().equalsIgnoreCase("FWS") || obj.getServicetype().equalsIgnoreCase("MCS") )) {
+				ProfitLossReport pcaProfit = new ProfitLossReport();
+				pcaProfit.setArticleId(obj.getArticleId());
+				pcaProfit.setBrokerRate(obj.getBrokerRate());
+				pcaProfit.setD2zRate(obj.getD2zRate());
+				pcaProfitList.add(pcaProfit);
+			}else if((obj.getArticleId().length() == 21) && (etowerMlid.contains(obj.getArticleId().substring(0, 3)))) {
+				ProfitLossReport ubiProfit = new ProfitLossReport();
+				ubiProfit.setArticleId(obj.getArticleId());
+				ubiProfit.setBrokerRate(obj.getBrokerRate());
+				ubiProfit.setD2zRate(obj.getD2zRate());
+				ubiProfitList.add(ubiProfit);
+			}else if((obj.getArticleId().length() == 23) && (etowerMlid.contains(obj.getArticleId().substring(0, 5)))) {
+				ProfitLossReport ubiProfit = new ProfitLossReport();
+				ubiProfit.setArticleId(obj.getArticleId());
+				ubiProfit.setBrokerRate(obj.getBrokerRate());
+				ubiProfit.setD2zRate(obj.getD2zRate());
+				ubiProfitList.add(ubiProfit);
+			}else if((obj.getArticleId().length() == 23) && (fdmMlid.contains(obj.getArticleId().substring(0, 5)))) {
+				ProfitLossReport fdmProfit = new ProfitLossReport();
+				fdmProfit.setArticleId(obj.getArticleId());
+				fdmProfit.setBrokerRate(obj.getBrokerRate());
+				fdmProfit.setD2zRate(obj.getD2zRate());
+				fdmProfitList.add(fdmProfit);
+			}
+		});
+		if(pflProfitList.size() > 0) {
+			List<BigDecimal> pflBrkRateList = new ArrayList<BigDecimal>();
+			List<BigDecimal> pflD2zRateList = new ArrayList<BigDecimal>();
+			pflProfitList.forEach(pflObj -> {
+				pflBrkRateList.add(pflObj.getBrokerRate());
+				pflD2zRateList.add(pflObj.getD2zRate());
+			});
+			ProfitLossReport profitPfl = new ProfitLossReport();
+			profitPfl.setBroker("PFL");
+			BigDecimal pflBrokerRate = pflBrkRateList.stream().filter(pflBrkRat -> pflBrkRat != null).reduce(BigDecimal::add).get();
+			BigDecimal pflD2zRate = pflD2zRateList.stream().filter(pflD2zRat -> pflD2zRat != null).reduce(BigDecimal::add).get();
+			profitPfl.setBrokerRate(pflBrokerRate);
+			profitPfl.setD2zRate(pflD2zRate);
+			profitPfl.setParcel(pflProfitList.size());
+			profitPfl.setRevenue(profitPfl.getBrokerRate());
+			profitPfl.setProfit(profitPfl.getBrokerRate().subtract(profitPfl.getD2zRate()));
+			profitPfl.setProfitPerParcel(profitPfl.getProfit().divide(new BigDecimal(profitPfl.getParcel()), 4));
+			profitLossReport.add(profitPfl);
+		}
+		if(pcaProfitList.size() > 0) {
+			List<BigDecimal> pcaBrkRateList = new ArrayList<BigDecimal>();
+			List<BigDecimal> pcaD2zRateList = new ArrayList<BigDecimal>();
+			pcaProfitList.forEach(pcaObj -> {
+				pcaBrkRateList.add(pcaObj.getBrokerRate());
+				pcaD2zRateList.add(pcaObj.getD2zRate());
+			});
+			ProfitLossReport profitPca = new ProfitLossReport();
+			profitPca.setBroker("PCA");
+			BigDecimal pcaBrokerRate = pcaBrkRateList.stream().filter(pcaBrkRat -> pcaBrkRat != null).reduce(BigDecimal::add).get();
+			BigDecimal pcaD2zRate = pcaD2zRateList.stream().filter(pcaD2zRat -> pcaD2zRat != null).reduce(BigDecimal::add).get();
+			profitPca.setBrokerRate(pcaBrokerRate);
+			profitPca.setD2zRate(pcaD2zRate);
+			profitPca.setParcel(pcaProfitList.size());
+			profitPca.setRevenue(profitPca.getBrokerRate());
+			profitPca.setProfit(profitPca.getBrokerRate().subtract(profitPca.getD2zRate()));
+			profitPca.setProfitPerParcel(profitPca.getProfit().divide(new BigDecimal(profitPca.getParcel()), 4));
+			profitLossReport.add(profitPca);
+		}
+		if(ubiProfitList.size() > 0) {
+			List<BigDecimal> ubiBrkRateList = new ArrayList<BigDecimal>();
+			List<BigDecimal> ubiD2zRateList = new ArrayList<BigDecimal>();
+			ubiProfitList.forEach(ubiObj -> {
+				ubiBrkRateList.add(ubiObj.getBrokerRate());
+				ubiD2zRateList.add(ubiObj.getD2zRate());
+			});
+			ProfitLossReport profitUbi = new ProfitLossReport();
+			profitUbi.setBroker("UBI");
+			BigDecimal ubiBrokerRate = ubiBrkRateList.stream().filter(ubiBrkRat -> ubiBrkRat != null).reduce(BigDecimal::add).get();
+			BigDecimal ubiD2zRate = ubiD2zRateList.stream().filter(ubiD2zRat -> ubiD2zRat != null).reduce(BigDecimal::add).get();
+			profitUbi.setBrokerRate(ubiBrokerRate);
+			profitUbi.setD2zRate(ubiD2zRate);
+			profitUbi.setParcel(ubiProfitList.size());
+			profitUbi.setRevenue(profitUbi.getBrokerRate());
+			profitUbi.setProfit(profitUbi.getBrokerRate().subtract(profitUbi.getD2zRate()));
+			profitUbi.setProfitPerParcel(profitUbi.getProfit().divide(new BigDecimal(profitUbi.getParcel()), 4));
+			profitLossReport.add(profitUbi);
+		}
+		if(fdmProfitList.size() > 0) {
+			List<BigDecimal> fdmBrkRateList = new ArrayList<BigDecimal>();
+			List<BigDecimal> fdmD2zRateList = new ArrayList<BigDecimal>();
+			fdmProfitList.forEach(fdmObj -> {
+				fdmBrkRateList.add(fdmObj.getBrokerRate());
+				fdmD2zRateList.add(fdmObj.getD2zRate());
+			});
+			ProfitLossReport profitFdm = new ProfitLossReport();
+			profitFdm.setBroker("FDM");
+			BigDecimal fdmBrokerRate = fdmBrkRateList.stream().filter(fdmBrkRat -> fdmBrkRat != null).reduce(BigDecimal::add).get();
+			BigDecimal fdmD2zRate = fdmD2zRateList.stream().filter(fdmD2zRat -> fdmD2zRat != null).reduce(BigDecimal::add).get();
+			profitFdm.setBrokerRate(fdmBrokerRate);
+			profitFdm.setD2zRate(fdmD2zRate);
+			profitFdm.setParcel(fdmProfitList.size());
+			profitFdm.setRevenue(profitFdm.getBrokerRate());
+			profitFdm.setProfit(profitFdm.getBrokerRate().subtract(profitFdm.getD2zRate()));
+			profitFdm.setProfitPerParcel(profitFdm.getProfit().divide(new BigDecimal(profitFdm.getParcel()), 4));
+			profitLossReport.add(profitFdm);
+		}
+		
+		List<BigDecimal> totlaRevList = new ArrayList<BigDecimal>();
+		List<BigDecimal> totalProfitList = new ArrayList<BigDecimal>();
+		List<Integer> 	 totalParcelList  = new ArrayList<Integer>();
+		List<BigDecimal> profitParcelList = new ArrayList<BigDecimal>();
+		profitLossReport.forEach(profitObj -> {
+			totlaRevList.add(profitObj.getRevenue());
+			totalProfitList.add(profitObj.getProfit());
+			totalParcelList.add(profitObj.getParcel());
+			profitParcelList.add(profitObj.getProfitPerParcel());
+		});
+		Integer totalParcel    = totalParcelList.stream().reduce(Integer::sum).get();
+		BigDecimal totalRev    = totlaRevList.stream().reduce(BigDecimal::add).get();
+		BigDecimal totalPrf    = totalProfitList.stream().reduce(BigDecimal::add).get();
+		BigDecimal totalPrfPrl = profitParcelList.stream().reduce(BigDecimal::add).get();
+		ProfitLossReport profitTotal = new ProfitLossReport();
+		profitTotal.setBroker("Total");
+		profitTotal.setParcel(totalParcel);
+		profitTotal.setRevenue(totalRev);
+		profitTotal.setProfit(totalPrf);
+		profitTotal.setProfitPerParcel(totalPrfPrl);
+		profitLossReport.add(profitTotal);
+		
+		return profitLossReport;
+
 	}
 
 }

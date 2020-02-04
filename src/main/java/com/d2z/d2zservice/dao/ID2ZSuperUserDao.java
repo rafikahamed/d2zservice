@@ -26,6 +26,7 @@ import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
+import com.d2z.d2zservice.model.ProfitLossReport;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ShipmentApproval;
@@ -242,6 +243,9 @@ public interface ID2ZSuperUserDao {
 	String fetchServiceTypeByRefNbr(String string);
 
 	String fetchServiceTypeByMlid(String string);
+
+	List<ProfitLossReport> profitLossReport(String fromDate, String toDate);
+
 
 }
 

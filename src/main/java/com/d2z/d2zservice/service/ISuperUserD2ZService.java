@@ -26,6 +26,7 @@ import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ParcelResponse;
+import com.d2z.d2zservice.model.ProfitLossReport;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
@@ -62,7 +63,6 @@ public interface ISuperUserD2ZService{
 	List<ExportShipment> exportShipmentData(String fromDate, String toDate);
 	
 	List<ExportShipment> exportShipmentDatafile(String type, List<String> Data);
-	
 	
 	List<ExportShipment> exportNonShipmentData(String fromDate, String toDate);
 
@@ -184,5 +184,7 @@ public interface ISuperUserD2ZService{
 	public Zone zoneReport(List<ZoneRequest> zoneRequest);
 
 	public UserMessage approveShiment(List<ShipmentApproval> shipmentApproval);
+
+	public List<ProfitLossReport> profitLossReport(String fromDate, String toDate);
 
 }

@@ -79,6 +79,22 @@ public class Senderdata_Invoicing implements Serializable {
 	
 	@Column(name="Timestamp")
 	private String timestamp;
+	
+	@Column(name="DateAllocated")
+	private String dateAllocated;
+	
+	@Column(name="Zone")
+	private String zone;
+	
+	@Column(name="Postage")
+	private String postage;
+	
+	@Column(name="Brokerusername")
+	private String brokerusername;
+	
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 
 	public int getUser_Id() {
 		return user_Id;
@@ -215,5 +231,37 @@ public class Senderdata_Invoicing implements Serializable {
 	public void setTimestamp(String timestamp) {
 		this.timestamp = timestamp;
 	}
-	
+
+	public String getDateAllocated() {
+		return dateAllocated;
+	}
+
+	public void setDateAllocated(String dateAllocated) {
+		this.dateAllocated = dateAllocated;
+	}
+
+	public String getZone() {
+		return zone;
+	}
+
+	public void setZone(String zone) {
+		this.zone = zone;
+	}
+
+	public String getPostage() {
+		return postage;
+	}
+
+	public void setPostage(String postage) {
+		this.postage = postage;
+	}
+
+	public String getBrokerusername() {
+		return brokerusername;
+	}
+
+	public void setBrokerusername(String brokerusername) {
+		this.brokerusername = brokerusername;
+	}
+
 }

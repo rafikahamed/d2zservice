@@ -10,6 +10,12 @@ import javax.persistence.Table;
 @Entity
 @Table(name="IncomingJobsLogic")
 public class IncomingJobsLogic implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@Column(name = "RowID")
 	private String ID;
