@@ -1778,8 +1778,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 
 	@Override
 	public List<ProfitLossReport> profitLossReport(String fromDate,String toDate) {
-		List<String> brokerList = incomingJobsLogicRepository.getIncomeBrokerList();
-		List<String> brokerProfit = senderdata_InvoicingRepository.getBrokerProfitDetails(fromDate,toDate,brokerList);
+		//List<String> brokerList = incomingJobsLogicRepository.getIncomeBrokerList();
+		List<String> brokerProfit = senderdata_InvoicingRepository.getBrokerProfitDetails(fromDate,toDate);
 		List<ProfitLossReport> profitLossReport = new ArrayList<ProfitLossReport>();
 		if(brokerProfit.size() > 0) {
 			Iterator itr = brokerProfit.iterator();
@@ -1798,7 +1798,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		}
 		
 		/*Supplier Profit and loss Report*/
-		List<Senderdata_Invoicing> supplierDetila = senderdata_InvoicingRepository.getSupplierDetails(fromDate,toDate,brokerList);
+		List<Senderdata_Invoicing> supplierDetila = senderdata_InvoicingRepository.getSupplierDetails(fromDate,toDate);
 		List<ProfitLossReport> pflProfitList = new ArrayList<ProfitLossReport>();
 		List<ProfitLossReport> pcaProfitList = new ArrayList<ProfitLossReport>();
 		List<ProfitLossReport> ubiProfitList = new ArrayList<ProfitLossReport>();
