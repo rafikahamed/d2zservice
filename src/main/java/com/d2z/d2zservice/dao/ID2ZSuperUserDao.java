@@ -241,5 +241,7 @@ public interface ID2ZSuperUserDao {
 
 	String fetchServiceTypeByRefNbr(String string);
 
+	String fetchServiceTypeByMlid(String string);
+
 }
 

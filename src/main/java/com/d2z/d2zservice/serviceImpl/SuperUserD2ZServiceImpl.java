@@ -586,6 +586,9 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				notBilled.setD2zRate(Double.parseDouble(obj[4].toString()));
 			if (obj[5] != null)
 					notBilled.setDateAllocated(obj[5].toString());
+			if (obj[6] != null)
+				notBilled.setWeight(obj[6].toString());
+		
 			notBilledList.add(notBilled);
 		}
 		return notBilledList;
@@ -1716,7 +1719,11 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	        	if(!senderMasterData.isEmpty()) {
 	        		freipostWrapper.uploadManifestService(senderMasterData);
 	        	}*/
-	        	
+	       	 	List<String> articleIDS = d2zDao.fetchDataForEtowerForeCastCall(refNbrs);
+	       	 	if(!articleIDS.isEmpty()) {
+	       	 		eTowerWrapper.makeEtowerForecastCall(articleIDS);
+	       	 	}
+        	 
 	        	List<SenderdataMaster> pcaData = d2zDao.fetchDataBasedonSupplier(toAllocate,"PCA");
 	        	if(!pcaData.isEmpty()) {
 	        		try {
@@ -1728,8 +1735,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	        	}
 	        	
 	        	List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
-	        	String serviceType = d2zDao.fetchServiceTypeByRefNbr(fastwayOrderId.get(0));
 	        	 if(!fastwayOrderId.isEmpty()) {
+	 	        	String serviceType = d2zDao.fetchServiceTypeByMlid(fastwayOrderId.get(0));
 	        		 try {
 						pflWrapper.createSubmitOrderPFL(fastwayOrderId,serviceType);
 					} catch (FailureResponseException e) {
@@ -1737,10 +1744,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 					}
 	        	 }
 	        
-	        	 List<String> articleIDS = d2zDao.fetchDataForEtowerForeCastCall(refNbrs);
-	        	 if(!articleIDS.isEmpty()) {
-	        		 eTowerWrapper.makeEtowerForecastCall(articleIDS);
-	        	 }
+	        
 	        }};
 	        new Thread(freipost).start();
 		}

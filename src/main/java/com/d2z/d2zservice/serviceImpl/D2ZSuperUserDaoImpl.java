@@ -1889,4 +1889,10 @@ List<Parcels> parcelist = new ArrayList<Parcels>();
 		return senderDataRepository.fetchServiceTypeByRefNbr(refNbr);
 	}
 
+	@Override
+	public String fetchServiceTypeByMlid(String mlid) {
+		// TODO Auto-generated method stub
+		return senderDataRepository.fetchServiceTypeByMlid(mlid);
+	}
+
 }

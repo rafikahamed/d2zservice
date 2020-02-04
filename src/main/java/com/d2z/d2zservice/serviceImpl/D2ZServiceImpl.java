@@ -251,6 +251,31 @@ public class D2ZServiceImpl implements ID2ZService {
 			pcaWrapper.makeCreateShippingOrderFilePCACall(orderDetailList,senderDataResponseList,null,"STS-Sub");
 			return senderDataResponseList;
 		}
+		else if("RET".equalsIgnoreCase(serviceType)){
+			PFLSenderDataFileRequest consignmentData = d2zValidator.isFWSubPostCodeUIValid(orderDetailList);
+			if(consignmentData.getPflSenderDataApi().size() > 0) {
+					makeCreateShippingOrderFilePFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,null, serviceType);
+				}
+			
+			if(consignmentData.getNonPflSenderDataApi().size() > 0) {
+				if(isPostcodeValidationReq) {
+					d2zValidator.isPostCodeValidUI(orderDetailList);
+					}
+				String senderFileID  = d2zDao.exportParcel(consignmentData.getNonPflSenderDataApi(),null);
+				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
+				Iterator itr = insertedOrder.iterator();
+				while (itr.hasNext()) {
+					Object[] obj = (Object[]) itr.next();
+					senderDataResponse = new SenderDataResponse();
+					senderDataResponse.setReferenceNumber(obj[0].toString());
+					senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
+					senderDataResponse.setCarrier(obj[4].toString());
+					senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
+					senderDataResponseList.add(senderDataResponse);
+				}
+			}
+			return senderDataResponseList;
+		}
 //		else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) 
 //				|| "MCM3".equalsIgnoreCase(serviceType) || "MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)){
 //			PFLSenderDataFileRequest consignmentData = d2zValidator.isFWSubPostCodeUIValid(orderDetailList);
@@ -1261,8 +1286,8 @@ else
 	        	}
 	        
 	        	List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
-	        	String serviceType = d2zDao.fetchServiceTypeByRefNbr(refNbrs[0]);
 	        	 if(!fastwayOrderId.isEmpty()) {
+	 	        	String serviceType = d2zDao.fetchServiceTypeByRefNbr(refNbrs[0]);
 	        		 try {
 						pflWrapper.createSubmitOrderPFL(fastwayOrderId,serviceType);
 					} catch (FailureResponseException e) {
@@ -2504,7 +2529,7 @@ else
 		System.out.println(eTowerResponse);
 		List<TrackEventResponseData> responseData = eTowerResponse.getData();
 
-		if (!responseData.isEmpty()) {
+		if (responseData!=null && !responseData.isEmpty()) {
 
 			for (TrackEventResponseData data : responseData) {
 
