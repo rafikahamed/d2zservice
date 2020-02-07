@@ -247,6 +247,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		}
 		else if("RET".equalsIgnoreCase(serviceType)){
 			PFLSenderDataFileRequest consignmentData = d2zValidator.isFWSubPostCodeUIValid(orderDetailList);
+			
 			if(consignmentData.getPflSenderDataApi().size() > 0) {
 					makeCreateShippingOrderFilePFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,null, serviceType);
 				}
