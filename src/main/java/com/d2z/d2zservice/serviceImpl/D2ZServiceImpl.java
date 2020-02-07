@@ -64,6 +64,7 @@ import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.FDMManifestDetails;
+import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
 import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.PFLTrackEvent;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
@@ -449,7 +450,7 @@ public class D2ZServiceImpl implements ID2ZService {
 				eParcelNewData.add(data);
 			}else if("1PME".equalsIgnoreCase(data.getServiceType())) {
 				expressNewData.add(data);
-			}else if("HKG".equalsIgnoreCase(data.getServiceType())) {
+			}else if("HKG".equalsIgnoreCase(data.getServiceType()) || "HKG2".equalsIgnoreCase(data.getServiceType())) {
 				parcelPostData.add(data);
 			}else  if(data.getCarrier().equalsIgnoreCase("eParcel")) {
 				setGS1Type= true;
@@ -740,7 +741,7 @@ if(!pcalabel)
 				eParcelNewData.add(data);
 			}else if("1PME".equalsIgnoreCase(data.getServiceType())) {
 				expressNewData.add(data);
-			}else if("HKG".equalsIgnoreCase(data.getServiceType())) {
+			}else if("HKG".equalsIgnoreCase(data.getServiceType()) || "HKG2".equalsIgnoreCase(data.getServiceType())) {
 				parcelPostData.add(data);
 			}else  if(data.getCarrier().equalsIgnoreCase("eParcel")) {
 				eParcelData.add(data);
