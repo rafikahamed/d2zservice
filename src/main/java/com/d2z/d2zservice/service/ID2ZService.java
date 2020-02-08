@@ -26,6 +26,7 @@ import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
+import com.d2z.d2zservice.model.SuperUserEnquiry;
 import com.d2z.d2zservice.model.TrackParcel;
 import com.d2z.d2zservice.model.TrackParcelResponse;
 import com.d2z.d2zservice.model.TrackingDetails;
@@ -130,11 +131,13 @@ public interface ID2ZService {
 	public List<ShipmentDetails> downloadShipmentDataTemplatebyType(List<String> number, Integer userId, String type);
 
 	public UserMessage returnAction(List<ReturnsAction> returnsAction);
-
+	
 	public List<TrackParcelResponse> trackParcels(List<String> articleIds) throws InterruptedException, ExecutionException;
 
 	public UserMessage enquiryFileUpload(Blob blob, String ticketNumber, String comments, String d2zComments, String sendUpdate,
 											String status, String filename);
+
+	public UserMessage enquiryFileUpload(List<SuperUserEnquiry> enquiry);
 
 
 }

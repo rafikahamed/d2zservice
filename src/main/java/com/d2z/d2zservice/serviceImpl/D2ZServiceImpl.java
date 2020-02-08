@@ -78,6 +78,7 @@ import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
+import com.d2z.d2zservice.model.SuperUserEnquiry;
 import com.d2z.d2zservice.model.TrackParcel;
 import com.d2z.d2zservice.model.TrackParcelResponse;
 import com.d2z.d2zservice.model.TrackingDetails;
@@ -2553,6 +2554,12 @@ else
 	public UserMessage enquiryFileUpload(Blob blob, String ticketNumber, String comments, String d2zComments, String sendUpdate,
 			String status, String fileName) {
 		UserMessage usrMsg = d2zDao.enquiryFileUpload(blob,ticketNumber,comments,d2zComments,sendUpdate,status,fileName);
+		return usrMsg;
+	}
+
+	@Override
+	public UserMessage enquiryFileUpload(List<SuperUserEnquiry> enquiry) {
+		UserMessage usrMsg = d2zDao.enquiryFileUpload(enquiry);
 		return usrMsg;
 	}
 

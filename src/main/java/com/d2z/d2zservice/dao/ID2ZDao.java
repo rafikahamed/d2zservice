@@ -25,6 +25,7 @@ import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
+import com.d2z.d2zservice.model.SuperUserEnquiry;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
@@ -177,5 +178,7 @@ public interface ID2ZDao {
 	public List<String> fetchMlidsBasedOnSupplier(String supplier);
 
 	public List<StarTrackPostcode> fetchSTPostCodeZone();
+
+	public UserMessage enquiryFileUpload(List<SuperUserEnquiry> enquiry);
 
 }

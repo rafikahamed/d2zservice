@@ -46,6 +46,7 @@ import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
+import com.d2z.d2zservice.model.SuperUserEnquiry;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.auspost.TrackableItems;
@@ -1240,7 +1241,6 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public String fetchServiceTypeByRefNbr(String refNbr) {
-		
 		return senderDataRepository.fetchServiceTypeByRefNbr(refNbr);
 	}
 
@@ -1253,6 +1253,16 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public List<StarTrackPostcode> fetchSTPostCodeZone() {
 		List<StarTrackPostcode> postCodeSTZoneList= (List<StarTrackPostcode>) starTrackPostcodeRepository.findAll();
     	return postCodeSTZoneList;
+	}
+
+	@Override
+	public UserMessage enquiryFileUpload(List<SuperUserEnquiry> SuperUserEnquiry) {
+		for(SuperUserEnquiry enquiry:SuperUserEnquiry) {
+			csticketsRepository.enquiryFileUpload(null, enquiry.getTicketNumber(), enquiry.getComments(), enquiry.getD2zComments(), enquiry.getSendUpdate(), enquiry.getStatus(), enquiry.getFileName());
+		}
+		UserMessage usrMsg = new UserMessage();
+		usrMsg.setMessage("Return Action Updated Successfully");
+		return usrMsg;
 	}
 
 }

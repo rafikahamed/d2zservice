@@ -36,6 +36,8 @@ import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
+import com.d2z.d2zservice.model.Enquiry;
+import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.ExportConsignment;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
@@ -48,6 +50,7 @@ import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.ShipmentApproval;
 import com.d2z.d2zservice.model.ShipmentCharges;
+import com.d2z.d2zservice.model.SuperUserEnquiry;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
@@ -477,6 +480,12 @@ public class D2ZSuperUserController {
         UserMessage successMsg = d2zService.enquiryFileUpload(null, ticketNum,cmts,d2zCmts,update,sts,null);
 	    return successMsg;
 	}  
+	
+	@RequestMapping(method = RequestMethod.PUT, path = "/enquiry/update")
+	public UserMessage enquiryFileUpload(@RequestBody List<SuperUserEnquiry> enquiry) throws Exception {
+        UserMessage successMsg = d2zService.enquiryFileUpload(enquiry);
+	    return successMsg;
+	}
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/profit-loss")
 	public List<ProfitLossReport> profitLossReport(
