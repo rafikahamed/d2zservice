@@ -92,21 +92,19 @@ public class D2ZValidator {
 	
 	public void isReferenceNumberUniqueUI(List<String> incomingRefNbr) throws ReferenceNumberNotUniqueException{
 		List<String> referenceNumber_DB = d2zDao.fetchAllReferenceNumbers();
-		
+
 		referenceNumber_DB.addAll(incomingRefNbr);
 
 		List<String> duplicateRefNbr = referenceNumber_DB.stream().collect(Collectors.groupingBy(Function.identity(),     
-	              Collectors.counting()))                                             
-	          .entrySet().stream()
-	          .filter(e -> e.getValue() > 1)                                      
-	          .map(e -> e.getKey())                                                  
-	          .collect(Collectors.toList());
-		
-		if(!duplicateRefNbr.isEmpty()) {
-			throw new ReferenceNumberNotUniqueException("Reference Number must be unique",duplicateRefNbr);
-		}
+			           Collectors.counting()))                                             
+			          .entrySet().stream()
+			          .filter(e -> e.getValue() > 1)                                      
+			          .map(e -> e.getKey())                                                  
+			          .collect(Collectors.toList());
+				if(!duplicateRefNbr.isEmpty()) {
+					throw new ReferenceNumberNotUniqueException("Reference Number must be unique",duplicateRefNbr);
+				}
 	}
-	
 	
 	public void isArticleIdUniqueUI(List<NonD2ZData> nonD2zData) throws ReferenceNumberNotUniqueException{
 		List<String> articleNumber_DB = d2zSuperUserDao.fetchAllArticleId();
@@ -395,6 +393,23 @@ public class D2ZValidator {
 		});
 		if(!incorrectSTPostcode_Suburb.isEmpty()) {
 			throw new InvalidSuburbPostcodeException("Suburb is not in carrier serviced areas",incorrectSTPostcode_Suburb);
+		}
+	}
+	
+	
+	public void isEnquiryReferenceNumberUnique(List<String> incomingRefNbr) throws ReferenceNumberNotUniqueException{
+		List<String> referenceNumber_enquiry = d2zSuperUserDao.fetchAllReferenceNumber();
+		referenceNumber_enquiry.addAll(incomingRefNbr);
+
+		List<String> duplicateEnqRefNbr = referenceNumber_enquiry.stream().collect(Collectors.groupingBy(Function.identity(),     
+	              Collectors.counting()))                                             
+	          .entrySet().stream()
+	          .filter(e -> e.getValue() > 1)                                      
+	          .map(e -> e.getKey())                                                  
+	          .collect(Collectors.toList());
+		
+		if(!duplicateEnqRefNbr.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Reference Number or Article ID or BarcodeLabel must be unique",duplicateEnqRefNbr);
 		}
 	}
 

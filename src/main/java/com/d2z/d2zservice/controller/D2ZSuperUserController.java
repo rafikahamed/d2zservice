@@ -399,7 +399,7 @@ public class D2ZSuperUserController {
     }
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/create-returns")
-    public UserMessage createReturns(@RequestBody List<Returns> returns) {
+    public UserMessage createReturns(@RequestBody List<Returns> returns) throws ReferenceNumberNotUniqueException {
 		return superUserD2zService.createReturns(returns);
     }
 	

@@ -145,7 +145,7 @@ public interface ISuperUserD2ZService{
 
 	public ReturnsClientResponse fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId);
 
-	public UserMessage createReturns(List<Returns> returns);
+	public UserMessage createReturns(List<Returns> returns) throws ReferenceNumberNotUniqueException;
 
 	public UserMessage updateJob(List<IncomingJobResponse> job);
 	

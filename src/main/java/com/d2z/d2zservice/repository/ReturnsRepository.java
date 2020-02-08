@@ -23,11 +23,9 @@ public interface ReturnsRepository extends CrudRepository<Returns, Long>{
 	List<String> fetchClientDetails(@Param("referenceNumber") String referenceNumber, @Param("barcodeLabel") String barcodeLabel, 
 			@Param("articleId") String articleId, @Param("dataMatrix") String dataMatrix);
 	
-	
 	@Query( nativeQuery = true, value="SELECT * FROM Returns where "
 			+ "returnsCreatedDate between :fromDate and :toDate and User_Id in (:userId) and action is null") 
 	List<Returns> fetchOutstandingDetails(@Param("fromDate") String fromDate, @Param("toDate") String toDate, @Param("userId") Integer[] userId);
-
 	
 	@Query("SELECT distinct(r.brokerName) FROM Returns r") 
 	List<String> fetchReturnsBroker();
@@ -55,5 +53,8 @@ public interface ReturnsRepository extends CrudRepository<Returns, Long>{
 	@Transactional
 	@Query("update Returns r set r.status = 'closed' where r.articleId = :articleId")
 	void updateReturnStatus(@Param("articleId") String articleId);
+
+	@Query("Select distinct(referenceNumber) from Returns") 
+	List<String> fetchAllReferenceNumbers();
 
 }

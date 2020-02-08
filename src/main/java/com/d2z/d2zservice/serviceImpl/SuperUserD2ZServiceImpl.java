@@ -1267,29 +1267,34 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	}
 
 	@Override
-	public UserMessage createReturns(List<Returns> returns) {
+	public UserMessage createReturns(List<Returns> returns) throws ReferenceNumberNotUniqueException {
 		List<Returns> returnsList = new ArrayList<Returns>();
+		List<String> enquiryRefNbr = returns.stream().map(obj -> {
+			return obj.getReferenceNumber(); 
+			}).collect(Collectors.toList());
+		d2zValidator.isEnquiryReferenceNumberUnique(enquiryRefNbr);
 		for(Returns returnVal: returns) {
 			Returns returnData = new Returns();
-			returnData.setScanType(returnVal.getScanType());
-			returnData.setArticleId(returnVal.getArticleId());
-			returnData.setBarcodelabelNumber(returnVal.getBarcodelabelNumber());
-			returnData.setReferenceNumber(returnVal.getReferenceNumber());
-			returnData.setReturnReason(returnVal.getReturnReason());
-			returnData.setBrokerName(returnVal.getBrokerName());
-			returnData.setClientName(returnVal.getClientName());
-			returnData.setConsigneeName(returnVal.getConsigneeName());
-			returnData.setRate(12.0);
-			returnData.setReturnsCreatedDate(Timestamp.valueOf(LocalDateTime.now()));
-			returnData.setUserId(returnVal.getUserId());
-			returnData.setClientBrokerId(returnVal.getClientBrokerId());
-			returnData.setCarrier(returnVal.getCarrier());
-			returnsList.add(returnData);
+			if(!returnVal.getBrokerName().isEmpty()) {
+				returnData.setScanType(returnVal.getScanType());
+				returnData.setArticleId(returnVal.getArticleId());
+				returnData.setBarcodelabelNumber(returnVal.getBarcodelabelNumber());
+				returnData.setReferenceNumber(returnVal.getReferenceNumber());
+				returnData.setReturnReason(returnVal.getReturnReason());
+				returnData.setBrokerName(returnVal.getBrokerName());
+				returnData.setClientName(returnVal.getClientName());
+				returnData.setConsigneeName(returnVal.getConsigneeName());
+				returnData.setRate(12.0);
+				returnData.setReturnsCreatedDate(Timestamp.valueOf(LocalDateTime.now()));
+				returnData.setUserId(returnVal.getUserId());
+				returnData.setClientBrokerId(returnVal.getClientBrokerId());
+				returnData.setCarrier(returnVal.getCarrier());
+				returnsList.add(returnData);
+			}
 		}
 		String clientDetails = d2zDao.createReturns(returnsList);
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage(clientDetails);
-		
 		Runnable r = new Runnable( ) {			
 		        public void run() {
 		        	for(Returns returnVal: returnsList) {

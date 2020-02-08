@@ -1947,4 +1947,10 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 
 	}
 
+	@Override
+	public List<String> fetchAllReferenceNumber() {
+    	List<String> referenceNumbers = returnsRepository.fetchAllReferenceNumbers();
+		return referenceNumbers;
+	}
+
 }

@@ -246,6 +246,7 @@ public interface ID2ZSuperUserDao {
 
 	List<ProfitLossReport> profitLossReport(String fromDate, String toDate);
 
+	List<String> fetchAllReferenceNumber();
 
 }
 
