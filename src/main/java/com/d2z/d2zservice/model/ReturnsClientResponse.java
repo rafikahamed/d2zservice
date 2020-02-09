@@ -12,6 +12,7 @@ public class ReturnsClientResponse {
 	private String referenceNumber;
 	private String barcodelabelNumber;
 	private String articleId;
+	private String airwayBill;
 	
 	public String getReferenceNumber() {
 		return referenceNumber;
@@ -72,6 +73,12 @@ public class ReturnsClientResponse {
 	}
 	public void setRoleId(int roleId) {
 		this.roleId = roleId;
+	}
+	public String getAirwayBill() {
+		return airwayBill;
+	}
+	public void setAirwayBill(String airwayBill) {
+		this.airwayBill = airwayBill;
 	}
 	
 }

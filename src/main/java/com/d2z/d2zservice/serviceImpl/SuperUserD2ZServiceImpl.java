@@ -1261,6 +1261,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				clientResponse.setReferenceNumber(obj[7].toString());
 				clientResponse.setBarcodelabelNumber(obj[8].toString());
 				clientResponse.setArticleId(obj[9].toString());
+				clientResponse.setAirwayBill(obj[10] != null ? obj[10].toString(): null);
 			}
 		}
 		return clientResponse;
@@ -1289,6 +1290,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				returnData.setUserId(returnVal.getUserId());
 				returnData.setClientBrokerId(returnVal.getClientBrokerId());
 				returnData.setCarrier(returnVal.getCarrier());
+				returnData.setAirwaybill(returnVal.getAirwaybill());
 				returnsList.add(returnData);
 			}
 		}

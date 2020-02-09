@@ -68,6 +68,9 @@ public class Returns implements Serializable {
 	@Column(name = "status")
 	private String status;
 	
+	@Column(name = "airwaybill")
+	private String airwaybill;
+	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
@@ -206,6 +209,14 @@ public class Returns implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getAirwaybill() {
+		return airwaybill;
+	}
+
+	public void setAirwaybill(String airwaybill) {
+		this.airwaybill = airwaybill;
 	}
 	
 }
