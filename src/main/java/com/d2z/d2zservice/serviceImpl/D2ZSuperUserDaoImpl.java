@@ -1576,6 +1576,13 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				shipmemntCharge.setAirport(Double.valueOf(twoDForm.format(airportChargeNexb)));
 				Double totalNexb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
 				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalNexb)));
+			}else if(incomingJobDetails.getBroker().equalsIgnoreCase("VELB") && incomingJobDetails.getConsignee().equalsIgnoreCase("AMI")) {
+				shipmemntCharge.setProcess((double) 0);
+				shipmemntCharge.setPickUp((double) 160);
+				shipmemntCharge.setDocs((double) 0);
+				shipmemntCharge.setAirport((double) 60);
+				Double totalRmfb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
+				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalRmfb)));
 			}else if(incomingJobDetails.getBroker().equalsIgnoreCase("RMFB") && incomingJobDetails.getConsignee().equalsIgnoreCase("D2Z")) {
 				shipmemntCharge.setProcess((double)25);
 				shipmemntCharge.setPickUp((double) 0);
@@ -1935,7 +1942,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		Integer totalParcel    = totalParcelList.stream().reduce(Integer::sum).get();
 		BigDecimal totalRev    = totlaRevList.stream().reduce(BigDecimal::add).get();
 		BigDecimal totalPrf    = totalProfitList.stream().reduce(BigDecimal::add).get();
-		BigDecimal totalPrfPrl = profitParcelList.stream().reduce(BigDecimal::add).get();
+		//BigDecimal totalPrfPrl = profitParcelList.stream().reduce(BigDecimal::add).get();
+		BigDecimal totalPrfPrl = totalPrf.divide(new BigDecimal(totalParcel), 4);
+
 		ProfitLossReport profitTotal = new ProfitLossReport();
 		profitTotal.setBroker("Total");
 		profitTotal.setParcel(totalParcel);
@@ -1945,7 +1954,6 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		profitLossReport.add(profitTotal);
 		
 		return profitLossReport;
-
 	}
 
 	@Override
