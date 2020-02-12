@@ -12,7 +12,7 @@ public class PCACreateShipmentRequestInfo {
 	private String packs;
 	private List<PCAPackages> packages;
 	private String weight;
-	private BigDecimal cbm;
+	private String cbm;
 	private PCADim dim;
 	private String currency;
 	private PCAShipper shipper;
@@ -70,10 +70,10 @@ public class PCACreateShipmentRequestInfo {
 	public void setWeight(String weight) {
 		this.weight = weight;
 	}
-	public BigDecimal getCbm() {
+	public String getCbm() {
 		return cbm;
 	}
-	public void setCbm(BigDecimal cbm) {
+	public void setCbm(String cbm) {
 		this.cbm = cbm;
 	}
 	public PCADim getDim() {

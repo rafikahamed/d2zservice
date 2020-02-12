@@ -118,7 +118,18 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			pcaWrapper.makeCreateShippingOrderPFACall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(),serviceType);
 			}
 			return;// senderDataResponseList;
-		}else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) 
+		}
+		else if("STS".equalsIgnoreCase(serviceType)) {
+			if(isPostcodeValidationReq) {
+				d2zValidator.isSTPostCodeValidAPI(orderDetail.getConsignmentData(),errorMap);
+			}
+			ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
+			if(orderDetail.getConsignmentData().size()>0) {
+			pcaWrapper.makeCreateShippingOrderPFACall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(),"STS-Sub");
+			}
+			return; //senderDataResponseList;
+		}
+		/*else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) 
 					|| "MCM3".equalsIgnoreCase(serviceType) || "MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)){
 			//ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 			if(orderDetail.getConsignmentData().size()>0) {
@@ -174,7 +185,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			}
 			}
 			return;
-		}}
+		}*/}
 		if(isPostcodeValidationReq) {
     		d2zValidator.isPostCodeValid(orderDetail,errorMap);
     		}	

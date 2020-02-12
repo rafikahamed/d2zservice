@@ -105,6 +105,26 @@ public class ConsignmentValidator  implements
 			.addConstraintViolation();
 			isValid= false;
 		}
+		if("STS".equalsIgnoreCase(value.getServiceType())){
+			if(null == value.getDimensionsHeight()) {
+				context.disableDefaultConstraintViolation();
+				context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getDimensionsHeight()+","+"Dimensions Height is mandatory")
+				.addConstraintViolation();
+				isValid= false;
+			}
+			if(null == value.getDimensionsWidth()) {
+				context.disableDefaultConstraintViolation();
+				context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getDimensionsWidth()+","+"Dimensions Width is mandatory")
+				.addConstraintViolation();
+				isValid= false;
+			}
+			if(null == value.getDimensionsLength()) {
+				context.disableDefaultConstraintViolation();
+				context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getDimensionsLength()+","+"Dimensions Length is mandatory")
+				.addConstraintViolation();
+				isValid= false;
+			}
+		}
 		if((null!=value.getBarcodeLabelNumber() && !value.getBarcodeLabelNumber().isEmpty()) && (null == value.getDatamatrix()  || value.getDatamatrix().isEmpty())) {
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getDatamatrix()+","+"Please provide valid Datamatrix")
