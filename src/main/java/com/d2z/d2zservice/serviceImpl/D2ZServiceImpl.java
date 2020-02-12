@@ -245,8 +245,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			}
 			pcaWrapper.makeCreateShippingOrderFilePCACall(orderDetailList,senderDataResponseList,null,"STS-Sub");
 			return senderDataResponseList;
-		}
-		else if("RET".equalsIgnoreCase(serviceType)){
+		}else if("RET".equalsIgnoreCase(serviceType)){
 			PFLSenderDataFileRequest consignmentData = d2zValidator.isFWSubPostCodeUIValid(orderDetailList);
 			
 			if(consignmentData.getPflSenderDataApi().size() > 0) {
