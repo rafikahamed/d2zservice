@@ -1270,10 +1270,10 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	@Override
 	public UserMessage createReturns(List<Returns> returns) throws ReferenceNumberNotUniqueException {
 		List<Returns> returnsList = new ArrayList<Returns>();
-		List<String> enquiryRefNbr = returns.stream().map(obj -> {
-			return obj.getReferenceNumber(); 
-			}).collect(Collectors.toList());
-		d2zValidator.isEnquiryReferenceNumberUnique(enquiryRefNbr);
+//		List<String> enquiryRefNbr = returns.stream().map(obj -> {
+//			return obj.getReferenceNumber(); 
+//			}).collect(Collectors.toList());
+		d2zValidator.isEnquiryReferenceNumberUnique(returns);
 		for(Returns returnVal: returns) {
 			Returns returnData = new Returns();
 			if(!returnVal.getBrokerName().isEmpty()) {
