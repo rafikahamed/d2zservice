@@ -79,7 +79,7 @@ public class PCAWrapper {
 			request.setPackages(pcaPackageList);
 
 			request.setWeight(orderDetail.getWeight());
-			request.setCbm(new BigDecimal(orderDetail.getWeight()));
+			request.setCbm(orderDetail.getWeight());
 			request.setCurrency(orderDetail.getCurrency());
 
 			PCAShipper pcaShipper = new PCAShipper();
@@ -127,6 +127,11 @@ public class PCAWrapper {
 			if("STS-Sub".equalsIgnoreCase(serviceType)) {
 				request.setChargecode(chargeCodeST);
 				chargeType = "StarTrack";
+				Double dimHeight = orderDetail.getDimensionsHeight().doubleValue();
+				Double dimWidth = orderDetail.getDimensionsWidth().doubleValue();
+				Double dimLength = orderDetail.getDimensionsLength().doubleValue();
+				Double cbm = ((dimHeight/100)*(dimWidth/100) * (dimLength/100));
+				request.setCbm(String.valueOf(cbm));
 			}else {
 				request.setChargecode(chargeCodeFW);
 			}
@@ -167,7 +172,7 @@ public class PCAWrapper {
 			request.setPackages(pcaPackageList);
 
 			request.setWeight(String.valueOf(orderDetail.getWeight()));
-			request.setCbm(new BigDecimal(orderDetail.getWeight()));
+			request.setCbm(String.valueOf(orderDetail.getWeight()));
 			request.setCurrency(orderDetail.getCurrency());
 
 			PCAShipper pcaShipper = new PCAShipper();
@@ -281,7 +286,7 @@ public class PCAWrapper {
 				senderDataresponse.setReferenceNumber(obj[0].toString());
 				senderDataresponse.setDatamatrix(obj[1].toString());
 				String barcode = obj[1].toString();
-				if(chargeType.equals("FastwayS"))
+				if(chargeType.equals("FastwayS") || chargeType.equals("StarTrack"))
 				{
 					senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
 				}
@@ -356,7 +361,7 @@ public class PCAWrapper {
 			request.setPackages(pcaPackageList);
 
 			request.setWeight(orderDetail.getWeight());
-			request.setCbm(new BigDecimal(orderDetail.getWeight()));
+			request.setCbm(orderDetail.getWeight());
 			request.setCurrency(orderDetail.getCurrency());
 
 			PCAShipper pcaShipper = new PCAShipper();
@@ -404,6 +409,12 @@ public class PCAWrapper {
 			if("STS-Sub".equalsIgnoreCase(serviceType)) {
 				request.setChargecode(chargeCodeST);
 				chargeType = "StarTrack";
+			
+				Double dimHeight = orderDetail.getDimensionsHeight().doubleValue();
+				Double dimWidth = orderDetail.getDimensionsWidth().doubleValue();
+				Double dimLength = orderDetail.getDimensionsLength().doubleValue();
+				Double cbm = ((dimHeight/100)*(dimWidth/100) * (dimLength/100));
+				request.setCbm(String.valueOf(cbm));
 			}else {
 				request.setChargecode(chargeCodeFW);
 			}
@@ -467,7 +478,7 @@ public class PCAWrapper {
 				SenderDataResponse senderDataresponse = new SenderDataResponse();
 				senderDataresponse.setReferenceNumber(obj[0].toString());
 				senderDataresponse.setDatamatrix(obj[1].toString());
-				senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
+				senderDataresponse.setBarcodeLabelNumber(obj[2] != null ? obj[2].toString() : "");
 				senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
 				senderDataresponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 				senderDataResponseList.add(senderDataresponse);

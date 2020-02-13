@@ -243,7 +243,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 				senderDataObj.setArticleId(pflLabel.getTrackingNo());
 				senderDataObj.setMlid(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
-				senderDataObj.setCarrier("FastwayS");
+				senderDataObj.setCarrier(pflLabel.getCarrier());
 			}
 			senderDataList.add(senderDataObj);
 		}
