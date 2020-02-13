@@ -2361,7 +2361,6 @@ else
 //		return bytes;
 		return shipmentDetails;
 	}
-
 	@Override
 	public UserMessage returnAction(List<ReturnsAction> returnsAction) {
 		UserMessage usrMsg =  d2zDao.returnAction(returnsAction);
