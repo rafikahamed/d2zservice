@@ -395,7 +395,22 @@ public class D2ZValidator {
 			throw new InvalidSuburbPostcodeException("Suburb is not in carrier serviced areas",incorrectSTPostcode_Suburb);
 		}
 	}
-	
+	public void isSTPostCodeValidAPI(List<SenderDataApi> orderDetailList) {
+		List<String> postCodeSTZoneList = D2ZSingleton.getInstance().getSTPostCodeZoneList();
+		List<String> incorrectSTPostcode_Suburb = new ArrayList<String>();
+		orderDetailList.forEach(obj -> {
+			String state = obj.getConsigneeState().trim().toUpperCase();
+			String suburb = obj.getConsigneeSuburb().trim().toUpperCase();
+			String postcode = obj.getConsigneePostcode().trim();
+			String combination = state.concat(suburb).concat(postcode);
+			if(!postCodeSTZoneList.contains(combination)) {
+				incorrectSTPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim());
+			}
+		});
+		if(!incorrectSTPostcode_Suburb.isEmpty()) {
+			throw new InvalidSuburbPostcodeException("Suburb is not in carrier serviced areas",incorrectSTPostcode_Suburb);
+		}
+	}
 	
 	public void isEnquiryReferenceNumberUnique(List<String> incomingRefNbr) throws ReferenceNumberNotUniqueException{
 		List<String> referenceNumber_enquiry = d2zSuperUserDao.fetchAllReferenceNumber();
@@ -411,6 +426,29 @@ public class D2ZValidator {
 		if(!duplicateEnqRefNbr.isEmpty()) {
 			throw new ReferenceNumberNotUniqueException("Reference Number or Article ID or BarcodeLabel must be unique",duplicateEnqRefNbr);
 		}
+	}
+
+	public void isSTPostCodeValidAPI(List<SenderDataApi> consignmentData, Map<String, List<ErrorDetails>> errorMap) {
+
+
+		List<String> postCodeFWZoneList = D2ZSingleton.getInstance().getSTPostCodeZoneList();
+		//List<String> postCodeFWStateNameList = D2ZSingleton.getInstance().getFWPostCodeStateNameList();
+
+		consignmentData.forEach(obj -> {
+			if(null!=obj.getConsigneeState() && null!=obj.getConsigneeSuburb() && null!=obj.getConsigneePostcode()
+					&& !obj.getConsigneeState().isEmpty() && !obj.getConsigneeSuburb().isEmpty() && !obj.getConsigneePostcode().isEmpty()) {
+				String state = obj.getConsigneeState().trim().toUpperCase();
+				String suburb = obj.getConsigneeSuburb().trim().toUpperCase();
+				String postcode = obj.getConsigneePostcode().trim();
+				String combination = state.concat(suburb).concat(postcode);
+				if(!postCodeFWZoneList.contains(combination)){ //&& !postCodeFWStateNameList.contains(combination)) {
+			   		 ValidationUtils.populateErrorDetails(obj.getReferenceNumber(),obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim(),
+						 "Suburb is not in carrier serviced areas",errorMap) ;
+			}
+			}
+		});
+	
+			
 	}
 
 }

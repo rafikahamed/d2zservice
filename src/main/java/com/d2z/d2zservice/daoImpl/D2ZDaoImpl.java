@@ -243,7 +243,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 				senderDataObj.setArticleId(pflLabel.getTrackingNo());
 				senderDataObj.setMlid(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
-				senderDataObj.setCarrier("FastwayS");
+				senderDataObj.setCarrier(pflLabel.getCarrier());
 			}
 			senderDataList.add(senderDataObj);
 		}
@@ -1105,9 +1105,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		        .map(Integer::valueOf)
 		        .toArray(Integer[]::new);
 		if(!fromDate.equals("null") && !toDate.equals("null") ) {
-			enquiryDetails = csticketsRepository.fetchEnquiry(status, fromDate, toDate, userIds);
+			enquiryDetails = csticketsRepository.fetchEnquiry( fromDate, toDate, userIds);
 		}else {
-			enquiryDetails = csticketsRepository.fetchEnquiry(status, userIds);
+			enquiryDetails = csticketsRepository.fetchEnquiry( userIds);
 		}
 		return enquiryDetails;
 	}

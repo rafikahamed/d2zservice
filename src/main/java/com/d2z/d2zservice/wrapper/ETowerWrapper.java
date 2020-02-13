@@ -833,6 +833,7 @@ s);
 				request.setInvoiceValue(orderDetail.getValue());
 				request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
 				if("STI AUSTRALIA".equals(serviceName)) {
+					request.setReferenceNo("HK10" + uniqueNumber);
 					request.setServiceCode("STI.CN2AU.AUPOST");
 					String shipperName = orderDetail.getShipper_Name().length() > 50
 							? orderDetail.getShipper_Name().substring(0, 50)

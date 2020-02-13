@@ -245,8 +245,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			}
 			pcaWrapper.makeCreateShippingOrderFilePCACall(orderDetailList,senderDataResponseList,null,"STS-Sub");
 			return senderDataResponseList;
-		}
-		else if("RET".equalsIgnoreCase(serviceType)){
+		}else if("RET".equalsIgnoreCase(serviceType)){
 			PFLSenderDataFileRequest consignmentData = d2zValidator.isFWSubPostCodeUIValid(orderDetailList);
 			
 			if(consignmentData.getPflSenderDataApi().size() > 0) {
@@ -1066,7 +1065,14 @@ else
 			}
 			pcaWrapper.makeCreateShippingOrderPFACall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(),serviceType);
 			return senderDataResponseList;
-		}else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) 
+		}
+		else if("STS".equalsIgnoreCase(serviceType)) {
+			if(isPostcodeValidationReq) {
+				d2zValidator.isSTPostCodeValidAPI(orderDetail.getConsignmentData());
+			}
+			pcaWrapper.makeCreateShippingOrderPFACall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(),"STS-Sub");
+			return senderDataResponseList;
+		}/*else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) 
 					|| "MCM3".equalsIgnoreCase(serviceType) || "MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)){
 			PFLSenderDataRequest consignmentData = d2zValidator.isFWSubPostCodeValid(orderDetail);
 			System.out.println("service type:"+serviceType+":"+consignmentData.getPflSenderDataApi().size());
@@ -1119,7 +1125,7 @@ else
 				}
 			}
 			return senderDataResponseList;
-		}
+		}*/
 		
 		}else if (barcodeLabelNumber!=null && !barcodeLabelNumber.trim().isEmpty()
 				&& datamatrix!=null && !datamatrix.trim().isEmpty()){
