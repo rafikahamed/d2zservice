@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.NonD2ZData;
+import com.d2z.d2zservice.entity.PostcodeZone;
+import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.exception.InvalidServiceTypeException;
 import com.d2z.d2zservice.exception.InvalidSuburbPostcodeException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
@@ -395,6 +397,7 @@ public class D2ZValidator {
 			throw new InvalidSuburbPostcodeException("Suburb is not in carrier serviced areas",incorrectSTPostcode_Suburb);
 		}
 	}
+
 	public void isSTPostCodeValidAPI(List<SenderDataApi> orderDetailList) {
 		List<String> postCodeSTZoneList = D2ZSingleton.getInstance().getSTPostCodeZoneList();
 		List<String> incorrectSTPostcode_Suburb = new ArrayList<String>();
@@ -412,24 +415,54 @@ public class D2ZValidator {
 		}
 	}
 	
-	public void isEnquiryReferenceNumberUnique(List<String> incomingRefNbr) throws ReferenceNumberNotUniqueException{
-		List<String> referenceNumber_enquiry = d2zSuperUserDao.fetchAllReferenceNumber();
-		referenceNumber_enquiry.addAll(incomingRefNbr);
-
-		List<String> duplicateEnqRefNbr = referenceNumber_enquiry.stream().collect(Collectors.groupingBy(Function.identity(),     
-	              Collectors.counting()))                                             
-	          .entrySet().stream()
-	          .filter(e -> e.getValue() > 1)                                      
-	          .map(e -> e.getKey())                                                  
-	          .collect(Collectors.toList());
+	public void isEnquiryReferenceNumberUnique(List<Returns> returns) throws ReferenceNumberNotUniqueException{
+	    List<Returns> returnObj = d2zSuperUserDao.fetchAllReferenceNumber();
+	    
+//    	List<String> uniqueReturns = returnObj.stream().map(daoObj -> {
+//    		return (daoObj.getReferenceNumber()).concat(daoObj.getArticleId()).concat(daoObj.getBarcodelabelNumber());
+//    	}).collect(Collectors.toList());
+	    
+    	List<String> uniqueReturnsRefNum = returnObj.stream().map(daoObj -> {
+    			return (daoObj.getReferenceNumber());
+    	}).collect(Collectors.toList());
+    		
+    	List<String> uniqueReturnsArticleId = returnObj.stream().map(daoObj -> {
+    			return (daoObj.getArticleId());
+    	}).collect(Collectors.toList());
+    		
+		List<String> uniqueReturnsBarcode = returnObj.stream().map(daoObj -> {
+			return (daoObj.getBarcodelabelNumber());
+		}).collect(Collectors.toList());
 		
-		if(!duplicateEnqRefNbr.isEmpty()) {
-			throw new ReferenceNumberNotUniqueException("Reference Number or Article ID or BarcodeLabel must be unique",duplicateEnqRefNbr);
+		List<String> uniqueRefNum = new ArrayList<String>();
+		List<String> uniqueArticleId = new ArrayList<String>();
+		List<String> uniqueBarcodeLabel = new ArrayList<String>();
+		
+		returns.forEach(obj -> {
+			String referenceNum = obj.getReferenceNumber() != null ? obj.getReferenceNumber().trim().toUpperCase() : obj.getReferenceNumber();
+			String articleId = obj.getArticleId() != null ? obj.getArticleId().trim().toUpperCase() : obj.getArticleId();
+			String barcodeLabel = obj.getBarcodelabelNumber() != null ? obj.getBarcodelabelNumber().trim() : obj.getBarcodelabelNumber();
+			if(null!=referenceNum && uniqueReturnsRefNum.contains(referenceNum)) {
+				uniqueRefNum.add(obj.getReferenceNumber().trim().toUpperCase());
+			}else if(null!=articleId && uniqueReturnsArticleId.contains(articleId)) {
+				uniqueArticleId.add(obj.getArticleId().trim().toUpperCase());
+			}else if(null!=barcodeLabel && uniqueReturnsBarcode.contains(barcodeLabel)) {
+				uniqueBarcodeLabel.add(obj.getBarcodelabelNumber().trim().toUpperCase());
+			}
+			
+		});
+		
+		if(!uniqueRefNum.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Reference Number must be unique",uniqueReturnsRefNum);
+		}else if(!uniqueArticleId.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Article ID must be unique",uniqueArticleId);
+		}else if(!uniqueBarcodeLabel.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Barcode Label Number must be unique",uniqueBarcodeLabel);
 		}
+		
 	}
 
 	public void isSTPostCodeValidAPI(List<SenderDataApi> consignmentData, Map<String, List<ErrorDetails>> errorMap) {
-
 
 		List<String> postCodeFWZoneList = D2ZSingleton.getInstance().getSTPostCodeZoneList();
 		//List<String> postCodeFWStateNameList = D2ZSingleton.getInstance().getFWPostCodeStateNameList();
@@ -447,7 +480,6 @@ public class D2ZValidator {
 			}
 			}
 		});
-	
 			
 	}
 

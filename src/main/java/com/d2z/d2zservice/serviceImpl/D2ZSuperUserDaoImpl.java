@@ -33,6 +33,7 @@ import com.d2z.d2zservice.entity.IncomingJobsLogic;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Parcels;
+import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.Returns;
@@ -1957,8 +1958,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
-	public List<String> fetchAllReferenceNumber() {
-    	List<String> referenceNumbers = returnsRepository.fetchAllReferenceNumbers();
+	public List<Returns> fetchAllReferenceNumber() {
+    	List<Returns> referenceNumbers= (List<Returns>) returnsRepository.findAll();
 		return referenceNumbers;
 	}
 
