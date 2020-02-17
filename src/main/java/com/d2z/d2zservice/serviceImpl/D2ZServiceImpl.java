@@ -2456,7 +2456,6 @@ else
 			TrackingResponse auPostResponse, PCATrackEventResponse pcaResponse, List<PFLTrackingResponseDetails> pflResponse, List<TrackParcelResponse> trackPracelResponse) {
 			
 		if(null != eTowerResponse) {
-			System.out.println("Normal");
 			parseEtowerTrackingResponse(trackPracelResponse,eTowerResponse);	
 		}
 		
