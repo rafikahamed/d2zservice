@@ -50,10 +50,12 @@ public class AsyncService {
 		return CompletableFuture.completedFuture(response);
     }
 	@Async("asyncExecutor")
-	public CompletableFuture<PCATrackEventResponse> makeCalltoPCA(List<String> articleIDs) throws InterruptedException 
+	public CompletableFuture<List<PCATrackEventResponse>> makeCalltoPCA(List<String> articleIDs) throws InterruptedException 
     {
 		log.info("PCA Tracking");
-		String response = pcaproxy.trackingEvent(articleIDs);
+		List<PCATrackEventResponse> responseList = new ArrayList<PCATrackEventResponse>();
+		for(String articleID : articleIDs) {
+		String response = pcaproxy.trackingEvent(articleID);
 		ObjectMapper mapper = new ObjectMapper();
 		PCATrackEventResponse pcaResponse = null;
 		try {
@@ -61,7 +63,9 @@ public class AsyncService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return CompletableFuture.completedFuture(pcaResponse);
+		responseList.add(pcaResponse);
+		}
+		return CompletableFuture.completedFuture(responseList);
     }
 	@Async("asyncExecutor")
 	public CompletableFuture<List<PFLTrackingResponseDetails>> makeCalltoPFL(List<String> articleIds) throws InterruptedException 

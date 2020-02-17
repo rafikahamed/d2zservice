@@ -2381,7 +2381,7 @@ else
 	    List<String> pcaMlids = d2zDao.fetchMlidsBasedOnSupplier("PCA");
 		CompletableFuture<TrackingEventResponse> eTowerResponse = new CompletableFuture<TrackingEventResponse>();
 		CompletableFuture<TrackingResponse> auPostResponse = new CompletableFuture<TrackingResponse>();
-		CompletableFuture<PCATrackEventResponse> pcaResponse = new CompletableFuture<PCATrackEventResponse>(); 
+		CompletableFuture<List<PCATrackEventResponse>> pcaResponse = new CompletableFuture<List<PCATrackEventResponse>>(); 
 		CompletableFuture<List<PFLTrackingResponseDetails>> pflResponse  = new CompletableFuture<List<PFLTrackingResponseDetails>>();
 		
 		for(String articleId : articleIds) {
@@ -2453,7 +2453,7 @@ else
 	}
 
 	private List<TrackParcelResponse> aggreateTrackParcelResponse(TrackingEventResponse eTowerResponse,
-			TrackingResponse auPostResponse, PCATrackEventResponse pcaResponse, List<PFLTrackingResponseDetails> pflResponse, List<TrackParcelResponse> trackPracelResponse) {
+			TrackingResponse auPostResponse, List<PCATrackEventResponse> pcaResponse, List<PFLTrackingResponseDetails> pflResponse, List<TrackParcelResponse> trackPracelResponse) {
 			
 		if(null != eTowerResponse) {
 			parseEtowerTrackingResponse(trackPracelResponse,eTowerResponse);	
@@ -2492,8 +2492,9 @@ else
 			}
 	}
 
-	private void parsePCAResponse(List<TrackParcelResponse> trackParcelResponse, PCATrackEventResponse pcaResponse) {
+	private void parsePCAResponse(List<TrackParcelResponse> trackParcelResponse, List<PCATrackEventResponse> pcaResponselist) {
 
+		for(PCATrackEventResponse pcaResponse : pcaResponselist) {
 		TrackParcelResponse parcelStatus = new TrackParcelResponse();
 		parcelStatus.setArticleId(pcaResponse.getRef());
 		List<TrackingEvents> events = new ArrayList<TrackingEvents>();
@@ -2507,6 +2508,7 @@ else
 		}
 		parcelStatus.setTrackingEvents(events);
 		trackParcelResponse.add(parcelStatus);
+		}
 	}
 
 	private void parseAuPostTrackingResponse(List<TrackParcelResponse> trackParcelResponse,

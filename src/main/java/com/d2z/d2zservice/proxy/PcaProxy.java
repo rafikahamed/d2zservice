@@ -50,10 +50,10 @@ public class PcaProxy {
 	@Value("${pca.apiId}")
 	private String apiId;
 	
-	public String trackingEvent(List<String> articleIds) {
+	public String trackingEvent(String articleId) {
 		ObjectMapper mapper = new ObjectMapper();
 		PCATrackEventRequest pcaTracking = new PCATrackEventRequest();
-		pcaTracking.setConnote(articleIds.get(0).substring(0,10));
+		pcaTracking.setConnote(articleId.substring(0,10));
 		String jsonString = null;
 		try {
 			jsonString = mapper.writeValueAsString(pcaTracking);
