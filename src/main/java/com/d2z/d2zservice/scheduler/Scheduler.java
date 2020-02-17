@@ -61,7 +61,7 @@ public class Scheduler {
 	public void triggerFDMCall() {
 		try {
 			System.out.println("Calling - FDM");
-			d2zService.triggerFDM();
+			//d2zService.triggerFDM();
 		} catch (Exception e) {
 			System.out.println(e.getLocalizedMessage());
 		}

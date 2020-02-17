@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.d2z.d2zservice.model.PCACreateShippingResponse;
+import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLTrackEvent;
 import com.d2z.d2zservice.model.PFLTrackingResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
@@ -20,6 +22,9 @@ import com.d2z.d2zservice.proxy.AusPostProxy;
 import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.proxy.PFLProxy;
 import com.d2z.d2zservice.proxy.PcaProxy;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class AsyncService {
@@ -45,12 +50,18 @@ public class AsyncService {
 		return CompletableFuture.completedFuture(response);
     }
 	@Async("asyncExecutor")
-	public CompletableFuture<String> makeCalltoPCA(List<String> articleIDs) throws InterruptedException 
+	public CompletableFuture<PCATrackEventResponse> makeCalltoPCA(List<String> articleIDs) throws InterruptedException 
     {
 		log.info("PCA Tracking");
-		String response = null;
-		pcaproxy.trackingEvent(articleIDs);
-		return CompletableFuture.completedFuture(response);
+		String response = pcaproxy.trackingEvent(articleIDs);
+		ObjectMapper mapper = new ObjectMapper();
+		PCATrackEventResponse pcaResponse = null;
+		try {
+			pcaResponse = mapper.readValue(response, PCATrackEventResponse.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return CompletableFuture.completedFuture(pcaResponse);
     }
 	@Async("asyncExecutor")
 	public CompletableFuture<List<PFLTrackingResponseDetails>> makeCalltoPFL(List<String> articleIds) throws InterruptedException 

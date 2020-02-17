@@ -50,10 +50,10 @@ public class PcaProxy {
 	@Value("${pca.apiId}")
 	private String apiId;
 	
-	public void trackingEvent(List<String> articleIds) {
+	public String trackingEvent(List<String> articleIds) {
 		ObjectMapper mapper = new ObjectMapper();
 		PCATrackEventRequest pcaTracking = new PCATrackEventRequest();
-		pcaTracking.setConnote(articleIds.get(0));
+		pcaTracking.setConnote(articleIds.get(0).substring(0,10));
 		String jsonString = null;
 		try {
 			jsonString = mapper.writeValueAsString(pcaTracking);
@@ -64,7 +64,7 @@ public class PcaProxy {
 		System.out.println(jsonString);
 		String response = executePost("http://api.pcaexpress.com.au/tracking", constructParamWithoutMethod(jsonString));
 		System.out.println("PCA Response--->"+response);
-		return;
+		return response;
 	}
 
 //	public void trackingEvent(List<String> articleIds) {
