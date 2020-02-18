@@ -64,6 +64,7 @@ import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.FDMManifestDetails;
+import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
 import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.PFLTrackEvent;
@@ -2380,7 +2381,7 @@ else
 	    List<String> pcaMlids = d2zDao.fetchMlidsBasedOnSupplier("PCA");
 		CompletableFuture<TrackingEventResponse> eTowerResponse = new CompletableFuture<TrackingEventResponse>();
 		CompletableFuture<TrackingResponse> auPostResponse = new CompletableFuture<TrackingResponse>();
-		CompletableFuture<String> pcaResponse = new CompletableFuture<String>(); 
+		CompletableFuture<List<PCATrackEventResponse>> pcaResponse = new CompletableFuture<List<PCATrackEventResponse>>(); 
 		CompletableFuture<List<PFLTrackingResponseDetails>> pflResponse  = new CompletableFuture<List<PFLTrackingResponseDetails>>();
 		
 		for(String articleId : articleIds) {
@@ -2452,10 +2453,9 @@ else
 	}
 
 	private List<TrackParcelResponse> aggreateTrackParcelResponse(TrackingEventResponse eTowerResponse,
-			TrackingResponse auPostResponse, String pcaResponse, List<PFLTrackingResponseDetails> pflResponse, List<TrackParcelResponse> trackPracelResponse) {
+			TrackingResponse auPostResponse, List<PCATrackEventResponse> pcaResponse, List<PFLTrackingResponseDetails> pflResponse, List<TrackParcelResponse> trackPracelResponse) {
 			
 		if(null != eTowerResponse) {
-			System.out.println("Normal");
 			parseEtowerTrackingResponse(trackPracelResponse,eTowerResponse);	
 		}
 		
@@ -2492,9 +2492,23 @@ else
 			}
 	}
 
-	private void parsePCAResponse(List<TrackParcelResponse> trackParcelResponse, String pcaResponse) {
-		// TODO Auto-generated method stub
-		
+	private void parsePCAResponse(List<TrackParcelResponse> trackParcelResponse, List<PCATrackEventResponse> pcaResponselist) {
+
+		for(PCATrackEventResponse pcaResponse : pcaResponselist) {
+		TrackParcelResponse parcelStatus = new TrackParcelResponse();
+		parcelStatus.setArticleId(pcaResponse.getRef());
+		List<TrackingEvents> events = new ArrayList<TrackingEvents>();
+		for(List<String> trackEventDetails : pcaResponse.getTracks()) {
+			
+				TrackingEvents event = new TrackingEvents();
+				event.setTrackEventDateOccured(trackEventDetails.get(2));
+				event.setEventDetails(trackEventDetails.get(0));
+				events.add(event);
+			
+		}
+		parcelStatus.setTrackingEvents(events);
+		trackParcelResponse.add(parcelStatus);
+		}
 	}
 
 	private void parseAuPostTrackingResponse(List<TrackParcelResponse> trackParcelResponse,

@@ -361,7 +361,9 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			System.out.println("PCA call not required");
 		} else {
 			// trackingEvent(trackingNumbers);
-			pcaproxy.trackingEvent(trackingNumbers);
+			for(String trackingNo : trackingNumbers) {
+			pcaproxy.trackingEvent(trackingNo);
+			}
 		}
 	}
 
@@ -1478,7 +1480,9 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		if(pcaList.size() > 0 ) {
 			System.out.println("PCA List-->");
 			System.out.println(pcaList.toString());	
-			pcaproxy.trackingEvent(pcaList);
+			for(String articleID : pcaList) {
+			pcaproxy.trackingEvent(articleID);
+			}
 		}
 		if(pflList.size() > 0 ) {
 			System.out.println("PFL List-->");
