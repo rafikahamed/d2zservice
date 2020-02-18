@@ -1569,7 +1569,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 //				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalRmfb)));
 //			}
 			
-			if(incomingJobDetails.getBroker().equalsIgnoreCase("VELB")) {
+			if(incomingJobDetails.getBroker().equalsIgnoreCase("VELB") && incomingJobDetails.getConsignee().equalsIgnoreCase("PCA") ) {
 				shipmemntCharge.setProcess((double) 0);
 				shipmemntCharge.setPickUp((double)70);
 				shipmemntCharge.setDocs((double)60);
