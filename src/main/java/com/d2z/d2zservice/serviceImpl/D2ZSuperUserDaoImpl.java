@@ -1795,7 +1795,10 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	public List<ProfitLossReport> profitLossReport(String fromDate,String toDate) {
 		//List<String> brokerList = incomingJobsLogicRepository.getIncomeBrokerList();
 		List<String> brokerProfit = senderdata_InvoicingRepository.getBrokerProfitDetails(fromDate,toDate);
-		List<ProfitLossReport> profitLossReport = new ArrayList<ProfitLossReport>();
+		List<ProfitLossReport> profitLossReportList = new ArrayList<ProfitLossReport>();
+		List<ProfitLossReport> profitLossReportSupplierList = new ArrayList<ProfitLossReport>();
+		List<ProfitLossReport> profitLossApgList = new ArrayList<ProfitLossReport>();
+
 		if(brokerProfit.size() > 0) {
 			Iterator itr = brokerProfit.iterator();
 			while (itr.hasNext()) {
@@ -1808,7 +1811,25 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				profit.setD2zRate((BigDecimal) obj[3]);
 				profit.setProfit(profit.getBrokerRate().subtract(profit.getD2zRate()));
 				profit.setProfitPerParcel(profit.getProfit().divide(new BigDecimal(profit.getParcel()), 4));
-				profitLossReport.add(profit);
+				profitLossReportList.add(profit);
+			}
+		}
+		
+		/*APG Data*/
+		List<String> apgBrokerProfit = senderdata_InvoicingRepository.getApgBrokerProfitDetails(fromDate,toDate);
+		if(apgBrokerProfit.size() > 0) {
+			Iterator itr = apgBrokerProfit.iterator();
+			while (itr.hasNext()) {
+				Object[] obj = (Object[]) itr.next();
+				ProfitLossReport profit = new ProfitLossReport();
+				profit.setBroker(obj[0].toString());
+				profit.setParcel( (int) obj[1]);
+				profit.setRevenue((BigDecimal) obj[2]);
+				profit.setBrokerRate((BigDecimal) obj[2]);
+				profit.setD2zRate((BigDecimal) obj[3]);
+				profit.setProfit(profit.getBrokerRate().subtract(profit.getD2zRate()));
+				profit.setProfitPerParcel(profit.getProfit().divide(new BigDecimal(profit.getParcel()), 4));
+				profitLossApgList.add(profit);
 			}
 		}
 		
@@ -1871,7 +1892,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			profitPfl.setRevenue(profitPfl.getBrokerRate());
 			profitPfl.setProfit(profitPfl.getBrokerRate().subtract(profitPfl.getD2zRate()));
 			profitPfl.setProfitPerParcel(profitPfl.getProfit().divide(new BigDecimal(profitPfl.getParcel()), 4));
-			profitLossReport.add(profitPfl);
+			profitLossReportSupplierList.add(profitPfl);
 		}
 		if(pcaProfitList.size() > 0) {
 			List<BigDecimal> pcaBrkRateList = new ArrayList<BigDecimal>();
@@ -1890,7 +1911,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			profitPca.setRevenue(profitPca.getBrokerRate());
 			profitPca.setProfit(profitPca.getBrokerRate().subtract(profitPca.getD2zRate()));
 			profitPca.setProfitPerParcel(profitPca.getProfit().divide(new BigDecimal(profitPca.getParcel()), 4));
-			profitLossReport.add(profitPca);
+			profitLossReportSupplierList.add(profitPca);
 		}
 		if(ubiProfitList.size() > 0) {
 			List<BigDecimal> ubiBrkRateList = new ArrayList<BigDecimal>();
@@ -1909,7 +1930,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			profitUbi.setRevenue(profitUbi.getBrokerRate());
 			profitUbi.setProfit(profitUbi.getBrokerRate().subtract(profitUbi.getD2zRate()));
 			profitUbi.setProfitPerParcel(profitUbi.getProfit().divide(new BigDecimal(profitUbi.getParcel()), 4));
-			profitLossReport.add(profitUbi);
+			profitLossReportSupplierList.add(profitUbi);
 		}
 		if(fdmProfitList.size() > 0) {
 			List<BigDecimal> fdmBrkRateList = new ArrayList<BigDecimal>();
@@ -1928,34 +1949,64 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			profitFdm.setRevenue(profitFdm.getBrokerRate());
 			profitFdm.setProfit(profitFdm.getBrokerRate().subtract(profitFdm.getD2zRate()));
 			profitFdm.setProfitPerParcel(profitFdm.getProfit().divide(new BigDecimal(profitFdm.getParcel()), 4));
-			profitLossReport.add(profitFdm);
+			profitLossReportSupplierList.add(profitFdm);
 		}
 		
-		List<BigDecimal> totlaRevList = new ArrayList<BigDecimal>();
+		/*Broker List*/
+		List<BigDecimal> totalRevList = new ArrayList<BigDecimal>();
 		List<BigDecimal> totalProfitList = new ArrayList<BigDecimal>();
 		List<Integer> 	 totalParcelList  = new ArrayList<Integer>();
 		List<BigDecimal> profitParcelList = new ArrayList<BigDecimal>();
-		profitLossReport.forEach(profitObj -> {
-			totlaRevList.add(profitObj.getRevenue());
+		
+		profitLossReportList.forEach(profitObj -> {
+			totalRevList.add(profitObj.getRevenue());
 			totalProfitList.add(profitObj.getProfit());
 			totalParcelList.add(profitObj.getParcel());
 			profitParcelList.add(profitObj.getProfitPerParcel());
 		});
-		Integer totalParcel    = totalParcelList.stream().reduce(Integer::sum).get();
-		BigDecimal totalRev    = totlaRevList.stream().reduce(BigDecimal::add).get();
-		BigDecimal totalPrf    = totalProfitList.stream().reduce(BigDecimal::add).get();
-		//BigDecimal totalPrfPrl = profitParcelList.stream().reduce(BigDecimal::add).get();
+		
+		/*Supplier List*/
+		List<BigDecimal> totlaRevSuppList = new ArrayList<BigDecimal>();
+		List<BigDecimal> totalProfitSuppList = new ArrayList<BigDecimal>();
+		List<Integer> 	 totalParcelSuppList  = new ArrayList<Integer>();
+		List<BigDecimal> profitParcelSuppList = new ArrayList<BigDecimal>();
+		
+		profitLossReportSupplierList.forEach(profitObj -> {
+			totlaRevSuppList.add(profitObj.getRevenue());
+			totalProfitSuppList.add(profitObj.getProfit());
+			totalParcelSuppList.add(profitObj.getParcel());
+			profitParcelSuppList.add(profitObj.getProfitPerParcel());
+		});
+		
+		/*APG List*/ 
+		List<BigDecimal> totalRevApgList = new ArrayList<BigDecimal>();
+		List<BigDecimal> totalProfitApgList = new ArrayList<BigDecimal>();
+		List<Integer> 	 totalParcelApgList  = new ArrayList<Integer>();
+		List<BigDecimal> profitParcelApgList = new ArrayList<BigDecimal>();
+		
+		profitLossApgList.forEach(profitObj -> {
+			totalRevApgList.add(profitObj.getRevenue());
+			totalProfitApgList.add(profitObj.getProfit());
+			totalParcelApgList.add(profitObj.getParcel());
+			profitParcelApgList.add(profitObj.getProfitPerParcel());
+		});
+		
+		Integer totalParcel    = (totalParcelList.stream().reduce(Integer::sum).get() - (totalParcelSuppList.stream().reduce(Integer::sum).get() + totalParcelApgList.stream().reduce(Integer::sum).get()));
+		BigDecimal totalRev    = (totalRevList.stream().reduce(BigDecimal::add).get().subtract(totlaRevSuppList.stream().reduce(BigDecimal::add).get()).subtract(totalRevApgList.stream().reduce(BigDecimal::add).get()));
+		BigDecimal totalPrf    = (totalProfitList.stream().reduce(BigDecimal::add).get().subtract(totalProfitSuppList.stream().reduce(BigDecimal::add).get()).subtract(totalProfitApgList.stream().reduce(BigDecimal::add).get()));
 		BigDecimal totalPrfPrl = totalPrf.divide(new BigDecimal(totalParcel), 4);
-
+		
 		ProfitLossReport profitTotal = new ProfitLossReport();
 		profitTotal.setBroker("Total");
 		profitTotal.setParcel(totalParcel);
 		profitTotal.setRevenue(totalRev);
 		profitTotal.setProfit(totalPrf);
 		profitTotal.setProfitPerParcel(totalPrfPrl);
-		profitLossReport.add(profitTotal);
+		profitLossReportList.addAll(profitLossReportSupplierList);
+		profitLossReportList.addAll(profitLossApgList);
+		profitLossReportList.add(profitTotal);
 		
-		return profitLossReport;
+		return profitLossReportList;
 	}
 
 	@Override

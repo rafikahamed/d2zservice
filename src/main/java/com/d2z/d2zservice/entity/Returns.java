@@ -75,7 +75,7 @@ public class Returns implements Serializable {
 	@Column(name = "status")
 	private String status;
 	
-	@Column(name = "airwaybill")
+	@Column(name = "AirwayBill")
 	private String airwaybill;
 	
 	public static long getSerialversionuid() {
