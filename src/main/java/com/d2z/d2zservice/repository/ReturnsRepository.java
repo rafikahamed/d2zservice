@@ -3,6 +3,7 @@ package com.d2z.d2zservice.repository;
 import java.util.List;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,5 +57,7 @@ public interface ReturnsRepository extends CrudRepository<Returns, Long>{
 
 	@Query("Select distinct(referenceNumber) from Returns") 
 	List<String> fetchAllReferenceNumbers();
-
+	
+	@Procedure(name = "updatereturnsClientIdDetails")
+	void updateReturnsClientDetails();
 }

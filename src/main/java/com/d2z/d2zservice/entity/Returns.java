@@ -7,10 +7,17 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="Returns")
+@NamedStoredProcedureQueries({
+	   @NamedStoredProcedureQuery(name = "updatereturnsClientIdDetails", 
+		  procedureName = "updatereturnsclientsid"
+		 )
+})
 public class Returns implements Serializable {
 
 	private static final long serialVersionUID = 1L;

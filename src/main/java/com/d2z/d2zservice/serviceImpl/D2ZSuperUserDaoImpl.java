@@ -996,6 +996,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	@Override
 	public String createReturns(List<Returns> returnsList) {
 		returnsRepository.saveAll(returnsList);
+		returnsRepository.updateReturnsClientDetails();
 		return "Returns Updated Successfully";
 	}
 
