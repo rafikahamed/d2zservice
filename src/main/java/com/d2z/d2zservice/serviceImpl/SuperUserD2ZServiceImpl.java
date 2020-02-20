@@ -1430,6 +1430,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		List<String> pflList = new ArrayList<String>();
 		List<String> etowerList = new ArrayList<String>();
 		List<String> auPostList = new ArrayList<String>();
+		
 		List<String> eTowerMlids = d2zDao.fetchMlidsBasedOnSupplier("eTower");
 		List<String> auPostMlids =  d2zDao.fetchMlidsBasedOnSupplier("FDM");
 	    List<String> pcaMlids = d2zDao.fetchMlidsBasedOnSupplier("PCA");
