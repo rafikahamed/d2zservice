@@ -53,6 +53,7 @@ import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
+import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
 import com.d2z.d2zservice.model.ProfitLossReport;
@@ -1767,7 +1768,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 
 	@Override
 	public void updateAirwayBill(String referenceNumbers, String shipmentNumber) {
-		 senderDataRepository.updateAirwayBill(referenceNumbers.split(","), shipmentNumber,D2ZCommonUtil.getAETCurrentTimestamp());
+		 senderDataRepository.updateAirwayBillInvoiceMAWB(referenceNumbers.split(","), shipmentNumber,D2ZCommonUtil.getAETCurrentTimestamp());
 		
 	}
 
@@ -1961,6 +1962,41 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	public List<Returns> fetchAllReferenceNumber() {
     	List<Returns> referenceNumbers= (List<Returns>) returnsRepository.findAll();
 		return referenceNumbers;
+	}
+
+	@Override
+	public ResponseMessage updatePCATrackingDetails(List<PCATrackEventResponse> responseList) {
+
+		
+		ResponseMessage responseMsg = new ResponseMessage();
+		
+			for (PCATrackEventResponse data : responseList) {
+				if(null!=data && null != data.getTracks()) {
+				int lastIndex = data.getTracks().size() - 1;
+				List<String> trackEventDetails = data.getTracks().get(lastIndex);
+				DateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+			    DateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US);
+			    Date date = null;
+				try {
+					date = inputFormat.parse(trackEventDetails.get(2));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				    String eventDateOccured = outputFormat.format(date);
+				    System.out.println("PCA ArticleID --->" + data.getRef());
+				    System.out.println("PCA Response Event Date--->"+eventDateOccured);
+					csticketsRepository.updatePCACSTrackingDetails(data.getRef(), trackEventDetails.get(0), data.getStatus(), Timestamp.valueOf(eventDateOccured));
+				}
+			}
+			responseMsg.setResponseMessage("Data uploaded successfully from PCA");
+		
+		return responseMsg;
+	
+	}
+
+	@Override
+	public List<String> fetchMlidsBasedOnSupplier(String supplier) {
+		return consigneeCountRepository.getMlidBasedonSupplier(supplier);
 	}
 
 }

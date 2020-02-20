@@ -57,7 +57,7 @@ public class Returns implements Serializable {
 	private Double rate;
 	
 	@Column(name = "ReturnsCreatedDate")
-	private Timestamp returnsCreatedDate;
+	private String returnsCreatedDate;
 	
 	@Column(name = "Action")
 	private String action;
@@ -179,11 +179,11 @@ public class Returns implements Serializable {
 		this.rate = rate;
 	}
 
-	public Timestamp getReturnsCreatedDate() {
+	public String getReturnsCreatedDate() {
 		return returnsCreatedDate;
 	}
 
-	public void setReturnsCreatedDate(Timestamp returnsCreatedDate) {
+	public void setReturnsCreatedDate(String returnsCreatedDate) {
 		this.returnsCreatedDate = returnsCreatedDate;
 	}
 

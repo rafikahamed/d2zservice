@@ -55,6 +55,7 @@ import com.d2z.d2zservice.model.ExportConsignment;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
+import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
@@ -81,11 +82,14 @@ import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.proxy.PFLProxy;
 import com.d2z.d2zservice.proxy.PcaProxy;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
+import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.wrapper.ETowerWrapper;
 //import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.d2zservice.wrapper.PCAWrapper;
 import com.d2z.d2zservice.wrapper.PFLWrapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -1288,7 +1292,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				returnData.setClientName(returnVal.getClientName());
 				returnData.setConsigneeName(returnVal.getConsigneeName());
 				returnData.setRate(12.0);
-				returnData.setReturnsCreatedDate(Timestamp.valueOf(LocalDateTime.now()));
+				returnData.setReturnsCreatedDate(D2ZCommonUtil.getAETCurrentTimestamp());
 				returnData.setUserId(returnVal.getUserId());
 				returnData.setClientBrokerId(returnVal.getClientBrokerId());
 				returnData.setCarrier(returnVal.getCarrier());
@@ -1426,63 +1430,67 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		List<String> pflList = new ArrayList<String>();
 		List<String> etowerList = new ArrayList<String>();
 		List<String> auPostList = new ArrayList<String>();
+		List<String> eTowerMlids = d2zDao.fetchMlidsBasedOnSupplier("eTower");
+		List<String> auPostMlids =  d2zDao.fetchMlidsBasedOnSupplier("FDM");
+	    List<String> pcaMlids = d2zDao.fetchMlidsBasedOnSupplier("PCA");
 		String serviceType =null;
 		if(csTickets != null) {
 			for(CSTickets csTicketDetails:csTickets) {
 				if(csTicketDetails.getCarrier().equalsIgnoreCase("FastwayS") || csTicketDetails.getCarrier().equalsIgnoreCase("StarTrack")) {
 					if(csTicketDetails.getArticleID() != null && csTicketDetails.getBarcodelabelNumber() != null) {
 						//pcaList.add(d2zDao.fetchBarcodeLabel(csTicketDetails.getArticleID()));
-						pcaList.add(csTicketDetails.getBarcodelabelNumber());
+						pcaList.add(csTicketDetails.getArticleID());
 					}
 				}else if(csTicketDetails.getCarrier().equalsIgnoreCase("FastwayM")) {
 					if(csTicketDetails.getArticleID() != null && csTicketDetails.getBarcodelabelNumber() != null) {
 						//pflList.add(d2zDao.fetchBarcodeLabel(csTicketDetails.getArticleID()));
 						pflList.add(csTicketDetails.getBarcodelabelNumber());
 					}
-				}else if(csTicketDetails.getCarrier().equalsIgnoreCase("Express")) {
-					if(csTicketDetails.getArticleID() != null)
-						etowerList.add(csTicketDetails.getArticleID());
-				}else if(csTicketDetails.getCarrier().equalsIgnoreCase("eParcel")) {
-					if("33G7K".contains(csTicketDetails.getArticleID().substring(0,5))|| "33G7L".contains(csTicketDetails.getArticleID().substring(0,5)) ||
-						"33G7M".contains(csTicketDetails.getArticleID().substring(0,5)) || "33G7N".contains(csTicketDetails.getArticleID().substring(0,5)) ||
-						"33G7P".contains(csTicketDetails.getArticleID().substring(0,5)) || "SJU".contains(csTicketDetails.getArticleID().substring(0,3)) ||
-						"ZK6".contains(csTicketDetails.getArticleID().substring(0,3))){
-						if(csTicketDetails.getArticleID() != null) {
+				}if(csTicketDetails.getArticleID().length()==21 || csTicketDetails.getArticleID().length() == 23) {
+					String mlid = csTicketDetails.getArticleID().length() == 23 ? csTicketDetails.getArticleID().substring(0,5) : csTicketDetails.getArticleID().substring(0,3);
+					
+					boolean isETower = eTowerMlids.stream().anyMatch(mlid::equalsIgnoreCase);
+					boolean isAuPost = auPostMlids.stream().anyMatch(mlid::equalsIgnoreCase);
+					boolean isPCA = pcaMlids.stream().anyMatch(mlid::equalsIgnoreCase);
+					if(isETower) {
+						if(mlid.equalsIgnoreCase("33XH8") ||mlid.equalsIgnoreCase("33XCT")||mlid.equalsIgnoreCase("33XH7")||mlid.equalsIgnoreCase("33XCR") ) {
 							etowerList.add(csTicketDetails.getArticleID());
-					}
-					}
-					if("33XCR".contains(csTicketDetails.getArticleID().substring(0,5))|| "33XCR".contains(csTicketDetails.getArticleID().substring(0,5)) ||
-							"33XCT".contains(csTicketDetails.getArticleID().substring(0,5)) || "33XH8".contains(csTicketDetails.getArticleID().substring(0,5))){
-								if(csTicketDetails.getArticleID() != null) {
-									etowerList.add(csTicketDetails.getArticleID());
-									serviceType = "HKG2";
+							serviceType = "HKG2";
+						}else if(mlid.equalsIgnoreCase("33UXT") ||mlid.equalsIgnoreCase("33UXX")||mlid.equalsIgnoreCase("33UY6")||mlid.equalsIgnoreCase("33UYA") ) {
+							etowerList.add(csTicketDetails.getArticleID());
+							serviceType = "HKG";
 							}
-					}
-					if("33UXT".contains(csTicketDetails.getArticleID().substring(0,5))|| "33UXX".contains(csTicketDetails.getArticleID().substring(0,5)) ||
-							"33UY6".contains(csTicketDetails.getArticleID().substring(0,5)) || "33UYA".contains(csTicketDetails.getArticleID().substring(0,5))){
-										if(csTicketDetails.getArticleID() != null) {
-											etowerList.add(csTicketDetails.getArticleID());
-											serviceType = "HKG";
-									}
-					}
-					if("33PE9".contains(csTicketDetails.getArticleID().substring(0,5)) || "33PET".contains(csTicketDetails.getArticleID().substring(0,5)) ||
-							"33PEN".contains(csTicketDetails.getArticleID().substring(0,5)) || "33PEH".contains(csTicketDetails.getArticleID().substring(0,5))) {
-						if(csTicketDetails.getArticleID() != null)
-							auPostList.add(csTicketDetails.getArticleID());
-					}
-					if("AMQ".contains(csTicketDetails.getArticleID().substring(0,3))) {
-						if(csTicketDetails.getArticleID() != null)
-							pcaList.add(csTicketDetails.getArticleID());
+						else {
+							etowerList.add(csTicketDetails.getArticleID());
+						}
+					}else if(isAuPost) {
+						auPostList.add(csTicketDetails.getArticleID());
+					}else if(isPCA) {
+						pcaList.add(csTicketDetails.getArticleID());
 					}
 				}
+				
 			}
 		}
 		if(pcaList.size() > 0 ) {
 			System.out.println("PCA List-->");
 			System.out.println(pcaList.toString());	
+			List<PCATrackEventResponse> responseList = new ArrayList<PCATrackEventResponse>();
 			for(String articleID : pcaList) {
-			pcaproxy.trackingEvent(articleID);
+			String response = pcaproxy.trackingEvent(articleID);
+			ObjectMapper mapper = new ObjectMapper();
+			PCATrackEventResponse pcaResponse = null;
+			try {
+				pcaResponse = mapper.readValue(response, PCATrackEventResponse.class);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+			responseList.add(pcaResponse);
+			}
+			
+		if(responseList.size()>0) {
+			d2zDao.updatePCATrackingDetails(responseList);
+		}
 		}
 		if(pflList.size() > 0 ) {
 			System.out.println("PFL List-->");

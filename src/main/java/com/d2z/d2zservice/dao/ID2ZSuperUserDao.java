@@ -24,6 +24,7 @@ import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
+import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
 import com.d2z.d2zservice.model.ProfitLossReport;
@@ -247,6 +248,10 @@ public interface ID2ZSuperUserDao {
 	List<ProfitLossReport> profitLossReport(String fromDate, String toDate);
 
 	List<Returns> fetchAllReferenceNumber();
+
+	ResponseMessage updatePCATrackingDetails(List<PCATrackEventResponse> responseList);
+
+	List<String> fetchMlidsBasedOnSupplier(String string);
 
 }
 
