@@ -2570,9 +2570,8 @@ else
 	}
 
 	@Override
-	public UserMessage enquiryFileUpload(Blob blob, String ticketNumber, String comments, String d2zComments, String sendUpdate,
-			String status, String fileName) {
-		UserMessage usrMsg = d2zDao.enquiryFileUpload(blob,ticketNumber,comments,d2zComments,sendUpdate,status,fileName);
+	public UserMessage enquiryFileUpload(Blob blob, String fileName, String ticketNumber) {
+		UserMessage usrMsg = d2zDao.enquiryFileUpload(blob,fileName,ticketNumber);
 		return usrMsg;
 	}
 
@@ -2583,9 +2582,15 @@ else
 	}
 
 	@Override
-	public EnquiryResponse enquiryUpdate(EnquiryUpdate updateEnquiry) {
-		EnquiryResponse enquiryInfo = d2zDao.enquiryUpdate(updateEnquiry);
+	public EnquiryResponse enquiryClientUpdate(EnquiryUpdate updateEnquiry) {
+		EnquiryResponse enquiryInfo = d2zDao.enquiryClientUpdate(updateEnquiry);
 		return enquiryInfo;
+	}
+	
+	@Override
+	public UserMessage enquiryUpdate(String ticketNum, String cmts, String d2zCmts, String update, String sts) {
+		UserMessage usrMsg = d2zDao.enquiryUpdate(ticketNum,cmts,d2zCmts,update,sts);
+		return usrMsg;
 	}
 
 }

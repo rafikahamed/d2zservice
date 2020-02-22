@@ -85,8 +85,8 @@ public class D2zController {
 	}
 	
 	@RequestMapping(method = RequestMethod.PUT, path = "/update-enquiry")
-	public EnquiryResponse enquiryUpdate(@RequestBody EnquiryUpdate updateEnquiry){
-		EnquiryResponse enquiryInfo = d2zService.enquiryUpdate(updateEnquiry);
+	public EnquiryResponse enquiryClientUpdate(@RequestBody EnquiryUpdate updateEnquiry){
+		EnquiryResponse enquiryInfo = d2zService.enquiryClientUpdate(updateEnquiry);
 		return enquiryInfo;
 	}
 	

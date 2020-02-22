@@ -171,8 +171,7 @@ public interface ID2ZDao {
 
 	public void updateSystemRefCount(Map<String, Integer> currentSysRefCount);
 
-	public UserMessage enquiryFileUpload(Blob blob, String ticketNumber, String comments, String d2zComments, String sendUpdate,
-			String status, String fileName);
+	public UserMessage enquiryFileUpload(Blob blob, String fileName, String ticketNumber);
 
 	public String fetchServiceTypeByRefNbr(String string);
 
@@ -182,6 +181,8 @@ public interface ID2ZDao {
 
 	public UserMessage enquiryFileUpload(List<SuperUserEnquiry> enquiry);
 
-	public EnquiryResponse enquiryUpdate(EnquiryUpdate updateEnquiry);
+	public EnquiryResponse enquiryClientUpdate(EnquiryUpdate updateEnquiry);
+	
+	public UserMessage enquiryUpdate(String ticketNum, String cmts, String d2zCmts, String update, String sts);
 
 }

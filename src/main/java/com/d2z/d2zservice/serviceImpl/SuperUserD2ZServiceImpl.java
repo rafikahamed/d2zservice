@@ -1429,12 +1429,14 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		List<String> pcaList = new ArrayList<String>();
 		List<String> pflList = new ArrayList<String>();
 		List<String> etowerList = new ArrayList<String>();
+		List<String> etowerHKGList = new ArrayList<String>();
+		List<String> etowerHKG2List = new ArrayList<String>();
+
 		List<String> auPostList = new ArrayList<String>();
-		
 		List<String> eTowerMlids = d2zDao.fetchMlidsBasedOnSupplier("eTower");
 		List<String> auPostMlids =  d2zDao.fetchMlidsBasedOnSupplier("FDM");
 	    List<String> pcaMlids = d2zDao.fetchMlidsBasedOnSupplier("PCA");
-		String serviceType =null;
+		
 		if(csTickets != null) {
 			for(CSTickets csTicketDetails:csTickets) {
 				if(csTicketDetails.getCarrier().equalsIgnoreCase("FastwayS") || csTicketDetails.getCarrier().equalsIgnoreCase("StarTrack")) {
@@ -1455,12 +1457,10 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 					boolean isPCA = pcaMlids.stream().anyMatch(mlid::equalsIgnoreCase);
 					if(isETower) {
 						if(mlid.equalsIgnoreCase("33XH8") ||mlid.equalsIgnoreCase("33XCT")||mlid.equalsIgnoreCase("33XH7")||mlid.equalsIgnoreCase("33XCR") ) {
-							etowerList.add(csTicketDetails.getArticleID());
-							serviceType = "HKG2";
+							etowerHKG2List.add(csTicketDetails.getArticleID());
 						}else if(mlid.equalsIgnoreCase("33UXT") ||mlid.equalsIgnoreCase("33UXX")||mlid.equalsIgnoreCase("33UY6")||mlid.equalsIgnoreCase("33UYA") ) {
-							etowerList.add(csTicketDetails.getArticleID());
-							serviceType = "HKG";
-							}
+							etowerHKGList.add(csTicketDetails.getArticleID());
+						}
 						else {
 							etowerList.add(csTicketDetails.getArticleID());
 						}
@@ -1517,10 +1517,20 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			else 
 				System.out.println("No Response from PFL for the giventracking number");
 		}
-		if(etowerList.size() > 0 ) {
+		if(etowerList.size() > 0) {
 			System.out.println("Etower List");
 			System.out.println(etowerList.toString());
-			eTowerTrackingEvent(etowerList,serviceType);
+			eTowerTrackingEvent(etowerList,null);
+		}
+		if(etowerHKGList.size() > 0) {
+			System.out.println("Etower HKG List");
+			System.out.println(etowerHKGList.toString());
+			eTowerTrackingEvent(etowerHKGList,"HKG");
+		}
+		if(etowerHKG2List.size() > 0) {
+			System.out.println("Etower HKG2 List");
+			System.out.println(etowerHKG2List.toString());
+			eTowerTrackingEvent(etowerHKG2List,"HKG2");
 		}
 		if(auPostList.size() > 0 ) {
 			System.out.println("AUPost List");
