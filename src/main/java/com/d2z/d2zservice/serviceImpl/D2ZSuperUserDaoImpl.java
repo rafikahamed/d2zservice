@@ -1519,7 +1519,6 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 	
 	public void updateReturnInvoice(Returns returnVal) {
-		
 		senderdata_InvoicingRepository.updateReturnInvoice("Return-"+D2ZCommonUtil.getday(),"RET", returnVal.getArticleId());
 	}
 
