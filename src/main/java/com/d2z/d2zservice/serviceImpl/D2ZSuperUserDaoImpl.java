@@ -883,13 +883,18 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				openEnquiryResponse.setTrackingEvent(obj[15] != null ? obj[15].toString() : "");
 				openEnquiryResponse.setSendUpdate(obj[17] != null ? obj[17].toString() : "");
 				openEnquiryResponse.setFileName(obj[18] != null ? obj[18].toString() : "");
-				TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(openEnquiryResponse.getConsigneePostcode());
-				if( null != transitTimeResponse && null != transitTimeResponse.getTransitTime() && null !=openEnquiryResponse.getTrackingEventDateOccured()) {
-					deliveryDate = D2ZCommonUtil.getIncreasedTime(openEnquiryResponse.getTrackingEventDateOccured(),transitTimeResponse.getTransitTime());
-				}else {
-					
-				}
-				openEnquiryResponse.setTrackingDeliveryDate(deliveryDate);
+				/*
+				 * TransitTime transitTimeResponse =
+				 * transitTimeRepository.fetchTransitTime(openEnquiryResponse.
+				 * getConsigneePostcode()); if( null != transitTimeResponse && null !=
+				 * transitTimeResponse.getTransitTime() && null
+				 * !=openEnquiryResponse.getTrackingEventDateOccured()) { deliveryDate =
+				 * D2ZCommonUtil.getIncreasedTime(openEnquiryResponse.
+				 * getTrackingEventDateOccured(),transitTimeResponse.getTransitTime()); }else {
+				 * 
+				 * } openEnquiryResponse.setTrackingDeliveryDate(deliveryDate);
+				 */
+				openEnquiryResponse.setTrackingDeliveryDate(obj[19] != null ? obj[19].toString() : "");
 				openEnquiryList.add(openEnquiryResponse);
 			  }
 		}

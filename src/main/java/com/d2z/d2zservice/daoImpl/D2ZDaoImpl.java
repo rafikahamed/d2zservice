@@ -33,6 +33,7 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.StarTrackPostcode;
 import com.d2z.d2zservice.entity.SystemRefCount;
 import com.d2z.d2zservice.entity.Trackandtrace;
+import com.d2z.d2zservice.entity.TransitTime;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
@@ -74,6 +75,7 @@ import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.StarTrackPostcodeRepository;
 import com.d2z.d2zservice.repository.SystemRefCountRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
+import com.d2z.d2zservice.repository.TransitTimeRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
@@ -144,6 +146,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	@Autowired
 	@Lazy
 	private D2ZValidator d2zValidator;
+	
+	@Autowired
+	TransitTimeRepository transitTimeRepository;
 	
 	
 	
@@ -1022,6 +1027,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		List<CSTickets> csTctList = new ArrayList<CSTickets>();
 		for(CreateEnquiryRequest enquiryRequest:createEnquiry.getEnquiryDetails()) {
 			CSTickets tickets = new CSTickets();
+			String timestamp = null;
 			if(enquiryRequest.getType().equalsIgnoreCase("Article Id")) {
 				SenderdataMaster senderArticleId = senderDataRepository.fetchDataArticleId(enquiryRequest.getIdentifier());
 				if(null != senderArticleId) {
@@ -1035,6 +1041,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setProductDescription(senderArticleId.getProduct_Description());
 					tickets.setBarcodelabelNumber(senderArticleId.getBarcodelabelNumber());
 					tickets.setCarrier(senderArticleId.getCarrier());
+					if(senderArticleId.getAirwayBill() !=null) {
+					timestamp = senderArticleId.getTimestamp();
+					}
 				}
 			}else if(enquiryRequest.getType().equalsIgnoreCase("Reference Number")) {
 				SenderdataMaster senderRefId = senderDataRepository.fetchDataReferenceNum(enquiryRequest.getIdentifier());
@@ -1049,6 +1058,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setProductDescription(senderRefId.getProduct_Description());
 					tickets.setBarcodelabelNumber(senderRefId.getBarcodelabelNumber());
 					tickets.setCarrier(senderRefId.getCarrier());
+					if(senderRefId.getAirwayBill() !=null) {
+						timestamp = senderRefId.getTimestamp();
+						}
 				}
 			}
 			tickets.setTicketID("INC"+D2ZCommonUtil.getday()+csticketsRepository.fetchNextSeq().toString());
@@ -1058,6 +1070,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 			tickets.setStatus("open");
 			tickets.setUserId( userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
 			tickets.setEnquiryOpenDate(Timestamp.valueOf(LocalDateTime.now()));
+			TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(tickets.getConsigneePostcode());
+			if( null != transitTimeResponse && null != transitTimeResponse.getTransitTime() && null !=timestamp) {
+				String deliveryDate = D2ZCommonUtil.getIncreasedTime(timestamp,transitTimeResponse.getTransitTime());
+				tickets.setExpectedDeliveryDate(deliveryDate);
+			}
 			csTctList.add(tickets);
 		}
 		List<String> incomingRefNbr = csTctList.stream().map(obj -> { return obj.getReferenceNumber(); }).collect(Collectors.toList());
@@ -1231,9 +1248,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public UserMessage enquiryFileUpload(Blob blob, String ticketNumber, String comments, String d2zComments, String sendUpdate, String status,
-			String fileName) {
-		csticketsRepository.enquiryFileUpload(blob, ticketNumber, comments, d2zComments, sendUpdate, status, fileName);
+	public UserMessage enquiryFileUpload(Blob blob,String fileName, String ticketNumber) {
+		csticketsRepository.enquiryFileUpload(blob, fileName,ticketNumber);
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage("Enquiry Data Updated Successfully");
 		return usrMsg;
@@ -1258,11 +1274,20 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public UserMessage enquiryFileUpload(List<SuperUserEnquiry> SuperUserEnquiry) {
 		for(SuperUserEnquiry enquiry:SuperUserEnquiry) {
-			csticketsRepository.enquiryFileUpload(null, enquiry.getTicketNumber(), enquiry.getComments(), enquiry.getD2zComments(), enquiry.getSendUpdate(), enquiry.getStatus(), enquiry.getFileName());
+			csticketsRepository.enquiryUpdate(enquiry.getTicketNumber(), enquiry.getComments(), enquiry.getD2zComments(), enquiry.getSendUpdate(), enquiry.getStatus());
 		}
 		UserMessage usrMsg = new UserMessage();
-		usrMsg.setMessage("Return Action Updated Successfully");
+		usrMsg.setMessage("Enquiry Data Updated Successfully");
 		return usrMsg;
+	}
+
+	@Override
+	public UserMessage enquiryUpdate(String ticketNum, String cmts, String d2zCmts, String update, String sts) {
+		csticketsRepository.enquiryUpdate(ticketNum, cmts, d2zCmts, update, sts);
+	
+	UserMessage usrMsg = new UserMessage();
+	usrMsg.setMessage("Enquiry Data Updated Successfully");
+	return usrMsg;
 	}
 
 }

@@ -134,10 +134,11 @@ public interface ID2ZService {
 	
 	public List<TrackParcelResponse> trackParcels(List<String> articleIds) throws InterruptedException, ExecutionException;
 
-	public UserMessage enquiryFileUpload(Blob blob, String ticketNumber, String comments, String d2zComments, String sendUpdate,
-											String status, String filename);
+	public UserMessage enquiryFileUpload(Blob blob, String filename, String ticketNumber);
 
 	public UserMessage enquiryFileUpload(List<SuperUserEnquiry> enquiry);
+
+	public UserMessage enquiryUpdate(String ticketNum, String cmts, String d2zCmts, String update, String sts);
 
 
 }

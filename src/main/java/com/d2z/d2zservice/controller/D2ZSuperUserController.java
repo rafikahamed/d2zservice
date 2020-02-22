@@ -1,10 +1,12 @@
 package com.d2z.d2zservice.controller;
 
 import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -452,35 +454,51 @@ public class D2ZSuperUserController {
 		return superUserD2zService.zoneReport(zoneRequest);
 	}
 	
-	@RequestMapping(value = "/enquiryPodFile/{ticketNumber}/{comments}/{d2zComments}/{sendUpdate}/{status}", method = RequestMethod.POST)
-	public UserMessage enquiryFileUpload(@RequestParam("file") MultipartFile file, 
-			@PathVariable String ticketNumber, @PathVariable String comments,
-			@PathVariable String d2zComments, @PathVariable String sendUpdate, @PathVariable String status) throws Exception {
+	//@RequestMapping(value = "/enquiryPodFile/{ticketNumber}/{comments}/{d2zComments}/{sendUpdate}/{status}", method = RequestMethod.POST)
+	@RequestMapping(value = "/enquiryPodFile/{ticketNumber}", method = RequestMethod.POST)
+	/*
+	 * public UserMessage enquiryFileUpload(@RequestBody MultipartFile file,
+	 * 
+	 * @PathVariable String ticketNumber, @PathVariable String comments,
+	 * 
+	 * @PathVariable String d2zComments, @PathVariable String
+	 * sendUpdate, @PathVariable String status) throws Exception {
+	 */
+	public UserMessage enquiryFileUpload(@RequestParam("file") MultipartFile file,@PathVariable String ticketNumber) throws Exception {
 		Blob blob = null;
 		byte[] myArray = file.getBytes();
         blob = new SerialBlob(myArray);
-        String ticketNum = ticketNumber != null ? ticketNumber : "";
-        String cmts = comments != null ? comments : "";
-        String d2zCmts = d2zComments != null ? d2zComments : "";
-        String update = sendUpdate != null ? sendUpdate : "";
-        String sts = status != null ? status : "";
-        UserMessage successMsg = d2zService.enquiryFileUpload(blob, ticketNum,cmts,d2zCmts,update,sts,file.getOriginalFilename());
-	    return successMsg;
+//        String ticketNum = updatedData.getTicketNumber();// != null ? updatedData.getTicketNumber() : "";
+//        String cmts = updatedData.getComments();// != null ? updatedData.getComments()  : "";
+//        String d2zCmts = updatedData.getD2zComments();// != null ? d2zComments : "";
+//        String update = updatedData.getSendUpdate();// != null ? sendUpdate : "";
+//        String sts = updatedData.getStatus();// != null ? status : "";
+        UserMessage successMsg = d2zService.enquiryFileUpload(blob, file.getOriginalFilename(),ticketNumber);
+        return successMsg;
 	}  
 	
-	@RequestMapping(value = "/enquiryPod/{ticketNumber}/{comments}/{d2zComments}/{sendUpdate}/{status}", method = RequestMethod.POST)
-	public UserMessage enquiryFileUpload(
-			@PathVariable String ticketNumber, @PathVariable String comments,
-			@PathVariable String d2zComments, @PathVariable String sendUpdate, @PathVariable String status) throws Exception {
-		 	String ticketNum = ticketNumber != null ? ticketNumber : "";
-	        String cmts = comments != null ? comments : "";
-	        String d2zCmts = d2zComments != null ? d2zComments : "";
-	        String update = sendUpdate != null ? sendUpdate : "";
-	        String sts = status != null ? status : "";
-        UserMessage successMsg = d2zService.enquiryFileUpload(null, ticketNum,cmts,d2zCmts,update,sts,null);
+//	@RequestMapping(value = "/enquiryPod/{ticketNumber}/{comments}/{d2zComments}/{sendUpdate}/{status}", method = RequestMethod.POST)
+//	public UserMessage enquiryFileUpload(
+//			@PathVariable String ticketNumber, @PathVariable String comments,
+//			@PathVariable String d2zComments, @PathVariable String sendUpdate, @PathVariable String status) throws Exception {
+//		 	String ticketNum = ticketNumber != null ? ticketNumber : "";
+//	        String cmts = comments != null ? comments : "";
+//	        String d2zCmts = d2zComments != null ? d2zComments : "";
+//	        String update = sendUpdate != null ? sendUpdate : "";
+//	        String sts = status != null ? status : "";
+//        UserMessage successMsg = d2zService.enquiryFileUpload(null, ticketNum,cmts,d2zCmts,update,sts,null);
+//	    return successMsg;
+//	}  
+	@RequestMapping(value = "/enquiryPod", method = RequestMethod.POST)
+	public UserMessage enquiryUpload(@RequestBody SuperUserEnquiry updatedData) throws Exception {
+		 String ticketNum = updatedData.getTicketNumber();// != null ? updatedData.getTicketNumber() : "";
+	        String cmts = updatedData.getComments();// != null ? updatedData.getComments()  : "";
+	        String d2zCmts = updatedData.getD2zComments();// != null ? d2zComments : "";
+	        String update = updatedData.getSendUpdate();// != null ? sendUpdate : "";
+	        String sts = updatedData.getStatus();// != null ? status : "";
+	        UserMessage successMsg = d2zService.enquiryUpdate(ticketNum,cmts,d2zCmts,update,sts);
 	    return successMsg;
-	}  
-	
+	} 
 	@RequestMapping(method = RequestMethod.PUT, path = "/enquiry/update")
 	public UserMessage enquiryFileUpload(@RequestBody List<SuperUserEnquiry> enquiry) throws Exception {
         UserMessage successMsg = d2zService.enquiryFileUpload(enquiry);

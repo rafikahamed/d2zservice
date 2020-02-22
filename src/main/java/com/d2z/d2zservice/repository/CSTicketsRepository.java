@@ -42,7 +42,7 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 			"				B.Consignee_Suburb,\r\n" + 
 			"				B.Consignee_State,\r\n" + 
 			"				B.Consignee_Postcode,\r\n" + 
-			"				B.Product_Description, B.TrackingEvent, B.EnquiryOpenDate, B.SendUpdate, B.fileName\r\n" + 
+			"				B.Product_Description, B.TrackingEvent, B.EnquiryOpenDate, B.SendUpdate, B.fileName, B.ExpectedDeliveryDate\r\n" + 
 			"FROM   (\r\n" + 
 			"	SELECT DISTINCT U.client_broker_id, \r\n" + 
 			"                        S.ticketid ,\r\n" + 
@@ -56,7 +56,7 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 			"						S.Consignee_Suburb,\r\n" + 
 			"						S.Consignee_State,\r\n" + 
 			"						S.Consignee_Postcode,\r\n" + 
-			"						S.Product_Description, S.TrackingEvent, S.EnquiryOpenDate, S.SendUpdate, S.fileName \r\n" + 
+			"						S.Product_Description, S.TrackingEvent, S.EnquiryOpenDate, S.SendUpdate, S.fileName, S.ExpectedDeliveryDate \r\n" + 
 			"        FROM CSTickets S \r\n" + 
 			"               INNER JOIN users U \r\n" + 
 			"                       ON U.role_id IN ( '3' ) \r\n" + 
@@ -75,7 +75,7 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 			"						S.Consignee_Suburb,\r\n" + 
 			"						S.Consignee_State,\r\n" + 
 			"						S.Consignee_Postcode,\r\n" + 
-			"						S.Product_Description, S.TrackingEvent, S.EnquiryOpenDate, S.SendUpdate, S.fileName \r\n" + 
+			"						S.Product_Description, S.TrackingEvent, S.EnquiryOpenDate, S.SendUpdate, S.fileName, S.ExpectedDeliveryDate \r\n" + 
 			"        FROM   CSTickets S \r\n" + 
 			"               INNER JOIN users U \r\n" + 
 			"                       ON U.role_id IN ( '2' ) \r\n" + 
@@ -123,9 +123,14 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 	
 	@Modifying
 	@Transactional
-	@Query("update CSTickets t set t.proof = :blob, t.comments = :comments, t.d2zComments = :d2zComments, t.sendUpdate = :sendUpdate, t.status = :status, t.fileName = :fileName where t.ticketID = :ticketNumber")
-	void enquiryFileUpload(@Param("blob") Blob blob,@Param("ticketNumber") String ticketNumber, @Param("comments") String comments, @Param("d2zComments") String d2zComments, 
-			@Param("sendUpdate") String sendUpdate, @Param("status") String status, @Param("fileName") String fileName);
+	@Query("update CSTickets t set t.comments = :comments, t.d2zComments = :d2zComments, t.sendUpdate = :sendUpdate, t.status = :status where t.ticketID = :ticketNumber")
+	void enquiryUpdate(@Param("ticketNumber") String ticketNumber, @Param("comments") String comments, @Param("d2zComments") String d2zComments, 
+			@Param("sendUpdate") String sendUpdate, @Param("status") String status);
+	
+	@Modifying
+	@Transactional
+	@Query("update CSTickets t set t.proof = :blob, t.fileName = :fileName where t.ticketID = :ticketNumber")
+	void enquiryFileUpload(@Param("blob") Blob blob, @Param("fileName") String fileName, @Param("ticketNumber") String ticketNumber);
 
 	
 }

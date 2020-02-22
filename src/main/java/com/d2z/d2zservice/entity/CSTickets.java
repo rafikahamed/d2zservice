@@ -47,7 +47,7 @@ public class CSTickets implements Serializable {
 	private Timestamp trackingEventDateOccured;
 	
 	@Column(name = "ExpectedDeliveryDate")
-	private Timestamp expectedDeliveryDate;
+	private String expectedDeliveryDate;
 	
 	@Column(name = "EnquiryOpenDate")
 	private Timestamp enquiryOpenDate;
@@ -179,11 +179,11 @@ public class CSTickets implements Serializable {
 		this.trackingEventDateOccured = trackingEventDateOccured;
 	}
 
-	public Timestamp getExpectedDeliveryDate() {
+	public String getExpectedDeliveryDate() {
 		return expectedDeliveryDate;
 	}
 
-	public void setExpectedDeliveryDate(Timestamp expectedDeliveryDate) {
+	public void setExpectedDeliveryDate(String expectedDeliveryDate) {
 		this.expectedDeliveryDate = expectedDeliveryDate;
 	}
 
