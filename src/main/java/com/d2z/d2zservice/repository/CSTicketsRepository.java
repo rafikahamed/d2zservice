@@ -18,11 +18,11 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 	Integer fetchNextSeq();
 	
 	@Query( nativeQuery = true, value="SELECT * FROM CSTickets where "
-			+ "enquiryOpenDate between :fromDate and :toDate and userId in (:userId)") 
+			+ "enquiryOpenDate between :fromDate and :toDate and userId in (:userId) and status='open'") 
 	List<CSTickets> fetchEnquiry(@Param("fromDate") String fromDate, @Param("toDate") String toDate,
 									@Param("userId") Integer[] userIds);
 	
-	@Query( nativeQuery = true, value="SELECT * FROM CSTickets where userId in (:userId)") 
+	@Query( nativeQuery = true, value="SELECT * FROM CSTickets where userId in (:userId) and status='open' ") 
 	List<CSTickets> fetchEnquiry(@Param("userId") Integer[] userIds);
 	
 	@Query( nativeQuery = true, value="SELECT * FROM CSTickets where userId in (:userId) and status = 'closed' and enquiryOpenDate >= getdate() -14") 

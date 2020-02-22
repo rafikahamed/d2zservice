@@ -1,6 +1,7 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,9 +14,6 @@ import javax.persistence.Table;
 @Table(name="IncomingJobs")
 public class IncomingJobs implements Serializable{
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public String getIsSubmitted() {
@@ -39,7 +37,6 @@ public class IncomingJobs implements Serializable{
 	
 	@Column(name = "Consignee")
 	private String Consignee;
-	
 
 	@Column(name = "MAWB")
 	private String Mawb;
@@ -65,9 +62,38 @@ public class IncomingJobs implements Serializable{
 	@Column(name = "ISDeleted")
 	private String isDeleted;
 	
-
 	@Column(name = "ISSubmitted")
 	private String isSubmitted;
+	
+	@Column(name = "ATA")
+	private LocalDate Ata;
+	
+	@Column(name = "CLEAR")
+	private String Clear;
+	
+	@Column(name = "NOTE")
+	private String Note;
+	
+	@Column(name = "HELD")
+	private String Held;
+	
+	@Column(name = "OUTTURN")
+	private String outturn;
+	
+	@Column(name="Process")
+	private BigDecimal process;
+	
+	@Column(name="Pickup")
+	private BigDecimal pickup;
+	
+	@Column(name="Docs")
+	private BigDecimal docs;
+	
+	@Column(name="Airport")
+	private BigDecimal airport;
+	
+	@Column(name="Total")
+	private BigDecimal total;
 	
 	public String getIsDeleted() {
 		return isDeleted;
@@ -157,7 +183,6 @@ public class IncomingJobs implements Serializable{
 		Weight = weight;
 	}
 
-
 	public LocalDate getEta() {
 		return Eta;
 	}
@@ -206,22 +231,44 @@ public class IncomingJobs implements Serializable{
 		this.outturn = outturn;
 	}
 
-	@Column(name = "ATA")
-	private LocalDate Ata;
-	
+	public BigDecimal getProcess() {
+		return process;
+	}
 
-	
-	@Column(name = "CLEAR")
-	private String Clear;
-	
-	@Column(name = "NOTE")
-	private String Note;
-	
-	@Column(name = "HELD")
-	private String Held;
-	
-	@Column(name = "OUTTURN")
-	private String outturn;
-	
+	public void setProcess(BigDecimal process) {
+		this.process = process;
+	}
 
+	public BigDecimal getPickup() {
+		return pickup;
+	}
+
+	public void setPickup(BigDecimal pickup) {
+		this.pickup = pickup;
+	}
+
+	public BigDecimal getDocs() {
+		return docs;
+	}
+
+	public void setDocs(BigDecimal docs) {
+		this.docs = docs;
+	}
+
+	public BigDecimal getAirport() {
+		return airport;
+	}
+
+	public void setAirport(BigDecimal airport) {
+		this.airport = airport;
+	}
+
+	public BigDecimal getTotal() {
+		return total;
+	}
+
+	public void setTotal(BigDecimal total) {
+		this.total = total;
+	}
+	
 }

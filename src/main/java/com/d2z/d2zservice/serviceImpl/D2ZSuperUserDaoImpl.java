@@ -924,12 +924,13 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	@Override
 	public String createEnquiry(List<CreateJobRequest> createJob) {
 		List<IncomingJobs> joblist = new ArrayList<IncomingJobs>();
+		DecimalFormat twoDForm = new DecimalFormat("#.##");
 		for(CreateJobRequest jobRequest :createJob){
-			String mlid = "";
-			for(DropDownModel model : jobRequest.getMlid()){
-				 mlid = mlid + model.getName()+",";
-			}
-			mlid = mlid.substring(0, mlid.length() - 1);
+				String mlid = "";
+				for(DropDownModel model : jobRequest.getMlid()){
+					 mlid = mlid + model.getName()+",";
+				}
+				mlid = mlid.substring(0, mlid.length() - 1);
 				IncomingJobs jobs = new IncomingJobs();
 				jobs.setBroker(jobRequest.getType());
 				jobs.setMLID(mlid);
@@ -941,13 +942,50 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				jobs.setPiece(jobRequest.getPrice());
 				jobs.setWeight(jobRequest.getWeight());
 				jobs.setIsDeleted("N");
-				System.out.println("Date:"+":"+jobRequest.getEta().length());
+				if(jobRequest.getType().equalsIgnoreCase("VELB") && jobRequest.getConsignee().equalsIgnoreCase("PCA") ) {
+					jobs.setProcess(BigDecimal.valueOf(0));
+					jobs.setPickup(BigDecimal.valueOf(70));
+					jobs.setDocs(BigDecimal.valueOf(60));
+					Double airportChargeNexb = Double.valueOf(jobRequest.getWeight())*(0.6);
+					jobs.setAirport(BigDecimal.valueOf(airportChargeNexb));
+					BigDecimal totalNexb = jobs.getProcess().add(jobs.getPickup()).add(jobs.getDocs()).add(jobs.getAirport());
+					jobs.setTotal(totalNexb);
+				}else if(jobRequest.getType().equalsIgnoreCase("VELB") && jobRequest.getConsignee().equalsIgnoreCase("AMI")) {
+					jobs.setProcess(BigDecimal.valueOf(0));
+					jobs.setPickup(BigDecimal.valueOf(160));
+					jobs.setDocs(BigDecimal.valueOf(0));
+					jobs.setAirport(BigDecimal.valueOf(60));
+					BigDecimal totalRmfb = jobs.getProcess().add(jobs.getPickup()).add(jobs.getDocs()).add(jobs.getAirport());
+					jobs.setTotal(totalRmfb);
+				}else if(jobRequest.getType().equalsIgnoreCase("RMFB") && jobRequest.getConsignee().equalsIgnoreCase("D2Z")) {
+					jobs.setProcess(BigDecimal.valueOf(25));
+					jobs.setPickup(BigDecimal.valueOf(0));
+					jobs.setDocs(BigDecimal.valueOf(0));
+					jobs.setAirport(BigDecimal.valueOf(0));
+					BigDecimal totalRmfb = jobs.getProcess().add(jobs.getPickup()).add(jobs.getDocs()).add(jobs.getAirport());
+					jobs.setTotal(totalRmfb);
+				}else if(jobRequest.getType().equalsIgnoreCase("GPXB") && jobRequest.getConsignee().equalsIgnoreCase("PCA")) {
+					Double processNexb = Double.valueOf(jobRequest.getWeight())*(0.88);
+					jobs.setProcess(BigDecimal.valueOf(processNexb));
+					jobs.setPickup(BigDecimal.valueOf(0));
+					jobs.setDocs(BigDecimal.valueOf(60));
+					jobs.setAirport(BigDecimal.valueOf(0));
+					BigDecimal totalNexb = jobs.getProcess().add(jobs.getPickup()).add(jobs.getDocs()).add(jobs.getAirport());
+					jobs.setTotal(totalNexb);
+				}else if(jobRequest.getType().equalsIgnoreCase("5ULB") && jobRequest.getConsignee().equalsIgnoreCase("PFL")) {
+					Double processNexb = Double.valueOf(jobRequest.getWeight())*(0.85);
+					jobs.setProcess(BigDecimal.valueOf(processNexb));
+					jobs.setPickup(BigDecimal.valueOf(0));
+					jobs.setDocs(BigDecimal.valueOf(60));
+					jobs.setAirport(BigDecimal.valueOf(0));
+					BigDecimal totalNexb = jobs.getProcess().add(jobs.getPickup()).add(jobs.getDocs()).add(jobs.getAirport());
+					jobs.setTotal(totalNexb);
+				}
 				if(jobRequest.getEta()!=null && jobRequest.getEta().length() > 0){
 				LocalDate date1  = LocalDate.parse(jobRequest.getEta());
-				System.out.println("Date:"+":"+date1);
 				jobs.setEta(date1);
-				}
-				joblist.add(jobs);
+			 }
+			joblist.add(jobs);
 		}
 		incomingRepository.saveAll(joblist);
 	return "Job created Successfully";
