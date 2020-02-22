@@ -112,6 +112,12 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 	@Query("update CSTickets c set c.trackingEvent = :status, c.trackingStatus = :status_code, trackingEventDateOccured = :eventDate where c.barcodelabelNumber = :barcodeLabel")
 	void updatePFLCSTrackingDetails(@Param("barcodeLabel") String barcodeLabel, @Param("status") String status, @Param("status_code") String status_code, @Param("eventDate") Timestamp eventDate);
 	
+	@Modifying
+	@Transactional
+	@Query(nativeQuery = true, value="update CSTickets set TrackingEvent = :description, TrackingStatus = :status, TrackingEventDateOccured = :eventDate where substring(ArticleID,0,11) = :article_id")
+	void updatePCACSTrackingDetails(@Param("article_id") String article_id, @Param("description") String description, @Param("status") String status, @Param("eventDate") Timestamp eventDate);
+	
+	
 	@Query("SELECT distinct(c.proof) FROM CSTickets c where c.ticketID = :ticketId") 
 	byte[] fetchPod(@Param("ticketId") String ticketId);
 	

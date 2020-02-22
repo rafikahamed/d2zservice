@@ -797,6 +797,13 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	
 	@Modifying(flushAutomatically = true,clearAutomatically = true)
 	@Transactional
+	@Query("Update SenderdataMaster s set s.airwayBill = :airwayBill, s.status = 'SHIPMENT ALLOCATED', \n"+
+									  "s.timestamp = :timestamp, s.invoiced = 'M' where s.reference_number IN (:referenceNumbers) and  isdeleted = 'N'")
+	void updateAirwayBillInvoiceMAWB(@Param("referenceNumbers") String[] referenceNumbers, @Param("airwayBill") String shipmentNumber, @Param("timestamp") String timestamp);
+	
+	
+	@Modifying(flushAutomatically = true,clearAutomatically = true)
+	@Transactional
 	@Query("Update SenderdataMaster s set s.weight = :weight where s.articleId = :articleid")
 	void updateweight(@Param("weight") Double weight, @Param("articleid") String articleid);
 	

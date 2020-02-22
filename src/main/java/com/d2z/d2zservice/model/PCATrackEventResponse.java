@@ -8,6 +8,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class PCATrackEventResponse {
 
 	private String ref;
+	private String status;
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	private List<List<String>> tracks;
 	public String getRef() {
 		return ref;
