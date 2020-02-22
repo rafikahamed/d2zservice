@@ -63,10 +63,10 @@ import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
+import com.d2z.d2zservice.model.EnquiryUpdate;
 import com.d2z.d2zservice.model.FDMManifestDetails;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
-import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.PFLTrackEvent;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelStatus;
@@ -2581,6 +2581,12 @@ else
 		return usrMsg;
 	}
 
+	@Override
+	public EnquiryResponse enquiryClientUpdate(EnquiryUpdate updateEnquiry) {
+		EnquiryResponse enquiryInfo = d2zDao.enquiryClientUpdate(updateEnquiry);
+		return enquiryInfo;
+	}
+	
 	@Override
 	public UserMessage enquiryUpdate(String ticketNum, String cmts, String d2zCmts, String update, String sts) {
 		UserMessage usrMsg = d2zDao.enquiryUpdate(ticketNum,cmts,d2zCmts,update,sts);

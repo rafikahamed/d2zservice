@@ -112,4 +112,15 @@ public interface Senderdata_InvoicingRepository extends CrudRepository<Senderdat
 	@Query(value="select s FROM Senderdata_Invoicing s where s.dateAllocated between :fromDate and :toDate and s.brokerRate is not null and s.d2zRate is not null")
 	List<Senderdata_Invoicing> getSupplierDetails(@Param("fromDate") String fromDate, @Param("toDate") String toDate);
 	
+	@Query(nativeQuery = true ,value="select\r\n" + 
+			"'APG' as Brokerusername,\r\n" + 
+			"count(Weight) as parcel,\r\n" + 
+			"sum(BrokerRate) as brokerRate,\r\n" + 
+			"sum(D2ZRate) as D2ZRate\r\n" + 
+			"  FROM [D2Z].[dbo].[Senderdata_Invoicing]\r\n" + 
+			"  where\r\n" + 
+			"  DateAllocated between :fromDate and :toDate and Servicetype in ('HKG','HKG2') and brokerRate is not null and D2ZRate is not null \r\n" + 
+			"  group by Brokerusername")
+	List<String> getApgBrokerProfitDetails(@Param("fromDate") String fromDate, @Param("toDate") String toDate);
+	
 }

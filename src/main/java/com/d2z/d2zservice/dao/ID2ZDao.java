@@ -21,6 +21,7 @@ import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
+import com.d2z.d2zservice.model.EnquiryUpdate;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
@@ -180,6 +181,8 @@ public interface ID2ZDao {
 
 	public UserMessage enquiryFileUpload(List<SuperUserEnquiry> enquiry);
 
+	public EnquiryResponse enquiryClientUpdate(EnquiryUpdate updateEnquiry);
+	
 	public UserMessage enquiryUpdate(String ticketNum, String cmts, String d2zCmts, String update, String sts);
 
 }

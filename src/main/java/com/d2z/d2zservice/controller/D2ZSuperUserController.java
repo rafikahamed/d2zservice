@@ -24,7 +24,6 @@ import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.Returns;
-import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.AUWeight;
@@ -38,8 +37,6 @@ import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
-import com.d2z.d2zservice.model.Enquiry;
-import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.ExportConsignment;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
@@ -499,6 +496,7 @@ public class D2ZSuperUserController {
 	        UserMessage successMsg = d2zService.enquiryUpdate(ticketNum,cmts,d2zCmts,update,sts);
 	    return successMsg;
 	} 
+	
 	@RequestMapping(method = RequestMethod.PUT, path = "/enquiry/update")
 	public UserMessage enquiryFileUpload(@RequestBody List<SuperUserEnquiry> enquiry) throws Exception {
         UserMessage successMsg = d2zService.enquiryFileUpload(enquiry);

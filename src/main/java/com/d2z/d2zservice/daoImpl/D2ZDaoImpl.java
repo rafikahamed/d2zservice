@@ -43,6 +43,7 @@ import com.d2z.d2zservice.model.CurrencyDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
+import com.d2z.d2zservice.model.EnquiryUpdate;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
@@ -1044,6 +1045,19 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					if(senderArticleId.getAirwayBill() !=null) {
 					timestamp = senderArticleId.getTimestamp();
 					}
+					tickets.setTicketID("INC"+D2ZCommonUtil.getday()+csticketsRepository.fetchNextSeq().toString());
+					tickets.setComments(enquiryRequest.getComments());
+					tickets.setDeliveryEnquiry(enquiryRequest.getEnquiry());
+					tickets.setPod(enquiryRequest.getPod());
+					tickets.setStatus("open");
+					tickets.setUserId( userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
+					tickets.setEnquiryOpenDate(Timestamp.valueOf(LocalDateTime.now()));
+					TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(tickets.getConsigneePostcode());
+					if( null != transitTimeResponse && null != transitTimeResponse.getTransitTime() && null !=timestamp) {
+						String deliveryDate = D2ZCommonUtil.getIncreasedTime(timestamp,transitTimeResponse.getTransitTime());
+						tickets.setExpectedDeliveryDate(deliveryDate);
+					}
+					csTctList.add(tickets);
 				}
 			}else if(enquiryRequest.getType().equalsIgnoreCase("Reference Number")) {
 				SenderdataMaster senderRefId = senderDataRepository.fetchDataReferenceNum(enquiryRequest.getIdentifier());
@@ -1060,39 +1074,45 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setCarrier(senderRefId.getCarrier());
 					if(senderRefId.getAirwayBill() !=null) {
 						timestamp = senderRefId.getTimestamp();
-						}
+					}
+					tickets.setTicketID("INC"+D2ZCommonUtil.getday()+csticketsRepository.fetchNextSeq().toString());
+					tickets.setComments(enquiryRequest.getComments());
+					tickets.setDeliveryEnquiry(enquiryRequest.getEnquiry());
+					tickets.setPod(enquiryRequest.getPod());
+					tickets.setStatus("open");
+					tickets.setUserId( userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
+					tickets.setEnquiryOpenDate(Timestamp.valueOf(LocalDateTime.now()));
+					TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(tickets.getConsigneePostcode());
+					if( null != transitTimeResponse && null != transitTimeResponse.getTransitTime() && null !=timestamp) {
+						String deliveryDate = D2ZCommonUtil.getIncreasedTime(timestamp,transitTimeResponse.getTransitTime());
+						tickets.setExpectedDeliveryDate(deliveryDate);
+					}
+					csTctList.add(tickets);
 				}
 			}
-			tickets.setTicketID("INC"+D2ZCommonUtil.getday()+csticketsRepository.fetchNextSeq().toString());
-			tickets.setComments(enquiryRequest.getComments());
-			tickets.setDeliveryEnquiry(enquiryRequest.getEnquiry());
-			tickets.setPod(enquiryRequest.getPod());
-			tickets.setStatus("open");
-			tickets.setUserId( userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
-			tickets.setEnquiryOpenDate(Timestamp.valueOf(LocalDateTime.now()));
-			TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(tickets.getConsigneePostcode());
-			if( null != transitTimeResponse && null != transitTimeResponse.getTransitTime() && null !=timestamp) {
-				String deliveryDate = D2ZCommonUtil.getIncreasedTime(timestamp,transitTimeResponse.getTransitTime());
-				tickets.setExpectedDeliveryDate(deliveryDate);
-			}
-			csTctList.add(tickets);
-		}
-		List<String> incomingRefNbr = csTctList.stream().map(obj -> { return obj.getReferenceNumber(); }).collect(Collectors.toList());
-		isReferenceNumberUniqueUI(incomingRefNbr);
-		for(CSTickets csTicket: csTctList) {
-			if(null ==  csTicket.getReferenceNumber()) {
-				throw new ReferenceNumberNotUniqueException("Reference Number (or) Article Id is not avilable in the system",null);
-			}
-		}
-		csticketsRepository.saveAll(csTctList);
-		List<String> tickets = new ArrayList<String>();
-		for(CSTickets csTicket:csTctList) {
-			tickets.add(csTicket.getTicketID());
 		}
 		EnquiryResponse usrMsg = new EnquiryResponse();
-		usrMsg.setMessage("Enquiry created Successfully");
-		usrMsg.setTicketId(tickets);
-		return usrMsg;
+		if(csTctList.size() > 0 ) {
+			List<String> incomingRefNbr = csTctList.stream().map(obj -> { return obj.getReferenceNumber(); }).collect(Collectors.toList());
+			isReferenceNumberUniqueUI(incomingRefNbr);
+			for(CSTickets csTicket: csTctList) {
+				if(null ==  csTicket.getReferenceNumber()) {
+					throw new ReferenceNumberNotUniqueException("Reference Number (or) Article Id is not avilable in the system",null);
+				}
+			}
+			csticketsRepository.saveAll(csTctList);
+			List<String> tickets = new ArrayList<String>();
+			for(CSTickets csTicket:csTctList) {
+				tickets.add(csTicket.getTicketID());
+			}
+			usrMsg.setMessage("Enquiry created Successfully");
+			usrMsg.setTicketId(tickets);
+			return usrMsg;
+		}else {
+			usrMsg.setMessage("Records are Not avilable for the given Enquiry");
+			return usrMsg;
+		}
+		
 	}
 	
 	
@@ -1281,13 +1301,18 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return usrMsg;
 	}
 
-	@Override
+	public EnquiryResponse enquiryClientUpdate(EnquiryUpdate updateEnquiry) {
+		csticketsRepository.enquiryUpdate(updateEnquiry.getTicketId(), updateEnquiry.getComments());
+		EnquiryResponse usrMsg = new EnquiryResponse();
+		usrMsg.setMessage("Enquiry Comments Updated Successfully");
+		return usrMsg;
+	}
+	
 	public UserMessage enquiryUpdate(String ticketNum, String cmts, String d2zCmts, String update, String sts) {
 		csticketsRepository.enquiryUpdate(ticketNum, cmts, d2zCmts, update, sts);
-	
-	UserMessage usrMsg = new UserMessage();
-	usrMsg.setMessage("Enquiry Data Updated Successfully");
-	return usrMsg;
+		UserMessage usrMsg = new UserMessage();
+		usrMsg.setMessage("Enquiry Data Updated Successfully");
+		return usrMsg;
 	}
 
 }
