@@ -63,10 +63,10 @@ import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
+import com.d2z.d2zservice.model.EnquiryUpdate;
 import com.d2z.d2zservice.model.FDMManifestDetails;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
-import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.PFLTrackEvent;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelStatus;
@@ -2580,6 +2580,12 @@ else
 	public UserMessage enquiryFileUpload(List<SuperUserEnquiry> enquiry) {
 		UserMessage usrMsg = d2zDao.enquiryFileUpload(enquiry);
 		return usrMsg;
+	}
+
+	@Override
+	public EnquiryResponse enquiryUpdate(EnquiryUpdate updateEnquiry) {
+		EnquiryResponse enquiryInfo = d2zDao.enquiryUpdate(updateEnquiry);
+		return enquiryInfo;
 	}
 
 }

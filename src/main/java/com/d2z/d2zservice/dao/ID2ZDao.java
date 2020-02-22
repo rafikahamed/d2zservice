@@ -21,6 +21,7 @@ import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
+import com.d2z.d2zservice.model.EnquiryUpdate;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
@@ -180,5 +181,7 @@ public interface ID2ZDao {
 	public List<StarTrackPostcode> fetchSTPostCodeZone();
 
 	public UserMessage enquiryFileUpload(List<SuperUserEnquiry> enquiry);
+
+	public EnquiryResponse enquiryUpdate(EnquiryUpdate updateEnquiry);
 
 }

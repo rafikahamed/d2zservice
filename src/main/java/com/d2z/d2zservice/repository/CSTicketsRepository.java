@@ -127,5 +127,9 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 	void enquiryFileUpload(@Param("blob") Blob blob,@Param("ticketNumber") String ticketNumber, @Param("comments") String comments, @Param("d2zComments") String d2zComments, 
 			@Param("sendUpdate") String sendUpdate, @Param("status") String status, @Param("fileName") String fileName);
 
-	
+	@Modifying
+	@Transactional
+	@Query("update CSTickets s set s.comments = :comments where s.ticketID = :ticketId")
+	void enquiryUpdate(@Param("ticketId") String ticketId, @Param("comments") String comments);
+
 }

@@ -42,6 +42,7 @@ import com.d2z.d2zservice.model.CurrencyDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
+import com.d2z.d2zservice.model.EnquiryUpdate;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
@@ -1035,6 +1036,15 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setProductDescription(senderArticleId.getProduct_Description());
 					tickets.setBarcodelabelNumber(senderArticleId.getBarcodelabelNumber());
 					tickets.setCarrier(senderArticleId.getCarrier());
+					
+					tickets.setTicketID("INC"+D2ZCommonUtil.getday()+csticketsRepository.fetchNextSeq().toString());
+					tickets.setComments(enquiryRequest.getComments());
+					tickets.setDeliveryEnquiry(enquiryRequest.getEnquiry());
+					tickets.setPod(enquiryRequest.getPod());
+					tickets.setStatus("open");
+					tickets.setUserId( userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
+					tickets.setEnquiryOpenDate(Timestamp.valueOf(LocalDateTime.now()));
+					csTctList.add(tickets);
 				}
 			}else if(enquiryRequest.getType().equalsIgnoreCase("Reference Number")) {
 				SenderdataMaster senderRefId = senderDataRepository.fetchDataReferenceNum(enquiryRequest.getIdentifier());
@@ -1049,32 +1059,37 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setProductDescription(senderRefId.getProduct_Description());
 					tickets.setBarcodelabelNumber(senderRefId.getBarcodelabelNumber());
 					tickets.setCarrier(senderRefId.getCarrier());
+					
+					tickets.setTicketID("INC"+D2ZCommonUtil.getday()+csticketsRepository.fetchNextSeq().toString());
+					tickets.setComments(enquiryRequest.getComments());
+					tickets.setDeliveryEnquiry(enquiryRequest.getEnquiry());
+					tickets.setPod(enquiryRequest.getPod());
+					tickets.setStatus("open");
+					tickets.setUserId( userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
+					tickets.setEnquiryOpenDate(Timestamp.valueOf(LocalDateTime.now()));
+					csTctList.add(tickets);
 				}
 			}
-			tickets.setTicketID("INC"+D2ZCommonUtil.getday()+csticketsRepository.fetchNextSeq().toString());
-			tickets.setComments(enquiryRequest.getComments());
-			tickets.setDeliveryEnquiry(enquiryRequest.getEnquiry());
-			tickets.setPod(enquiryRequest.getPod());
-			tickets.setStatus("open");
-			tickets.setUserId( userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
-			tickets.setEnquiryOpenDate(Timestamp.valueOf(LocalDateTime.now()));
-			csTctList.add(tickets);
-		}
-		List<String> incomingRefNbr = csTctList.stream().map(obj -> { return obj.getReferenceNumber(); }).collect(Collectors.toList());
-		isReferenceNumberUniqueUI(incomingRefNbr);
-		for(CSTickets csTicket: csTctList) {
-			if(null ==  csTicket.getReferenceNumber()) {
-				throw new ReferenceNumberNotUniqueException("Reference Number (or) Article Id is not avilable in the system",null);
-			}
-		}
-		csticketsRepository.saveAll(csTctList);
-		List<String> tickets = new ArrayList<String>();
-		for(CSTickets csTicket:csTctList) {
-			tickets.add(csTicket.getTicketID());
 		}
 		EnquiryResponse usrMsg = new EnquiryResponse();
-		usrMsg.setMessage("Enquiry created Successfully");
-		usrMsg.setTicketId(tickets);
+		if(csTctList.size() > 0) {
+			List<String> incomingRefNbr = csTctList.stream().map(obj -> { return obj.getReferenceNumber(); }).collect(Collectors.toList());
+			isReferenceNumberUniqueUI(incomingRefNbr);
+			for(CSTickets csTicket: csTctList) {
+				if(null ==  csTicket.getReferenceNumber()) {
+					throw new ReferenceNumberNotUniqueException("Reference Number (or) Article Id is not avilable in the system",null);
+				}
+			}
+			csticketsRepository.saveAll(csTctList);
+			List<String> tickets = new ArrayList<String>();
+			for(CSTickets csTicket:csTctList) {
+				tickets.add(csTicket.getTicketID());
+			}
+			usrMsg.setMessage("Enquiry created Successfully");
+			usrMsg.setTicketId(tickets);
+		}else {
+			usrMsg.setMessage("Enquiry Details cannot be Empty");
+		}
 		return usrMsg;
 	}
 	
@@ -1262,6 +1277,14 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		}
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage("Return Action Updated Successfully");
+		return usrMsg;
+	}
+
+	@Override
+	public EnquiryResponse enquiryUpdate(EnquiryUpdate updateEnquiry) {
+		csticketsRepository.enquiryUpdate(updateEnquiry.getTicketId(), updateEnquiry.getComments());
+		EnquiryResponse usrMsg = new EnquiryResponse();
+		usrMsg.setMessage("Enquiry Comments Updated Successfully");
 		return usrMsg;
 	}
 

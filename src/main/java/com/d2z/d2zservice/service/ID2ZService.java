@@ -19,6 +19,7 @@ import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
+import com.d2z.d2zservice.model.EnquiryUpdate;
 import com.d2z.d2zservice.model.ParcelStatus;
 import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -138,6 +139,8 @@ public interface ID2ZService {
 											String status, String filename);
 
 	public UserMessage enquiryFileUpload(List<SuperUserEnquiry> enquiry);
+
+	public EnquiryResponse enquiryUpdate(EnquiryUpdate updateEnquiry);
 
 
 }
