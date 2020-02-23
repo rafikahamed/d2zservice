@@ -1268,7 +1268,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public UserMessage enquiryFileUpload(Blob blob,String fileName, String ticketNumber) {
+	public UserMessage enquiryFileUpload(byte[] blob,String fileName, String ticketNumber) {
 		csticketsRepository.enquiryFileUpload(blob, fileName,ticketNumber);
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage("Enquiry Data Updated Successfully");

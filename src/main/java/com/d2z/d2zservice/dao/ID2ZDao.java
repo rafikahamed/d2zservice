@@ -171,7 +171,7 @@ public interface ID2ZDao {
 
 	public void updateSystemRefCount(Map<String, Integer> currentSysRefCount);
 
-	public UserMessage enquiryFileUpload(Blob blob, String fileName, String ticketNumber);
+	public UserMessage enquiryFileUpload(byte[] blob, String fileName, String ticketNumber);
 
 	public String fetchServiceTypeByRefNbr(String string);
 

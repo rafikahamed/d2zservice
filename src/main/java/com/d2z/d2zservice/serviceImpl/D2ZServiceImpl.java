@@ -2570,7 +2570,7 @@ else
 	}
 
 	@Override
-	public UserMessage enquiryFileUpload(Blob blob, String fileName, String ticketNumber) {
+	public UserMessage enquiryFileUpload(byte[] blob, String fileName, String ticketNumber) {
 		UserMessage usrMsg = d2zDao.enquiryFileUpload(blob,fileName,ticketNumber);
 		return usrMsg;
 	}
