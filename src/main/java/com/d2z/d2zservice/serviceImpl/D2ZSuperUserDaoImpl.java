@@ -893,6 +893,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				 * } openEnquiryResponse.setTrackingDeliveryDate(deliveryDate);
 				 */
 				openEnquiryResponse.setTrackingDeliveryDate(obj[19] != null ? obj[19].toString() : "");
+				openEnquiryResponse.setEmailAddress(obj[20] != null ? obj[20].toString() : "");
 				openEnquiryList.add(openEnquiryResponse);
 			  }
 		}

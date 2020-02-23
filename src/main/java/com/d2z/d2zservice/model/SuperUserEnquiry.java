@@ -28,6 +28,7 @@ public class SuperUserEnquiry {
 	private String fileName;
 	private boolean selection;
 	private int index;
+	private String emailAddress;
 	
 	public String getUserName() {
 		return userName;
@@ -184,6 +185,12 @@ public class SuperUserEnquiry {
 	}
 	public void setIndex(int index) {
 		this.index = index;
+	}
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 	
 }

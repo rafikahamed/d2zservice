@@ -2588,8 +2588,11 @@ else
 	}
 	
 	@Override
-	public UserMessage enquiryUpdate(String ticketNum, String cmts, String d2zCmts, String update, String sts) {
-		UserMessage usrMsg = d2zDao.enquiryUpdate(ticketNum,cmts,d2zCmts,update,sts);
+	public UserMessage enquiryUpdate(SuperUserEnquiry updatedData) {
+		UserMessage usrMsg = d2zDao.enquiryUpdate(updatedData.getTicketNumber(),updatedData.getComments(),updatedData.getD2zComments(),updatedData.getSendUpdate(),updatedData.getStatus());
+		if(updatedData.getSendUpdate().equalsIgnoreCase("YES")) {
+			
+		}
 		return usrMsg;
 	}
 

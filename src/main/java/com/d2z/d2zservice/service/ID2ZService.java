@@ -141,6 +141,6 @@ public interface ID2ZService {
 
 	public EnquiryResponse enquiryClientUpdate(EnquiryUpdate updateEnquiry);
 	
-	public UserMessage enquiryUpdate(String ticketNum, String cmts, String d2zCmts, String update, String sts);
+	public UserMessage enquiryUpdate(SuperUserEnquiry updatedData);
 
 }

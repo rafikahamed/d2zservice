@@ -42,7 +42,7 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 			"				B.Consignee_Suburb,\r\n" + 
 			"				B.Consignee_State,\r\n" + 
 			"				B.Consignee_Postcode,\r\n" + 
-			"				B.Product_Description, B.TrackingEvent, B.EnquiryOpenDate, B.SendUpdate, B.fileName, B.ExpectedDeliveryDate\r\n" + 
+			"				B.Product_Description, B.TrackingEvent, B.EnquiryOpenDate, B.SendUpdate, B.fileName, B.ExpectedDeliveryDate, A.EmailAddress\r\n" + 
 			"FROM   (\r\n" + 
 			"	SELECT DISTINCT U.client_broker_id, \r\n" + 
 			"                        S.ticketid ,\r\n" + 

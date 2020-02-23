@@ -488,12 +488,7 @@ public class D2ZSuperUserController {
 //	}  
 	@RequestMapping(value = "/enquiryPod", method = RequestMethod.POST)
 	public UserMessage enquiryUpload(@RequestBody SuperUserEnquiry updatedData) throws Exception {
-		 String ticketNum = updatedData.getTicketNumber();// != null ? updatedData.getTicketNumber() : "";
-	        String cmts = updatedData.getComments();// != null ? updatedData.getComments()  : "";
-	        String d2zCmts = updatedData.getD2zComments();// != null ? d2zComments : "";
-	        String update = updatedData.getSendUpdate();// != null ? sendUpdate : "";
-	        String sts = updatedData.getStatus();// != null ? status : "";
-	        UserMessage successMsg = d2zService.enquiryUpdate(ticketNum,cmts,d2zCmts,update,sts);
+	        UserMessage successMsg = d2zService.enquiryUpdate(updatedData);
 	    return successMsg;
 	} 
 	

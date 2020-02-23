@@ -26,6 +26,7 @@ public class OpenEnquiryResponse {
 	private String productDescription;
 	private String sendUpdate;
 	private String fileName;
+	private String emailAddress;
 	
 	public String getFileName() {
 		return fileName;
@@ -170,6 +171,12 @@ public class OpenEnquiryResponse {
 	}
 	public void setTrackingEvent(String trackingEvent) {
 		this.trackingEvent = trackingEvent;
+	}
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 	
 }
