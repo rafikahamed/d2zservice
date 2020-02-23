@@ -1831,18 +1831,27 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
-
 	public String fetchServiceTypeByMlid(String mlid) {
-		// TODO Auto-generated method stub
 		return senderDataRepository.fetchServiceTypeByMlid(mlid);
 	}
+	
 	public List<ProfitLossReport> profitLossReport(String fromDate,String toDate) {
-		//List<String> brokerList = incomingJobsLogicRepository.getIncomeBrokerList();
 		List<String> brokerProfit = senderdata_InvoicingRepository.getBrokerProfitDetails(fromDate,toDate);
 		List<ProfitLossReport> profitLossReportList = new ArrayList<ProfitLossReport>();
 		List<ProfitLossReport> profitLossReportSupplierList = new ArrayList<ProfitLossReport>();
-		List<ProfitLossReport> profitLossApgList = new ArrayList<ProfitLossReport>();
-
+		
+		/*Shipment Charges Data*/
+		Map<String, String> profitShipmentMap = new HashMap<String, String>();
+		List<String> profitShipmentList = incomingRepository.getProfitShipmentDetails(fromDate,toDate);
+		if(profitShipmentList.size() > 0) {
+			Iterator itr = profitShipmentList.iterator();
+			while (itr.hasNext()) {
+				Object[] obj = (Object[]) itr.next();
+				profitShipmentMap.put(obj[0].toString(), obj[1].toString());
+			}
+		}
+		
+		/*Broker Profit Data*/
 		if(brokerProfit.size() > 0) {
 			Iterator itr = brokerProfit.iterator();
 			while (itr.hasNext()) {
@@ -1855,25 +1864,10 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				profit.setD2zRate((BigDecimal) obj[3]);
 				profit.setProfit(profit.getBrokerRate().subtract(profit.getD2zRate()));
 				profit.setProfitPerParcel(profit.getProfit().divide(new BigDecimal(profit.getParcel()), 4));
+				if(profitShipmentMap.containsKey(profit.getBroker())) {
+					profit.setShipmentCharge(new BigDecimal(profitShipmentMap.get(profit.getBroker())));
+				}
 				profitLossReportList.add(profit);
-			}
-		}
-		
-		/*APG Data*/
-		List<String> apgBrokerProfit = senderdata_InvoicingRepository.getApgBrokerProfitDetails(fromDate,toDate);
-		if(apgBrokerProfit.size() > 0) {
-			Iterator itr = apgBrokerProfit.iterator();
-			while (itr.hasNext()) {
-				Object[] obj = (Object[]) itr.next();
-				ProfitLossReport profit = new ProfitLossReport();
-				profit.setBroker(obj[0].toString());
-				profit.setParcel( (int) obj[1]);
-				profit.setRevenue((BigDecimal) obj[2]);
-				profit.setBrokerRate((BigDecimal) obj[2]);
-				profit.setD2zRate((BigDecimal) obj[3]);
-				profit.setProfit(profit.getBrokerRate().subtract(profit.getD2zRate()));
-				profit.setProfitPerParcel(profit.getProfit().divide(new BigDecimal(profit.getParcel()), 4));
-				profitLossApgList.add(profit);
 			}
 		}
 		
@@ -1883,40 +1877,46 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		List<ProfitLossReport> pcaProfitList = new ArrayList<ProfitLossReport>();
 		List<ProfitLossReport> ubiProfitList = new ArrayList<ProfitLossReport>();
 		List<ProfitLossReport> fdmProfitList = new ArrayList<ProfitLossReport>();
-		List<String> etowerMlid = consigneeCountRepository.getMlidBasedonSupplier("etower");
-		List<String> fdmMlid = consigneeCountRepository.getMlidBasedonSupplier("FDM");
+		List<ProfitLossReport> apgProfitList = new ArrayList<ProfitLossReport>();
 		supplierDetila.forEach(obj -> {
 			if((obj.getArticleId().length() == 12) && (obj.getServicetype().equalsIgnoreCase("FWM") || obj.getServicetype().equalsIgnoreCase("MCM") ||
-					obj.getServicetype().equalsIgnoreCase("FW"))) {
+					obj.getServicetype().equalsIgnoreCase("FW") || obj.getServicetype().equalsIgnoreCase("1PS4")) ) {
 				ProfitLossReport pflProfit = new ProfitLossReport();
 				pflProfit.setArticleId(obj.getArticleId());
 				pflProfit.setBrokerRate(obj.getBrokerRate());
 				pflProfit.setD2zRate(obj.getD2zRate());
 				pflProfitList.add(pflProfit);
-			}else if((obj.getArticleId().length() == 12) && (obj.getServicetype().equalsIgnoreCase("FWS") || obj.getServicetype().equalsIgnoreCase("MCS") )) {
+			}else if((obj.getArticleId().length() == 12) && (obj.getServicetype().equalsIgnoreCase("FWS") || obj.getServicetype().equalsIgnoreCase("MCS"))
+					|| ((obj.getArticleId().length() == 21 && "AMQ".contains(obj.getArticleId().substring(0, 3))))) {
 				ProfitLossReport pcaProfit = new ProfitLossReport();
 				pcaProfit.setArticleId(obj.getArticleId());
 				pcaProfit.setBrokerRate(obj.getBrokerRate());
 				pcaProfit.setD2zRate(obj.getD2zRate());
 				pcaProfitList.add(pcaProfit);
-			}else if((obj.getArticleId().length() == 21) && (etowerMlid.contains(obj.getArticleId().substring(0, 3)))) {
+			}else if((obj.getArticleId().length() == 21) && (D2ZCommonUtil.ubiData().contains(obj.getArticleId().substring(0, 3)))) {
 				ProfitLossReport ubiProfit = new ProfitLossReport();
 				ubiProfit.setArticleId(obj.getArticleId());
 				ubiProfit.setBrokerRate(obj.getBrokerRate());
 				ubiProfit.setD2zRate(obj.getD2zRate());
 				ubiProfitList.add(ubiProfit);
-			}else if((obj.getArticleId().length() == 23) && (etowerMlid.contains(obj.getArticleId().substring(0, 5)))) {
+			}else if((obj.getArticleId().length() == 23) && (D2ZCommonUtil.ubiData().contains(obj.getArticleId().substring(0, 5)))) {
 				ProfitLossReport ubiProfit = new ProfitLossReport();
 				ubiProfit.setArticleId(obj.getArticleId());
 				ubiProfit.setBrokerRate(obj.getBrokerRate());
 				ubiProfit.setD2zRate(obj.getD2zRate());
 				ubiProfitList.add(ubiProfit);
-			}else if((obj.getArticleId().length() == 23) && (fdmMlid.contains(obj.getArticleId().substring(0, 5)))) {
+			}else if((obj.getArticleId().length() == 23) && (D2ZCommonUtil.fdmData().contains(obj.getArticleId().substring(0, 5))) && !obj.getServicetype().equalsIgnoreCase("1PS4")) {
 				ProfitLossReport fdmProfit = new ProfitLossReport();
 				fdmProfit.setArticleId(obj.getArticleId());
 				fdmProfit.setBrokerRate(obj.getBrokerRate());
 				fdmProfit.setD2zRate(obj.getD2zRate());
 				fdmProfitList.add(fdmProfit);
+			}else if((obj.getArticleId().length() == 23) && (D2ZCommonUtil.apgData().contains(obj.getArticleId().substring(0, 5)))) {
+				ProfitLossReport apgProfit = new ProfitLossReport();
+				apgProfit.setArticleId(obj.getArticleId());
+				apgProfit.setBrokerRate(obj.getBrokerRate());
+				apgProfit.setD2zRate(obj.getD2zRate());
+				apgProfitList.add(apgProfit);
 			}
 		});
 		if(pflProfitList.size() > 0) {
@@ -1934,8 +1934,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			profitPfl.setD2zRate(pflD2zRate);
 			profitPfl.setParcel(pflProfitList.size());
 			profitPfl.setRevenue(profitPfl.getBrokerRate());
-			profitPfl.setProfit(profitPfl.getBrokerRate().subtract(profitPfl.getD2zRate()));
-			profitPfl.setProfitPerParcel(profitPfl.getProfit().divide(new BigDecimal(profitPfl.getParcel()), 4));
+			if(profitShipmentMap.size() > 0)
+				profitPfl.setShipmentCharge(new BigDecimal(profitShipmentMap.get("PFL")));
 			profitLossReportSupplierList.add(profitPfl);
 		}
 		if(pcaProfitList.size() > 0) {
@@ -1953,8 +1953,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			profitPca.setD2zRate(pcaD2zRate);
 			profitPca.setParcel(pcaProfitList.size());
 			profitPca.setRevenue(profitPca.getBrokerRate());
-			profitPca.setProfit(profitPca.getBrokerRate().subtract(profitPca.getD2zRate()));
-			profitPca.setProfitPerParcel(profitPca.getProfit().divide(new BigDecimal(profitPca.getParcel()), 4));
+			if(profitShipmentMap.size() > 0)
+				profitPca.setShipmentCharge(new BigDecimal(profitShipmentMap.get("PCA")));
 			profitLossReportSupplierList.add(profitPca);
 		}
 		if(ubiProfitList.size() > 0) {
@@ -1972,8 +1972,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			profitUbi.setD2zRate(ubiD2zRate);
 			profitUbi.setParcel(ubiProfitList.size());
 			profitUbi.setRevenue(profitUbi.getBrokerRate());
-			profitUbi.setProfit(profitUbi.getBrokerRate().subtract(profitUbi.getD2zRate()));
-			profitUbi.setProfitPerParcel(profitUbi.getProfit().divide(new BigDecimal(profitUbi.getParcel()), 4));
+			if(profitShipmentMap.size() > 0)
+				profitUbi.setShipmentCharge(new BigDecimal(profitShipmentMap.get("UBI")));
 			profitLossReportSupplierList.add(profitUbi);
 		}
 		if(fdmProfitList.size() > 0) {
@@ -1991,9 +1991,26 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			profitFdm.setD2zRate(fdmD2zRate);
 			profitFdm.setParcel(fdmProfitList.size());
 			profitFdm.setRevenue(profitFdm.getBrokerRate());
-			profitFdm.setProfit(profitFdm.getBrokerRate().subtract(profitFdm.getD2zRate()));
-			profitFdm.setProfitPerParcel(profitFdm.getProfit().divide(new BigDecimal(profitFdm.getParcel()), 4));
+			if(profitShipmentMap.size() > 0)
+				profitFdm.setShipmentCharge(new BigDecimal(profitShipmentMap.get("FDM")));
 			profitLossReportSupplierList.add(profitFdm);
+		}
+		if(apgProfitList.size() > 0) {
+			List<BigDecimal> apgBrkRateList = new ArrayList<BigDecimal>();
+			List<BigDecimal> apgD2zRateList = new ArrayList<BigDecimal>();
+			apgProfitList.forEach(apgObj -> {
+				apgBrkRateList.add(apgObj.getBrokerRate());
+				apgD2zRateList.add(apgObj.getD2zRate());
+			});
+			ProfitLossReport profitApg = new ProfitLossReport();
+			profitApg.setBroker("APG");
+			BigDecimal apgBrokerRate = apgBrkRateList.stream().filter(fdmBrkRat -> fdmBrkRat != null).reduce(BigDecimal::add).get();
+			BigDecimal apgD2zRate = apgD2zRateList.stream().filter(fdmD2zRat -> fdmD2zRat != null).reduce(BigDecimal::add).get();
+			profitApg.setBrokerRate(apgBrokerRate);
+			profitApg.setD2zRate(apgD2zRate);
+			profitApg.setParcel(apgProfitList.size());
+			profitApg.setRevenue(profitApg.getBrokerRate());
+			profitLossReportSupplierList.add(profitApg);
 		}
 		
 		/*Broker List*/
@@ -2001,12 +2018,15 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		List<BigDecimal> totalProfitList = new ArrayList<BigDecimal>();
 		List<Integer> 	 totalParcelList  = new ArrayList<Integer>();
 		List<BigDecimal> profitParcelList = new ArrayList<BigDecimal>();
+		List<BigDecimal> shipmentList = new ArrayList<BigDecimal>();
 		
 		profitLossReportList.forEach(profitObj -> {
 			totalRevList.add(profitObj.getRevenue());
 			totalProfitList.add(profitObj.getProfit());
 			totalParcelList.add(profitObj.getParcel());
 			profitParcelList.add(profitObj.getProfitPerParcel());
+			if(profitObj.getShipmentCharge() != null)
+				shipmentList.add(profitObj.getShipmentCharge());
 		});
 		
 		/*Supplier List*/
@@ -2014,42 +2034,34 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		List<BigDecimal> totalProfitSuppList = new ArrayList<BigDecimal>();
 		List<Integer> 	 totalParcelSuppList  = new ArrayList<Integer>();
 		List<BigDecimal> profitParcelSuppList = new ArrayList<BigDecimal>();
+		List<BigDecimal> shipmentSuppliertList = new ArrayList<BigDecimal>();
 		
-		profitLossReportSupplierList.forEach(profitObj -> {
-			totlaRevSuppList.add(profitObj.getRevenue());
-			totalProfitSuppList.add(profitObj.getProfit());
-			totalParcelSuppList.add(profitObj.getParcel());
-			profitParcelSuppList.add(profitObj.getProfitPerParcel());
+		profitLossReportSupplierList.forEach(profitSuppObj -> {
+			totlaRevSuppList.add(profitSuppObj.getRevenue());
+			totalProfitSuppList.add(profitSuppObj.getProfit());
+			totalParcelSuppList.add(profitSuppObj.getParcel());
+			profitParcelSuppList.add(profitSuppObj.getProfitPerParcel());
+			if(profitSuppObj.getShipmentCharge() != null)
+				shipmentSuppliertList.add(profitSuppObj.getShipmentCharge());
 		});
 		
-		/*APG List*/ 
-		List<BigDecimal> totalRevApgList = new ArrayList<BigDecimal>();
-		List<BigDecimal> totalProfitApgList = new ArrayList<BigDecimal>();
-		List<Integer> 	 totalParcelApgList  = new ArrayList<Integer>();
-		List<BigDecimal> profitParcelApgList = new ArrayList<BigDecimal>();
-		
-		profitLossApgList.forEach(profitObj -> {
-			totalRevApgList.add(profitObj.getRevenue());
-			totalProfitApgList.add(profitObj.getProfit());
-			totalParcelApgList.add(profitObj.getParcel());
-			profitParcelApgList.add(profitObj.getProfitPerParcel());
-		});
-		
-		Integer totalParcel    = (totalParcelList.stream().reduce(Integer::sum).get() - (totalParcelSuppList.stream().reduce(Integer::sum).get() + totalParcelApgList.stream().reduce(Integer::sum).get()));
-		BigDecimal totalRev    = (totalRevList.stream().reduce(BigDecimal::add).get().subtract(totlaRevSuppList.stream().reduce(BigDecimal::add).get()).subtract(totalRevApgList.stream().reduce(BigDecimal::add).get()));
-		BigDecimal totalPrf    = (totalProfitList.stream().reduce(BigDecimal::add).get().subtract(totalProfitSuppList.stream().reduce(BigDecimal::add).get()).subtract(totalProfitApgList.stream().reduce(BigDecimal::add).get()));
-		BigDecimal totalPrfPrl = totalPrf.divide(new BigDecimal(totalParcel), 4);
+		BigDecimal totalShipment = null;
+		Integer totalParcel      = (totalParcelList.stream().reduce(Integer::sum).get() - (totalParcelSuppList.stream().reduce(Integer::sum).get()));
+		BigDecimal totalRev      = (totalRevList.stream().reduce(BigDecimal::add).get().subtract(totlaRevSuppList.stream().reduce(BigDecimal::add).get()));
+		BigDecimal totalPrf      = (totalProfitList.stream().reduce(BigDecimal::add).get());
+		BigDecimal totalPrfPrl   = totalPrf.divide(new BigDecimal(totalParcel), 4);
+		if(shipmentList.size() > 0 || shipmentSuppliertList.size() > 0)
+			totalShipment = (shipmentList.stream().reduce(BigDecimal::add).get().subtract(shipmentSuppliertList.stream().reduce(BigDecimal::add).get()));
 		
 		ProfitLossReport profitTotal = new ProfitLossReport();
 		profitTotal.setBroker("Total");
 		profitTotal.setParcel(totalParcel);
 		profitTotal.setRevenue(totalRev);
 		profitTotal.setProfit(totalPrf);
+		profitTotal.setShipmentCharge(totalShipment);
 		profitTotal.setProfitPerParcel(totalPrfPrl);
 		profitLossReportList.addAll(profitLossReportSupplierList);
-		profitLossReportList.addAll(profitLossApgList);
 		profitLossReportList.add(profitTotal);
-		
 		return profitLossReportList;
 	}
 

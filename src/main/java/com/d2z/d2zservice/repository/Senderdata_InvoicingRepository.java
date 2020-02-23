@@ -105,8 +105,40 @@ public interface Senderdata_InvoicingRepository extends CrudRepository<Senderdat
 			"sum(D2ZRate) as D2ZRate\r\n" + 
 			"  FROM [D2Z].[dbo].[Senderdata_Invoicing]\r\n" + 
 			"  where\r\n" + 
-			"  DateAllocated between :fromDate and :toDate and brokerRate is not null and D2ZRate is not null \r\n" + 
-			"  group by Brokerusername")
+			"  DateAllocated between :fromDate and :toDate\r\n" + 
+			"  and brokerRate is not null and D2ZRate is not null\r\n" + 
+			"  and Brokerusername not in ('5ULB')\r\n" + 
+			"  group by Brokerusername\r\n" + 
+			"\r\n" + 
+			"union\r\n" + 
+			"\r\n" + 
+			"select\r\n" + 
+			"'5ULB HKG' as Brokerusername,\r\n" + 
+			"count(Weight) as parcel,\r\n" + 
+			"sum(BrokerRate) as brokerRate,\r\n" + 
+			"sum(D2ZRate) as D2ZRate\r\n" + 
+			"  FROM [D2Z].[dbo].[Senderdata_Invoicing]\r\n" + 
+			"  where\r\n" + 
+			"  DateAllocated between :fromDate and :toDate \r\n" + 
+			"  and brokerRate is not null and D2ZRate is not null\r\n" + 
+			"  and Brokerusername = '5ULB'\r\n" + 
+			"  and Servicetype in ('HKG','HKG2')\r\n" + 
+			"  group by Brokerusername\r\n" + 
+			"\r\n" + 
+			"union\r\n" + 
+			"\r\n" + 
+			"select\r\n" + 
+			"'5ULB Other' as Brokerusername,\r\n" + 
+			"count(Weight) as parcel,\r\n" + 
+			"sum(BrokerRate) as brokerRate,\r\n" + 
+			"sum(D2ZRate) as D2ZRate\r\n" + 
+			"  FROM [D2Z].[dbo].[Senderdata_Invoicing]\r\n" + 
+			"  where\r\n" + 
+			"  DateAllocated between :fromDate and :toDate \r\n" + 
+			"  and brokerRate is not null and D2ZRate is not null\r\n" + 
+			"  and Brokerusername = '5ULB'\r\n" + 
+			"  and Servicetype not in ('HKG','HKG2')\r\n" + 
+			"  group by Brokerusername;")
 	List<String> getBrokerProfitDetails(@Param("fromDate") String fromDate, @Param("toDate") String toDate);
 	
 	@Query(value="select s FROM Senderdata_Invoicing s where s.dateAllocated between :fromDate and :toDate and s.brokerRate is not null and s.d2zRate is not null")

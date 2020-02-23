@@ -82,6 +82,42 @@ public class D2ZCommonUtil {
 		String formattedMsg = String.join(" ", list);
 		return formattedMsg;
 	}
+	
+	public static List<String> apgData(){
+		List<String> apgList = new ArrayList<String>();
+		apgList.add("33UXT");
+		apgList.add("33UXX");
+		apgList.add("33UY6");
+		apgList.add("33UYA");
+		apgList.add("33XCR");
+		apgList.add("33XCT");
+		apgList.add("33XH7");
+		apgList.add("33XH8");
+		return apgList;
+	}
+	
+	public static List<String> ubiData(){
+		List<String> ubiList = new ArrayList<String>();
+		ubiList.add("33G7K");
+		ubiList.add("33G7L");
+		ubiList.add("33G7M");
+		ubiList.add("33G7N");
+		ubiList.add("33G7P");
+		ubiList.add("SJU");
+		ubiList.add("33QU7");
+		ubiList.add("ZK6");
+		return ubiList;
+	}
+	
+	public static List<String> fdmData(){
+		List<String> fdmList = new ArrayList<String>();
+		fdmList.add("33PE9");
+		fdmList.add("33PET");
+		fdmList.add("33PEN");
+		fdmList.add("33PEH");
+		return fdmList;
+	}
+	
 	/*public static int generateTrackID() {
 		Random rnd = new Random();
 		int uniqueNumber = 100000 + rnd.nextInt(900000);

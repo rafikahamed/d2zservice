@@ -12,6 +12,7 @@ public class ProfitLossReport {
 	private BigDecimal profit;
 	private BigDecimal profitPerParcel;
 	private BigDecimal d2zRate;
+	private BigDecimal shipmentCharge;
 	
 	public String getBroker() {
 		return broker;
@@ -60,6 +61,12 @@ public class ProfitLossReport {
 	}
 	public void setArticleId(String articleId) {
 		this.articleId = articleId;
+	}
+	public BigDecimal getShipmentCharge() {
+		return shipmentCharge;
+	}
+	public void setShipmentCharge(BigDecimal shipmentCharge) {
+		this.shipmentCharge = shipmentCharge;
 	}
 	
 }
