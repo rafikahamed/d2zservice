@@ -25,21 +25,36 @@ public interface IncomingJobsRepository extends CrudRepository<IncomingJobs,Long
 	void approveShiment(@Param("mawb") String mawb);
 	
 	@Query(nativeQuery = true ,value="select\r\n" + 
-			"Broker,\r\n" + 
-			"sum(Total) as shipmentCharge\r\n" + 
-			"  FROM [D2Z].[dbo].[IncomingJobs]\r\n" + 
-			"  where\r\n" + 
-			"  ATA between :fromDate and :toDate\r\n" + 
-			"  and total is not null\r\n" + 
+			"Broker, sum(Total) as shipmentCharge\r\n" + 
+			"FROM [D2Z].[dbo].[IncomingJobs]\r\n" + 
+			"where\r\n" + 
+			"  ATA between :fromDate and :toDate and total is not null and Broker not in ('5ULB')\r\n" + 
 			"  group by Broker\r\n" + 
+			"\r\n" + 
+			"union\r\n" + 
+			"\r\n" + 
+			"select\r\n" + 
+			"'5ULB Other' as Broker, sum(Total) as shipmentCharge\r\n" + 
+			"FROM [D2Z].[dbo].[IncomingJobs]\r\n" + 
+			"where\r\n" + 
+			"  ATA between :fromDate and :toDate and total is not null and Broker = '5ULB' and Consignee not in ('APG')\r\n" + 
+			"  group by Broker\r\n" + 
+			"\r\n" + 
 			"union\r\n" + 
 			"select\r\n" + 
-			"Consignee,\r\n" + 
-			"sum(Total) as shipmentCharge\r\n" + 
-			"  FROM [D2Z].[dbo].[IncomingJobs]\r\n" + 
-			"  where\r\n" + 
-			"  ATA between :fromDate and :toDate \r\n" + 
-			"  and total is not null\r\n" + 
+			"'5ULB HKG' as Broker, sum(Total) as shipmentCharge\r\n" + 
+			"FROM [D2Z].[dbo].[IncomingJobs]\r\n" + 
+			"where\r\n" + 
+			"  ATA between :fromDate and :toDate and total is not null and Broker = '5ULB' and Consignee = 'APG'\r\n" + 
+			"  group by Broker\r\n" + 
+			"\r\n" + 
+			"union\r\n" + 
+			"\r\n" + 
+			"select\r\n" + 
+			"Consignee, sum(Total) as shipmentCharge\r\n" + 
+			"FROM [D2Z].[dbo].[IncomingJobs]\r\n" + 
+			"where\r\n" + 
+			"  ATA between :fromDate and :toDate and total is not null\r\n" + 
 			"  group by Consignee")
 	List<String> getProfitShipmentDetails(@Param("fromDate") String fromDate, @Param("toDate") String toDate);
 

@@ -33,14 +33,12 @@ import com.d2z.d2zservice.entity.IncomingJobsLogic;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Parcels;
-import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Senderdata_Invoicing;
 import com.d2z.d2zservice.entity.Trackandtrace;
-import com.d2z.d2zservice.entity.TransitTime;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.model.AUWeight;
 import com.d2z.d2zservice.model.ApprovedInvoice;
@@ -1879,7 +1877,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		List<ProfitLossReport> fdmProfitList = new ArrayList<ProfitLossReport>();
 		List<ProfitLossReport> apgProfitList = new ArrayList<ProfitLossReport>();
 		supplierDetila.forEach(obj -> {
-			if((obj.getArticleId().length() == 12) && (obj.getServicetype().equalsIgnoreCase("FWM") || obj.getServicetype().equalsIgnoreCase("MCM") ||
+			if( (obj.getServicetype().equalsIgnoreCase("FWM") || obj.getServicetype().equalsIgnoreCase("MCM") ||
 					obj.getServicetype().equalsIgnoreCase("FW") || obj.getServicetype().equalsIgnoreCase("1PS4")) ) {
 				ProfitLossReport pflProfit = new ProfitLossReport();
 				pflProfit.setArticleId(obj.getArticleId());
@@ -1934,7 +1932,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			profitPfl.setD2zRate(pflD2zRate);
 			profitPfl.setParcel(pflProfitList.size());
 			profitPfl.setRevenue(profitPfl.getBrokerRate());
-			if(profitShipmentMap.size() > 0)
+			if(profitShipmentMap.size() > 0 && null != profitShipmentMap.get("PFL"))
 				profitPfl.setShipmentCharge(new BigDecimal(profitShipmentMap.get("PFL")));
 			profitLossReportSupplierList.add(profitPfl);
 		}
@@ -1953,7 +1951,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			profitPca.setD2zRate(pcaD2zRate);
 			profitPca.setParcel(pcaProfitList.size());
 			profitPca.setRevenue(profitPca.getBrokerRate());
-			if(profitShipmentMap.size() > 0)
+			if(profitShipmentMap.size() > 0 && null != profitShipmentMap.get("PCA"))
 				profitPca.setShipmentCharge(new BigDecimal(profitShipmentMap.get("PCA")));
 			profitLossReportSupplierList.add(profitPca);
 		}
@@ -1972,7 +1970,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			profitUbi.setD2zRate(ubiD2zRate);
 			profitUbi.setParcel(ubiProfitList.size());
 			profitUbi.setRevenue(profitUbi.getBrokerRate());
-			if(profitShipmentMap.size() > 0)
+			if(profitShipmentMap.size() > 0 && null != profitShipmentMap.get("UBI"))
 				profitUbi.setShipmentCharge(new BigDecimal(profitShipmentMap.get("UBI")));
 			profitLossReportSupplierList.add(profitUbi);
 		}
@@ -1991,7 +1989,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			profitFdm.setD2zRate(fdmD2zRate);
 			profitFdm.setParcel(fdmProfitList.size());
 			profitFdm.setRevenue(profitFdm.getBrokerRate());
-			if(profitShipmentMap.size() > 0)
+			if(profitShipmentMap.size() > 0 && null != profitShipmentMap.get("FDM"))
 				profitFdm.setShipmentCharge(new BigDecimal(profitShipmentMap.get("FDM")));
 			profitLossReportSupplierList.add(profitFdm);
 		}
@@ -2049,7 +2047,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		Integer totalParcel      = (totalParcelList.stream().reduce(Integer::sum).get() - (totalParcelSuppList.stream().reduce(Integer::sum).get()));
 		BigDecimal totalRev      = (totalRevList.stream().reduce(BigDecimal::add).get().subtract(totlaRevSuppList.stream().reduce(BigDecimal::add).get()));
 		BigDecimal totalPrf      = (totalProfitList.stream().reduce(BigDecimal::add).get());
-		BigDecimal totalPrfPrl   = totalPrf.divide(new BigDecimal(totalParcel), 4);
+		BigDecimal totalPrfPrl   = totalPrf.divide(new BigDecimal(totalParcelList.stream().reduce(Integer::sum).get()), 4);
 		if(shipmentList.size() > 0 || shipmentSuppliertList.size() > 0)
 			totalShipment = (shipmentList.stream().reduce(BigDecimal::add).get().subtract(shipmentSuppliertList.stream().reduce(BigDecimal::add).get()));
 		
