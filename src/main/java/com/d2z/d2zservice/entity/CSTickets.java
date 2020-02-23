@@ -90,7 +90,7 @@ public class CSTickets implements Serializable {
 	
 	@Lob
 	@Column(name="proof")
-	private Blob proof;
+	private byte[] proof;
 	
 	@Column(name="fileName")
 	private String fileName;
@@ -291,11 +291,11 @@ public class CSTickets implements Serializable {
 		this.enquiryOpenDate = enquiryOpenDate;
 	}
 
-	public Blob getProof() {
+	public byte[] getProof() {
 		return proof;
 	}
 
-	public void setProof(Blob blob) {
+	public void setProof(byte[] blob) {
 		this.proof = blob;
 	}
 

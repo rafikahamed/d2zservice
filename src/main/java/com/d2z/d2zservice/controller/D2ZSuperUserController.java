@@ -470,7 +470,7 @@ public class D2ZSuperUserController {
 //        String d2zCmts = updatedData.getD2zComments();// != null ? d2zComments : "";
 //        String update = updatedData.getSendUpdate();// != null ? sendUpdate : "";
 //        String sts = updatedData.getStatus();// != null ? status : "";
-        UserMessage successMsg = d2zService.enquiryFileUpload(blob, file.getOriginalFilename(),ticketNumber);
+        UserMessage successMsg = d2zService.enquiryFileUpload(myArray, file.getOriginalFilename(),ticketNumber);
         return successMsg;
 	}  
 	

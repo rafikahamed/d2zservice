@@ -130,7 +130,7 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 	@Modifying
 	@Transactional
 	@Query("update CSTickets t set t.proof = :blob, t.fileName = :fileName where t.ticketID = :ticketNumber")
-	void enquiryFileUpload(@Param("blob") Blob blob, @Param("fileName") String fileName, @Param("ticketNumber") String ticketNumber);
+	void enquiryFileUpload(@Param("blob") byte[] blob, @Param("fileName") String fileName, @Param("ticketNumber") String ticketNumber);
 
 	@Modifying
 	@Transactional
