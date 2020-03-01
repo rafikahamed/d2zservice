@@ -422,21 +422,20 @@ public class D2ZValidator {
 //    		return (daoObj.getReferenceNumber()).concat(daoObj.getArticleId()).concat(daoObj.getBarcodelabelNumber());
 //    	}).collect(Collectors.toList());
 	    
-    	List<String> uniqueReturnsRefNum = returnObj.stream().map(daoObj -> {
+    	List<String> uniqueReturnsRefNum = returnObj.stream().filter(daoObj -> daoObj.getReferenceNumber() != null).map(daoObj -> {
     			return (daoObj.getReferenceNumber().trim().toUpperCase());
     	}).collect(Collectors.toList());
     		
-    	List<String> uniqueReturnsArticleId = returnObj.stream().map(daoObj -> {
+    	List<String> uniqueReturnsArticleId = returnObj.stream().filter(daoObj -> daoObj.getArticleId() != null).map(daoObj -> {
     			return (daoObj.getArticleId().trim().toUpperCase());
     	}).collect(Collectors.toList());
     		
-		List<String> uniqueReturnsBarcode = returnObj.stream().map(daoObj -> {
+		List<String> uniqueReturnsBarcode = returnObj.stream().filter(daoObj -> daoObj.getBarcodelabelNumber() != null).map(daoObj -> {
 			return (daoObj.getBarcodelabelNumber().trim().toUpperCase());
 		}).collect(Collectors.toList());
 		
 		List<String> uniqueValue = new ArrayList<String>();
-		List<String> uniqueArticleId = new ArrayList<String>();
-		List<String> uniqueBarcodeLabel = new ArrayList<String>();
+		
 		
 		returns.forEach(obj -> {
 			System.out.println(obj.getScanType());
@@ -453,7 +452,7 @@ public class D2ZValidator {
 			}else if(obj.getScanType().equalsIgnoreCase("Barcode Label")) {
 				String barcodeLabel = obj.getBarcodelabelNumber() != null ? obj.getBarcodelabelNumber().trim().toUpperCase() : obj.getBarcodelabelNumber();
 				if(null!=barcodeLabel && uniqueReturnsBarcode.contains(barcodeLabel)) {
-					uniqueValue.add(obj.getBarcodelabelNumber());
+					uniqueValue.add(obj.getBarcodelabelNumber().trim().toUpperCase());
 			}
 			}
 		});
