@@ -1,5 +1,7 @@
 package com.d2z.d2zservice.model;
 
+import java.util.Date;
+
 public class OpenEnquiryResponse {
 	
 	private String userName;
@@ -7,6 +9,7 @@ public class OpenEnquiryResponse {
 	private int userId;
 	private int client_broker_id;
 	private String articleID;
+	private String createdDate;
 	private String referenceNumber;
 	private String deliveryEnquiry;
 	private String pod;
@@ -28,6 +31,12 @@ public class OpenEnquiryResponse {
 	private String fileName;
 	private String emailAddress;
 	
+	public String getCreatedDate() {
+		return createdDate;
+	}
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
+	}
 	public String getFileName() {
 		return fileName;
 	}
