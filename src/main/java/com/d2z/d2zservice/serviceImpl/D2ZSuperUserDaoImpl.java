@@ -879,6 +879,19 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				openEnquiryResponse.setConsigneePostcode(obj[13] != null ? obj[13].toString() : "");
 				openEnquiryResponse.setProductDescription(obj[14] != null ? obj[14].toString() : "");
 				openEnquiryResponse.setTrackingEvent(obj[15] != null ? obj[15].toString() : "");
+				if(obj[16] !=null) {
+				  SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+				    Date date = new Date();
+					try {
+						date = dbFormat.parse(obj[16].toString());
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				    SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd");
+				    String createdDate = newFormat.format(date);
+				openEnquiryResponse.setCreatedDate(createdDate);
+				}
 				openEnquiryResponse.setSendUpdate(obj[17] != null ? obj[17].toString() : "");
 				openEnquiryResponse.setFileName(obj[18] != null ? obj[18].toString() : "");
 				/*
@@ -1029,7 +1042,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	@Override
 	public List<String> fetchClientDetails(String referenceNumber, String barcodeLabel, String articleId) {
 		String dataMatrix = null;
-		if(!barcodeLabel.equalsIgnoreCase("null")) {
+		if(!barcodeLabel.equalsIgnoreCase("null") && barcodeLabel.length()>=40) {
 			dataMatrix = barcodeLabel.substring(1,39);
 		}
 		List<String> clientDetails = returnsRepository.fetchClientDetails(referenceNumber,barcodeLabel,articleId,dataMatrix);
@@ -1366,7 +1379,10 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
-	public List<Returns> returnsOutstanding() {
+	public List<Returns> returnsOutstanding(int roleId) {
+		if(roleId == 5) {
+			return returnsRepository.returnsOutstandingExceptFastway();
+		}
 		return returnsRepository.returnsOutstanding();
 	}
 
@@ -2104,5 +2120,6 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	public List<String> fetchMlidsBasedOnSupplier(String supplier) {
 		return consigneeCountRepository.getMlidBasedonSupplier(supplier);
 	}
+
 
 }
