@@ -1,15 +1,12 @@
 package com.d2z.d2zservice.repository;
 
-import java.sql.Blob;
 import java.sql.Timestamp;
 import java.util.List;
-
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.d2z.d2zservice.entity.CSTickets;
 
 public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
@@ -136,5 +133,8 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 	@Transactional
 	@Query("update CSTickets s set s.comments = :comments where s.ticketID = :ticketId")
 	void enquiryUpdate(@Param("ticketId") String ticketId, @Param("comments") String comments);
+	
+	@Query("SELECT c FROM CSTickets c where c.ticketID= :ticketId")
+	CSTickets fetchCSTicketDetails(@Param("ticketId") String ticketId);
 
 }

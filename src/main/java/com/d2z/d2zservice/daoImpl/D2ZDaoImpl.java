@@ -1,6 +1,5 @@
 package com.d2z.d2zservice.daoImpl;
 
-import java.sql.Blob;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,11 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
-
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.AUPostResponse;
@@ -1313,6 +1310,12 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage("Enquiry Data Updated Successfully");
 		return usrMsg;
+	}
+
+	@Override
+	public CSTickets fetchCSTicketDetails(String ticketId) {
+		CSTickets csTicket = csticketsRepository.fetchCSTicketDetails(ticketId);
+		return csTicket;
 	}
 
 }

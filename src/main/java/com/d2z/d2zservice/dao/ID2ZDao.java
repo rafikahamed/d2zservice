@@ -1,6 +1,5 @@
 package com.d2z.d2zservice.dao;
 
-import java.sql.Blob;
 import java.util.List;
 import java.util.Map;
 import com.d2z.d2zservice.entity.APIRates;
@@ -184,5 +183,7 @@ public interface ID2ZDao {
 	public EnquiryResponse enquiryClientUpdate(EnquiryUpdate updateEnquiry);
 	
 	public UserMessage enquiryUpdate(String ticketNum, String cmts, String d2zCmts, String update, String sts);
+
+	public CSTickets fetchCSTicketDetails(String ticketNumber);
 
 }

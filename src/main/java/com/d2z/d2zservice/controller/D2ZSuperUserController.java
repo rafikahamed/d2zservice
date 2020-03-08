@@ -464,6 +464,7 @@ public class D2ZSuperUserController {
 	public UserMessage enquiryFileUpload(@RequestParam("file") MultipartFile file,@PathVariable String ticketNumber) throws Exception {
 		Blob blob = null;
 		byte[] myArray = file.getBytes();
+		System.out.println(myArray);
         blob = new SerialBlob(myArray);
 //        String ticketNum = updatedData.getTicketNumber();// != null ? updatedData.getTicketNumber() : "";
 //        String cmts = updatedData.getComments();// != null ? updatedData.getComments()  : "";
