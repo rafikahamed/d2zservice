@@ -412,9 +412,9 @@ public class D2ZSuperUserController {
 		return superUserD2zService.returnsOutstanding(fromDate, toDate, brokerName);
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, path = "/action-returns")
-	public List<Returns> returnsActionDetails() {
-		return superUserD2zService.returnsOutstanding();
+	@RequestMapping(method = RequestMethod.GET, path = "/action-returns/{roleId}")
+	public List<Returns> returnsActionDetails( @PathVariable int roleId) {
+		return superUserD2zService.returnsOutstanding(roleId);
 	}
 	
 	@RequestMapping(method = RequestMethod.PUT, path = "/action")

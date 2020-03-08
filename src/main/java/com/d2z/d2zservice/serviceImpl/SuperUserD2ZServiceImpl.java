@@ -1589,8 +1589,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	}
 
 	@Override
-	public List<Returns> returnsOutstanding() {
-		return d2zDao.returnsOutstanding();
+	public List<Returns> returnsOutstanding(int roleId) {
+		return d2zDao.returnsOutstanding(roleId);
 	}
 
 	@Override

@@ -60,4 +60,7 @@ public interface ReturnsRepository extends CrudRepository<Returns, Long>{
 	
 	@Procedure(name = "updatereturnsClientIdDetails")
 	void updateReturnsClientDetails();
+
+	@Query( nativeQuery = true, value="SELECT * FROM Returns where action is not null and status is null and carrier != 'FastwayM'")
+	List<Returns> returnsOutstandingExceptFastway();
 }

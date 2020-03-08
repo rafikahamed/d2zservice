@@ -422,42 +422,43 @@ public class D2ZValidator {
 //    		return (daoObj.getReferenceNumber()).concat(daoObj.getArticleId()).concat(daoObj.getBarcodelabelNumber());
 //    	}).collect(Collectors.toList());
 	    
-    	List<String> uniqueReturnsRefNum = returnObj.stream().map(daoObj -> {
-    			return (daoObj.getReferenceNumber());
+    	List<String> uniqueReturnsRefNum = returnObj.stream().filter(daoObj -> daoObj.getReferenceNumber() != null).map(daoObj -> {
+    			return (daoObj.getReferenceNumber().trim().toUpperCase());
     	}).collect(Collectors.toList());
     		
-    	List<String> uniqueReturnsArticleId = returnObj.stream().map(daoObj -> {
-    			return (daoObj.getArticleId());
+    	List<String> uniqueReturnsArticleId = returnObj.stream().filter(daoObj -> daoObj.getArticleId() != null).map(daoObj -> {
+    			return (daoObj.getArticleId().trim().toUpperCase());
     	}).collect(Collectors.toList());
     		
-		List<String> uniqueReturnsBarcode = returnObj.stream().map(daoObj -> {
-			return (daoObj.getBarcodelabelNumber());
+		List<String> uniqueReturnsBarcode = returnObj.stream().filter(daoObj -> daoObj.getBarcodelabelNumber() != null).map(daoObj -> {
+			return (daoObj.getBarcodelabelNumber().trim().toUpperCase());
 		}).collect(Collectors.toList());
 		
-		List<String> uniqueRefNum = new ArrayList<String>();
-		List<String> uniqueArticleId = new ArrayList<String>();
-		List<String> uniqueBarcodeLabel = new ArrayList<String>();
+		List<String> uniqueValue = new ArrayList<String>();
+		
 		
 		returns.forEach(obj -> {
-			String referenceNum = obj.getReferenceNumber() != null ? obj.getReferenceNumber().trim().toUpperCase() : obj.getReferenceNumber();
-			String articleId = obj.getArticleId() != null ? obj.getArticleId().trim().toUpperCase() : obj.getArticleId();
-			String barcodeLabel = obj.getBarcodelabelNumber() != null ? obj.getBarcodelabelNumber().trim() : obj.getBarcodelabelNumber();
-			if(null!=referenceNum && uniqueReturnsRefNum.contains(referenceNum)) {
-				uniqueRefNum.add(obj.getReferenceNumber().trim().toUpperCase());
-			}else if(null!=articleId && uniqueReturnsArticleId.contains(articleId)) {
-				uniqueArticleId.add(obj.getArticleId().trim().toUpperCase());
-			}else if(null!=barcodeLabel && uniqueReturnsBarcode.contains(barcodeLabel)) {
-				uniqueBarcodeLabel.add(obj.getBarcodelabelNumber().trim().toUpperCase());
+			System.out.println(obj.getScanType());
+			if(obj.getScanType().equalsIgnoreCase("Reference Number")) {
+				String referenceNum = obj.getReferenceNumber() != null ? obj.getReferenceNumber().trim().toUpperCase() : obj.getReferenceNumber();
+				if(null!=referenceNum && uniqueReturnsRefNum.contains(referenceNum)) {
+					uniqueValue.add(obj.getReferenceNumber());
+				}	
+			}else if(obj.getScanType().equalsIgnoreCase("Article Id")) {
+				String articleId = obj.getArticleId() != null ? obj.getArticleId().trim().toUpperCase() : obj.getArticleId();
+				if(null!=articleId && uniqueReturnsArticleId.contains(articleId)) {
+					uniqueValue.add(obj.getArticleId());
+				}
+			}else if(obj.getScanType().equalsIgnoreCase("Barcode Label")) {
+				String barcodeLabel = obj.getBarcodelabelNumber() != null ? obj.getBarcodelabelNumber().trim().toUpperCase() : obj.getBarcodelabelNumber();
+				if(null!=barcodeLabel && uniqueReturnsBarcode.contains(barcodeLabel)) {
+					uniqueValue.add(obj.getBarcodelabelNumber().trim().toUpperCase());
 			}
-			
+			}
 		});
 		
-		if(!uniqueRefNum.isEmpty()) {
-			throw new ReferenceNumberNotUniqueException("Reference Number must be unique",uniqueReturnsRefNum);
-		}else if(!uniqueArticleId.isEmpty()) {
-			throw new ReferenceNumberNotUniqueException("Article ID must be unique",uniqueArticleId);
-		}else if(!uniqueBarcodeLabel.isEmpty()) {
-			throw new ReferenceNumberNotUniqueException("Barcode Label Number must be unique",uniqueBarcodeLabel);
+		if(!uniqueValue.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Return details already exist",uniqueValue);
 		}
 		
 	}

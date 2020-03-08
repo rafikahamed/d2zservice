@@ -201,7 +201,7 @@ public interface ID2ZSuperUserDao {
 	
 	String submitJob(List<IncomingJobResponse> job);
 
-	List<Returns> returnsOutstanding();
+	List<Returns> returnsOutstanding(int roleId);
 
 	UserMessage updateAction(List<ReturnsAction> returnsAction);
 
