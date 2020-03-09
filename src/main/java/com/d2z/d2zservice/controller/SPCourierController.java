@@ -198,10 +198,12 @@ public class SPCourierController {
 		d2zService.triggerFreipost(referenceNumbers);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, path = "/FDM")
-	public void triggerFDM() {
-		d2zService.triggerFDM();
+
+	@RequestMapping(method = RequestMethod.PUT, path = "/FDM")
+	public void triggerFDM(@RequestBody List<String> refNbrs) {
+		d2zService.triggerFDM(refNbrs);
 	}
+
 
 	@RequestMapping(method = RequestMethod.GET, path = "/aupost/track-labels")
 	public ResponseMessage auTrackingEvent() {

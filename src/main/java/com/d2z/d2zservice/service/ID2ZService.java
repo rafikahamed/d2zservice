@@ -97,7 +97,7 @@ public interface ID2ZService {
 
 	public void triggerFreipost(String referenceNumbers);
 
-	public void triggerFDM();
+	public void triggerFDM(List<String> refnbrs);
 
 	public ResponseMessage auTrackingEvent();
 	

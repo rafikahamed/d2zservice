@@ -1517,20 +1517,24 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			else 
 				System.out.println("No Response from PFL for the giventracking number");
 		}
+		Map<String,List<String>> eTowerMap = new HashMap<String,List<String>>();
 		if(etowerList.size() > 0) {
 			System.out.println("Etower List");
 			System.out.println(etowerList.toString());
-			eTowerTrackingEvent(etowerList,null);
+			eTowerMap.put("", etowerList);
 		}
 		if(etowerHKGList.size() > 0) {
 			System.out.println("Etower HKG List");
 			System.out.println(etowerHKGList.toString());
-			eTowerTrackingEvent(etowerHKGList,"HKG");
+			eTowerMap.put("HKG", etowerHKGList);
 		}
 		if(etowerHKG2List.size() > 0) {
 			System.out.println("Etower HKG2 List");
 			System.out.println(etowerHKG2List.toString());
-			eTowerTrackingEvent(etowerHKG2List,"HKG2");
+			eTowerMap.put("HKG2", etowerHKG2List);
+		}
+		if(!eTowerMap.isEmpty()) {
+			eTowerTrackingEvent(eTowerMap);
 		}
 		if(auPostList.size() > 0 ) {
 			System.out.println("AUPost List");
@@ -1565,17 +1569,18 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	}
 	
 	
-	public ResponseMessage eTowerTrackingEvent(List<String> trackingNbrs,String serviceType) {
-		ResponseMessage respMsg = null;
-		List<List<String>> trackingNbrList = ListUtils.partition(trackingNbrs, 300);
+	public void eTowerTrackingEvent(Map<String,List<String>> eTowerMap) {
+		eTowerMap.forEach((k,v) -> {
+		List<List<String>> trackingNbrList = ListUtils.partition(v, 300);
 		int count = 1;
 		for (List<String> trackingNumbers : trackingNbrList) {
 			System.out.println(count + ":::" + trackingNumbers.size());
 			count++;
-			TrackingEventResponse response = proxy.makeCallForTrackingEvents(trackingNumbers,serviceType);
-			respMsg = d2zDao.updateAUEtowerTrackingDetails(response);
+			TrackingEventResponse response = proxy.makeCallForTrackingEvents(trackingNumbers,k);
+			d2zDao.updateAUEtowerTrackingDetails(response);
 		}
-		return respMsg;
+		});
+		
 	}
 	
 	public UserMessage submitJob(List<IncomingJobResponse> job) {
