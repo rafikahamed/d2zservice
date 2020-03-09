@@ -1519,17 +1519,17 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		}
 		Map<String,List<String>> eTowerMap = new HashMap<String,List<String>>();
 		if(etowerList.size() > 0) {
-			System.out.println("Etower List");
+			System.out.println("Etower List->");
 			System.out.println(etowerList.toString());
 			eTowerMap.put("", etowerList);
 		}
 		if(etowerHKGList.size() > 0) {
-			System.out.println("Etower HKG List");
+			System.out.println("Etower HKG List->");
 			System.out.println(etowerHKGList.toString());
 			eTowerMap.put("HKG", etowerHKGList);
 		}
 		if(etowerHKG2List.size() > 0) {
-			System.out.println("Etower HKG2 List");
+			System.out.println("Etower HKG2 List->");
 			System.out.println(etowerHKG2List.toString());
 			eTowerMap.put("HKG2", etowerHKG2List);
 		}
