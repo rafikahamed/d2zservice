@@ -15,9 +15,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmailUtil {
 	
-	
-	
-	
 	/**
 	 * Utility method to send simple HTML email
 	 * @param session
@@ -28,7 +25,7 @@ public class EmailUtil {
 	public static void sendEmail(Session session, String fromEmail, String toEmail, String name, String messageData, String subject){
 		try{
         	MimeMessage message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("cs@d2z.com.au"));
+            message.setFrom(new InternetAddress("Reports@d2z.com.au"));
         
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Contact Us -->"+subject);
@@ -46,7 +43,7 @@ public class EmailUtil {
 	public void senderEmail(Session session, String email, String toEmail, String name, String subject) {
 		try{
 				MimeMessage message = new MimeMessage(session);
-				message.setFrom(new InternetAddress("cs@d2z.com.au"));
+				message.setFrom(new InternetAddress("Reports@d2z.com.au"));
 				
 			        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
 			        message.setSubject("Acknowledgement -->"+subject);

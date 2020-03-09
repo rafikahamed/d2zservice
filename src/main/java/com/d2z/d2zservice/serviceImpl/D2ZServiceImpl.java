@@ -8,7 +8,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Blob;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -28,6 +27,7 @@ import java.util.stream.Collectors;
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +35,9 @@ import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.async.AsyncService;
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
@@ -115,7 +118,6 @@ import com.d2z.d2zservice.util.EmailUtil;
 import com.d2z.d2zservice.util.FTPUploader;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.wrapper.ETowerWrapper;
-//import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.d2zservice.wrapper.PCAWrapper;
 import com.d2z.d2zservice.wrapper.PFLWrapper;
 import com.d2z.singleton.D2ZSingleton;
@@ -138,7 +140,8 @@ import uk.org.okapibarcode.backend.OkapiException;
 import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.backend.Symbol.DataType;
 import uk.org.okapibarcode.output.Java2DRenderer;
-
+import javax.mail.MessagingException;
+ 
 @Service
 public class D2ZServiceImpl implements ID2ZService {
 
@@ -195,6 +198,9 @@ public class D2ZServiceImpl implements ID2ZService {
 	
 	@Autowired
 	AsyncService aysncService;
+	
+	@Autowired
+    private JavaMailSender mailSender;
 
 	@Override
 	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) 
@@ -1813,9 +1819,9 @@ else
 		UserMessage userMsg = new UserMessage();
 		System.out.print("email:" + email + "message:" + messageData);
 
-		final String fromEmail = "cs@d2z.com.au";
+		final String fromEmail = "Reports@d2z.com.au";
 
-		final String password = "rydjwqzrxhvcwhrb";
+		final String password = "h'6%e?BFpn/qdE9";
 
 		Properties props = new Properties();
 
@@ -2589,8 +2595,32 @@ else
 	@Override
 	public UserMessage enquiryUpdate(SuperUserEnquiry updatedData) {
 		UserMessage usrMsg = d2zDao.enquiryUpdate(updatedData.getTicketNumber(),updatedData.getComments(),updatedData.getD2zComments(),updatedData.getSendUpdate(),updatedData.getStatus());
-		if(updatedData.getSendUpdate().equalsIgnoreCase("YES")) {
-			
+		if(updatedData.getSendUpdate().equalsIgnoreCase("yes")) {
+			CSTickets csTicket = d2zDao.fetchCSTicketDetails(updatedData.getTicketNumber());
+			System.out.println(csTicket);
+			byte[] attachmentData = csTicket.getProof();
+			String mailBody =  "<body><h4> Dear Customer,</br></br>"
+	                + "<table width='80%' border='1'>"
+	                + "<tr><td>D2Z Comments     </td><td>  " + csTicket.getD2zComments() + "</td></tr>" 
+	                + "<tr><td>User Comments   </td><td>  " + csTicket.getComments() + "</td></tr>"
+	                + "</table>"
+	                + "</h4>"
+	                + "<h4>Regards, </br>"
+	                + "D2Z Support Team</h4>"
+	                + "</body> ";
+			MimeMessage message = mailSender.createMimeMessage();
+			try {
+	            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+	            helper.setFrom("Reports@d2z.com.au");
+	            helper.setTo("ranjucse07@gmail.com");
+	            helper.setSubject("D2Z Enquiry Updates");
+	            helper.setText(mailBody, true);
+	            if(attachmentData != null)
+	            	helper.addAttachment("D2Z-Enquiry-pod.pdf", new ByteArrayResource(attachmentData));
+	            mailSender.send(message);
+	        } catch (MessagingException e) {
+	            e.printStackTrace();
+	        }
 		}
 		return usrMsg;
 	}
