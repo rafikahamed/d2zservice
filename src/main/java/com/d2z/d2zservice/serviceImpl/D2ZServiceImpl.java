@@ -2613,7 +2613,7 @@ else
 			try {
 	            MimeMessageHelper helper = new MimeMessageHelper(message, true);
 	            helper.setFrom("Reports@d2z.com.au");
-	            helper.setTo("ranjucse07@gmail.com");
+	            helper.setTo("CS@d2z.com.au");
 	            helper.setSubject("D2Z Enquiry Updates");
 	            helper.setText(mailBody, true);
 	            if(attachmentData != null)
