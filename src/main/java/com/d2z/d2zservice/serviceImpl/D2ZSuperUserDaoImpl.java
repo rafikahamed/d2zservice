@@ -1032,6 +1032,14 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			jobs.setOutturn(job.getOutturn());
 			jobs.setPiece(job.getPiece());
 			jobs.setWeight(job.getWeight());
+			if(job.getInjectionDate()!=null){
+				jobs.setInjectionDate(job.getInjectionDate().toString());
+				}
+			if(job.getClearanceDate()!=null){
+				jobs.setClearanceDate(job.getClearanceDate().toString());
+				}
+			jobs.setDamage(job.getDamageNotes());
+			jobs.setSurplus(job.getSurplusShortage());
 			joblist.add(jobs);
 			
 		}
@@ -1097,6 +1105,16 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			}
 			jobs.setHeld(job.getHeld());
 			jobs.setIsDeleted("N");
+			jobs.setDamageNotes(job.getDamage());
+			if(job.getSurplus()!=null && (job.getSurplus().equalsIgnoreCase("True") || job.getSurplus().equalsIgnoreCase("Y"))){
+				jobs.setSurplusShortage("Y");
+			}
+			if(job.getClearanceDate()!=null &&  job.getClearanceDate().length() > 0){
+			jobs.setClearanceDate(LocalDate.parse(job.getClearanceDate()));
+			}
+			if(job.getInjectionDate()!=null &&  job.getInjectionDate().length() > 0){
+				jobs.setInjectionDate(LocalDate.parse(job.getInjectionDate()));
+				}
 			joblist.add(jobs);
 		}
 		incomingRepository.saveAll(joblist);
