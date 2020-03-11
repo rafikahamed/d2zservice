@@ -2,6 +2,7 @@ package com.d2z.d2zservice.async;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
@@ -43,10 +44,15 @@ public class AsyncService {
 	
 	private static Logger log = LoggerFactory.getLogger(AsyncService.class);
 	@Async("asyncExecutor")
-	public CompletableFuture<TrackingEventResponse> makeCalltoEtower(List<String> trackingNumber,String serviceType) throws InterruptedException 
+	public CompletableFuture<List<TrackingEventResponse>> makeCalltoEtower(Map<String,List<String>> eTowerMap) throws InterruptedException 
     {
 		log.info("Etower Tracking");
-		TrackingEventResponse response = eTowerProxy.makeCallForTrackingEvents(trackingNumber,serviceType);
+		List<TrackingEventResponse> response = new ArrayList<TrackingEventResponse>();
+		eTowerMap.forEach((k,v) ->{
+			TrackingEventResponse eTowerResponse = eTowerProxy.makeCallForTrackingEvents(v,k);
+			response.add(eTowerResponse);
+
+		});
 		return CompletableFuture.completedFuture(response);
     }
 	@Async("asyncExecutor")

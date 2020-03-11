@@ -777,7 +777,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 Integer fetchUserIdByReferenceNumber( String reference_number);
 
 
-	@Query("SELECT t FROM SenderdataMaster t where t.reference_number in (:refNbrs) and t.isDeleted = 'N'")
+	@Query("SELECT t FROM SenderdataMaster t where t.articleId in (:refNbrs) and t.isDeleted = 'N'")
 	List<SenderdataMaster> fetchDataForAusPost(List<String>  refNbrs);
 	
 	@Query("SELECT t.reference_number FROM SenderdataMaster t where t.articleId in (:article) ")

@@ -1857,8 +1857,8 @@ else
 	}
 
 	@Override
-	public void triggerFDM() {
-		List<String> refNumbers = d2zDao.fetchArticleIDForFDMCall();
+	public void triggerFDM(List<String> refNumbers) {
+		//List<String> refNumbers = d2zDao.fetchArticleIDForFDMCall();
 		System.out.println("Track and trace:" + refNumbers.size());
 		List<List<String>> refNbrList = ListUtils.partition(refNumbers, 2000);
 		for (List<String> referenceNumbers : refNbrList) {
@@ -2385,11 +2385,11 @@ else
 		List<String> eParcelMlids = d2zDao.fetchMlidsBasedOnSupplier("eTower");
 		List<String> auPostMlids =  d2zDao.fetchMlidsBasedOnSupplier("FDM");
 	    List<String> pcaMlids = d2zDao.fetchMlidsBasedOnSupplier("PCA");
-		CompletableFuture<TrackingEventResponse> eTowerResponse = new CompletableFuture<TrackingEventResponse>();
+		CompletableFuture<List<TrackingEventResponse>> eTowerResponse = new CompletableFuture<List<TrackingEventResponse>>();
 		CompletableFuture<TrackingResponse> auPostResponse = new CompletableFuture<TrackingResponse>();
 		CompletableFuture<List<PCATrackEventResponse>> pcaResponse = new CompletableFuture<List<PCATrackEventResponse>>(); 
 		CompletableFuture<List<PFLTrackingResponseDetails>> pflResponse  = new CompletableFuture<List<PFLTrackingResponseDetails>>();
-		
+		Map<String,List<String>> eTowerMap = new HashMap<String,List<String>>();
 		for(String articleId : articleIds) {
 			if(articleId.length()==21 || articleId.length() == 23) {
 				String mlid = articleId.length() == 23 ? articleId.substring(0,5) : articleId.substring(0,3);
@@ -2417,19 +2417,17 @@ else
 				pcaArticleIds.add(articleId);
 			}
 		}
-		
 		if(eTowerArticleIds.size() > 0) {
-			eTowerResponse = aysncService.makeCalltoEtower(eTowerArticleIds,"");
-		}else {
-			eTowerResponse.complete(null);
+			eTowerMap.put("", eTowerArticleIds);
 		}
 		if(eTowerHKGArticleIds.size() > 0) {
-			eTowerResponse = aysncService.makeCalltoEtower(eTowerHKGArticleIds,"HKG");
-		}else {
-			eTowerResponse.complete(null);
+			eTowerMap.put("HKG", eTowerHKGArticleIds);
 		}
 		if(eTowerHKG2ArticleIds.size() > 0) {
-			eTowerResponse = aysncService.makeCalltoEtower(eTowerHKG2ArticleIds,"HKG2");
+			eTowerMap.put("HKG2", eTowerHKG2ArticleIds);
+		}
+		if(!eTowerMap.isEmpty()) {
+			eTowerResponse = aysncService.makeCalltoEtower(eTowerMap);
 		}else {
 			eTowerResponse.complete(null);
 		}
@@ -2458,7 +2456,7 @@ else
 		return trackPracelsResponse;
 	}
 
-	private List<TrackParcelResponse> aggreateTrackParcelResponse(TrackingEventResponse eTowerResponse,
+	private List<TrackParcelResponse> aggreateTrackParcelResponse(List<TrackingEventResponse> eTowerResponse,
 			TrackingResponse auPostResponse, List<PCATrackEventResponse> pcaResponse, List<PFLTrackingResponseDetails> pflResponse, List<TrackParcelResponse> trackPracelResponse) {
 			
 		if(null != eTowerResponse) {
@@ -2546,8 +2544,8 @@ else
 	}
 
 	private void parseEtowerTrackingResponse(List<TrackParcelResponse> trackParcelResponse,
-			TrackingEventResponse eTowerResponse) {
-		System.out.println(eTowerResponse);
+			List<TrackingEventResponse> respone) {
+		for(TrackingEventResponse eTowerResponse : respone) {
 		List<TrackEventResponseData> responseData = eTowerResponse.getData();
 
 		if (responseData!=null && !responseData.isEmpty()) {
@@ -2573,6 +2571,7 @@ else
 					}
 				}
 	}
+		}
 	}
 
 	@Override
