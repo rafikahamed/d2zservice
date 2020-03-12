@@ -11,7 +11,7 @@ import com.d2z.d2zservice.entity.Parcels;
 
 public interface ParcelRepository extends CrudRepository<Parcels,Long>{
 
-	@Query("SELECT p FROM Parcels p where p.output = 'C' and p.client = :client and p.status != 'CLEAR' ") 
+	@Query("SELECT p FROM Parcels p where p.output = 'C' and p.client = :client and p.status like '%HELD' ") 
 	List<Parcels> fetchheldparcel(String client);
 	
 	@Query("SELECT p FROM Parcels p where  p.output = 'C' and p.status = 'CLEAR' and p.client = :client") 
