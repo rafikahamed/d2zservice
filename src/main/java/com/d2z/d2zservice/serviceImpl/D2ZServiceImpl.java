@@ -1819,9 +1819,9 @@ else
 		UserMessage userMsg = new UserMessage();
 		System.out.print("email:" + email + "message:" + messageData);
 
-		final String fromEmail = "Reports@d2z.com.au";
+		final String fromEmail = "";
 
-		final String password = "h'6%e?BFpn/qdE9";
+		final String password = "";
 
 		Properties props = new Properties();
 
@@ -2612,7 +2612,7 @@ else
 			try {
 	            MimeMessageHelper helper = new MimeMessageHelper(message, true);
 	            helper.setFrom("Reports@d2z.com.au");
-	            helper.setTo("CS@d2z.com.au");
+	            helper.setTo("jack@d2z.com.au");
 	            helper.setSubject("D2Z Enquiry Updates");
 	            helper.setText(mailBody, true);
 	            if(attachmentData != null)
