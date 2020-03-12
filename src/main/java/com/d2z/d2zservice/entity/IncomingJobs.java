@@ -95,6 +95,51 @@ public class IncomingJobs implements Serializable{
 	@Column(name="Total")
 	private BigDecimal total;
 	
+	@Column(name = "InjectionDate")
+	private LocalDate injectionDate;
+	
+	@Column(name = "ClearanceDate")
+	private LocalDate clearanceDate;
+	
+	@Column(name = "SurplusShortage")
+	private String surplusShortage;
+	
+	@Column(name = "DamageNotes")
+	private String damageNotes;
+	
+	
+	public LocalDate getInjectionDate() {
+		return injectionDate;
+	}
+
+	public void setInjectionDate(LocalDate injectionDate) {
+		this.injectionDate = injectionDate;
+	}
+
+	public LocalDate getClearanceDate() {
+		return clearanceDate;
+	}
+
+	public void setClearanceDate(LocalDate clearanceDate) {
+		this.clearanceDate = clearanceDate;
+	}
+
+	public String getSurplusShortage() {
+		return surplusShortage;
+	}
+
+	public void setSurplusShortage(String surplusShortage) {
+		this.surplusShortage = surplusShortage;
+	}
+
+	public String getDamageNotes() {
+		return damageNotes;
+	}
+
+	public void setDamageNotes(String damageNotes) {
+		this.damageNotes = damageNotes;
+	}
+
 	public String getIsDeleted() {
 		return isDeleted;
 	}

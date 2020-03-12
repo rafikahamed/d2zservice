@@ -228,5 +228,55 @@ public class IncomingJobResponse {
 	
 	private String outturn;
 	
+	private String injectionDate;
+	
+	private String clearanceDate;
+	
+	private String surplus;
+	
+	private String damage;
+
+
+	public String getInjectionDate() {
+		return injectionDate;
+	}
+
+
+	public void setInjectionDate(String injectionDate) {
+		this.injectionDate = injectionDate;
+	}
+
+
+	public String getClearanceDate() {
+		return clearanceDate;
+	}
+
+
+	public void setClearanceDate(String clearanceDate) {
+		this.clearanceDate = clearanceDate;
+	}
+
+
+	public String getSurplus() {
+		return surplus;
+	}
+
+
+	public void setSurplus(String surplus) {
+		this.surplus = surplus;
+	}
+
+
+	public String getDamage() {
+		return damage;
+	}
+
+
+	public void setDamage(String damage) {
+		this.damage = damage;
+	}
+	
+	
+	
 
 }
