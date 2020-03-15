@@ -73,6 +73,8 @@ import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
 import com.d2z.d2zservice.model.PFLTrackEvent;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelStatus;
+import com.d2z.d2zservice.model.PerformanceReportData;
+import com.d2z.d2zservice.model.PerformanceReportTrackingData;
 import com.d2z.d2zservice.model.PflCreateShippingOrderInfo;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
 import com.d2z.d2zservice.model.PostCodeWeight;
@@ -141,7 +143,7 @@ import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.backend.Symbol.DataType;
 import uk.org.okapibarcode.output.Java2DRenderer;
 import javax.mail.MessagingException;
- 
+
 @Service
 public class D2ZServiceImpl implements ID2ZService {
 
@@ -169,12 +171,12 @@ public class D2ZServiceImpl implements ID2ZService {
 	@Autowired
 	EmailUtil emailUtil;
 
-	/*@Autowired
-	FreipostWrapper freipostWrapper;
-*/
+	/*
+	 * @Autowired FreipostWrapper freipostWrapper;
+	 */
 	@Autowired
-	ETowerWrapper eTowerWrapper; 
-	
+	ETowerWrapper eTowerWrapper;
+
 	@Autowired
 	AusPostProxy ausPostProxy;
 
@@ -186,84 +188,85 @@ public class D2ZServiceImpl implements ID2ZService {
 
 	@Autowired
 	private FTPUploader ftpUploader;
-	
+
 	@Autowired
 	PFLWrapper pflWrapper;
-	
+
 	@Autowired
 	PCAWrapper pcaWrapper;
-	
+
 	@Autowired
 	PcaProxy pcaProxy;
-	
+
 	@Autowired
 	AsyncService aysncService;
-	
+
 	@Autowired
-    private JavaMailSender mailSender;
+	private JavaMailSender mailSender;
 
 	@Override
-	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) 
-					throws ReferenceNumberNotUniqueException, FailureResponseException{
+	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList)
+			throws ReferenceNumberNotUniqueException, FailureResponseException {
 		List<String> incomingRefNbr = orderDetailList.stream().map(obj -> {
-			return obj.getReferenceNumber(); })
-				.collect(Collectors.toList());
+			return obj.getReferenceNumber();
+		}).collect(Collectors.toList());
 		boolean isPostcodeValidationReq = true;
-		if(("N").equals(userRepository.fetchPostcodeValidationIndicator(orderDetailList.get(0).getUserName()))){
+		if (("N").equals(userRepository.fetchPostcodeValidationIndicator(orderDetailList.get(0).getUserName()))) {
 			isPostcodeValidationReq = false;
 		}
 
 		d2zValidator.isReferenceNumberUniqueUI(incomingRefNbr);
 		d2zValidator.isServiceValidUI(orderDetailList);
-		
+
 		d2zValidator.isAddressValidUI(orderDetailList);
 
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 		String serviceType = orderDetailList.get(0).getServiceType();
-		if("1PM3E".equalsIgnoreCase(serviceType) 
-				|| "1PS3".equalsIgnoreCase(serviceType) 
+		if ("1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType)
 				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
-			if(isPostcodeValidationReq) {
+			if (isPostcodeValidationReq) {
 				d2zValidator.isPostCodeValidUI(orderDetailList);
-				}
-			eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(orderDetailList,senderDataResponseList);
+			}
+			eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(orderDetailList, senderDataResponseList);
 			return senderDataResponseList;
-		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType) || "1PS4".equalsIgnoreCase(serviceType)) {
-			if(isPostcodeValidationReq) {
-				if("1PS4".equalsIgnoreCase(serviceType)) {
-						d2zValidator.isPostCodeValidUI(orderDetailList);
-						
-				}else {
+		} else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType)
+				|| "1PS4".equalsIgnoreCase(serviceType)) {
+			if (isPostcodeValidationReq) {
+				if ("1PS4".equalsIgnoreCase(serviceType)) {
+					d2zValidator.isPostCodeValidUI(orderDetailList);
+
+				} else {
 					d2zValidator.isFWPostCodeUIValid(orderDetailList);
 				}
 			}
-			makeCreateShippingOrderFilePFLCall(orderDetailList,senderDataResponseList,null,serviceType);
+			makeCreateShippingOrderFilePFLCall(orderDetailList, senderDataResponseList, null, serviceType);
 			return senderDataResponseList;
-		}else if("FWS".equalsIgnoreCase(serviceType)) {
-			if(isPostcodeValidationReq) {
-			d2zValidator.isFWPostCodeUIValid(orderDetailList);
+		} else if ("FWS".equalsIgnoreCase(serviceType)) {
+			if (isPostcodeValidationReq) {
+				d2zValidator.isFWPostCodeUIValid(orderDetailList);
 			}
-			pcaWrapper.makeCreateShippingOrderFilePCACall(orderDetailList,senderDataResponseList,null,serviceType);
+			pcaWrapper.makeCreateShippingOrderFilePCACall(orderDetailList, senderDataResponseList, null, serviceType);
 			return senderDataResponseList;
-		}else if("STS".equalsIgnoreCase(serviceType)) {
-			if(isPostcodeValidationReq) {
+		} else if ("STS".equalsIgnoreCase(serviceType)) {
+			if (isPostcodeValidationReq) {
 				d2zValidator.isSTPostCodeValid(orderDetailList);
 			}
-			pcaWrapper.makeCreateShippingOrderFilePCACall(orderDetailList,senderDataResponseList,null,"STS-Sub");
+			pcaWrapper.makeCreateShippingOrderFilePCACall(orderDetailList, senderDataResponseList, null, "STS-Sub");
 			return senderDataResponseList;
-		}else if("RET".equalsIgnoreCase(serviceType)){
+		} else if ("RET".equalsIgnoreCase(serviceType)) {
 			PFLSenderDataFileRequest consignmentData = d2zValidator.isFWSubPostCodeUIValid(orderDetailList);
-			
-			if(consignmentData.getPflSenderDataApi().size() > 0) {
-					makeCreateShippingOrderFilePFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,null, serviceType);
-				}
-			
-			if(consignmentData.getNonPflSenderDataApi().size() > 0) {
-				if(isPostcodeValidationReq) {
+
+			if (consignmentData.getPflSenderDataApi().size() > 0) {
+				makeCreateShippingOrderFilePFLCall(consignmentData.getPflSenderDataApi(), senderDataResponseList, null,
+						serviceType);
+			}
+
+			if (consignmentData.getNonPflSenderDataApi().size() > 0) {
+				if (isPostcodeValidationReq) {
 					d2zValidator.isPostCodeValidUI(orderDetailList);
-					}
-				String senderFileID  = d2zDao.exportParcel(consignmentData.getNonPflSenderDataApi(),null);
+				}
+				String senderFileID = d2zDao.exportParcel(consignmentData.getNonPflSenderDataApi(), null);
 				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 				Iterator itr = insertedOrder.iterator();
 				while (itr.hasNext()) {
@@ -312,21 +315,21 @@ public class D2ZServiceImpl implements ID2ZService {
 //			}
 //			return senderDataResponseList;
 //		}
-		if(isPostcodeValidationReq) {
+		if (isPostcodeValidationReq) {
 			d2zValidator.isPostCodeValidUI(orderDetailList);
 		}
-		String senderFileID  = d2zDao.exportParcel(orderDetailList,null);
+		String senderFileID = d2zDao.exportParcel(orderDetailList, null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		Iterator itr = insertedOrder.iterator();
-		while(itr.hasNext()) {   
-			 Object[] obj = (Object[]) itr.next();
-			 senderDataResponse = new SenderDataResponse();
-			 senderDataResponse.setReferenceNumber(obj[0].toString());
-			 senderDataResponse.setBarcodeLabelNumber(obj[2] != null ? obj[2].toString() : "");
-			 senderDataResponse.setCarrier(obj[4].toString());
-			 senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
-			 senderDataResponseList.add(senderDataResponse);
-        }
+		while (itr.hasNext()) {
+			Object[] obj = (Object[]) itr.next();
+			senderDataResponse = new SenderDataResponse();
+			senderDataResponse.setReferenceNumber(obj[0].toString());
+			senderDataResponse.setBarcodeLabelNumber(obj[2] != null ? obj[2].toString() : "");
+			senderDataResponse.setCarrier(obj[4].toString());
+			senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
+			senderDataResponseList.add(senderDataResponse);
+		}
 		return senderDataResponseList;
 	}
 
@@ -335,20 +338,19 @@ public class D2ZServiceImpl implements ID2ZService {
 		String fileUploadData = d2zDao.consignmentDelete(refrenceNumlist);
 		UserMessage userMsg = new UserMessage();
 		userMsg.setMessage(fileUploadData);
-		
-		 List<String> incomingRefNbr = Arrays.asList(refrenceNumlist.split("\\s*,\\s*"));
-				 
-				 Runnable r = new Runnable( ) {			
-		        public void run() {
-		        System.out.println("in Thread for Delete pfl etower");
-		        List<String> inc = incomingRefNbr.stream().map(obj ->obj+"Delete").collect(Collectors.toList());
-		        System.out.println("in Thread for Delete pfl etower");
-		        	deleteEtowerPflPca(inc);
-		        	
-		    		
-		        }
-		     };
-		    new Thread(r).start();
+
+		List<String> incomingRefNbr = Arrays.asList(refrenceNumlist.split("\\s*,\\s*"));
+
+		Runnable r = new Runnable() {
+			public void run() {
+				System.out.println("in Thread for Delete pfl etower");
+				List<String> inc = incomingRefNbr.stream().map(obj -> obj + "Delete").collect(Collectors.toList());
+				System.out.println("in Thread for Delete pfl etower");
+				deleteEtowerPflPca(inc);
+
+			}
+		};
+		new Thread(r).start();
 		return userMsg;
 	}
 
@@ -385,7 +387,7 @@ public class D2ZServiceImpl implements ID2ZService {
 	public List<TrackingDetails> trackingDetails(String fileName) {
 		List<TrackingDetails> trackingDetailsList = new ArrayList<TrackingDetails>();
 		TrackingDetails trackingDetails = null;
-		
+
 		List<String> trackingService = d2zDao.trackingDetails(fileName);
 		Iterator itr = trackingService.iterator();
 		while (itr.hasNext()) {
@@ -393,9 +395,9 @@ public class D2ZServiceImpl implements ID2ZService {
 			trackingDetails = new TrackingDetails();
 			trackingDetails.setRefrenceNumber(obj[0].toString());
 			trackingDetails.setConsigneeName(obj[1].toString());
-			if((obj[3].toString().equalsIgnoreCase("FastwayM")  )||(obj[3].toString().equalsIgnoreCase("FastwayS")  )) {
+			if ((obj[3].toString().equalsIgnoreCase("FastwayM")) || (obj[3].toString().equalsIgnoreCase("FastwayS"))) {
 				trackingDetails.setBarCodeLabelNumber(obj[2].toString());
-			}else {
+			} else {
 				trackingDetails.setBarCodeLabelNumber(obj[2].toString().substring(18));
 			}
 			trackingDetailsList.add(trackingDetails);
@@ -443,41 +445,40 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderData> parcelPostData = new ArrayList<SenderData>();
 		List<SenderData> fwData = new ArrayList<SenderData>();
 
-		
-		boolean setGS1Type=false;
+		boolean setGS1Type = false;
 		for (SenderData data : senderData) {
 			if ("MCM1".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				whiteLabelData.add(data);
-			}
-			else if ("MCM2".equalsIgnoreCase(data.getServiceType()) && (data.getCarrier().equalsIgnoreCase("Express") || data.getCarrier().equalsIgnoreCase("eParcel")) ) {
+			} else if ("MCM2".equalsIgnoreCase(data.getServiceType()) && (data.getCarrier().equalsIgnoreCase("Express")
+					|| data.getCarrier().equalsIgnoreCase("eParcel"))) {
 				whiteLabelData.add(data);
-			}
-			else if("MCM3".equalsIgnoreCase(data.getServiceType())) {
+			} else if ("MCM3".equalsIgnoreCase(data.getServiceType())) {
 				whiteLabelData.add(data);
-			}else if("1PM".equalsIgnoreCase(data.getServiceType())) {
+			} else if ("1PM".equalsIgnoreCase(data.getServiceType())) {
 				eParcelNewData.add(data);
-			}else if("1PME".equalsIgnoreCase(data.getServiceType())) {
+			} else if ("1PME".equalsIgnoreCase(data.getServiceType())) {
 				expressNewData.add(data);
-			}else if("HKG".equalsIgnoreCase(data.getServiceType()) || "HKG2".equalsIgnoreCase(data.getServiceType())) {
+			} else if ("HKG".equalsIgnoreCase(data.getServiceType())
+					|| "HKG2".equalsIgnoreCase(data.getServiceType())) {
 				parcelPostData.add(data);
-			}else  if(data.getCarrier().equalsIgnoreCase("eParcel")) {
-				setGS1Type= true;
+			} else if (data.getCarrier().equalsIgnoreCase("eParcel")) {
+				setGS1Type = true;
 				eParcelData.add(data);
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
 				setGS1Type = true;
 				expressData.add(data);
-			}else if ("FW".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
+			} else if ("FW".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				fwData.add(data);
-			}else if(data.getCarrier().equalsIgnoreCase("FastwayM")) {
+			} else if (data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				fastwayData.add(data);
-			}else if(data.getCarrier().equalsIgnoreCase("FastwayS")) {
+			} else if (data.getCarrier().equalsIgnoreCase("FastwayS")) {
 				fastway_S_Data.add(data);
 			}
-		
-			if("VELC".equalsIgnoreCase(data.getUserName())) {
+
+			if ("VELC".equalsIgnoreCase(data.getUserName())) {
 				data.setLabelSenderName("SW4");
 			}
-			data.setDatamatrixImage(generateDataMatrix(data.getDatamatrix(),setGS1Type));
+			data.setDatamatrixImage(generateDataMatrix(data.getDatamatrix(), setGS1Type));
 		}
 
 		Map<String, Object> parameters = new HashMap<>();
@@ -500,7 +501,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		JasperReport fwLabel = null;
 		JRBeanCollectionDataSource parcelPostDataSource;
 		JasperReport parcelPost = null;
-		
+
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 			if (!eParcelData.isEmpty()) {
@@ -520,7 +521,7 @@ public class D2ZServiceImpl implements ID2ZService {
 				JRSaver.saveObject(expressLabel, "express.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(expressLabel, parameters, expressDataSource));
 			}
-			
+
 			if (!expressNewData.isEmpty()) {
 				System.out.println("Generating Express new..." + expressNewData.size());
 				expressNewDataSource = new JRBeanCollectionDataSource(expressNewData);
@@ -572,8 +573,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			if (!fwData.isEmpty()) {
 				System.out.println("Generating Fastway FW..." + fwData.size());
 				fwDataSource = new JRBeanCollectionDataSource(fwData);
-				fwLabel = JasperCompileManager
-						.compileReport(getClass().getResource("/FWLabel.jrxml").openStream());
+				fwLabel = JasperCompileManager.compileReport(getClass().getResource("/FWLabel.jrxml").openStream());
 				JRSaver.saveObject(fastwayLabel, "FWLabel.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(fwLabel, parameters, fwDataSource));
 			}
@@ -599,9 +599,9 @@ public class D2ZServiceImpl implements ID2ZService {
 			// Set up the DataMatrix object
 			DataMatrix dataMatrix = new DataMatrix();
 			// We need a GS1 DataMatrix barcode.
-			if(setGS1DataType)
-			dataMatrix.setDataType(DataType.GS1);
-			
+			if (setGS1DataType)
+				dataMatrix.setDataType(DataType.GS1);
+
 			// 0 means size will be set automatically according to amount of data (smallest
 			// possible).
 			dataMatrix.setPreferredSize(0);
@@ -638,7 +638,7 @@ public class D2ZServiceImpl implements ID2ZService {
 	@Override
 	public byte[] trackingLabel(List<String> refBarNum) throws PCAlabelException {
 		List<SenderData> trackingLabelList = new ArrayList<SenderData>();
-		System.out.println("size:"+refBarNum.size());
+		System.out.println("size:" + refBarNum.size());
 		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNum);
 		boolean pcalabel = false;
 		Iterator itr = trackingLabelData.iterator();
@@ -700,182 +700,180 @@ public class D2ZServiceImpl implements ID2ZService {
 			if (trackingArray[26] != null)
 				trackingLabel.setServiceType(trackingArray[26].toString());
 			boolean setGS1DataType = false;
-			if(trackingLabel.getCarrier().equalsIgnoreCase("Express") || trackingLabel.getCarrier().equalsIgnoreCase("eParcel")) {
+			if (trackingLabel.getCarrier().equalsIgnoreCase("Express")
+					|| trackingLabel.getCarrier().equalsIgnoreCase("eParcel")) {
 				setGS1DataType = true;
 			}
-			if(trackingLabel.getCarrier().equalsIgnoreCase("StarTrack"))
-			{if(trackingLabelData.size() > 1)
-			{
-				throw new PCAlabelException("Starttradk Label request can contain only one reference number", refBarNum);
+			if (trackingLabel.getCarrier().equalsIgnoreCase("StarTrack")) {
+				if (trackingLabelData.size() > 1) {
+					throw new PCAlabelException("Starttradk Label request can contain only one reference number",
+							refBarNum);
+				} else {
+					pcalabel = true;
+				}
+
 			}
-			else
-			{
-				pcalabel = true;
-			}
-				
-			}
-			trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix(),setGS1DataType));
-			
+			trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix(), setGS1DataType));
+
 			String user = d2zDao.fetchUserById(Integer.parseInt(trackingArray[27].toString()));
-			if("VELC".equalsIgnoreCase(user)) {
+			if ("VELC".equalsIgnoreCase(user)) {
 				trackingLabel.setLabelSenderName("SW4");
 			}
 			trackingLabelList.add(trackingLabel);
 		}
 		byte[] bytes = null;
-if(!pcalabel)
-{
-		List<SenderData> eParcelData = new ArrayList<SenderData>();
+		if (!pcalabel) {
+			List<SenderData> eParcelData = new ArrayList<SenderData>();
 
-		List<SenderData> expressData = new ArrayList<SenderData>();
-		List<SenderData> fastwayData = new ArrayList<SenderData>();
-		List<SenderData> fastway_S_Data = new ArrayList<SenderData>();
-		List<SenderData> whiteLabelData = new ArrayList<SenderData>();
-		List<SenderData> eParcelNewData = new ArrayList<SenderData>();
-		List<SenderData> expressNewData = new ArrayList<SenderData>();
-		List<SenderData> parcelPostData = new ArrayList<SenderData>();
-		List<SenderData> fwData = new ArrayList<SenderData>();
+			List<SenderData> expressData = new ArrayList<SenderData>();
+			List<SenderData> fastwayData = new ArrayList<SenderData>();
+			List<SenderData> fastway_S_Data = new ArrayList<SenderData>();
+			List<SenderData> whiteLabelData = new ArrayList<SenderData>();
+			List<SenderData> eParcelNewData = new ArrayList<SenderData>();
+			List<SenderData> expressNewData = new ArrayList<SenderData>();
+			List<SenderData> parcelPostData = new ArrayList<SenderData>();
+			List<SenderData> fwData = new ArrayList<SenderData>();
 
-		for (SenderData data : trackingLabelList) {
-			if ("MCM1".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
-				whiteLabelData.add(data);
+			for (SenderData data : trackingLabelList) {
+				if ("MCM1".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
+					whiteLabelData.add(data);
+				} else if ("MCM2".equalsIgnoreCase(data.getServiceType())
+						&& (data.getCarrier().equalsIgnoreCase("Express")
+								|| data.getCarrier().equalsIgnoreCase("eParcel"))) {
+					whiteLabelData.add(data);
+				} else if ("MCM3".equalsIgnoreCase(data.getServiceType())) {
+					whiteLabelData.add(data);
+				} else if ("1PM".equalsIgnoreCase(data.getServiceType())) {
+					eParcelNewData.add(data);
+				} else if ("1PME".equalsIgnoreCase(data.getServiceType())) {
+					expressNewData.add(data);
+				} else if ("HKG".equalsIgnoreCase(data.getServiceType())
+						|| "HKG2".equalsIgnoreCase(data.getServiceType())) {
+					parcelPostData.add(data);
+				} else if (data.getCarrier().equalsIgnoreCase("eParcel")) {
+					eParcelData.add(data);
+				} else if (data.getCarrier().equalsIgnoreCase("Express")) {
+					expressData.add(data);
+				} else if ("FW".equalsIgnoreCase(data.getServiceType())
+						&& data.getCarrier().equalsIgnoreCase("FastwayM")) {
+					fwData.add(data);
+				} else if (data.getCarrier().equalsIgnoreCase("FastwayM")) {
+					fastwayData.add(data);
+				} else if (data.getCarrier().equalsIgnoreCase("FastwayS")) {
+					fastway_S_Data.add(data);
+				}
 			}
-			else if ("MCM2".equalsIgnoreCase(data.getServiceType()) && (data.getCarrier().equalsIgnoreCase("Express") || data.getCarrier().equalsIgnoreCase("eParcel")) ) {
-				whiteLabelData.add(data);
+
+			Map<String, Object> parameters = new HashMap<>();
+
+			// Blob blob = null;
+			JRBeanCollectionDataSource eParcelDataSource;
+			JRBeanCollectionDataSource expressDataSource;
+			JasperReport eParcelLabel = null;
+			JasperReport expressLabel = null;
+			JRBeanCollectionDataSource fastwayDataSource;
+			JasperReport fastwayLabel = null;
+			JRBeanCollectionDataSource fastway_S_DataSource;
+			JasperReport fastway_S_Label = null;
+			JRBeanCollectionDataSource whiteLabelDataSource;
+			JasperReport whiteLabel = null;
+			JRBeanCollectionDataSource eParcelNewDataSource;
+			JasperReport eParcelNew = null;
+			JRBeanCollectionDataSource expressNewDataSource;
+			JasperReport expressNew = null;
+			JRBeanCollectionDataSource parcelPostDataSource;
+			JasperReport parcelPost = null;
+			JRBeanCollectionDataSource fwDataSource;
+			JasperReport fwLabel = null;
+			try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
+				List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
+				if (!eParcelData.isEmpty()) {
+					System.out.println("Generating eParcel..." + eParcelData.size());
+					eParcelDataSource = new JRBeanCollectionDataSource(eParcelData);
+					eParcelLabel = JasperCompileManager
+							.compileReport(getClass().getResource("/eparcelLabel.jrxml").openStream());
+					JRSaver.saveObject(eParcelLabel, "label.jasper");
+					jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, eParcelDataSource));
+				}
+				if (!expressData.isEmpty()) {
+					System.out.println("Generating Express..." + expressData.size());
+					expressDataSource = new JRBeanCollectionDataSource(expressData);
+					expressLabel = JasperCompileManager
+							.compileReport(getClass().getResource("/ExpressLabel.jrxml").openStream());
+					JRSaver.saveObject(expressLabel, "express.jasper");
+					jasperPrintList.add(JasperFillManager.fillReport(expressLabel, parameters, expressDataSource));
+				}
+				if (!expressNewData.isEmpty()) {
+					System.out.println("Generating Express new..." + expressNewData.size());
+					expressNewDataSource = new JRBeanCollectionDataSource(expressNewData);
+					expressNew = JasperCompileManager
+							.compileReport(getClass().getResource("/ExpressNew.jrxml").openStream());
+					JRSaver.saveObject(expressNew, "expressNew.jasper");
+					jasperPrintList.add(JasperFillManager.fillReport(expressNew, parameters, expressNewDataSource));
+				}
+				if (!parcelPostData.isEmpty()) {
+					System.out.println("Generating Parcel Post..." + parcelPostData.size());
+					parcelPostDataSource = new JRBeanCollectionDataSource(parcelPostData);
+					parcelPost = JasperCompileManager
+							.compileReport(getClass().getResource("/ParcelPost.jrxml").openStream());
+					JRSaver.saveObject(parcelPost, "parcelPost.jasper");
+					jasperPrintList.add(JasperFillManager.fillReport(parcelPost, parameters, parcelPostDataSource));
+				}
+				if (!fastwayData.isEmpty()) {
+					System.out.println("Generating Fastway..." + fastwayData.size());
+					fastwayDataSource = new JRBeanCollectionDataSource(fastwayData);
+					fastwayLabel = JasperCompileManager
+							.compileReport(getClass().getResource("/FastWayLabel.jrxml").openStream());
+					JRSaver.saveObject(fastwayLabel, "FastWayLabel.jasper");
+					jasperPrintList.add(JasperFillManager.fillReport(fastwayLabel, parameters, fastwayDataSource));
+				}
+				if (!fwData.isEmpty()) {
+					System.out.println("Generating Fastway FW..." + fwData.size());
+					fwDataSource = new JRBeanCollectionDataSource(fwData);
+					fwLabel = JasperCompileManager.compileReport(getClass().getResource("/FWLabel.jrxml").openStream());
+					JRSaver.saveObject(fastwayLabel, "FWLabel.jasper");
+					jasperPrintList.add(JasperFillManager.fillReport(fwLabel, parameters, fwDataSource));
+				}
+				if (!fastway_S_Data.isEmpty()) {
+					System.out.println("Generating FastwayS..." + fastway_S_Data.size());
+					fastway_S_DataSource = new JRBeanCollectionDataSource(fastway_S_Data);
+					fastway_S_Label = JasperCompileManager
+							.compileReport(getClass().getResource("/FastwayPCA.jrxml").openStream());
+					JRSaver.saveObject(fastway_S_Label, "FastwayPCA.jasper");
+					jasperPrintList
+							.add(JasperFillManager.fillReport(fastway_S_Label, parameters, fastway_S_DataSource));
+				}
+				if (!whiteLabelData.isEmpty()) {
+					System.out.println("Generating WhiteLabel..." + whiteLabelData.size());
+					whiteLabelDataSource = new JRBeanCollectionDataSource(whiteLabelData);
+					whiteLabel = JasperCompileManager
+							.compileReport(getClass().getResource("/WhiteLabel.jrxml").openStream());
+					JRSaver.saveObject(whiteLabel, "whiteLabel.jasper");
+					jasperPrintList.add(JasperFillManager.fillReport(whiteLabel, parameters, whiteLabelDataSource));
+				}
+				if (!eParcelNewData.isEmpty()) {
+					System.out.println("Generating EParcel new..." + eParcelNewData.size());
+					eParcelNewDataSource = new JRBeanCollectionDataSource(eParcelNewData);
+					eParcelNew = JasperCompileManager
+							.compileReport(getClass().getResource("/eParcelNew.jrxml").openStream());
+					JRSaver.saveObject(eParcelNew, "eParcelNew.jasper");
+					jasperPrintList.add(JasperFillManager.fillReport(eParcelNew, parameters, eParcelNewDataSource));
+				}
+				final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
+				JRPdfExporter exporter = new JRPdfExporter();
+				exporter.setExporterInput(SimpleExporterInput.getInstance(jasperPrintList));
+				exporter.setExporterOutput(exporterOutput);
+				exporter.exportReport();
+				// return the PDF in bytes
+				bytes = outputStream.toByteArray();
+
+			} catch (JRException | IOException e) {
+				e.printStackTrace();
 			}
-			else if("MCM3".equalsIgnoreCase(data.getServiceType())) {
-				whiteLabelData.add(data);
-			}else if("1PM".equalsIgnoreCase(data.getServiceType())) {
-				eParcelNewData.add(data);
-			}else if("1PME".equalsIgnoreCase(data.getServiceType())) {
-				expressNewData.add(data);
-			}else if("HKG".equalsIgnoreCase(data.getServiceType()) || "HKG2".equalsIgnoreCase(data.getServiceType())) {
-				parcelPostData.add(data);
-			}else  if(data.getCarrier().equalsIgnoreCase("eParcel")) {
-				eParcelData.add(data);
-			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
-				expressData.add(data);
-			}else if ("FW".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
-				fwData.add(data);
-			}else if(data.getCarrier().equalsIgnoreCase("FastwayM")) {
-				fastwayData.add(data);
-			}else if(data.getCarrier().equalsIgnoreCase("FastwayS")) {
-				fastway_S_Data.add(data);
-			}
+		} else {
+			bytes = pcaWrapper.pcalabel(trackingLabelList.get(0).getReferenceNumber());
 		}
-
-		Map<String, Object> parameters = new HashMap<>();
-		
-		// Blob blob = null;
-		JRBeanCollectionDataSource eParcelDataSource;
-		JRBeanCollectionDataSource expressDataSource;
-		JasperReport eParcelLabel = null;
-		JasperReport expressLabel = null;
-		JRBeanCollectionDataSource fastwayDataSource;
-		JasperReport fastwayLabel = null;
-		JRBeanCollectionDataSource fastway_S_DataSource;
-		JasperReport fastway_S_Label = null;
-		JRBeanCollectionDataSource whiteLabelDataSource;
-		JasperReport whiteLabel = null;
-		JRBeanCollectionDataSource eParcelNewDataSource;
-		JasperReport eParcelNew = null;
-		JRBeanCollectionDataSource expressNewDataSource;
-		JasperReport expressNew = null;
-		JRBeanCollectionDataSource parcelPostDataSource;
-		JasperReport parcelPost = null;
-		JRBeanCollectionDataSource fwDataSource;
-		JasperReport fwLabel = null;
-		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
-			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
-			if (!eParcelData.isEmpty()) {
-				System.out.println("Generating eParcel..." + eParcelData.size());
-				eParcelDataSource = new JRBeanCollectionDataSource(eParcelData);
-				eParcelLabel = JasperCompileManager
-						.compileReport(getClass().getResource("/eparcelLabel.jrxml").openStream());
-				JRSaver.saveObject(eParcelLabel, "label.jasper");
-				jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, eParcelDataSource));
-			}
-			if (!expressData.isEmpty()) {
-				System.out.println("Generating Express..." + expressData.size());
-				expressDataSource = new JRBeanCollectionDataSource(expressData);
-				expressLabel = JasperCompileManager
-						.compileReport(getClass().getResource("/ExpressLabel.jrxml").openStream());
-				JRSaver.saveObject(expressLabel, "express.jasper");
-				jasperPrintList.add(JasperFillManager.fillReport(expressLabel, parameters, expressDataSource));
-			}
-			if (!expressNewData.isEmpty()) {
-				System.out.println("Generating Express new..." + expressNewData.size());
-				expressNewDataSource = new JRBeanCollectionDataSource(expressNewData);
-				expressNew = JasperCompileManager
-						.compileReport(getClass().getResource("/ExpressNew.jrxml").openStream());
-				JRSaver.saveObject(expressNew, "expressNew.jasper");
-				jasperPrintList.add(JasperFillManager.fillReport(expressNew, parameters, expressNewDataSource));
-			}
-			if (!parcelPostData.isEmpty()) {
-				System.out.println("Generating Parcel Post..." + parcelPostData.size());
-				parcelPostDataSource = new JRBeanCollectionDataSource(parcelPostData);
-				parcelPost = JasperCompileManager
-						.compileReport(getClass().getResource("/ParcelPost.jrxml").openStream());
-				JRSaver.saveObject(parcelPost, "parcelPost.jasper");
-				jasperPrintList.add(JasperFillManager.fillReport(parcelPost, parameters, parcelPostDataSource));
-			}
-			if (!fastwayData.isEmpty()) {
-				System.out.println("Generating Fastway..." + fastwayData.size());
-				fastwayDataSource = new JRBeanCollectionDataSource(fastwayData);
-				fastwayLabel = JasperCompileManager
-						.compileReport(getClass().getResource("/FastWayLabel.jrxml").openStream());
-				JRSaver.saveObject(fastwayLabel, "FastWayLabel.jasper");
-				jasperPrintList.add(JasperFillManager.fillReport(fastwayLabel, parameters, fastwayDataSource));
-			}
-			if (!fwData.isEmpty()) {
-				System.out.println("Generating Fastway FW..." + fwData.size());
-				fwDataSource = new JRBeanCollectionDataSource(fwData);
-				fwLabel = JasperCompileManager
-						.compileReport(getClass().getResource("/FWLabel.jrxml").openStream());
-				JRSaver.saveObject(fastwayLabel, "FWLabel.jasper");
-				jasperPrintList.add(JasperFillManager.fillReport(fwLabel, parameters, fwDataSource));
-			}
-			if (!fastway_S_Data.isEmpty()) {
-				System.out.println("Generating FastwayS..." + fastway_S_Data.size());
-				fastway_S_DataSource = new JRBeanCollectionDataSource(fastway_S_Data);
-				fastway_S_Label = JasperCompileManager
-						.compileReport(getClass().getResource("/FastwayPCA.jrxml").openStream());
-				JRSaver.saveObject(fastway_S_Label, "FastwayPCA.jasper");
-				jasperPrintList.add(JasperFillManager.fillReport(fastway_S_Label, parameters, fastway_S_DataSource));
-			}
-			if (!whiteLabelData.isEmpty()) {
-				System.out.println("Generating WhiteLabel..." + whiteLabelData.size());
-				whiteLabelDataSource = new JRBeanCollectionDataSource(whiteLabelData);
-				whiteLabel = JasperCompileManager
-						.compileReport(getClass().getResource("/WhiteLabel.jrxml").openStream());
-				JRSaver.saveObject(whiteLabel, "whiteLabel.jasper");
-				jasperPrintList.add(JasperFillManager.fillReport(whiteLabel, parameters, whiteLabelDataSource));
-			}
-			if (!eParcelNewData.isEmpty()) {
-				System.out.println("Generating EParcel new..." + eParcelNewData.size());
-				eParcelNewDataSource = new JRBeanCollectionDataSource(eParcelNewData);
-				eParcelNew = JasperCompileManager
-						.compileReport(getClass().getResource("/eParcelNew.jrxml").openStream());
-				JRSaver.saveObject(eParcelNew, "eParcelNew.jasper");
-				jasperPrintList.add(JasperFillManager.fillReport(eParcelNew, parameters, eParcelNewDataSource));
-			}
-			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
-			JRPdfExporter exporter = new JRPdfExporter();
-			exporter.setExporterInput(SimpleExporterInput.getInstance(jasperPrintList));
-			exporter.setExporterOutput(exporterOutput);
-			exporter.exportReport();
-			// return the PDF in bytes
-			bytes = outputStream.toByteArray();
-			
-		} catch (JRException | IOException e) {
-			e.printStackTrace();
-		}
-}
-else
-{
-	bytes = pcaWrapper.pcalabel(trackingLabelList.get(0).getReferenceNumber());
-}
 		return bytes;
 	}
 
@@ -889,7 +887,7 @@ else
 		if ("Y".equalsIgnoreCase(autoShipment)) {
 			try {
 				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMdd");
-    			String shipmentNumber = userId+simpleDateFormat.format(new Date());
+				String shipmentNumber = userId + simpleDateFormat.format(new Date());
 				allocateShipment(referenceNumber, manifestNumber.concat("AS").concat(shipmentNumber));
 			} catch (ReferenceNumberNotUniqueException e) {
 				// TODO Auto-generated catch block
@@ -1018,8 +1016,8 @@ else
 	}
 
 	@Override
-	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail,List<String> autoShipRefNbrs) throws 
-		ReferenceNumberNotUniqueException, FailureResponseException {
+	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail,
+			List<String> autoShipRefNbrs) throws ReferenceNumberNotUniqueException, FailureResponseException {
 		Integer userId = userRepository.fetchUserIdbyUserName(orderDetail.getUserName());
 		if (userId == null) {
 			throw new InvalidUserException("User does not exist", orderDetail.getUserName());
@@ -1028,157 +1026,156 @@ else
 			throw new MaxSizeCountException("We are allowing max 300 records, Your Request contains - "
 					+ orderDetail.getConsignmentData().size() + " Records");
 		}
-		boolean isPostcodeValidationReq =true;
-		if(("N").equals(userRepository.fetchPostcodeValidationIndicator(orderDetail.getUserName()))){
-			isPostcodeValidationReq=false;
+		boolean isPostcodeValidationReq = true;
+		if (("N").equals(userRepository.fetchPostcodeValidationIndicator(orderDetail.getUserName()))) {
+			isPostcodeValidationReq = false;
 		}
 		List<String> incomingRefNbr = orderDetail.getConsignmentData().stream().map(obj -> {
-			return obj.getReferenceNumber(); })
-				.collect(Collectors.toList());
+			return obj.getReferenceNumber();
+		}).collect(Collectors.toList());
 		d2zValidator.isReferenceNumberUnique(incomingRefNbr);
 		d2zValidator.isServiceValid(orderDetail);
-		
+
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 		boolean autoShipment = false;
 		String barcodeLabelNumber = orderDetail.getConsignmentData().get(0).getBarcodeLabelNumber();
 		String datamatrix = orderDetail.getConsignmentData().get(0).getDatamatrix();
-	    if(null==barcodeLabelNumber || barcodeLabelNumber.trim().isEmpty() || null==datamatrix || datamatrix.trim().isEmpty()) {
-	    String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
-	    System.out.print("servicetype:"+serviceType);
-	    if( "1PM3E".equalsIgnoreCase(serviceType) 
-				|| "1PS3".equalsIgnoreCase(serviceType) 
-				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
-	    	if(isPostcodeValidationReq) {
-	    		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
-	    		}
-			 System.out.print("servicetype:"+serviceType);
-			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
-			return senderDataResponseList;
-		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType) || "1PS4".equalsIgnoreCase(serviceType)) {
-			if(isPostcodeValidationReq) {
-				if("1PS4".equalsIgnoreCase(serviceType)) {
+		if (null == barcodeLabelNumber || barcodeLabelNumber.trim().isEmpty() || null == datamatrix
+				|| datamatrix.trim().isEmpty()) {
+			String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
+			System.out.print("servicetype:" + serviceType);
+			if ("1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType)
+					|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
+				if (isPostcodeValidationReq) {
+					d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+				}
+				System.out.print("servicetype:" + serviceType);
+				eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail, senderDataResponseList);
+				return senderDataResponseList;
+			} else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType)
+					|| "1PS4".equalsIgnoreCase(serviceType)) {
+				if (isPostcodeValidationReq) {
+					if ("1PS4".equalsIgnoreCase(serviceType)) {
 						d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
-						
-				}else {
+
+					} else {
+						d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
+					}
+				}
+				makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(), senderDataResponseList,
+						orderDetail.getUserName(), serviceType);
+				return senderDataResponseList;
+			} else if ("FWS".equalsIgnoreCase(serviceType)) {
+				if (isPostcodeValidationReq) {
 					d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
 				}
-			}
-			makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(),serviceType);
-			return senderDataResponseList;
-		}else if("FWS".equalsIgnoreCase(serviceType)) {
-			if(isPostcodeValidationReq) {
-			d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
-			}
-			pcaWrapper.makeCreateShippingOrderPFACall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(),serviceType);
-			return senderDataResponseList;
-		}
-		else if("STS".equalsIgnoreCase(serviceType)) {
-			if(isPostcodeValidationReq) {
-				d2zValidator.isSTPostCodeValidAPI(orderDetail.getConsignmentData());
-			}
-			pcaWrapper.makeCreateShippingOrderPFACall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(),"STS-Sub");
-			return senderDataResponseList;
-		}/*else if("MCM".equalsIgnoreCase(serviceType) || "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType) 
-					|| "MCM3".equalsIgnoreCase(serviceType) || "MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)){
-			PFLSenderDataRequest consignmentData = d2zValidator.isFWSubPostCodeValid(orderDetail);
-			System.out.println("service type:"+serviceType+":"+consignmentData.getPflSenderDataApi().size());
-			if(consignmentData.getPflSenderDataApi().size() > 0) {
-				if("MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)){
-					System.out.println("inside MCS");
-					pcaWrapper.makeCreateShippingOrderPFACall(consignmentData.getPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName(),serviceType);
+				pcaWrapper.makeCreateShippingOrderPFACall(orderDetail.getConsignmentData(), senderDataResponseList,
+						orderDetail.getUserName(), serviceType);
+				return senderDataResponseList;
+			} else if ("STS".equalsIgnoreCase(serviceType)) {
+				if (isPostcodeValidationReq) {
+					d2zValidator.isSTPostCodeValidAPI(orderDetail.getConsignmentData());
 				}
-				else
-					makeCreateShippingOrderPFLCall(consignmentData.getPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName(), serviceType);
-			}
-			
-			if(consignmentData.getNonPflSenderDataApi().size() > 0 && "STS".equalsIgnoreCase(serviceType)) {
-				pcaWrapper.makeCreateShippingOrderPFACall(consignmentData.getNonPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName(),"STS-Sub");
-			}
-			
-			if(consignmentData.getNonPflSenderDataApi().size() > 0 && !"STS".equalsIgnoreCase(serviceType)) {
-				if(isPostcodeValidationReq) {
-		    		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
-		    		}
-				String senderFileID = d2zDao.createConsignments(consignmentData.getNonPflSenderDataApi(), userId, orderDetail.getUserName(), null);
-				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
-				Iterator itr = insertedOrder.iterator();
-				while (itr.hasNext()) {
-					Object[] obj = (Object[]) itr.next();
-					senderDataResponse = new SenderDataResponse();
-					senderDataResponse.setReferenceNumber(obj[0].toString());
-					senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
-					if("MCS".equalsIgnoreCase(serviceType))
-							{
-						String barcode = obj[1].toString();
-						senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
-						
-						if(senderDataResponse.getInjectionPort().equals("SYD") ||senderDataResponse.getInjectionPort().equals("MEL")||senderDataResponse.getInjectionPort().equals("BNE")||senderDataResponse.getInjectionPort().equals("ADL") ||senderDataResponse.getInjectionPort().equals("PER"))
-						{
-							senderDataResponse.setSortcode(senderDataResponse.getInjectionPort());
-						}
-						else
-						{
-							senderDataResponse.setSortcode("OTH");
-						}
-							}
-					else
-					{
-					senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
-					}
-					senderDataResponse.setCarrier(obj[4].toString());
-					
-					senderDataResponseList.add(senderDataResponse);
-				}
-			}
-			return senderDataResponseList;
-		}*/
-		
-		}else if (barcodeLabelNumber!=null && !barcodeLabelNumber.trim().isEmpty()
-				&& datamatrix!=null && !datamatrix.trim().isEmpty()){
-		autoShipment =("Y").equals(userRepository.fetchAutoShipmentIndicator(userId));
+				pcaWrapper.makeCreateShippingOrderPFACall(orderDetail.getConsignmentData(), senderDataResponseList,
+						orderDetail.getUserName(), "STS-Sub");
+				return senderDataResponseList;
+			} /*
+				 * else if("MCM".equalsIgnoreCase(serviceType) ||
+				 * "MCM1".equalsIgnoreCase(serviceType) || "MCM2".equalsIgnoreCase(serviceType)
+				 * || "MCM3".equalsIgnoreCase(serviceType) ||
+				 * "MCS".equalsIgnoreCase(serviceType) || "STS".equalsIgnoreCase(serviceType)){
+				 * PFLSenderDataRequest consignmentData =
+				 * d2zValidator.isFWSubPostCodeValid(orderDetail);
+				 * System.out.println("service type:"+serviceType+":"+consignmentData.
+				 * getPflSenderDataApi().size());
+				 * if(consignmentData.getPflSenderDataApi().size() > 0) {
+				 * if("MCS".equalsIgnoreCase(serviceType) ||
+				 * "STS".equalsIgnoreCase(serviceType)){ System.out.println("inside MCS");
+				 * pcaWrapper.makeCreateShippingOrderPFACall(consignmentData.getPflSenderDataApi
+				 * (),senderDataResponseList,orderDetail.getUserName(),serviceType); } else
+				 * makeCreateShippingOrderPFLCall(consignmentData.getPflSenderDataApi(),
+				 * senderDataResponseList,orderDetail.getUserName(), serviceType); }
+				 * 
+				 * if(consignmentData.getNonPflSenderDataApi().size() > 0 &&
+				 * "STS".equalsIgnoreCase(serviceType)) {
+				 * pcaWrapper.makeCreateShippingOrderPFACall(consignmentData.
+				 * getNonPflSenderDataApi(),senderDataResponseList,orderDetail.getUserName(),
+				 * "STS-Sub"); }
+				 * 
+				 * if(consignmentData.getNonPflSenderDataApi().size() > 0 &&
+				 * !"STS".equalsIgnoreCase(serviceType)) { if(isPostcodeValidationReq) {
+				 * d2zValidator.isPostCodeValid(orderDetail.getConsignmentData()); } String
+				 * senderFileID =
+				 * d2zDao.createConsignments(consignmentData.getNonPflSenderDataApi(), userId,
+				 * orderDetail.getUserName(), null); List<String> insertedOrder =
+				 * d2zDao.fetchBySenderFileID(senderFileID); Iterator itr =
+				 * insertedOrder.iterator(); while (itr.hasNext()) { Object[] obj = (Object[])
+				 * itr.next(); senderDataResponse = new SenderDataResponse();
+				 * senderDataResponse.setReferenceNumber(obj[0].toString());
+				 * senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
+				 * if("MCS".equalsIgnoreCase(serviceType)) { String barcode = obj[1].toString();
+				 * senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll(
+				 * "\\[|\\]", "")));
+				 * 
+				 * if(senderDataResponse.getInjectionPort().equals("SYD")
+				 * ||senderDataResponse.getInjectionPort().equals("MEL")||senderDataResponse.
+				 * getInjectionPort().equals("BNE")||senderDataResponse.getInjectionPort().
+				 * equals("ADL") ||senderDataResponse.getInjectionPort().equals("PER")) {
+				 * senderDataResponse.setSortcode(senderDataResponse.getInjectionPort()); } else
+				 * { senderDataResponse.setSortcode("OTH"); } } else {
+				 * senderDataResponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() :
+				 * ""); } senderDataResponse.setCarrier(obj[4].toString());
+				 * 
+				 * senderDataResponseList.add(senderDataResponse); } } return
+				 * senderDataResponseList; }
+				 */
+
+		} else if (barcodeLabelNumber != null && !barcodeLabelNumber.trim().isEmpty() && datamatrix != null
+				&& !datamatrix.trim().isEmpty()) {
+			autoShipment = ("Y").equals(userRepository.fetchAutoShipmentIndicator(userId));
 		}
-	    if(isPostcodeValidationReq) {
-    		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
-    		}
-		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(), userId, orderDetail.getUserName(), null);
+		if (isPostcodeValidationReq) {
+			d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+		}
+		String senderFileID = d2zDao.createConsignments(orderDetail.getConsignmentData(), userId,
+				orderDetail.getUserName(), null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
-		
 
 		Iterator itr = insertedOrder.iterator();
 		while (itr.hasNext()) {
-			
+
 			Object[] obj = (Object[]) itr.next();
 			senderDataResponse = new SenderDataResponse();
 			senderDataResponse.setReferenceNumber(obj[0].toString());
 			String barcode = obj[1].toString();
-			
+
 			senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
 			senderDataResponse.setCarrier(obj[4].toString());
 			senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 			senderDataResponseList.add(senderDataResponse);
-			if(autoShipment)
+			if (autoShipment)
 				autoShipRefNbrs.add(senderDataResponse.getReferenceNumber());
 		}
-		
-		
+
 		return senderDataResponseList;
 	}
 
-	private void makeCreateShippingOrderPFLCall (List<SenderDataApi> data,
-			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws FailureResponseException {
+	private void makeCreateShippingOrderPFLCall(List<SenderDataApi> data,
+			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType)
+			throws FailureResponseException {
 		PflCreateShippingRequest pflRequest = new PflCreateShippingRequest();
 		Map<String, String> systemRefNbrMap = new HashMap<String, String>();
 		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
 		for (SenderDataApi orderDetail : data) {
 			PflCreateShippingOrderInfo request = new PflCreateShippingOrderInfo();
-			 //Random rnd = new Random();
-			 int uniqueNumber = SingletonCounter.getInstance().getPFLCount();
-    		 String sysRefNbr = "RTFGA"+uniqueNumber;
-    		 request.setCustom_ref(sysRefNbr);
-  			systemRefNbrMap.put(request.getCustom_ref(), orderDetail.getReferenceNumber());
+			// Random rnd = new Random();
+			int uniqueNumber = SingletonCounter.getInstance().getPFLCount();
+			String sysRefNbr = "RTFGA" + uniqueNumber;
+			request.setCustom_ref(sysRefNbr);
+			systemRefNbrMap.put(request.getCustom_ref(), orderDetail.getReferenceNumber());
 
-			//request.setCustom_ref(orderDetail.getReferenceNumber());
+			// request.setCustom_ref(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
 			String recpName = orderDetail.getConsigneeName().length() > 34
 					? orderDetail.getConsigneeName().substring(0, 34)
@@ -1186,7 +1183,7 @@ else
 			request.setRecipientName(recpName);
 			request.setAddressLine1(orderDetail.getConsigneeAddr1());
 			request.setAddressLine2(orderDetail.getConsigneeAddr2());
-			//request.setEmail(orderDetail.getConsigneeEmail());
+			// request.setEmail(orderDetail.getConsigneeEmail());
 			request.setPhone(orderDetail.getConsigneePhone());
 			request.setCity(orderDetail.getConsigneeSuburb());
 			request.setState(orderDetail.getConsigneeState());
@@ -1196,22 +1193,24 @@ else
 			pflOrderInfoRequest.add(request);
 		}
 		pflRequest.setOrderinfo(pflOrderInfoRequest);
-		pflWrapper.createShippingOrderPFL(data, pflRequest, userName, senderDataResponseList, serviceType,systemRefNbrMap);
+		pflWrapper.createShippingOrderPFL(data, pflRequest, userName, senderDataResponseList, serviceType,
+				systemRefNbrMap);
 	}
-	
-	private void makeCreateShippingOrderFilePFLCall (List<SenderData> data,
-			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType) throws FailureResponseException {
+
+	private void makeCreateShippingOrderFilePFLCall(List<SenderData> data,
+			List<SenderDataResponse> senderDataResponseList, String userName, String serviceType)
+			throws FailureResponseException {
 		PflCreateShippingRequest pflRequest = new PflCreateShippingRequest();
 		Map<String, String> systemRefNbrMap = new HashMap<String, String>();
 		List<PflCreateShippingOrderInfo> pflOrderInfoRequest = new ArrayList<PflCreateShippingOrderInfo>();
 		for (SenderData orderDetail : data) {
 			PflCreateShippingOrderInfo request = new PflCreateShippingOrderInfo();
-			 //Random rnd = new Random();
-			 int uniqueNumber = SingletonCounter.getInstance().getPFLCount();
-    		 String sysRefNbr = "RTFGA"+uniqueNumber;
-    		 request.setCustom_ref(sysRefNbr);
-  			systemRefNbrMap.put(request.getCustom_ref(), orderDetail.getReferenceNumber());
-		//	request.setCustom_ref(orderDetail.getReferenceNumber());
+			// Random rnd = new Random();
+			int uniqueNumber = SingletonCounter.getInstance().getPFLCount();
+			String sysRefNbr = "RTFGA" + uniqueNumber;
+			request.setCustom_ref(sysRefNbr);
+			systemRefNbrMap.put(request.getCustom_ref(), orderDetail.getReferenceNumber());
+			// request.setCustom_ref(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
 			String recpName = orderDetail.getConsigneeName().length() > 34
 					? orderDetail.getConsigneeName().substring(0, 34)
@@ -1219,7 +1218,7 @@ else
 			request.setRecipientName(recpName);
 			request.setAddressLine1(orderDetail.getConsigneeAddr1());
 			request.setAddressLine2(orderDetail.getConsigneeAddr2());
-			//request.setEmail(orderDetail.getConsigneeEmail());
+			// request.setEmail(orderDetail.getConsigneeEmail());
 			request.setPhone(orderDetail.getConsigneePhone());
 			request.setCity(orderDetail.getConsigneeSuburb());
 			request.setState(orderDetail.getConsigneeState());
@@ -1229,7 +1228,8 @@ else
 			pflOrderInfoRequest.add(request);
 		}
 		pflRequest.setOrderinfo(pflOrderInfoRequest);
-		pflWrapper.createShippingOrderPFLUI(data, pflRequest, userName, senderDataResponseList, serviceType,systemRefNbrMap);
+		pflWrapper.createShippingOrderPFLUI(data, pflRequest, userName, senderDataResponseList, serviceType,
+				systemRefNbrMap);
 	}
 
 	@Override
@@ -1240,106 +1240,104 @@ else
 	@Override
 	public ResponseMessage allocateShipment(String referenceNumbers, String shipmentNumber)
 			throws ReferenceNumberNotUniqueException {
-	
+
 		ResponseMessage userMsg = new ResponseMessage();
 		String[] refNbrs = referenceNumbers.split(",");
 		List<String> refNumbers = Arrays.asList(refNbrs);
-	
+
 		List<SenderdataMaster> consignments = d2zDao.fetchConsignmentsByRefNbr(refNumbers);
-		if(consignments.isEmpty()) {
+		if (consignments.isEmpty()) {
 			throw new ReferenceNumberNotUniqueException("Failure - Invalid Reference Numbers", refNumbers);
 		}
-		List<String> invalidData = consignments.stream().filter(obj -> null!=obj.getAirwayBill())
-				.map(a -> {
-			
-				String msg = a.getReference_number()+" : Shippment is already allocated";
-			
-				return msg;
+		List<String> invalidData = consignments.stream().filter(obj -> null != obj.getAirwayBill()).map(a -> {
+
+			String msg = a.getReference_number() + " : Shippment is already allocated";
+
+			return msg;
 		}).collect(Collectors.toList());
 		if (!invalidData.isEmpty()) {
 			throw new ReferenceNumberNotUniqueException("Request failed", invalidData);
 		}
-      
+
 		String msg = d2zDao.allocateShipment(referenceNumbers, shipmentNumber);
 		userMsg.setResponseMessage(msg);
-		  if(consignments.size() < refNumbers.size()) {
-	        	List<String> refNbr_DB = consignments.stream().map(obj->{
-	        		return obj.getReference_number();
-	        	}).collect(Collectors.toList());
-	        	List<String> invalidRefNbrs = new ArrayList<String>(refNumbers);
-	        	invalidRefNbrs.removeAll(refNbr_DB);
-	        	userMsg.setResponseMessage("Partial Success - Invalid Reference Numbers : "+String.join(",",invalidRefNbrs));
-	        }
-		Runnable freipost = new Runnable( ) {			
-	        public void run() {
-	        	String[] refNbrArray = referenceNumbers.split(",");
+		if (consignments.size() < refNumbers.size()) {
+			List<String> refNbr_DB = consignments.stream().map(obj -> {
+				return obj.getReference_number();
+			}).collect(Collectors.toList());
+			List<String> invalidRefNbrs = new ArrayList<String>(refNumbers);
+			invalidRefNbrs.removeAll(refNbr_DB);
+			userMsg.setResponseMessage(
+					"Partial Success - Invalid Reference Numbers : " + String.join(",", invalidRefNbrs));
+		}
+		Runnable freipost = new Runnable() {
+			public void run() {
+				String[] refNbrArray = referenceNumbers.split(",");
 
-	        	 List<String> articleIDS = d2zDao.fetchDataForEtowerForeCastCall(refNbrs);
-	        	 if(!articleIDS.isEmpty()) {
-	        		 eTowerWrapper.makeEtowerForecastCall(articleIDS);
-	        	 }
-	        	
-	        /*	List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
-	        	if(!senderMasterData.isEmpty()) {
-	        		freipostWrapper.uploadManifestService(senderMasterData);
-	        	}*/
-	        	
-	        	List<SenderdataMaster> pcaData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"PCA");
-	        	if(!pcaData.isEmpty()) {
-	        		try {
+				List<String> articleIDS = d2zDao.fetchDataForEtowerForeCastCall(refNbrs);
+				if (!articleIDS.isEmpty()) {
+					eTowerWrapper.makeEtowerForecastCall(articleIDS);
+				}
+
+				/*
+				 * List<SenderdataMaster> senderMasterData =
+				 * d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
+				 * if(!senderMasterData.isEmpty()) {
+				 * freipostWrapper.uploadManifestService(senderMasterData); }
+				 */
+
+				List<SenderdataMaster> pcaData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray), "PCA");
+				if (!pcaData.isEmpty()) {
+					try {
 						pcaWrapper.makeCreateShippingOrderPCACall(pcaData);
 					} catch (FailureResponseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-	        	}
-	        
-	        	List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
-	        	 if(!fastwayOrderId.isEmpty()) {
-	 	        	String serviceType = d2zDao.fetchServiceTypeByRefNbr(refNbrs[0]);
-	        		 try {
-						pflWrapper.createSubmitOrderPFL(fastwayOrderId,serviceType);
+				}
+
+				List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
+				if (!fastwayOrderId.isEmpty()) {
+					String serviceType = d2zDao.fetchServiceTypeByRefNbr(refNbrs[0]);
+					try {
+						pflWrapper.createSubmitOrderPFL(fastwayOrderId, serviceType);
 					} catch (FailureResponseException e) {
 						e.printStackTrace();
 					}
-	        	 }
-	        
-	        }};
-	        new Thread(freipost).start();
-	        
-		/* Runnable pfl = new Runnable( ) {			
-		        public void run() {
-		        }
-		    };
-			new Thread(pfl).start();
-		
-		 Runnable r = new Runnable( ) {			
-	        public void run() {
-	        	
-	        }
-	     };
-		 new Thread(r).start();*/
-		 
-		
+				}
+
+			}
+		};
+		new Thread(freipost).start();
+
+		/*
+		 * Runnable pfl = new Runnable( ) { public void run() { } }; new
+		 * Thread(pfl).start();
+		 * 
+		 * Runnable r = new Runnable( ) { public void run() {
+		 * 
+		 * } }; new Thread(r).start();
+		 */
+
 		return userMsg;
-	 }
+	}
 
 	// @Scheduled(cron = "0 0 0/2 * * ?")
 	// @Scheduled(cron = "0 0/10 * * * ?")
 	public void makeCalltoAusPost() {
-		List<String> referenceNumbers = d2zDao.fetchDataForAUPost();
-		System.out.println("Track and trace:" + referenceNumbers.size());
-		if (referenceNumbers.size() < 10) {
+		List<String> articleIDs = d2zDao.fetchDataForAUPost();
+		System.out.println("Track and trace:" + articleIDs.size());
+		if (articleIDs.size() < 10) {
 			System.out.println("Less than 10 records for AUPost call");
 			return;
 		}
-		makeCalltoAusPost(referenceNumbers);
+		makeCalltoAusPost(articleIDs);
 	}
-	
-	public void makeCalltoAusPost(List<String> referenceNumbers) {
-	System.out.println(referenceNumbers.get(0));
-	System.out.println(referenceNumbers.get(1));
-		List<SenderdataMaster> senderMasterData = d2zDao.fetchDataForAusPost(referenceNumbers);
+
+	public void makeCalltoAusPost(List<String> articleIDs) {
+		System.out.println(articleIDs.get(0));
+		System.out.println(articleIDs.get(1));
+		List<SenderdataMaster> senderMasterData = d2zDao.fetchDataForAusPost(articleIDs);
 		System.out.println("Sender Data:" + senderMasterData.size());
 
 		List<List<SenderdataMaster>> senderDataList = ListUtils.partition(senderMasterData, 2000);
@@ -1361,11 +1359,11 @@ else
 					email = data.getConsignee_Email().trim();
 				}
 				ShipmentRequest shipmentRequest = new ShipmentRequest();
-				 //Random rnd = new Random();
-				 int uniqueNumber = SingletonCounter.getInstance().getAuPostCount();
-	    		 String sysRefNbr = "DA"+uniqueNumber;
-				//shipmentRequest.setSender_references(data.getReference_number());
-	    		 shipmentRequest.setSender_references(sysRefNbr);
+				// Random rnd = new Random();
+				int uniqueNumber = SingletonCounter.getInstance().getAuPostCount();
+				String sysRefNbr = "DA" + uniqueNumber;
+				// shipmentRequest.setSender_references(data.getReference_number());
+				shipmentRequest.setSender_references(sysRefNbr);
 				shipmentRequest.setEmail_tracking_enabled(email != null);
 
 				FromAddress from = new FromAddress();
@@ -1373,16 +1371,14 @@ else
 				shipmentRequest.setFrom(from);
 
 				ToAddress to = new ToAddress();
-				to.setName(data.getConsignee_name().length() > 39	
-				        ? data.getConsignee_name().substring(0, 39)
-						:data.getConsignee_name());
-				
+				to.setName(data.getConsignee_name().length() > 39 ? data.getConsignee_name().substring(0, 39)
+						: data.getConsignee_name());
+
 				to.setPostcode(data.getConsignee_Postcode());
 				to.setState(data.getConsignee_State());
 				to.setSuburb(data.getConsignee_Suburb());
-				to.getLines().add(data.getConsignee_addr1().length() > 39	
-						        ? data.getConsignee_addr1().substring(0, 39)
-								:data.getConsignee_addr1());
+				to.getLines().add(data.getConsignee_addr1().length() > 39 ? data.getConsignee_addr1().substring(0, 39)
+						: data.getConsignee_addr1());
 				String regex = "^[0-9]{1,20}$";
 				String phone = "";
 				if (null != data.getConsignee_Phone() && data.getConsignee_Phone().matches(regex)) {
@@ -1401,9 +1397,9 @@ else
 				// data.getDimensions_Length().toString());
 				// item.setWidth(data.getDimensions_Width() == null ? "" :
 				// data.getDimensions_Width().toString());
-				item.setItem_description(data.getProduct_Description().length() > 50
-						? data.getProduct_Description().substring(0, 50)
-								:data.getProduct_Description());
+				item.setItem_description(
+						data.getProduct_Description().length() > 50 ? data.getProduct_Description().substring(0, 50)
+								: data.getProduct_Description());
 				item.setWeight(data.getCubic_Weight() == null ? "" : data.getCubic_Weight().toString());
 
 				com.d2z.d2zservice.model.auspost.TrackingDetails trackingDetail = new com.d2z.d2zservice.model.auspost.TrackingDetails();
@@ -1412,7 +1408,7 @@ else
 				barcode.insert(41, '|');
 				barcode.insert(49, '|');
 				trackingDetail.setBarcode_id(barcode.toString());
-				
+
 				trackingDetail.setConsignment_id(data.getArticleId().substring(0, 12));
 				item.setTracking_details(trackingDetail);
 
@@ -1600,17 +1596,15 @@ else
 		for (SenderdataMaster senderData : senderDataList) {
 			ShipmentDetails shipmentData = new ShipmentDetails();
 			shipmentData.setReferenceNumber(senderData.getReference_number());
-			//shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
+			// shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
 			String connoteNo = "";
-			if(null!=senderData.getBarcodelabelNumber()) {
-				if(senderData.getBarcodelabelNumber().length()==12) {
+			if (null != senderData.getBarcodelabelNumber()) {
+				if (senderData.getBarcodelabelNumber().length() == 12) {
 					connoteNo = senderData.getBarcodelabelNumber();
-				}
-				else if(senderData.getBarcodelabelNumber().length()==39) {
+				} else if (senderData.getBarcodelabelNumber().length() == 39) {
 					connoteNo = senderData.getBarcodelabelNumber().substring(18, 28);
-				}
-				else if(senderData.getBarcodelabelNumber().length()==41) {
-					connoteNo = senderData.getBarcodelabelNumber().substring(18,30);
+				} else if (senderData.getBarcodelabelNumber().length() == 41) {
+					connoteNo = senderData.getBarcodelabelNumber().substring(18, 30);
 				}
 			}
 			shipmentData.setCon_no(connoteNo);
@@ -1624,17 +1618,17 @@ else
 			shipmentData.setDestination("AUSTRALIA");
 			shipmentData.setQuantity(senderData.getShippedQuantity());
 			String commodity = senderData.getProduct_Description();
-			if(null!=commodity) {
-			if(commodity.length()>50) {
-				commodity = "Car Accessory";
-			}
-			if(commodity.equalsIgnoreCase("Education Board")) {
-				commodity = "Education Accessory";
-			}
+			if (null != commodity) {
+				if (commodity.length() > 50) {
+					commodity = "Car Accessory";
+				}
+				if (commodity.equalsIgnoreCase("Education Board")) {
+					commodity = "Education Accessory";
+				}
 			}
 			shipmentData.setCommodity(commodity);
-			Double uscurrency = senderData.getValue()*audcurrency;
-			shipmentData.setValue(Math.round(uscurrency*100.0)/100.0);
+			Double uscurrency = senderData.getValue() * audcurrency;
+			shipmentData.setValue(Math.round(uscurrency * 100.0) / 100.0);
 			shipmentData.setShipperName(senderData.getShipper_Name());
 			shipmentData.setShipperAddress(senderData.getShipper_Addr1());
 			shipmentData.setShipperCity(senderData.getShipper_City());
@@ -1753,22 +1747,22 @@ else
 		String referenceNumbers = String.join(",", incomingRefNbr);
 
 		d2zDao.deleteConsignment(referenceNumbers);
-		Runnable r = new Runnable( ) {			
-		        public void run() {
-		        	List<String> inc = incomingRefNbr.stream().map(obj ->obj+"Delete").collect(Collectors.toList());
-		        System.out.println("in Thread for Delete pfl etower");
-		        	deleteEtowerPflPca(inc);
-		        	
-		        }
-		     };
-		    new Thread(r).start();
+		Runnable r = new Runnable() {
+			public void run() {
+				List<String> inc = incomingRefNbr.stream().map(obj -> obj + "Delete").collect(Collectors.toList());
+				System.out.println("in Thread for Delete pfl etower");
+				deleteEtowerPflPca(inc);
+
+			}
+		};
+		new Thread(r).start();
 		userMsg.setMessage("Deleted Successfully");
 		return userMsg;
 	}
 
 	@Override
 	public List<PostCodeWeight> getRates(@Valid APIRatesRequest request) {
-		System.out.println("name:"+request.getUserName());
+		System.out.println("name:" + request.getUserName());
 		User user = d2zDao.login(request.getUserName(), request.getPassword());
 
 		if (null == user) {
@@ -1807,7 +1801,8 @@ else
 
 				maxWeight = 22;
 			}
-			//double rate = postcodeWeightMap.get(obj.getPostcode() + maxWeight + user.getUser_Id()+ServiceType);
+			// double rate = postcodeWeightMap.get(obj.getPostcode() + maxWeight +
+			// user.getUser_Id()+ServiceType);
 			double rate = postcodeWeightMap.get(obj.getPostcode() + maxWeight + user.getUser_Id());
 			obj.setRate(rate);
 		});
@@ -1847,125 +1842,126 @@ else
 
 	@Override
 	public void triggerFreipost(String referenceNumbers) {
-		//d2zDao.makeFriePostUpdataManifestCall(referenceNumbers);
+		// d2zDao.makeFriePostUpdataManifestCall(referenceNumbers);
 		String[] refNbrArray = referenceNumbers.split(",");
-    	List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
-    	/*if(!senderMasterData.isEmpty()) {
-    		freipostWrapper.uploadManifestService(senderMasterData);
-    	}*/
-		//freipostWrapper.trackingEventService("124538");
+		List<SenderdataMaster> senderMasterData = d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),
+				"Freipost");
+		/*
+		 * if(!senderMasterData.isEmpty()) {
+		 * freipostWrapper.uploadManifestService(senderMasterData); }
+		 */
+		// freipostWrapper.trackingEventService("124538");
 	}
 
 	@Override
 	public void triggerFDM(List<String> refNumbers) {
-		//List<String> refNumbers = d2zDao.fetchArticleIDForFDMCall();
+		// List<String> refNumbers = d2zDao.fetchArticleIDForFDMCall();
 		System.out.println("Track and trace:" + refNumbers.size());
 		List<List<String>> refNbrList = ListUtils.partition(refNumbers, 2000);
 		for (List<String> referenceNumbers : refNbrList) {
 			List<SenderdataMaster> senderData = d2zDao.fetchDataForAusPost(referenceNumbers);
 			System.out.println("Sender Data:" + senderData.size());
-				if (!senderData.isEmpty()) {
-					FDMManifestRequest request = new FDMManifestRequest();
-					Date dNow = new Date();
-					SimpleDateFormat ft = new SimpleDateFormat("yyMMddhhmm");
-					String orderRef = ft.format(dNow);
-					FDMManifestDetails fdmDetails = new FDMManifestDetails();
-					fdmDetails.setMessage_no(orderRef);
-					fdmDetails.setCustomer_id("D2Z");
-					List<FFResponse> FFResponseList = new ArrayList<FFResponse>();
-	
-					ArrayOfConsignment consignmentsArray = new ArrayOfConsignment();
-					List<Consignment> consignments = new ArrayList<Consignment>();
-						for (SenderdataMaster data : senderData) {
-							Consignment consignment = new Consignment();
-							FFResponse ffresponse = new FFResponse();
-							ffresponse.setMessage(orderRef);
-							ffresponse.setBarcodelabelnumber(data.getBarcodelabelNumber());
-							ffresponse.setWeight(String.valueOf(data.getCubic_Weight()));
-							ffresponse.setArticleid(data.getArticleId());
-							ffresponse.setReferencenumber(data.getReference_number());
-							// ffresponse.setSupplier(data.getsu);
-							ffresponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-							ffresponse.setSupplier("FDM");
-							ffresponse.setResponse("Pending");
-							consignment.setConnote_no(data.getArticleId());
-							consignment.setTracking_connote(data.getReference_number());
-		
-							String date = data.getTimestamp();
-							try {
-								Date dateFormat = new SimpleDateFormat("YYMMDDHHMMSS").parse(date);
-								consignment.setConnote_date(dateFormat.toString());
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							consignment.setCustname(data.getConsignee_name());
-							consignment.setCust_street1(data.getConsignee_addr1());
-							consignment.setCust_street2(data.getConsignee_addr2());
-							consignment.setCust_suburb(data.getConsignee_Suburb());
-							consignment.setCust_pcode(data.getConsignee_Postcode());
-							consignment.setCust_state(data.getConsignee_State());
-							consignment.setCust_country("AU");
-							consignment.setCust_ph(data.getConsignee_Phone());
-							consignment.setCust_email(data.getConsignee_Email());
-							consignment.setInstruction(data.getDeliveryInstructions());
-							consignment.setCustomer_code("D2Z");
-							consignment.setCarrier("AUSPOST");
-							consignment.setVendor_name("D2Z");
-							consignment.setVendor_street1("Ground Floor, Suite 3, 410 Church Street");
-							consignment.setVendor_suburb("North Parramatta");
-							consignment.setVendor_pcode("2151");
-							consignment.setVendor_state("NSW");
-							consignment.setVendor_country("AU");
-							consignment.setTotal_weight(String.valueOf(data.getCubic_Weight()));
-							ArrayofDetail details = new ArrayofDetail();
-							List<Line> itemList = new ArrayList<Line>();
-							Line lineItem = new Line();
-							lineItem.setBarcode(data.getBarcodelabelNumber());
-		
-							lineItem.setArticle_no(data.getArticleId());
-							lineItem.setDescription(data.getProduct_Description());
-							lineItem.setWeight(String.valueOf(data.getCubic_Weight()));
-							lineItem.setDim_height(
-									data.getDimensions_Height() == null ? "" : data.getDimensions_Height().toString());
-							lineItem.setDim_length(
-									data.getDimensions_Length() == null ? "" : data.getDimensions_Length().toString());
-							lineItem.setDim_width(
-									data.getDimensions_Width() == null ? "" : data.getDimensions_Width().toString());
-							itemList.add(lineItem);
-							details.setLine(itemList);
-							consignment.setDetails(details);
-							consignments.add(consignment);
-							FFResponseList.add(ffresponse);
-						}
-					 consignmentsArray.setConsignment(consignments);
-					 fdmDetails.setConsignments(consignmentsArray);
-					 request.setManifest(fdmDetails);
+			if (!senderData.isEmpty()) {
+				FDMManifestRequest request = new FDMManifestRequest();
+				Date dNow = new Date();
+				SimpleDateFormat ft = new SimpleDateFormat("yyMMddhhmm");
+				String orderRef = ft.format(dNow);
+				FDMManifestDetails fdmDetails = new FDMManifestDetails();
+				fdmDetails.setMessage_no(orderRef);
+				fdmDetails.setCustomer_id("D2Z");
+				List<FFResponse> FFResponseList = new ArrayList<FFResponse>();
 
-					 Gson gson = new Gson();
-					 String jsonStr = gson.toJson(request);
-					 JSONObject json = new JSONObject(jsonStr);
-					 String requestXml = XML.toString(json);
-					 byte[] contentInBytes = requestXml.getBytes();
-					 InputStream targetStream = new ByteArrayInputStream(contentInBytes);
-					 System.out.println("in:"+targetStream+"request:"+request);
-					 //ftpUploader.fdmFileCreation(request);
-					 System.out.println("FDM Request ---->");
-					 System.out.println(request);
-					 //ftpUploader.ftpUpload(targetStream);
-					 //ffresponseRepository.saveAll(FFResponseList);
-					 ftpUploader.fdmFileCreation(request);
-					// ffresponseRepository.saveAll(FFResponseList);
-					// String response = fdmProxy.makeCallToFDMManifestMapping(request);
-					/* List <FFResponse> FFresponsequery =
-					 ffresponseRepository.findByMessageNoIs(orderRef);
-					 List <FFResponse> FFResponseUpdaList = new ArrayList<FFResponse>();
-					 for (FFResponse temp : FFresponsequery) {
-					 temp.setResponse(response);
-					 FFResponseUpdaList .add(temp);
-					 }
-					 ffresponseRepository.saveAll(FFResponseUpdaList);*/
+				ArrayOfConsignment consignmentsArray = new ArrayOfConsignment();
+				List<Consignment> consignments = new ArrayList<Consignment>();
+				for (SenderdataMaster data : senderData) {
+					Consignment consignment = new Consignment();
+					FFResponse ffresponse = new FFResponse();
+					ffresponse.setMessage(orderRef);
+					ffresponse.setBarcodelabelnumber(data.getBarcodelabelNumber());
+					ffresponse.setWeight(String.valueOf(data.getCubic_Weight()));
+					ffresponse.setArticleid(data.getArticleId());
+					ffresponse.setReferencenumber(data.getReference_number());
+					// ffresponse.setSupplier(data.getsu);
+					ffresponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+					ffresponse.setSupplier("FDM");
+					ffresponse.setResponse("Pending");
+					consignment.setConnote_no(data.getArticleId());
+					consignment.setTracking_connote(data.getReference_number());
+
+					String date = data.getTimestamp();
+					try {
+						Date dateFormat = new SimpleDateFormat("YYMMDDHHMMSS").parse(date);
+						consignment.setConnote_date(dateFormat.toString());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					consignment.setCustname(data.getConsignee_name());
+					consignment.setCust_street1(data.getConsignee_addr1());
+					consignment.setCust_street2(data.getConsignee_addr2());
+					consignment.setCust_suburb(data.getConsignee_Suburb());
+					consignment.setCust_pcode(data.getConsignee_Postcode());
+					consignment.setCust_state(data.getConsignee_State());
+					consignment.setCust_country("AU");
+					consignment.setCust_ph(data.getConsignee_Phone());
+					consignment.setCust_email(data.getConsignee_Email());
+					consignment.setInstruction(data.getDeliveryInstructions());
+					consignment.setCustomer_code("D2Z");
+					consignment.setCarrier("AUSPOST");
+					consignment.setVendor_name("D2Z");
+					consignment.setVendor_street1("Ground Floor, Suite 3, 410 Church Street");
+					consignment.setVendor_suburb("North Parramatta");
+					consignment.setVendor_pcode("2151");
+					consignment.setVendor_state("NSW");
+					consignment.setVendor_country("AU");
+					consignment.setTotal_weight(String.valueOf(data.getCubic_Weight()));
+					ArrayofDetail details = new ArrayofDetail();
+					List<Line> itemList = new ArrayList<Line>();
+					Line lineItem = new Line();
+					lineItem.setBarcode(data.getBarcodelabelNumber());
+
+					lineItem.setArticle_no(data.getArticleId());
+					lineItem.setDescription(data.getProduct_Description());
+					lineItem.setWeight(String.valueOf(data.getCubic_Weight()));
+					lineItem.setDim_height(
+							data.getDimensions_Height() == null ? "" : data.getDimensions_Height().toString());
+					lineItem.setDim_length(
+							data.getDimensions_Length() == null ? "" : data.getDimensions_Length().toString());
+					lineItem.setDim_width(
+							data.getDimensions_Width() == null ? "" : data.getDimensions_Width().toString());
+					itemList.add(lineItem);
+					details.setLine(itemList);
+					consignment.setDetails(details);
+					consignments.add(consignment);
+					FFResponseList.add(ffresponse);
 				}
+				consignmentsArray.setConsignment(consignments);
+				fdmDetails.setConsignments(consignmentsArray);
+				request.setManifest(fdmDetails);
+
+				Gson gson = new Gson();
+				String jsonStr = gson.toJson(request);
+				JSONObject json = new JSONObject(jsonStr);
+				String requestXml = XML.toString(json);
+				byte[] contentInBytes = requestXml.getBytes();
+				InputStream targetStream = new ByteArrayInputStream(contentInBytes);
+				System.out.println("in:" + targetStream + "request:" + request);
+				// ftpUploader.fdmFileCreation(request);
+				System.out.println("FDM Request ---->");
+				System.out.println(request);
+				// ftpUploader.ftpUpload(targetStream);
+				// ffresponseRepository.saveAll(FFResponseList);
+				ftpUploader.fdmFileCreation(request);
+				// ffresponseRepository.saveAll(FFResponseList);
+				// String response = fdmProxy.makeCallToFDMManifestMapping(request);
+				/*
+				 * List <FFResponse> FFresponsequery =
+				 * ffresponseRepository.findByMessageNoIs(orderRef); List <FFResponse>
+				 * FFResponseUpdaList = new ArrayList<FFResponse>(); for (FFResponse temp :
+				 * FFresponsequery) { temp.setResponse(response); FFResponseUpdaList .add(temp);
+				 * } ffresponseRepository.saveAll(FFResponseUpdaList);
+				 */
+			}
 		}
 	}
 
@@ -1975,13 +1971,13 @@ else
 		ResponseMessage respMsg = null;
 		List<String> articleIdData = trackAndTraceRepository.getArticleId();
 		List<String> articleIds = new ArrayList<String>();
-		Map<String,String> map = new HashMap<String,String>();
+		Map<String, String> map = new HashMap<String, String>();
 		Iterator itr = articleIdData.iterator();
 		while (itr.hasNext()) {
 			Object[] obj = (Object[]) itr.next();
 			articleIds.add(obj[0].toString());
-			map.put(obj[0].toString(),obj[1].toString());
-			
+			map.put(obj[0].toString(), obj[1].toString());
+
 		}
 		List<List<String>> articleIdList = ListUtils.partition(articleIds, 10);
 		int count = 1;
@@ -1992,44 +1988,44 @@ else
 			TrackingResponse auTrackingDetails = ausPostProxy.trackingEvent(articleId);
 			System.out.println("AU Track Response");
 			System.out.println(auTrackingDetails.toString());
-			respMsg = d2zDao.insertAUTrackingDetails(auTrackingDetails,map);
-			System.out.print("timestamp:"+LocalDateTime.now());
+			respMsg = d2zDao.insertAUTrackingDetails(auTrackingDetails, map);
+			System.out.print("timestamp:" + LocalDateTime.now());
 			try {
-				if(count > 10)
-				{
-				Thread.sleep(60000);
+				if (count > 10) {
+					Thread.sleep(60000);
 				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.print("After thread timestamp:"+LocalDateTime.now());
+			System.out.print("After thread timestamp:" + LocalDateTime.now());
 		}
 		return respMsg;
 	}
-
 
 	@Override
 	public void updateRates() {
 		d2zDao.updateRates();
 	}
-	
+
 	@Override
 	public void updateCubicWeight() {
 		d2zDao.updateCubicWeight();
 	}
+
 	@Override
 	public void makeCallToEtowerBasedonSupplierUI(List<String> incomingRefNbr) {
-		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(incomingRefNbr,"eTower");
+		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(incomingRefNbr, "eTower");
 		eTowerWrapper.makeCalltoEtower(eTowerOrders);
 	}
-	
+
 	@Override
 	public void freipostTrackingEvent() {
 		List<String> articleIds = d2zDao.getArticleIDForFreiPostTracking();
-		/*for(String articleId : articleIds) {
-			freipostWrapper.trackingEventService(articleId);
-		}*/
+		/*
+		 * for(String articleId : articleIds) {
+		 * freipostWrapper.trackingEventService(articleId); }
+		 */
 	}
 
 	@Override
@@ -2040,7 +2036,7 @@ else
 
 	@Override
 	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, String userId) {
-		List<CSTickets> enquiryDetails = d2zDao.fetchEnquiry(status,fromDate,toDate,userId);
+		List<CSTickets> enquiryDetails = d2zDao.fetchEnquiry(status, fromDate, toDate, userId);
 		return enquiryDetails;
 	}
 
@@ -2061,32 +2057,29 @@ else
 			throws ReferenceNumberNotUniqueException {
 		// TODO Auto-generated method stub
 		String[] articleNbrs = ArticleId.split(",");
-		
-		
-		List<String>refnbrs = d2zDao.fetchReferencenumberByArticleid(Arrays.asList(articleNbrs));
-		String referenceNumbers =refnbrs.stream()
-                .collect(Collectors.joining(","));
-		ResponseMessage userMsg= allocateShipment(referenceNumbers, shipmentNumber);
+
+		List<String> refnbrs = d2zDao.fetchReferencenumberByArticleid(Arrays.asList(articleNbrs));
+		String referenceNumbers = refnbrs.stream().collect(Collectors.joining(","));
+		ResponseMessage userMsg = allocateShipment(referenceNumbers, shipmentNumber);
 		return userMsg;
 	}
 
 	@Override
-	public UserMessage addUserService(String username,String serviceType) {
+	public UserMessage addUserService(String username, String serviceType) {
 		UserMessage userMsg = new UserMessage();
 		User usr = userRepository.findByUsername(username);
-		if(usr!=null){
-		 List<String> serviceTypeList = Arrays.asList(serviceType.split("\\s*,\\s*"));
-		 List<UserService> savedUserService = d2zDao.addUserService(usr, serviceTypeList);
-		
-		 if (savedUserService.size() != 0) {
-					userMsg.setMessage("User Service Added Successfully");
-					userMsg.setUserName(username);
-			}else {
+		if (usr != null) {
+			List<String> serviceTypeList = Arrays.asList(serviceType.split("\\s*,\\s*"));
+			List<UserService> savedUserService = d2zDao.addUserService(usr, serviceTypeList);
+
+			if (savedUserService.size() != 0) {
+				userMsg.setMessage("User Service Added Successfully");
+				userMsg.setUserName(username);
+			} else {
 				userMsg.setMessage("Unable to Add User Service");
 				userMsg.setUserName(username);
 			}
-		}
-		else{
+		} else {
 			userMsg.setMessage("UserName doesnot Exist");
 			userMsg.setUserName(username);
 		}
@@ -2097,48 +2090,46 @@ else
 	public void currencyRate() {
 		d2zDao.logcurrencyRate();
 	}
-	
-	public void deleteEtowerPflPca(List<String> refnbr){
-		
+
+	public void deleteEtowerPflPca(List<String> refnbr) {
+
 		List<String> pflfwarticleid = new ArrayList<String>();
 		List<String> pflarticleid = new ArrayList<String>();
 		List<String> pcaArticleid = new ArrayList<String>();
 		System.out.println(refnbr);
 		List<SenderdataMaster> senderdata = d2zDao.fetchDataBasedonrefnbr(refnbr);
 		System.out.println(senderdata.size());
-		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(refnbr,"eTower");
+		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(refnbr, "eTower");
 		System.out.println(eTowerOrders.size());
 		List<String> etowerreference = eTowerOrders.stream().map(obj -> {
-			String s = obj.getReference_number().replace("Delete", ""); 
-			return s;})
-				.collect(Collectors.toList());
-		for(SenderdataMaster data : senderdata){
-			if(data.getCarrier().equals("FastwayM") ){
-				if(data.getServicetype().equalsIgnoreCase("FW"))
-				{
+			String s = obj.getReference_number().replace("Delete", "");
+			return s;
+		}).collect(Collectors.toList());
+		for (SenderdataMaster data : senderdata) {
+			if (data.getCarrier().equals("FastwayM")) {
+				if (data.getServicetype().equalsIgnoreCase("FW")) {
 					pflfwarticleid.add(data.getArticleId());
-				}
-				else
-				{
-				pflarticleid.add(data.getArticleId());
+				} else {
+					pflarticleid.add(data.getArticleId());
 				}
 			}
-			if(data.getCarrier().equals("FastwayS"))
+			if (data.getCarrier().equals("FastwayS"))
 				pcaArticleid.add(data.getArticleId());
 		}
-		
+
 		try {
-			System.out.println("etower size:"+etowerreference.size()+":::"+"Pfl Size:"+pflarticleid.size()+":::"+"Pfl Size:"+pcaArticleid.size());
-			if(etowerreference.size() > 0){
+			System.out.println("etower size:" + etowerreference.size() + ":::" + "Pfl Size:" + pflarticleid.size()
+					+ ":::" + "Pfl Size:" + pcaArticleid.size());
+			if (etowerreference.size() > 0) {
 				eTowerWrapper.DeleteShipingResponse(etowerreference);
 			}
-			if(pflarticleid.size() > 0){
-				pflWrapper.DeleteOrderPFL(pflarticleid,"");
+			if (pflarticleid.size() > 0) {
+				pflWrapper.DeleteOrderPFL(pflarticleid, "");
 			}
-			if(pflfwarticleid.size() > 0){
-				pflWrapper.DeleteOrderPFL(pflfwarticleid,"FW");
+			if (pflfwarticleid.size() > 0) {
+				pflWrapper.DeleteOrderPFL(pflfwarticleid, "FW");
 			}
-			if(pcaArticleid.size() > 0) {
+			if (pcaArticleid.size() > 0) {
 				pcaWrapper.deletePcaOrder(pcaArticleid);
 			}
 		} catch (FailureResponseException e) {
@@ -2148,37 +2139,34 @@ else
 
 	@Override
 	public List<Returns> returnsOutstanding(String fromDate, String toDate, String userId) {
-		List<Returns> outstandingData =  d2zDao.returnsOutstanding(fromDate,toDate,userId);
+		List<Returns> outstandingData = d2zDao.returnsOutstanding(fromDate, toDate, userId);
 		return outstandingData;
 	}
-
 
 	@Override
 	public List<ShipmentDetails> downloadShipmentDatabyType(List<String> number, Integer userId, String type) {
 		// TODO Auto-generated method stub
-		
+
 		List<Integer> listOfClientId = d2zBrokerDao.getClientId(userId);
-		List<SenderdataMaster> senderDataList = d2zDao.fetchShipmentDatabyType(number, listOfClientId,type);
+		List<SenderdataMaster> senderDataList = d2zDao.fetchShipmentDatabyType(number, listOfClientId, type);
 		System.out.println(senderDataList.size() + " records");
 		Double audcurrency = d2zDao.getAudcurrency("USD");
 		List<ShipmentDetails> shipmentDetails = new ArrayList<ShipmentDetails>();
 		for (SenderdataMaster senderData : senderDataList) {
 			ShipmentDetails shipmentData = new ShipmentDetails();
 			shipmentData.setReferenceNumber(senderData.getReference_number());
-			//shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
+			// shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
 			String connoteNo = "";
-			if(null!=senderData.getBarcodelabelNumber()) {
-				if(senderData.getBarcodelabelNumber().length()==12) {
+			if (null != senderData.getBarcodelabelNumber()) {
+				if (senderData.getBarcodelabelNumber().length() == 12) {
 					connoteNo = senderData.getBarcodelabelNumber();
-				}
-				else if(senderData.getBarcodelabelNumber().length()==39) {
-					connoteNo = senderData.getBarcodelabelNumber().substring(18,28);
-				}
-				else if(senderData.getBarcodelabelNumber().length()==41) {
-					connoteNo = senderData.getBarcodelabelNumber().substring(18,30);
+				} else if (senderData.getBarcodelabelNumber().length() == 39) {
+					connoteNo = senderData.getBarcodelabelNumber().substring(18, 28);
+				} else if (senderData.getBarcodelabelNumber().length() == 41) {
+					connoteNo = senderData.getBarcodelabelNumber().substring(18, 30);
 				}
 			}
-			 
+
 			shipmentData.setCon_no(connoteNo);
 			shipmentData.setConsigneeName(senderData.getConsignee_name());
 			shipmentData.setConsigneeAddress(senderData.getConsignee_addr1());
@@ -2190,18 +2178,18 @@ else
 			shipmentData.setDestination("AUSTRALIA");
 			shipmentData.setQuantity(senderData.getShippedQuantity());
 			String commodity = senderData.getProduct_Description();
-			if(null!=commodity) {
-			if(commodity.length()>50) {
-				commodity = "Car Accessory";
-			}
-			if(commodity.equalsIgnoreCase("Education Board")) {
-				commodity = "Education Accessory";
-			}
+			if (null != commodity) {
+				if (commodity.length() > 50) {
+					commodity = "Car Accessory";
+				}
+				if (commodity.equalsIgnoreCase("Education Board")) {
+					commodity = "Education Accessory";
+				}
 			}
 			shipmentData.setCommodity(commodity);
-			
-			Double uscurrency = senderData.getValue()*audcurrency;
-			shipmentData.setValue(Math.round(uscurrency*100.0)/100.0);
+
+			Double uscurrency = senderData.getValue() * audcurrency;
+			shipmentData.setValue(Math.round(uscurrency * 100.0) / 100.0);
 			shipmentData.setShipperName(senderData.getShipper_Name());
 			shipmentData.setShipperAddress(senderData.getShipper_Addr1());
 			shipmentData.setShipperCity(senderData.getShipper_City());
@@ -2214,7 +2202,7 @@ else
 //		byte[] bytes = shipmentWriter.generateShipmentxls(shipmentDetails);
 //		return bytes;
 		return shipmentDetails;
-		
+
 	}
 
 	@Override
@@ -2223,48 +2211,39 @@ else
 		List<Integer> listOfClientId = d2zBrokerDao.getClientId(userId);
 		List<SenderdataMaster> senderDataList = d2zDao.fetchShipmentData(shipmentNumber, listOfClientId);
 		System.out.println(senderDataList.size() + " records");
-		
+
 		List<ShipmentDetails> shipmentDetails = new ArrayList<ShipmentDetails>();
 		for (SenderdataMaster senderData : senderDataList) {
 			ShipmentDetails shipmentData = new ShipmentDetails();
-			if(senderData.getReference_number()!=null && senderData.getReference_number().length() > 21)
-			{
+			if (senderData.getReference_number() != null && senderData.getReference_number().length() > 21) {
 				shipmentData.setReferenceNumber(senderData.getReference_number().substring(0, 21));
-			}
-			else
-			{
+			} else {
 				shipmentData.setReferenceNumber(senderData.getReference_number());
 			}
-			
-			//shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
-			
+
+			// shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
+
 			shipmentData.setConsigneeName(senderData.getConsignee_name());
-			if(senderData.getConsignee_addr1()!=null && senderData.getConsignee_addr1().length() > 49)
-			{
-			shipmentData.setConsigneeAddress(senderData.getConsignee_addr1().substring(0, 49));
-			}
-			else
-			{
+			if (senderData.getConsignee_addr1() != null && senderData.getConsignee_addr1().length() > 49) {
+				shipmentData.setConsigneeAddress(senderData.getConsignee_addr1().substring(0, 49));
+			} else {
 				shipmentData.setConsigneeAddress(senderData.getConsignee_addr1());
 			}
 			shipmentData.setConsigneeSuburb(senderData.getConsignee_Suburb());
-			
+
 			shipmentData.setConsigneeState(senderData.getConsignee_State());
-			if(senderData.getConsignee_Postcode()!=null && senderData.getConsignee_Postcode().length() > 4)
-			{
+			if (senderData.getConsignee_Postcode() != null && senderData.getConsignee_Postcode().length() > 4) {
 				shipmentData.setConsigneePostcode(senderData.getConsignee_Postcode().substring(0, 4));
-			}
-			else
-			{
+			} else {
 				shipmentData.setConsigneePostcode(senderData.getConsignee_Postcode());
 			}
-			
+
 			shipmentData.setDestination("AU");
 			shipmentData.setCommodity(senderData.getProduct_Description());
 			shipmentData.setCount("1");
 			shipmentData.setLanding("1");
 			shipmentData.setWeight(senderData.getWeight());
-			
+
 			shipmentData.setShipperName(senderData.getShipper_Name());
 			shipmentData.setShipperAddress(senderData.getShipper_Addr1());
 			shipmentData.setShipperCity(senderData.getShipper_City());
@@ -2275,13 +2254,10 @@ else
 			shipmentData.setDest("SYD");
 			shipmentData.setValue(senderData.getValue());
 			shipmentData.setGoods("AUD");
-			
-			if( senderData.getValue() > 1000)
-			{
+
+			if (senderData.getValue() > 1000) {
 				shipmentData.setSac("N");
-			}
-			else
-			{
+			} else {
 				shipmentData.setSac("Y");
 			}
 			shipmentData.setShipperContact(senderData.getAirwayBill());
@@ -2297,51 +2273,41 @@ else
 	public List<ShipmentDetails> downloadShipmentDataTemplatebyType(List<String> number, Integer userId, String type) {
 		// TODO Auto-generated method stub
 		List<Integer> listOfClientId = d2zBrokerDao.getClientId(userId);
-		List<SenderdataMaster> senderDataList = d2zDao.fetchShipmentDatabyType(number, listOfClientId,type);
+		List<SenderdataMaster> senderDataList = d2zDao.fetchShipmentDatabyType(number, listOfClientId, type);
 		System.out.println(senderDataList.size() + " records");
-		
-		
+
 		List<ShipmentDetails> shipmentDetails = new ArrayList<ShipmentDetails>();
 		for (SenderdataMaster senderData : senderDataList) {
 			ShipmentDetails shipmentData = new ShipmentDetails();
-			if(senderData.getReference_number()!=null && senderData.getReference_number().length() > 21)
-			{
+			if (senderData.getReference_number() != null && senderData.getReference_number().length() > 21) {
 				shipmentData.setReferenceNumber(senderData.getReference_number().substring(0, 21));
-			}
-			else
-			{
+			} else {
 				shipmentData.setReferenceNumber(senderData.getReference_number());
 			}
-			
-			//shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
-			
+
+			// shipmentData.setCon_no(senderData.getBarcodelabelNumber().substring(19, 30));
+
 			shipmentData.setConsigneeName(senderData.getConsignee_name());
-			if(senderData.getConsignee_addr1()!=null && senderData.getConsignee_addr1().length() > 49)
-			{
-			shipmentData.setConsigneeAddress(senderData.getConsignee_addr1().substring(0, 49));
-			}
-			else
-			{
+			if (senderData.getConsignee_addr1() != null && senderData.getConsignee_addr1().length() > 49) {
+				shipmentData.setConsigneeAddress(senderData.getConsignee_addr1().substring(0, 49));
+			} else {
 				shipmentData.setConsigneeAddress(senderData.getConsignee_addr1());
 			}
 			shipmentData.setConsigneeSuburb(senderData.getConsignee_Suburb());
-			
+
 			shipmentData.setConsigneeState(senderData.getConsignee_State());
-			if(senderData.getConsignee_Postcode()!=null && senderData.getConsignee_Postcode().length() > 4)
-			{
+			if (senderData.getConsignee_Postcode() != null && senderData.getConsignee_Postcode().length() > 4) {
 				shipmentData.setConsigneePostcode(senderData.getConsignee_Postcode().substring(0, 4));
-			}
-			else
-			{
+			} else {
 				shipmentData.setConsigneePostcode(senderData.getConsignee_Postcode());
 			}
-			
+
 			shipmentData.setDestination("AU");
 			shipmentData.setCommodity(senderData.getProduct_Description());
 			shipmentData.setCount("1");
 			shipmentData.setLanding("1");
 			shipmentData.setWeight(senderData.getWeight());
-			
+
 			shipmentData.setShipperName(senderData.getShipper_Name());
 			shipmentData.setShipperAddress(senderData.getShipper_Addr1());
 			shipmentData.setShipperCity(senderData.getShipper_City());
@@ -2352,13 +2318,10 @@ else
 			shipmentData.setDest("SYD");
 			shipmentData.setValue(senderData.getValue());
 			shipmentData.setGoods("AUD");
-			
-			if( senderData.getValue() > 1000)
-			{
+
+			if (senderData.getValue() > 1000) {
 				shipmentData.setSac("N");
-			}
-			else
-			{
+			} else {
 				shipmentData.setSac("Y");
 			}
 			shipmentData.setShipperContact(senderData.getAirwayBill());
@@ -2368,14 +2331,16 @@ else
 //		return bytes;
 		return shipmentDetails;
 	}
+
 	@Override
 	public UserMessage returnAction(List<ReturnsAction> returnsAction) {
-		UserMessage usrMsg =  d2zDao.returnAction(returnsAction);
+		UserMessage usrMsg = d2zDao.returnAction(returnsAction);
 		return usrMsg;
 	}
 
 	@Override
-	public List<TrackParcelResponse> trackParcels(List<String> articleIds) throws InterruptedException, ExecutionException {
+	public List<TrackParcelResponse> trackParcels(List<String> articleIds)
+			throws InterruptedException, ExecutionException {
 		List<String> eTowerArticleIds = new ArrayList<String>();
 		List<String> eTowerHKGArticleIds = new ArrayList<String>();
 		List<String> eTowerHKG2ArticleIds = new ArrayList<String>();
@@ -2383,161 +2348,163 @@ else
 		List<String> pcaArticleIds = new ArrayList<String>();
 		List<String> pflArticleIds = new ArrayList<String>();
 		List<String> eParcelMlids = d2zDao.fetchMlidsBasedOnSupplier("eTower");
-		List<String> auPostMlids =  d2zDao.fetchMlidsBasedOnSupplier("FDM");
-	    List<String> pcaMlids = d2zDao.fetchMlidsBasedOnSupplier("PCA");
+		List<String> auPostMlids = d2zDao.fetchMlidsBasedOnSupplier("FDM");
+		List<String> pcaMlids = d2zDao.fetchMlidsBasedOnSupplier("PCA");
 		CompletableFuture<List<TrackingEventResponse>> eTowerResponse = new CompletableFuture<List<TrackingEventResponse>>();
 		CompletableFuture<TrackingResponse> auPostResponse = new CompletableFuture<TrackingResponse>();
-		CompletableFuture<List<PCATrackEventResponse>> pcaResponse = new CompletableFuture<List<PCATrackEventResponse>>(); 
-		CompletableFuture<List<PFLTrackingResponseDetails>> pflResponse  = new CompletableFuture<List<PFLTrackingResponseDetails>>();
-		Map<String,List<String>> eTowerMap = new HashMap<String,List<String>>();
-		for(String articleId : articleIds) {
-			if(articleId.length()==21 || articleId.length() == 23) {
-				String mlid = articleId.length() == 23 ? articleId.substring(0,5) : articleId.substring(0,3);
-				
-				boolean isEParcel = eParcelMlids.stream().anyMatch(mlid::equalsIgnoreCase);
-				boolean isAuPost = auPostMlids.stream().anyMatch(mlid::equalsIgnoreCase);
-				boolean isPCA = pcaMlids.stream().anyMatch(mlid::equalsIgnoreCase);
-				if(isEParcel) {
-					if(mlid.equalsIgnoreCase("33XH8") ||mlid.equalsIgnoreCase("33XCT")||mlid.equalsIgnoreCase("33XH7")||mlid.equalsIgnoreCase("33XCR") ) {
-						eTowerHKG2ArticleIds.add(articleId);
-					}else if(mlid.equalsIgnoreCase("33UXT") ||mlid.equalsIgnoreCase("33UXX")||mlid.equalsIgnoreCase("33UY6")||mlid.equalsIgnoreCase("33UYA") ) {
-						eTowerHKGArticleIds.add(articleId);}
-					else {
-						eTowerArticleIds.add(articleId);
-					}
-				}else if(isAuPost) {
-					auPostArticleIds.add(articleId);
-				}else if(isPCA) {
-					pcaArticleIds.add(articleId);
+		CompletableFuture<List<PCATrackEventResponse>> pcaResponse = new CompletableFuture<List<PCATrackEventResponse>>();
+		CompletableFuture<List<PFLTrackingResponseDetails>> pflResponse = new CompletableFuture<List<PFLTrackingResponseDetails>>();
+		Map<String, List<String>> eTowerMap = new HashMap<String, List<String>>();
+		for (String articleId : articleIds) {
+
+			String mlid = articleId.length() == 23 ? articleId.substring(0, 5) : articleId.substring(0, 3);
+
+			boolean isEParcel = eParcelMlids.stream().anyMatch(mlid::equalsIgnoreCase);
+			boolean isAuPost = auPostMlids.stream().anyMatch(mlid::equalsIgnoreCase);
+			boolean isPCA = pcaMlids.stream().anyMatch(mlid::equalsIgnoreCase);
+			if (isEParcel) {
+				if (mlid.equalsIgnoreCase("33XH8") || mlid.equalsIgnoreCase("33XCT") || mlid.equalsIgnoreCase("33XH7")
+						|| mlid.equalsIgnoreCase("33XCR")) {
+					eTowerHKG2ArticleIds.add(articleId);
+				} else if (mlid.equalsIgnoreCase("33UXT") || mlid.equalsIgnoreCase("33UXX")
+						|| mlid.equalsIgnoreCase("33UY6") || mlid.equalsIgnoreCase("33UYA")) {
+					eTowerHKGArticleIds.add(articleId);
+				} else {
+					eTowerArticleIds.add(articleId);
 				}
-			}else if(articleId.startsWith("BN")) {
+			} else if (isAuPost) {
+				auPostArticleIds.add(articleId);
+			} else if (isPCA) {
+				pcaArticleIds.add(articleId);
+			} else if (articleId.startsWith("BN") || articleId.startsWith("MP") || articleId.startsWith("WJY")) {
 				pflArticleIds.add(articleId);
-			}
-			else {
+			} else {
 				pcaArticleIds.add(articleId);
 			}
 		}
-		if(eTowerArticleIds.size() > 0) {
+		if (eTowerArticleIds.size() > 0) {
 			eTowerMap.put("", eTowerArticleIds);
 		}
-		if(eTowerHKGArticleIds.size() > 0) {
+		if (eTowerHKGArticleIds.size() > 0) {
 			eTowerMap.put("HKG", eTowerHKGArticleIds);
 		}
-		if(eTowerHKG2ArticleIds.size() > 0) {
+		if (eTowerHKG2ArticleIds.size() > 0) {
 			eTowerMap.put("HKG2", eTowerHKG2ArticleIds);
 		}
-		if(!eTowerMap.isEmpty()) {
+		if (!eTowerMap.isEmpty()) {
 			eTowerResponse = aysncService.makeCalltoEtower(eTowerMap);
-		}else {
+		} else {
 			eTowerResponse.complete(null);
 		}
-		if(auPostArticleIds.size() > 0) {
+		if (auPostArticleIds.size() > 0) {
 			auPostResponse = aysncService.makeCalltoAuPost(auPostArticleIds);
-		}else {
+		} else {
 			auPostResponse.complete(null);
 		}
-		if(pcaArticleIds.size() > 0) {
+		if (pcaArticleIds.size() > 0) {
 			pcaResponse = aysncService.makeCalltoPCA(pcaArticleIds);
-		}
-		else {
+		} else {
 			pcaResponse.complete(null);
 		}
-		if(pflArticleIds.size() > 0) {
-				pflResponse = aysncService.makeCalltoPFL(pflArticleIds);
-			}
-		else {
+		if (pflArticleIds.size() > 0) {
+			pflResponse = aysncService.makeCalltoPFL(pflArticleIds);
+		} else {
 			pflResponse.complete(null);
 		}
-		CompletableFuture.allOf(eTowerResponse,auPostResponse, pcaResponse,pflResponse).join();
+		CompletableFuture.allOf(eTowerResponse, auPostResponse, pcaResponse, pflResponse).join();
 		List<TrackParcelResponse> trackPracelsResponse = new ArrayList<TrackParcelResponse>();
 
-		aggreateTrackParcelResponse(eTowerResponse.get(),auPostResponse.get(),pcaResponse.get(),pflResponse.get(),trackPracelsResponse);
-		
+		aggreateTrackParcelResponse(eTowerResponse.get(), auPostResponse.get(), pcaResponse.get(), pflResponse.get(),
+				trackPracelsResponse);
+
 		return trackPracelsResponse;
 	}
 
 	private List<TrackParcelResponse> aggreateTrackParcelResponse(List<TrackingEventResponse> eTowerResponse,
-			TrackingResponse auPostResponse, List<PCATrackEventResponse> pcaResponse, List<PFLTrackingResponseDetails> pflResponse, List<TrackParcelResponse> trackPracelResponse) {
-			
-		if(null != eTowerResponse) {
-			parseEtowerTrackingResponse(trackPracelResponse,eTowerResponse);	
+			TrackingResponse auPostResponse, List<PCATrackEventResponse> pcaResponse,
+			List<PFLTrackingResponseDetails> pflResponse, List<TrackParcelResponse> trackPracelResponse) {
+
+		if (null != eTowerResponse) {
+			parseEtowerTrackingResponse(trackPracelResponse, eTowerResponse);
 		}
-		
-		if(null!=auPostResponse) {
-			parseAuPostTrackingResponse(trackPracelResponse,auPostResponse);
+
+		if (null != auPostResponse) {
+			parseAuPostTrackingResponse(trackPracelResponse, auPostResponse);
 		}
-		if(null != pcaResponse) {
-			parsePCAResponse(trackPracelResponse,pcaResponse);
+		if (null != pcaResponse) {
+			parsePCAResponse(trackPracelResponse, pcaResponse);
 		}
-		if(null!=pflResponse) {
-			parsePFLResponse(trackPracelResponse,pflResponse);
+		if (null != pflResponse) {
+			parsePFLResponse(trackPracelResponse, pflResponse);
 		}
-		return trackPracelResponse;	
+		return trackPracelResponse;
 	}
 
 	private void parsePFLResponse(List<TrackParcelResponse> trackParcelResponse,
 			List<PFLTrackingResponseDetails> pflResponse) {
-			if(!pflResponse.isEmpty()) {
-				for(PFLTrackingResponseDetails response : pflResponse) {
-					TrackParcelResponse parcelStatus = new TrackParcelResponse();
-					parcelStatus.setArticleId(response.getBarcodeLabel());
-					List<TrackingEvents> events = new ArrayList<TrackingEvents>();
-					for(PFLTrackEvent trackEvent:response.getTrackEvent()) {
-						TrackingEvents  event= new TrackingEvents();
-						event.setTrackEventDateOccured(trackEvent.getDate());
-						event.setEventDetails(trackEvent.getStatus());
-						events.add(event);
-					}
-					
-					parcelStatus.setTrackingEvents(events);
-					trackParcelResponse.add(parcelStatus);
-
+		if (!pflResponse.isEmpty()) {
+			for (PFLTrackingResponseDetails response : pflResponse) {
+				TrackParcelResponse parcelStatus = new TrackParcelResponse();
+				parcelStatus.setArticleId(response.getBarcodeLabel());
+				List<TrackingEvents> events = new ArrayList<TrackingEvents>();
+				for (PFLTrackEvent trackEvent : response.getTrackEvent()) {
+					TrackingEvents event = new TrackingEvents();
+					event.setTrackEventDateOccured(trackEvent.getDate());
+					event.setEventDetails(trackEvent.getStatus());
+					events.add(event);
 				}
+
+				parcelStatus.setTrackingEvents(events);
+				trackParcelResponse.add(parcelStatus);
+
 			}
+		}
 	}
 
-	private void parsePCAResponse(List<TrackParcelResponse> trackParcelResponse, List<PCATrackEventResponse> pcaResponselist) {
+	private void parsePCAResponse(List<TrackParcelResponse> trackParcelResponse,
+			List<PCATrackEventResponse> pcaResponselist) {
 
-		for(PCATrackEventResponse pcaResponse : pcaResponselist) {
-		TrackParcelResponse parcelStatus = new TrackParcelResponse();
-		parcelStatus.setArticleId(pcaResponse.getRef());
-		List<TrackingEvents> events = new ArrayList<TrackingEvents>();
-		for(List<String> trackEventDetails : pcaResponse.getTracks()) {
-			
+		for (PCATrackEventResponse pcaResponse : pcaResponselist) {
+			TrackParcelResponse parcelStatus = new TrackParcelResponse();
+			parcelStatus.setArticleId(pcaResponse.getRef());
+			List<TrackingEvents> events = new ArrayList<TrackingEvents>();
+			for (List<String> trackEventDetails : pcaResponse.getTracks()) {
+
 				TrackingEvents event = new TrackingEvents();
 				event.setTrackEventDateOccured(trackEventDetails.get(2));
 				event.setEventDetails(trackEventDetails.get(0));
 				events.add(event);
-			
-		}
-		parcelStatus.setTrackingEvents(events);
-		trackParcelResponse.add(parcelStatus);
+
+			}
+			parcelStatus.setTrackingEvents(events);
+			trackParcelResponse.add(parcelStatus);
 		}
 	}
 
 	private void parseAuPostTrackingResponse(List<TrackParcelResponse> trackParcelResponse,
 			TrackingResponse auPostResponse) {
-	    List<TrackingResults> trackingData = auPostResponse.getTracking_results();
-		if(!trackingData.isEmpty()) {
-			
-			for(TrackingResults data : trackingData ) {
-				if(data!=null && data.getTrackable_items()!=null) {
-					for(TrackableItems trackingLabel : data.getTrackable_items()) {
+		List<TrackingResults> trackingData = auPostResponse.getTracking_results();
+		if (!trackingData.isEmpty()) {
+
+			for (TrackingResults data : trackingData) {
+				if (data != null && data.getTrackable_items() != null) {
+					for (TrackableItems trackingLabel : data.getTrackable_items()) {
 						TrackParcelResponse parcelStatus = new TrackParcelResponse();
 						List<TrackingEvents> events = new ArrayList<TrackingEvents>();
 
 						parcelStatus.setArticleId(trackingLabel.getArticle_id());
-						if(trackingLabel != null && trackingLabel.getEvents() != null) {
-							for(com.d2z.d2zservice.model.auspost.TrackingEvents trackingEvents: trackingLabel.getEvents()) {
+						if (trackingLabel != null && trackingLabel.getEvents() != null) {
+							for (com.d2z.d2zservice.model.auspost.TrackingEvents trackingEvents : trackingLabel
+									.getEvents()) {
 								TrackingEvents event = new TrackingEvents();
 								event.setTrackEventDateOccured(trackingEvents.getDate());
 								event.setEventDetails(trackingEvents.getDescription());
 								events.add(event);
-								}
-							parcelStatus.setTrackingEvents(events);
 							}
-						trackParcelResponse.add(parcelStatus);
+							parcelStatus.setTrackingEvents(events);
 						}
+						trackParcelResponse.add(parcelStatus);
+					}
 				}
 			}
 		}
@@ -2545,38 +2512,38 @@ else
 
 	private void parseEtowerTrackingResponse(List<TrackParcelResponse> trackParcelResponse,
 			List<TrackingEventResponse> respone) {
-		for(TrackingEventResponse eTowerResponse : respone) {
-		List<TrackEventResponseData> responseData = eTowerResponse.getData();
+		for (TrackingEventResponse eTowerResponse : respone) {
+			List<TrackEventResponseData> responseData = eTowerResponse.getData();
 
-		if (responseData!=null && !responseData.isEmpty()) {
+			if (responseData != null && !responseData.isEmpty()) {
 
-			for (TrackEventResponseData data : responseData) {
+				for (TrackEventResponseData data : responseData) {
 
-				if (data != null) {
-					
-					List<TrackingEvents> trackingEvents = new ArrayList<TrackingEvents>();
-					TrackParcelResponse parcelStatus = new TrackParcelResponse();
-					parcelStatus.setArticleId(data.getOrderId());
-					if(data.getEvents()!=null) {
-					for (ETowerTrackingDetails trackingDetails : data.getEvents()) {
-											
-						TrackingEvents event = new TrackingEvents();
-						event.setTrackEventDateOccured(trackingDetails.getEventTime());
-						event.setEventDetails(trackingDetails.getActivity());
-						trackingEvents.add(event);
+					if (data != null) {
+
+						List<TrackingEvents> trackingEvents = new ArrayList<TrackingEvents>();
+						TrackParcelResponse parcelStatus = new TrackParcelResponse();
+						parcelStatus.setArticleId(data.getOrderId());
+						if (data.getEvents() != null) {
+							for (ETowerTrackingDetails trackingDetails : data.getEvents()) {
+
+								TrackingEvents event = new TrackingEvents();
+								event.setTrackEventDateOccured(trackingDetails.getEventTime());
+								event.setEventDetails(trackingDetails.getActivity());
+								trackingEvents.add(event);
+							}
 						}
-					}
-					parcelStatus.setTrackingEvents(trackingEvents);
-					trackParcelResponse.add(parcelStatus);
+						parcelStatus.setTrackingEvents(trackingEvents);
+						trackParcelResponse.add(parcelStatus);
 					}
 				}
-	}
+			}
 		}
 	}
 
 	@Override
 	public UserMessage enquiryFileUpload(byte[] blob, String fileName, String ticketNumber) {
-		UserMessage usrMsg = d2zDao.enquiryFileUpload(blob,fileName,ticketNumber);
+		UserMessage usrMsg = d2zDao.enquiryFileUpload(blob, fileName, ticketNumber);
 		return usrMsg;
 	}
 
@@ -2591,38 +2558,110 @@ else
 		EnquiryResponse enquiryInfo = d2zDao.enquiryClientUpdate(updateEnquiry);
 		return enquiryInfo;
 	}
-	
+
 	@Override
 	public UserMessage enquiryUpdate(SuperUserEnquiry updatedData) {
-		UserMessage usrMsg = d2zDao.enquiryUpdate(updatedData.getTicketNumber(),updatedData.getComments(),updatedData.getD2zComments(),updatedData.getSendUpdate(),updatedData.getStatus());
-		if(updatedData.getSendUpdate().equalsIgnoreCase("yes")) {
+		UserMessage usrMsg = d2zDao.enquiryUpdate(updatedData.getTicketNumber(), updatedData.getComments(),
+				updatedData.getD2zComments(), updatedData.getSendUpdate(), updatedData.getStatus());
+		if (updatedData.getSendUpdate().equalsIgnoreCase("yes")) {
 			CSTickets csTicket = d2zDao.fetchCSTicketDetails(updatedData.getTicketNumber());
 			System.out.println(csTicket);
 			byte[] attachmentData = csTicket.getProof();
-			String mailBody =  "<body><h4> Dear Customer,</br></br>"
-	                + "<table width='80%' border='1'>"
-	                + "<tr><td>D2Z Comments     </td><td>  " + csTicket.getD2zComments() + "</td></tr>" 
-	                + "<tr><td>User Comments   </td><td>  " + csTicket.getComments() + "</td></tr>"
-	                + "</table>"
-	                + "</h4>"
-	                + "<h4>Regards, </br>"
-	                + "D2Z Support Team</h4>"
-	                + "</body> ";
+			String mailBody = "<body><h4> Dear Customer,</br></br>" + "<table width='80%' border='1'>"
+					+ "<tr><td>D2Z Comments     </td><td>  " + csTicket.getD2zComments() + "</td></tr>"
+					+ "<tr><td>User Comments   </td><td>  " + csTicket.getComments() + "</td></tr>" + "</table>"
+					+ "</h4>" + "<h4>Regards, </br>" + "D2Z Support Team</h4>" + "</body> ";
 			MimeMessage message = mailSender.createMimeMessage();
 			try {
-	            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-	            helper.setFrom("Reports@d2z.com.au");
-	            helper.setTo("jack@d2z.com.au");
-	            helper.setSubject("D2Z Enquiry Updates");
-	            helper.setText(mailBody, true);
-	            if(attachmentData != null)
-	            	helper.addAttachment("D2Z-Enquiry-pod.pdf", new ByteArrayResource(attachmentData));
-	            mailSender.send(message);
-	        } catch (MessagingException e) {
-	            e.printStackTrace();
-	        }
+				MimeMessageHelper helper = new MimeMessageHelper(message, true);
+				helper.setFrom("Reports@d2z.com.au");
+				helper.setTo("jack@d2z.com.au");
+				helper.setSubject("D2Z Enquiry Updates");
+				helper.setText(mailBody, true);
+				if (attachmentData != null)
+					helper.addAttachment("D2Z-Enquiry-pod.pdf", new ByteArrayResource(attachmentData));
+				mailSender.send(message);
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			}
 		}
 		return usrMsg;
+	}
+
+	@Override
+	public UserMessage generatePerformanceReport() {
+		long startTime = System.currentTimeMillis();
+		List<PerformanceReportTrackingData> trackingNumbers = d2zDao.fetchArticleIdForPerformanceReport();
+		Map<String, List<String>> trackingDetails = trackingNumbers.stream()
+				.collect(Collectors.groupingBy(PerformanceReportTrackingData::getServiceType,
+						Collectors.mapping(PerformanceReportTrackingData::getArticleID, Collectors.toList())));
+		Map<String, TrackingEvents> trackingDataMap = new HashMap<String, TrackingEvents>();
+		trackingDetails.forEach((serviceType, trackingNbrs) -> {
+			if (serviceType.equalsIgnoreCase("FW") || serviceType.equalsIgnoreCase("1PS4")) {
+				pflWrapper.makeTrackingEventCall(trackingNbrs, trackingDataMap);
+			} else {
+				eTowerWrapper.makeCallForTrackingEvents(trackingDataMap, trackingNbrs, serviceType);
+			}
+
+		});
+		
+		 List<String> reportData = d2zDao.fetchPerformanceReportData();
+		 List<PerformanceReportData> performanceReportData = new ArrayList<PerformanceReportData>(); 
+		 Iterator reportDataItr = reportData.iterator(); 
+		 while (reportDataItr.hasNext()) 
+		 { 
+			 Object[] obj = (Object[]) reportDataItr.next(); 
+			 PerformanceReportData data = new PerformanceReportData();
+			 String articleId = obj[0] != null?obj[0].toString():""; 
+			 data.setArticleId(articleId);
+			 data.setConsigneeName(obj[1]!=null?obj[1].toString():"");
+			 data.setConsigneeAddr1(obj[2] != null?obj[2].toString():"");
+			 data.setConsigneeAddr2(obj[3]!=null?obj[3].toString():"");
+			 data.setCity(obj[4] != null?obj[4].toString():"");
+			 data.setState(obj[5]!=null?obj[5].toString():""); 
+			 data.setPostcode(obj[6] !=null?obj[6].toString():"");
+			 data.setArriveDate(obj[7]!=null?obj[7].toString():"");
+			 data.setClearanceDate(obj[8] != null?obj[8].toString():"");
+			 data.setLodgementDate(obj[9]!=null?obj[9].toString():"");
+			 
+			 if(trackingDataMap.containsKey(articleId) && null!=trackingDataMap.get(articleId))
+			 {
+				 data.setLatestTrackingStatus(trackingDataMap.get(articleId).getEventDetails());
+				 data.setLatestTrackingTimestamp(trackingDataMap.get(articleId).getTrackEventDateOccured()); 
+			 } 
+			 performanceReportData.add(data);
+		}
+		 
+		 
+		 
+		 byte[] attachmentData = shipmentWriter.generatePerformance(performanceReportData); 
+		 String mailBody =
+				 "<body><h4> Dear Customer,</br></br>" +
+						 "Please find attached the Performance Report." + "</h4>" +
+						 "<h4>Regards, </br>" + "D2Z Support Team</h4>" + "</body> "; 
+		 MimeMessage message = mailSender.createMimeMessage(); 
+		 try 
+		 { 
+		  MimeMessageHelper helper = new MimeMessageHelper(message, true); 
+		  helper.setFrom("report@d2z.com.au");
+		  helper.setTo("aparna@d2z.com.au");
+		  helper.setSubject("D2Z Performance Report"); 
+		  helper.setText(mailBody, true);
+		  if(attachmentData != null)
+			  helper.addAttachment("PerformanceReport.xlsx", new ByteArrayResource(attachmentData)); 
+		  mailSender.send(message); 
+		  } 
+		 catch (MessagingException e) 
+		 { 
+			 e.printStackTrace(); 
+		 } 
+		 long endTime = System.currentTimeMillis();
+		 long executeTime = endTime - startTime;
+		 System.out.println("Time taken for Performance Report generation : " +executeTime);
+		  
+		 UserMessage msg = new UserMessage();
+		 msg.setMessage("Report generated Successfully");
+		 return msg;
 	}
 
 }

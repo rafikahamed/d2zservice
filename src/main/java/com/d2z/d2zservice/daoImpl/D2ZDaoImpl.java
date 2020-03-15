@@ -41,6 +41,8 @@ import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.EnquiryUpdate;
+import com.d2z.d2zservice.model.PerformanceReportData;
+import com.d2z.d2zservice.model.PerformanceReportTrackingData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
@@ -901,17 +903,17 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public List<String>  fetchDataForAUPost() {
 		List<Trackandtrace> trackandtraceData = trackAndTraceRepository.fetchArticleIDForAUPost();
 		List<Trackandtrace> updatedData = new ArrayList<Trackandtrace>();
-		List<String> refNbrs = new ArrayList<String>(); 
+		List<String> articleID = new ArrayList<String>(); 
 		if(trackandtraceData.size() >= 10) {
 			for(Trackandtrace data : trackandtraceData) {
 				data.setFileName("AUPost");
 				updatedData.add(data);
-				refNbrs.add(data.getReference_number());
+				articleID.add(data.getArticleID());
 			}
 			trackAndTraceRepository.saveAll(updatedData);
 		}
 		
-		return refNbrs;
+		return articleID;
 	}
 	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails,Map<String,String> map) {
 		List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
@@ -1317,5 +1319,19 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		CSTickets csTicket = csticketsRepository.fetchCSTicketDetails(ticketId);
 		return csTicket;
 	}
+
+	@Override
+	public List<String> fetchPerformanceReportData() {
+		return senderDataRepository.fetchPerformanceReportData() ;
+	}
+
+	@Override
+	public List<PerformanceReportTrackingData> fetchArticleIdForPerformanceReport() {
+		List<PerformanceReportTrackingData> trackingData = new ArrayList<PerformanceReportTrackingData>();
+		List<Object[]> objArr = senderDataRepository.fetchArticleIdForPerformanceReport();
+		objArr.forEach(obj -> trackingData.add(new PerformanceReportTrackingData(obj)));
+		return trackingData;
+	}
+	
 
 }

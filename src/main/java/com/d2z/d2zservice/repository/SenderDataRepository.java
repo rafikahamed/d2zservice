@@ -822,4 +822,19 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT s.servicetype FROM SenderdataMaster s where s.mlid = :mlid")
 	String fetchServiceTypeByMlid(String mlid);
 
+	@Query(nativeQuery = true,value = "select s.articleId,s.consignee_name,s.consignee_addr1,s.consignee_addr2,s.consignee_suburb,"
+			+ "s.consignee_state,s.consignee_postcode,i.ata,\n" + 
+			"i.clearanceDate,injectionDate	from senderdata_master "
+			+ "s INNER JOIN Incomingjobs i ON s.airwayBill = i.mawb "
+			+ "where s.user_id in (189762,189765) and s.IsDeleted = 'N' and s.Status = 'SHIPMENT ALLOCATED' "
+			+ "and DATEPART(m, s.Timestamp) = DATEPART(m, DATEADD(m, -1, getdate())) "
+			+ "AND DATEPART(yy, s.Timestamp) = DATEPART(yy, DATEADD(m, -1, getdate()))")
+	List<String> fetchPerformanceReportData();
+
+	@Query(nativeQuery = true,value = "select s.articleId,s.serviceType	from senderdata_master s "
+			+ "where s.user_id in (189762,189765) and s.IsDeleted = 'N' and s.Status = 'SHIPMENT ALLOCATED' "
+			+ "and DATEPART(m, s.Timestamp) = DATEPART(m, DATEADD(m, -1, getdate())) "
+			+ "AND DATEPART(yy, s.Timestamp) = DATEPART(yy, DATEADD(m, -1, getdate()))")
+	List<Object[]> fetchArticleIdForPerformanceReport();
+
 } 

@@ -21,6 +21,8 @@ import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.EnquiryUpdate;
+import com.d2z.d2zservice.model.PerformanceReportData;
+import com.d2z.d2zservice.model.PerformanceReportTrackingData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
@@ -185,5 +187,9 @@ public interface ID2ZDao {
 	public UserMessage enquiryUpdate(String ticketNum, String cmts, String d2zCmts, String update, String sts);
 
 	public CSTickets fetchCSTicketDetails(String ticketNumber);
+
+	public List<String> fetchPerformanceReportData();
+
+	public List<PerformanceReportTrackingData> fetchArticleIdForPerformanceReport();
 
 }

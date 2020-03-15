@@ -21,6 +21,7 @@ import com.d2z.d2zservice.model.PFLSubmitOrderResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponse;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
 import com.d2z.d2zservice.model.PflTrackEventRequest;
+import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.security.HMACGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -260,8 +261,15 @@ public class PFLProxy {
 			ResponseEntity<PFLTrackingResponse> responseEntity = template.exchange(url, HttpMethod.POST,
 					httpEntity, PFLTrackingResponse.class);
 			System.out.println("PFL Response code--->"+responseEntity.getStatusCode());
-			response = responseEntity.getBody();
-			System.out.println(response);
+			 response = responseEntity.getBody();
+	        ObjectWriter ow = new ObjectMapper().writer();
+	        
+			try {
+				jsonResponse = ow.writeValueAsString(response);
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+	        System.out.println("Response :: " + jsonResponse);
 		} catch (HttpStatusCodeException e) {
 			System.out.println("error code :" + e.getStatusCode());
 			jsonResponse = e.getResponseBodyAsString();

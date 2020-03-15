@@ -23,17 +23,23 @@ import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
+import com.d2z.d2zservice.model.PerformanceReportTrackingData;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
+import com.d2z.d2zservice.model.TrackParcelResponse;
+import com.d2z.d2zservice.model.TrackingEvents;
 import com.d2z.d2zservice.model.etower.CreateShippingRequest;
 import com.d2z.d2zservice.model.etower.CreateShippingResponse;
 import com.d2z.d2zservice.model.etower.DeleteShippingResponse;
+import com.d2z.d2zservice.model.etower.ETowerTrackingDetails;
 import com.d2z.d2zservice.model.etower.EtowerErrorResponse;
 import com.d2z.d2zservice.model.etower.Facility;
 import com.d2z.d2zservice.model.etower.GainLabelsResponse;
 import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.model.etower.ResponseData;
+import com.d2z.d2zservice.model.etower.TrackEventResponseData;
+import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.singleton.D2ZSingleton;
 import com.d2z.singleton.SingletonCounter;
@@ -956,6 +962,38 @@ s);
 			// insertTrackingDetails(trackEventresponse);
 		}
 
+	}
+
+	public void makeCallForTrackingEvents(Map<String, TrackingEvents> trackingEvents,
+			List<String> trackingNumbers, String serviceType) {
+		
+		
+			List<List<String>> trackingNbrList = ListUtils.partition(trackingNumbers, 300);
+			for (List<String> trackingNbrs : trackingNbrList) {
+				
+				TrackingEventResponse response = eTowerProxy.makeCallForTrackingEvents(trackingNbrs,serviceType);
+				List<TrackEventResponseData> responseData = response.getData();
+
+				if (responseData!=null && !responseData.isEmpty()) {
+
+					for (TrackEventResponseData data : responseData) {
+
+						if (data != null) {
+							
+							
+							if(data.getEvents()!=null) {
+													
+								TrackingEvents event = new TrackingEvents();
+								event.setTrackEventDateOccured(data.getEvents().get(0).getEventTime());
+								event.setEventDetails(data.getEvents().get(0).getActivity());
+								trackingEvents.put(data.getOrderId(), event);
+							}
+							
+							}
+						}
+			}
+			}
+		
 	}
 
 }

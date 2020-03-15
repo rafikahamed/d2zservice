@@ -304,7 +304,10 @@ public class D2zController {
 	public void getcurrency() {
 		d2zService.currencyRate();
 	}
-	
+	@RequestMapping(method = RequestMethod.GET, path = "/performanceReport")
+	public UserMessage getPerformanceReport() {
+		return d2zService.generatePerformanceReport();
+	}
 	@RequestMapping(method = RequestMethod.GET, path = "/outStanding-returns")
 	public List<Returns> returnsOutstanding(@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate, 
 			@RequestParam("userId") String userId) {

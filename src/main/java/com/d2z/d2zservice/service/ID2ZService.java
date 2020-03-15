@@ -143,4 +143,6 @@ public interface ID2ZService {
 	
 	public UserMessage enquiryUpdate(SuperUserEnquiry updatedData);
 
+	public UserMessage generatePerformanceReport();
+
 }

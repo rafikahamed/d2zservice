@@ -104,4 +104,12 @@ public class Scheduler {
 		 d2zService.currencyRate();
 		
 	}
+	
+	//@Scheduled(cron = "0 19 * * 0 ?")
+	public void generatePerformanceReport() {try {
+		d2zService.generatePerformanceReport();
+	} catch (Exception e) {
+		System.out.println(e.getLocalizedMessage());
+	}}
+	
 }

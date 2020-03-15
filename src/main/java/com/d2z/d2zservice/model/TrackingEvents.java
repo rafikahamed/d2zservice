@@ -1,7 +1,5 @@
 package com.d2z.d2zservice.model;
 
-import java.sql.Timestamp;
-
 public class TrackingEvents {
 	
 	private String eventDetails;

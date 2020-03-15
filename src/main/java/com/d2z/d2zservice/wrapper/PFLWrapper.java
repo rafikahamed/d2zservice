@@ -16,10 +16,14 @@ import com.d2z.d2zservice.model.PFLCreateShippingResponse;
 import com.d2z.d2zservice.model.PFLResponseData;
 import com.d2z.d2zservice.model.PFLSubmitOrderRequest;
 import com.d2z.d2zservice.model.PFLSubmitOrderResponse;
+import com.d2z.d2zservice.model.PFLTrackingResponse;
+import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
+import com.d2z.d2zservice.model.PflTrackEventRequest;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
+import com.d2z.d2zservice.model.TrackingEvents;
 import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.proxy.PFLProxy;
 
@@ -226,6 +230,21 @@ public class PFLWrapper {
 					d2zDao.logEtowerResponse(responseEntity);
 				}
 			}
+	}
+
+	public void makeTrackingEventCall(List<String> trackingNbrs,Map<String,TrackingEvents> trackingDataMap) {
+		for(String pflValue:trackingNbrs) {
+			PflTrackEventRequest pflTrackEvent = new PflTrackEventRequest();
+			pflTrackEvent.setTracking_number(pflValue);
+			PFLTrackingResponse pflTrackResp = pflProxy.trackingEvent(pflTrackEvent);
+			if(pflTrackResp.getResult() != null) {
+				TrackingEvents event = new TrackingEvents();
+				event.setEventDetails(pflTrackResp.getResult().get(0).getStatus());
+				event.setTrackEventDateOccured(pflTrackResp.getResult().get(0).getDate());
+				trackingDataMap.put(pflTrackEvent.getTracking_number(),event);
+
+			}
+		}
 	}
 	
 	
