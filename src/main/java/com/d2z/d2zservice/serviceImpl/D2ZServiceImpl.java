@@ -50,7 +50,7 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
-import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
+import com.d2z.d2zservice.excelWriter.ExcelWriter;
 import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.MaxSizeCountException;
@@ -160,7 +160,7 @@ public class D2ZServiceImpl implements ID2ZService {
 	FFResponseRepository ffresponseRepository;
 
 	@Autowired
-	ShipmentDetailsWriter shipmentWriter;
+	ExcelWriter excelWriter;
 
 	@Autowired
 	private ID2ZBrokerDao d2zBrokerDao;
@@ -2634,7 +2634,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		 
 		 
 		 
-		 byte[] attachmentData = shipmentWriter.generatePerformance(performanceReportData); 
+		 byte[] attachmentData = excelWriter.generatePerformance(performanceReportData); 
 		 String mailBody =
 				 "<body><h4> Dear Customer,</br></br>" +
 						 "Please find attached the Performance Report." + "</h4>" +
