@@ -28,6 +28,7 @@ import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
+import com.d2z.d2zservice.entity.IncomingJobs;
 import com.d2z.d2zservice.entity.IncomingJobsLogic;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
@@ -37,7 +38,7 @@ import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
-import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
+import com.d2z.d2zservice.excelWriter.ExcelWriter;
 import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.AUWeight;
@@ -117,9 +118,6 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	private ID2ZSuperUserDao d2zDao;
 
 	@Autowired
-	ShipmentDetailsWriter shipmentWriter;
-
-	@Autowired
 	private ETowerProxy proxy;
 
 	@Autowired
@@ -145,6 +143,9 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 */
 	@Autowired
 	ETowerWrapper eTowerWrapper; 
+	
+	@Autowired
+	ExcelWriter excelWriter;
 	
 	@Override
 	public UserMessage uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -1842,6 +1843,12 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	public List<ProfitLossReport> profitLossReport(String fromDate, String toDate) {
 		List<ProfitLossReport> profitReport = d2zDao.profitLossReport(fromDate,toDate);
 		return profitReport;
+	}
+	
+	@Override
+	public void generateShipmentReport(String MAWB) {
+		IncomingJobs incomingJobs = d2zDao.fetchJobsByMAWB(MAWB);
+		excelWriter.generateShipmentReport(incomingJobs);
 	}
 
 }

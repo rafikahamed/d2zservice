@@ -19,6 +19,9 @@ public interface IncomingJobsRepository extends CrudRepository<IncomingJobs,Long
 	@Query( nativeQuery = true, value="SELECT * FROM incomingjobs where broker in ('NEXB', 'VELB', 'RMFB', '5ULB') and Shipment is null")
 	List<IncomingJobs> shipmentCharges();
 	
+	@Query(nativeQuery = true, value= "Select * from IncomingJobs where  mawb = :mawb")
+	IncomingJobs fetchJobByMAWB(@Param("mawb") String mawb);
+	
 	@Modifying(flushAutomatically = true,clearAutomatically = true)
 	@Transactional
 	@Query(nativeQuery = true, value="Update IncomingJobs  set Shipment = 'Y' where mawb = :mawb")

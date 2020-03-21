@@ -2139,5 +2139,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		return consigneeCountRepository.getMlidBasedonSupplier(supplier);
 	}
 
+	@Override
+	public IncomingJobs fetchJobsByMAWB(String mawb) {
+		return incomingRepository.fetchJobByMAWB(mawb);
+	}
 
 }

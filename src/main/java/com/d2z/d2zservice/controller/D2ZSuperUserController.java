@@ -390,7 +390,11 @@ public class D2ZSuperUserController {
 		List<IncomingJobResponse> jobInfo = superUserD2zService.getcloseJobList();
 		return jobInfo;
 	}
-	
+	@RequestMapping(method = RequestMethod.GET, path = "/shipmentReport/{mawb}")
+	public void generateShipmentReport(@PathVariable String mawb) {
+		superUserD2zService.generateShipmentReport(mawb);
+		
+	}
 	@RequestMapping( method = RequestMethod.GET, path = "/clientDetails")
     public ReturnsClientResponse fetchClientDetails(@RequestParam("referenceNumber") String referenceNumber,
     	@RequestParam("barcodeLabel") String barcodeLabel, @RequestParam("articleId") String articleId) {

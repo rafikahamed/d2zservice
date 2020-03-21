@@ -7,6 +7,7 @@ import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FastwayPostcode;
+import com.d2z.d2zservice.entity.IncomingJobs;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
