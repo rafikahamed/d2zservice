@@ -1,13 +1,18 @@
 package com.d2z.d2zservice.wrapper;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -982,10 +987,33 @@ s);
 							
 							
 							if(data.getEvents()!=null) {
-													
+								List<ETowerTrackingDetails>	etowerEvents = data.getEvents();				
 								TrackingEvents event = new TrackingEvents();
-								event.setTrackEventDateOccured(data.getEvents().get(0).getEventTime());
-								event.setEventDetails(data.getEvents().get(0).getActivity());
+								DateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+								DateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+								Date date = null;
+								
+								if(etowerEvents.size()>2) {
+									for(ETowerTrackingDetails trackEvent : etowerEvents) {
+										if(trackEvent.getActivity().contains("SHIPPING INFORMATION")) {
+											continue;
+										}else {
+											try {
+												date = inputFormat.parse(trackEvent.getEventTime());
+
+											} catch (ParseException e) {
+												e.printStackTrace();
+											}
+											String eventDateOccured = outputFormat.format(date);
+											event.setTrackEventDateOccured(eventDateOccured);
+											event.setEventDetails(trackEvent.getActivity());
+											break;
+										}
+									}
+								}else {
+								event.setTrackEventDateOccured(etowerEvents.get(0).getEventTime());
+								event.setEventDetails(etowerEvents.get(0).getActivity());
+								}
 								trackingEvents.put(data.getOrderId(), event);
 							}
 							

@@ -9,6 +9,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
@@ -45,6 +48,7 @@ import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.FFResponse;
+import com.d2z.d2zservice.entity.IncomingJobs;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
@@ -2598,9 +2602,46 @@ public class D2ZServiceImpl implements ID2ZService {
 						Collectors.mapping(PerformanceReportTrackingData::getArticleID, Collectors.toList())));
 		Map<String, TrackingEvents> trackingDataMap = new HashMap<String, TrackingEvents>();
 		trackingDetails.forEach((serviceType, trackingNbrs) -> {
-			if (serviceType.equalsIgnoreCase("FW") || serviceType.equalsIgnoreCase("1PS4")) {
+			if (serviceType.equalsIgnoreCase("FW")){
 				pflWrapper.makeTrackingEventCall(trackingNbrs, trackingDataMap);
-			} else {
+			} else if(serviceType.equalsIgnoreCase("1PS4")){
+				List<String> auPostTrackingNbrs = 	trackingNbrs.stream().filter(obj-> obj.startsWith("33PE9")).collect(Collectors.toList());
+				List<List<String>> articleIdList = ListUtils.partition(auPostTrackingNbrs, 10);
+				for (List<String> articleIdNumbers : articleIdList) {
+					String articleIds = StringUtils.join(articleIdNumbers, ", ");
+					TrackingResponse auTrackingDetails = ausPostProxy.trackingEvent(articleIds);
+					List<TrackingResults> trackingData = auTrackingDetails.getTracking_results();
+					if(trackingData != null) {
+						
+						for(TrackingResults data : trackingData ) {
+							if(data!=null && data.getTrackable_items()!=null) {
+								for(TrackableItems trackingLabel : data.getTrackable_items()) {
+									if(trackingLabel != null && trackingLabel.getEvents() != null && !trackingLabel.getEvents().isEmpty()) {
+										DateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+										DateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+										Date date = null;
+										try {
+											date = inputFormat.parse(trackingLabel.getEvents().get(0).getDate());
+										} catch (ParseException e) {
+											e.printStackTrace();
+										}
+										String eventDateOccuredAuPost = outputFormat.format(date);
+										TrackingEvents events = new TrackingEvents();
+										events.setTrackEventDateOccured(eventDateOccuredAuPost);
+										events.setEventDetails(trackingLabel.getStatus());
+										trackingDataMap.put(trackingLabel.getArticle_id(),events);
+									}
+								}
+							}
+						}
+					}
+				}
+				trackingNbrs.removeAll(auPostTrackingNbrs);
+				if(trackingNbrs.size()>0) {
+					pflWrapper.makeTrackingEventCall(trackingNbrs, trackingDataMap);
+				}
+			}
+			else {
 				eTowerWrapper.makeCallForTrackingEvents(trackingDataMap, trackingNbrs, serviceType);
 			}
 
@@ -2624,9 +2665,8 @@ public class D2ZServiceImpl implements ID2ZService {
 			 data.setArriveDate(obj[7]!=null?obj[7].toString():"");
 			 data.setClearanceDate(obj[8] != null?obj[8].toString():"");
 			 data.setLodgementDate(obj[9]!=null?obj[9].toString():"");
-			 
 			 if(trackingDataMap.containsKey(articleId) && null!=trackingDataMap.get(articleId))
-			 {
+			 { 
 				 data.setLatestTrackingStatus(trackingDataMap.get(articleId).getEventDetails());
 				 data.setLatestTrackingTimestamp(trackingDataMap.get(articleId).getTrackEventDateOccured()); 
 			 } 

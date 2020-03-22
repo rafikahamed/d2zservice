@@ -35,7 +35,7 @@ public interface ReturnsRepository extends CrudRepository<Returns, Long>{
 			+ "returnsCreatedDate between :fromDate and :toDate") 
 	List<Returns> returnsOutstandingDetails(@Param("fromDate") String fromDate, @Param("toDate") String toDate, @Param("brokerName") String brokerName);
 	
-	@Query( nativeQuery = true, value="SELECT * FROM Returns where brokerName = :brokerName") 
+	@Query( nativeQuery = true, value="SELECT * FROM Returns where brokerName = :brokerName and action is null") 
 	List<Returns> returnsOutstandingDetailsBroker(@Param("brokerName") String brokerName);
 
 	@Query( nativeQuery = true, value="SELECT * FROM Returns where User_Id in (:userId) and action is null") 

@@ -187,4 +187,6 @@ public interface ISuperUserD2ZService{
 
 	public List<ProfitLossReport> profitLossReport(String fromDate, String toDate);
 
+	void generateShipmentReport(String MAWB);
+
 }
