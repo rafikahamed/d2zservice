@@ -145,4 +145,6 @@ public interface ID2ZService {
 
 	public UserMessage generatePerformanceReport();
 
+	public UserMessage enquiryEmail();
+
 }

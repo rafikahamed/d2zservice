@@ -20,8 +20,11 @@ public interface UserRepository extends CrudRepository<User, Long>{
 	 @Query("SELECT u FROM User u where u.companyName = :companyName and u.role_Id= :roleId") 
 	 User fetchUserbyCompanyName(@Param("companyName") String companyName, @Param("roleId") int roleId);
 
-	 @Query("Select user_Id from User t where t.username = :userName") 
+	 @Query("Select t.user_Id from User t where t.username = :userName") 
 	 Integer fetchUserIdbyUserName(@Param("userName") String userName);
+	 
+	 @Query("Select t.clientBrokerId from User t where t.username = :userName") 
+	 Integer fetchClientBrokerIdbyUserName(@Param("userName") String userName);
 	
 	 @Query("SELECT u.companyName FROM User u where u.role_Id=2") 
 	 List<String> fetchBrokerCompanyName();
@@ -52,7 +55,12 @@ public interface UserRepository extends CrudRepository<User, Long>{
 	@Query("SELECT u FROM User u where u.role_Id = 2") 
 	List<User> broker();
 
-	 @Query ("Select u.postcodeValidate from User u where u.username = :userName")
+	@Query ("Select u.postcodeValidate from User u where u.username = :userName")
 	Object fetchPostcodeValidationIndicator(String  userName);
+	
+	@Query(nativeQuery = true, value=" select * from dbo.Users where Client_Broker_id in (\n" + 
+			"   SELECT distinct(Client_Broker_id) FROM [D2Z].[dbo].[csticketsbackup] where \n" + 
+			"   status='open' and Client_Broker_id is not null ) and role_id=2") 
+	List<User> fetchEmailDetails();
 
 }

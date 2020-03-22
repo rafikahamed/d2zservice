@@ -96,7 +96,7 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 	@Query("SELECT distinct(c.referenceNumber) FROM CSTickets c") 
 	List<String> fetchAllReferenceNumbers();
 	
-	@Query(value="SELECT t FROM CSTickets t where status = 'open'") 
+	@Query(value="SELECT t FROM CSTickets t where t.status = 'open'") 
 	List<CSTickets> fetchCSTicketDetails();
 
 	@Modifying
@@ -136,5 +136,30 @@ public interface CSTicketsRepository extends CrudRepository<CSTickets, Long>{
 	
 	@Query("SELECT c FROM CSTickets c where c.ticketID= :ticketId")
 	CSTickets fetchCSTicketDetails(@Param("ticketId") String ticketId);
-
+	
+  	@Query(nativeQuery = true, value="select\r\n" + 
+			"distinct\r\n" + 
+			"a.TicketID,\r\n" + 
+			"a.ArticleID,\r\n" + 
+			"a.ReferenceNumber,\r\n" + 
+			"a.DeliveryEnquiry,\r\n" + 
+			"a.pod,\r\n" + 
+			"a.Comments,\r\n" + 
+			"a.D2ZComments,\r\n" + 
+			"a.Consignee_name,\r\n" + 
+			"a.TrackingEvent,\r\n" + 
+			"a.TrackingEventDateOccured,\r\n" + 
+			"a.userId,\r\n" + 
+			"a.Client_Broker_id,\r\n" + 
+			"b.EmailAddress\r\n" + 
+			"from\r\n" + 
+			"[D2Z].[dbo].[csticketsbackup] a\r\n" + 
+			"LEFT JOIN\r\n" + 
+			"[D2Z].[dbo].[Users] b\r\n" + 
+			"on a.Client_Broker_id = b.Client_Broker_id\r\n" + 
+			"where\r\n" + 
+			"a.Client_Broker_id is not null\r\n" + 
+			"and a.status = 'open'") 
+	List<Object[]> fetchOpenTicketDetails();
+	
 }

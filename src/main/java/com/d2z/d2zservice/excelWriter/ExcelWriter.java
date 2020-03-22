@@ -1,10 +1,7 @@
 package com.d2z.d2zservice.excelWriter;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.List;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -14,9 +11,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import com.d2z.d2zservice.model.EmailEnquiryDetails;
 import com.d2z.d2zservice.model.PerformanceReportData;
-import com.d2z.d2zservice.entity.SenderdataMaster;
-import com.d2z.d2zservice.model.ShipmentDetails;
+
 @Service
 public class ExcelWriter {
 
@@ -76,4 +73,55 @@ public class ExcelWriter {
 		}
       return xls;
 	}
+
+	
+	public byte[] generateEnquiryReport(List<EmailEnquiryDetails> enquiryDetails) {
+		//Header for Enquiry Reports
+		String[] columns = {"Ticket ID","Article ID","Reference Number","Enquiry","POD","Comments","D2Z Comments","Consignee Name",
+	    		  "Tracking Event","Tracking Date"};
+	 
+		Workbook workbook = new XSSFWorkbook();
+		Sheet sheet = workbook.createSheet("Outstanding Enquiry Report");
+		CellStyle style = workbook.createCellStyle();
+		Font font = workbook.createFont();//Create font
+	    font.setBold(true);//Make font bold
+	    style.setFont(font);
+		Row headerRow = sheet.createRow(0);
+		for(int i = 0; i < columns.length; i++) {
+         Cell cell = headerRow.createCell(i);
+         cell.setCellValue(columns[i]);
+         cell.setCellStyle(style);
+		}
+		int rowNum = 1;
+     for(EmailEnquiryDetails enquiry : enquiryDetails) {
+         Row row = sheet.createRow(rowNum++);
+         row.createCell(0).setCellValue(enquiry.getTicketId());
+         row.createCell(1).setCellValue(enquiry.getArticleId());
+         row.createCell(2).setCellValue(enquiry.getReferenceNumber());
+         row.createCell(3).setCellValue(enquiry.getDeliveryEnquiry());
+         row.createCell(4).setCellValue(enquiry.getPod());
+         row.createCell(5).setCellValue(enquiry.getComments());
+         row.createCell(6).setCellValue(enquiry.getD2zComments());
+         row.createCell(7).setCellValue(enquiry.getConsignee_Name());
+         row.createCell(8).setCellValue(enquiry.getTrackingEvent());
+         row.createCell(9).setCellValue(enquiry.getTrackingEventDateOccured());
+      	}
+     
+	     for(int i = 0; i < columns.length; i++) {
+	         sheet.autoSizeColumn(i);
+	     }
+	
+	     byte[] xls = null;
+	     try {
+	     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	     	workbook.write(baos);
+	     	 xls = baos.toByteArray();
+	     	workbook.close();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	     return xls;
+	}
+	
 }

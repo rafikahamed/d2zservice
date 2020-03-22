@@ -18,6 +18,7 @@ import com.d2z.d2zservice.entity.UserService;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
+import com.d2z.d2zservice.model.EmailEnquiryDetails;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.EnquiryUpdate;
@@ -191,5 +192,9 @@ public interface ID2ZDao {
 	public List<String> fetchPerformanceReportData();
 
 	public List<PerformanceReportTrackingData> fetchArticleIdForPerformanceReport();
+
+	public List<EmailEnquiryDetails> fetchEmailEnquiryDetails();
+
+	public List<User> fetchEmailDetails();
 
 }

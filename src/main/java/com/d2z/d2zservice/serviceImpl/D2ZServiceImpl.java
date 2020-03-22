@@ -64,6 +64,7 @@ import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.Ebay_Shipment;
 import com.d2z.d2zservice.model.Ebay_ShipmentDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
+import com.d2z.d2zservice.model.EmailEnquiryDetails;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.EnquiryUpdate;
@@ -2661,6 +2662,50 @@ public class D2ZServiceImpl implements ID2ZService {
 		  
 		 UserMessage msg = new UserMessage();
 		 msg.setMessage("Report generated Successfully");
+		 return msg;
+	}
+
+	@Override
+	public UserMessage enquiryEmail() {
+		List<EmailEnquiryDetails> csticketDetails = d2zDao.fetchEmailEnquiryDetails();
+		Map<String, List<EmailEnquiryDetails>> enquiryMap = new HashMap<String, List<EmailEnquiryDetails>>();
+		csticketDetails.forEach(obj -> {
+			if(enquiryMap.containsKey(obj.getEmailAddress())){
+				enquiryMap.get(obj.getEmailAddress()).add(obj);
+			}else {
+				List<EmailEnquiryDetails> csticketList = new ArrayList<EmailEnquiryDetails>();
+				csticketList.add(obj);
+				enquiryMap.put(obj.getEmailAddress(), csticketList);
+			}
+		});
+		
+		//Iterate the Email Map and send the notification
+		enquiryMap.forEach((enquiryEmail,enquiryVal)->{
+			System.out.println("Enquiry Map : " + enquiryEmail + " Count : " + enquiryVal);
+			byte[] attachmentData = excelWriter.generateEnquiryReport(enquiryVal); 
+			
+			 String mailBody = "<body><h4> Dear Customer,</br></br>" +
+							   "Please find attached the Enquiry Outstanding Report." + "</h4>" +
+							   "<h4>Regards, </br>" + "D2Z Support Team</h4>" + "</body> "; 
+			 MimeMessage message = mailSender.createMimeMessage(); 
+			 try 
+			 { 
+			  MimeMessageHelper helper = new MimeMessageHelper(message, true); 
+			  helper.setFrom("report@d2z.com.au");
+//			  helper.setTo("rafikahamed56@gmail.com");
+			  System.out.println("Sending Enquiry Details --->"+enquiryEmail);
+			  helper.setTo(enquiryEmail);
+			  helper.setSubject("D2Z Outstanding Enquiry Report"); 
+			  helper.setText(mailBody, true);
+			  if(attachmentData != null)
+				  helper.addAttachment("Outstanding Enquiry.xlsx", new ByteArrayResource(attachmentData)); 
+			  mailSender.send(message); 
+			  }catch (MessagingException e) { 
+				 e.printStackTrace(); 
+			  } 
+		 });
+		 UserMessage msg = new UserMessage();
+		 msg.setMessage("Enquiry Report generated Successfully");
 		 return msg;
 	}
 

@@ -1,12 +1,8 @@
 package com.d2z.d2zservice.scheduler;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
-
-import com.d2z.d2zservice.model.CurrencyDetails;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 
@@ -112,4 +108,10 @@ public class Scheduler {
 		System.out.println(e.getLocalizedMessage());
 	}}
 	
+	//@Scheduled(cron = "0 0 7 * * ?",zone="GMT")
+	public void enquiryEmail() {
+		System.out.println("Calling  - Enquiry Details");
+		d2zService.enquiryEmail();
+	}
+
 }

@@ -97,6 +97,12 @@ public class D2zController {
 		return enquiryInfo;
 	}
 	
+	@RequestMapping(method = RequestMethod.GET, path = "/enquiry-email")
+	public UserMessage enquiryEmail() {
+		UserMessage enquiryInfo = d2zService.enquiryEmail();
+		return enquiryInfo;
+	}
+	
 	@RequestMapping(method = RequestMethod.GET, path = "/completed-Enquiry")
 	public List<CSTickets> fetchCompletedEnquiry(@RequestParam("userId") String userId) {
 		List<CSTickets> completedEnquiry = d2zService.fetchCompletedEnquiry(userId);
