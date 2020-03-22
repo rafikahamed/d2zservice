@@ -39,6 +39,7 @@ import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.CurrencyDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
 import com.d2z.d2zservice.model.EmailEnquiryDetails;
+import com.d2z.d2zservice.model.EmailReturnDetails;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.EnquiryUpdate;
@@ -1347,6 +1348,14 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public List<User> fetchEmailDetails() {
 		List<User> userEmailDetails = userRepository.fetchEmailDetails();
 		return userEmailDetails;
+	}
+
+	@Override
+	public List<EmailReturnDetails> fetchReturnsDetails() {
+		List<EmailReturnDetails> returnsData = new ArrayList<EmailReturnDetails>();
+		List<Object[]> returns = returnsRepository.fetchReturnsDetails();
+		returns.forEach(obj -> returnsData.add(new EmailReturnDetails(obj)));
+		return returnsData;
 	}
 
 }

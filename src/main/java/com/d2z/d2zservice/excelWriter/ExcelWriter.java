@@ -23,6 +23,7 @@ import org.apache.poi.ss.util.RegionUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.model.EmailEnquiryDetails;
+import com.d2z.d2zservice.model.EmailReturnDetails;
 import com.d2z.d2zservice.model.PerformanceReportData;
 import com.d2z.d2zservice.model.PerformanceReportData;
 import com.d2z.d2zservice.entity.IncomingJobs;
@@ -96,7 +97,7 @@ public class ExcelWriter {
 	    		  "Tracking Event","Tracking Date"};
 	 
 		Workbook workbook = new XSSFWorkbook();
-		Sheet sheet = workbook.createSheet("Outstanding Enquiry Report");
+		Sheet sheet = workbook.createSheet("Enquiry Report");
 		CellStyle style = workbook.createCellStyle();
 		Font font = workbook.createFont();//Create font
 	    font.setBold(true);//Make font bold
@@ -108,18 +109,19 @@ public class ExcelWriter {
          cell.setCellStyle(style);
 		}
 		int rowNum = 1;
-     for(EmailEnquiryDetails enquiry : enquiryDetails) {
-         Row row = sheet.createRow(rowNum++);
-         row.createCell(0).setCellValue(enquiry.getTicketId());
-         row.createCell(1).setCellValue(enquiry.getArticleId());
-         row.createCell(2).setCellValue(enquiry.getReferenceNumber());
-         row.createCell(3).setCellValue(enquiry.getDeliveryEnquiry());
-         row.createCell(4).setCellValue(enquiry.getPod());
-         row.createCell(5).setCellValue(enquiry.getComments());
-         row.createCell(6).setCellValue(enquiry.getD2zComments());
-         row.createCell(7).setCellValue(enquiry.getConsignee_Name());
-         row.createCell(8).setCellValue(enquiry.getTrackingEvent());
-         row.createCell(9).setCellValue(enquiry.getTrackingEventDateOccured());
+		
+		for(EmailEnquiryDetails enquiry : enquiryDetails) {
+	         Row row = sheet.createRow(rowNum++);
+	         row.createCell(0).setCellValue(enquiry.getTicketId());
+	         row.createCell(1).setCellValue(enquiry.getArticleId());
+	         row.createCell(2).setCellValue(enquiry.getReferenceNumber());
+	         row.createCell(3).setCellValue(enquiry.getDeliveryEnquiry());
+	         row.createCell(4).setCellValue(enquiry.getPod());
+	         row.createCell(5).setCellValue(enquiry.getComments());
+	         row.createCell(6).setCellValue(enquiry.getD2zComments());
+	         row.createCell(7).setCellValue(enquiry.getConsignee_Name());
+	         row.createCell(8).setCellValue(enquiry.getTrackingEvent());
+	         row.createCell(9).setCellValue(enquiry.getTrackingEventDateOccured());
       	}
      
 	     for(int i = 0; i < columns.length; i++) {
@@ -224,6 +226,54 @@ public class ExcelWriter {
 		   valueCell.setCellStyle(style);
 		   
 		   
+	}
+
+
+	public byte[] generateReturnsReport(List<EmailReturnDetails> enquiryVal) {
+		
+		//Header for Enquiry Reports
+		String[] columns = {"Article ID","Reference Number","Consignee Name","Client Name","Return Reason","Shipment Number","Scanned Date"};
+	 
+		Workbook workbook = new XSSFWorkbook();
+		Sheet sheet = workbook.createSheet("Returns Report");
+		CellStyle style = workbook.createCellStyle();
+		Font font = workbook.createFont();//Create font
+	    font.setBold(true);//Make font bold
+	    style.setFont(font);
+		Row headerRow = sheet.createRow(0);
+		for(int i = 0; i < columns.length; i++) {
+         Cell cell = headerRow.createCell(i);
+         cell.setCellValue(columns[i]);
+         cell.setCellStyle(style);
+		}
+		int rowNum = 1;
+		
+		for(EmailReturnDetails returns : enquiryVal) {
+	         Row row = sheet.createRow(rowNum++);
+	         row.createCell(0).setCellValue(returns.getArticleId());
+	         row.createCell(1).setCellValue(returns.getReferenceNumber());
+	         row.createCell(2).setCellValue(returns.getConsigneeName());
+	         row.createCell(3).setCellValue(returns.getClientName());
+	         row.createCell(4).setCellValue(returns.getReturnReason());
+	         row.createCell(5).setCellValue(returns.getAirwaybill());
+	         row.createCell(6).setCellValue(returns.getReturnsCreatedDate());
+      	}
+     
+	     for(int i = 0; i < columns.length; i++) {
+	         sheet.autoSizeColumn(i);
+	     }
+	
+	     byte[] xls = null;
+	     try {
+	     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	     	workbook.write(baos);
+	     	 xls = baos.toByteArray();
+	     	workbook.close();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	     return xls;
 	}
 
 }

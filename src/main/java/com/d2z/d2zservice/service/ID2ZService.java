@@ -1,6 +1,5 @@
 package com.d2z.d2zservice.service;
 
-import java.sql.Blob;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.validation.Valid;
@@ -146,5 +145,7 @@ public interface ID2ZService {
 	public UserMessage generatePerformanceReport();
 
 	public UserMessage enquiryEmail();
+
+	public UserMessage returnsEmail();
 
 }

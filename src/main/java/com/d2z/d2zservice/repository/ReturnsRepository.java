@@ -63,4 +63,27 @@ public interface ReturnsRepository extends CrudRepository<Returns, Long>{
 
 	@Query( nativeQuery = true, value="SELECT * FROM Returns where action is not null and status is null and carrier != 'FastwayM'")
 	List<Returns> returnsOutstandingExceptFastway();
+	
+	@Query( nativeQuery = true, value="select\r\n" + 
+			"distinct\r\n" + 
+			"a.ArticleId,\r\n" + 
+			"a.ReferenceNumber,\r\n" + 
+			"a.ConsigneeName,\r\n" + 
+			"a.ClientName,\r\n" + 
+			"a.ReturnReason,\r\n" + 
+			"a.airwaybill,\r\n" + 
+			"a.ReturnsCreatedDate,\r\n" + 
+			"a.User_Id,\r\n" + 
+			"a.Client_Broker_id,\r\n" + 
+			"b.EmailAddress\r\n" + 
+			"from\r\n" + 
+			"[D2Z].[dbo].[Returns] a\r\n" + 
+			"LEFT JOIN\r\n" + 
+			"[D2Z].[dbo].[Users] b\r\n" + 
+			"on a.Client_Broker_id = b.Client_Broker_id\r\n" + 
+			"where\r\n" + 
+			"a.Client_Broker_id is not null\r\n" + 
+			"and action is null")
+	List<Object[]> fetchReturnsDetails();
+	
 }
