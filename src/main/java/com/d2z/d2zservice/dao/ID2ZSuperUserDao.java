@@ -33,6 +33,7 @@ import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ShipmentApproval;
 import com.d2z.d2zservice.model.ShipmentCharges;
+import com.d2z.d2zservice.model.SurplusData;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
@@ -255,6 +256,8 @@ public interface ID2ZSuperUserDao {
 	List<String> fetchMlidsBasedOnSupplier(String string);
 
 	IncomingJobs fetchJobsByMAWB(String mawb);
+
+	List<SurplusData> fetchSurplusData(String mawb);
 
 }
 

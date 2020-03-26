@@ -2,12 +2,12 @@ package com.d2z.d2zservice.service;
 
 import java.util.List;
 import java.util.Map;
+
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.Returns;
-import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.AUWeight;
@@ -22,6 +22,10 @@ import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.ExportConsignment;
+import com.d2z.d2zservice.model.ExportDelete;
+import com.d2z.d2zservice.model.ExportShipment;
+import com.d2z.d2zservice.model.HeldParcel;
+import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
@@ -39,10 +43,6 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.Zone;
 import com.d2z.d2zservice.model.ZoneRequest;
-import com.d2z.d2zservice.model.ExportDelete;
-import com.d2z.d2zservice.model.ExportShipment;
-import com.d2z.d2zservice.model.HeldParcel;
-import com.d2z.d2zservice.model.IncomingJobResponse;
 
 public interface ISuperUserD2ZService{
 
@@ -187,6 +187,6 @@ public interface ISuperUserD2ZService{
 
 	public List<ProfitLossReport> profitLossReport(String fromDate, String toDate);
 
-	void generateShipmentReport(String MAWB);
+	UserMessage generateShipmentReport(IncomingJobResponse jobs, String userID);
 
 }

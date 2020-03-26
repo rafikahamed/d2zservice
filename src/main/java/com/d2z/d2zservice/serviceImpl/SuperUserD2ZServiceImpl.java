@@ -69,6 +69,7 @@ import com.d2z.d2zservice.model.ReturnsClientResponse;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.ShipmentApproval;
 import com.d2z.d2zservice.model.ShipmentCharges;
+import com.d2z.d2zservice.model.SurplusData;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
@@ -1846,9 +1847,20 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	}
 	
 	@Override
-	public void generateShipmentReport(String MAWB) {
-		IncomingJobs incomingJobs = d2zDao.fetchJobsByMAWB(MAWB);
-		excelWriter.generateShipmentReport(incomingJobs);
+	public UserMessage generateShipmentReport(IncomingJobResponse incomingJobs,String userID) {
+			List<SurplusData> surplusData = new ArrayList<SurplusData>();
+				if(incomingJobs.getSurplus()!=null && (incomingJobs.getSurplus().equalsIgnoreCase("True") ||
+						incomingJobs.getSurplus().equalsIgnoreCase("Y")))
+				{		
+					incomingJobs.setSurplus("Y");
+					surplusData = d2zDao.fetchSurplusData(incomingJobs.getMawb());
+				}
+		    excelWriter.generateShipmentReport(incomingJobs,surplusData);
+		
+		UserMessage userMsg = new UserMessage();
+		userMsg.setMessage("Shipment Summary generated successfully");
+		return userMsg;
 	}
+	
 
 }

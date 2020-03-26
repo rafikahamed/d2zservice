@@ -54,11 +54,13 @@ import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
+import com.d2z.d2zservice.model.PerformanceReportTrackingData;
 import com.d2z.d2zservice.model.ProfitLossReport;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.ShipmentApproval;
 import com.d2z.d2zservice.model.ShipmentCharges;
+import com.d2z.d2zservice.model.SurplusData;
 import com.d2z.d2zservice.model.UploadTrackingFileData;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
@@ -2142,6 +2144,14 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	@Override
 	public IncomingJobs fetchJobsByMAWB(String mawb) {
 		return incomingRepository.fetchJobByMAWB(mawb);
+	}
+
+	@Override
+	public List<SurplusData> fetchSurplusData(String mawb) {
+		List<SurplusData> surplusData = new ArrayList<SurplusData>();
+		List<Object[]> objArr = parcelRepository.fetchSurplusData(mawb);
+		objArr.forEach(obj -> surplusData.add(new SurplusData(obj)));
+		return surplusData;
 	}
 
 }

@@ -29,6 +29,7 @@ import com.d2z.d2zservice.model.PerformanceReportData;
 import com.d2z.d2zservice.entity.IncomingJobs;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.model.ShipmentDetails;
+import com.d2z.d2zservice.model.SurplusData;
 @Service
 public class ExcelWriter {
 
@@ -89,18 +90,18 @@ public class ExcelWriter {
 		}
       return xls;
 	}
-	public byte[] generateShipmentReport(IncomingJobs incomingJobs) {
+	public byte[] generateShipmentReport(IncomingJobResponse incomingJobs, List<SurplusData> surplusData) {
 		try {
 
 			   Workbook workbook = new XSSFWorkbook();
-			   Sheet sheet = workbook.createSheet("MYSheet");
+			   Sheet sheet = workbook.createSheet("ShipmentSummary");
 
 
 			   InputStream inputStream = new FileInputStream("src/main/resources/D2Z.jpg");
 
 			   byte[] imageBytes = IOUtils.toByteArray(inputStream);
 
-			   int pictureureIdx = workbook.addPicture(imageBytes, Workbook.PICTURE_TYPE_PNG);
+			   int pictureureIdx = workbook.addPicture(imageBytes, Workbook.PICTURE_TYPE_JPEG);
 
 			   inputStream.close();
 
@@ -110,8 +111,10 @@ public class ExcelWriter {
 
 			   ClientAnchor anchor = helper.createClientAnchor();
 
-			   anchor.setCol1(2);
-			   anchor.setRow1(7);
+			   anchor.setCol1(0);
+			   anchor.setRow1(1);
+			   anchor.setCol2(2);
+			   anchor.setRow2(7);
 
 			   drawing.createPicture(anchor, pictureureIdx);
 			   
@@ -138,13 +141,17 @@ public class ExcelWriter {
 			   fillShipmentSummaryData("INJECTION DATE",null!=incomingJobs.getInjectionDate()?incomingJobs.getInjectionDate().toString():"",13,sheet,workbook);
 			   fillShipmentSummaryData("CLEAR",incomingJobs.getClear(),14,sheet,workbook);
 			   fillShipmentSummaryData("HELD",incomingJobs.getHeld(),15,sheet,workbook);
-			   fillShipmentSummaryData("SURPLUS/SHORTAGE",incomingJobs.getSurplusShortage(),16,sheet,workbook);
-			   fillShipmentSummaryData("DAMAGE/OTHER",incomingJobs.getDamageNotes(),17,sheet,workbook);
+			   fillShipmentSummaryData("SURPLUS/SHORTAGE",incomingJobs.getSurplus(),16,sheet,workbook);
+			   fillShipmentSummaryData("DAMAGE/OTHER",incomingJobs.getDamage(),17,sheet,workbook);
 			   
-			   
-			   Row row10 = sheet.createRow(19);
-			   row10.createCell(0).setCellValue("ARTICLE ID");
-			   row10.createCell(1).setCellValue("SURPLUS/SHORTAGE");
+			   fillShipmentSummaryData("ARTICLE ID","SURPLUS/SHORTAGE",19,sheet,workbook);
+
+				int rowNum = 20;
+			      for(SurplusData data : surplusData) {
+			          Row surplusrow = sheet.createRow(rowNum++);
+			          surplusrow.createCell(0).setCellValue(data.getArticleId());
+			          surplusrow.createCell(1).setCellValue(data.getStatus());
+			      }
 			   
 			   for(int i = 0; i < 4; i++) { sheet.autoSizeColumn(i); }
 			   File fileNm = new File("src/main/resources/ShipmentReport.xlsx");
