@@ -17,7 +17,6 @@ import com.d2z.d2zservice.model.PFLResponseData;
 import com.d2z.d2zservice.model.PFLSubmitOrderRequest;
 import com.d2z.d2zservice.model.PFLSubmitOrderResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponse;
-import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
 import com.d2z.d2zservice.model.PflTrackEventRequest;
 import com.d2z.d2zservice.model.SenderData;

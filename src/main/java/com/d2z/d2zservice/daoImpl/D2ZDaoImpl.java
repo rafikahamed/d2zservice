@@ -38,10 +38,11 @@ import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateEnquiryRequest;
 import com.d2z.d2zservice.model.CurrencyDetails;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
+import com.d2z.d2zservice.model.EmailEnquiryDetails;
+import com.d2z.d2zservice.model.EmailReturnDetails;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.EnquiryUpdate;
-import com.d2z.d2zservice.model.PerformanceReportData;
 import com.d2z.d2zservice.model.PerformanceReportTrackingData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
@@ -1050,6 +1051,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setPod(enquiryRequest.getPod());
 					tickets.setStatus("open");
 					tickets.setUserId( userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
+					tickets.setClientBrokerId(userRepository.fetchClientBrokerIdbyUserName(createEnquiry.getUserName()));
 					tickets.setEnquiryOpenDate(Timestamp.valueOf(LocalDateTime.now()));
 					TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(tickets.getConsigneePostcode());
 					if( null != transitTimeResponse && null != transitTimeResponse.getTransitTime() && null !=timestamp) {
@@ -1080,6 +1082,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setPod(enquiryRequest.getPod());
 					tickets.setStatus("open");
 					tickets.setUserId( userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
+					tickets.setClientBrokerId(userRepository.fetchClientBrokerIdbyUserName(createEnquiry.getUserName()));
 					tickets.setEnquiryOpenDate(Timestamp.valueOf(LocalDateTime.now()));
 					TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(tickets.getConsigneePostcode());
 					if( null != transitTimeResponse && null != transitTimeResponse.getTransitTime() && null !=timestamp) {
@@ -1332,6 +1335,27 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		objArr.forEach(obj -> trackingData.add(new PerformanceReportTrackingData(obj)));
 		return trackingData;
 	}
-	
+
+	@Override
+	public List<EmailEnquiryDetails> fetchEmailEnquiryDetails() {
+		List<EmailEnquiryDetails> enquiryData = new ArrayList<EmailEnquiryDetails>();
+		List<Object[]> csTicket = csticketsRepository.fetchOpenTicketDetails();
+		csTicket.forEach(obj -> enquiryData.add(new EmailEnquiryDetails(obj)));
+		return enquiryData;
+	}
+
+	@Override
+	public List<User> fetchEmailDetails() {
+		List<User> userEmailDetails = userRepository.fetchEmailDetails();
+		return userEmailDetails;
+	}
+
+	@Override
+	public List<EmailReturnDetails> fetchReturnsDetails() {
+		List<EmailReturnDetails> returnsData = new ArrayList<EmailReturnDetails>();
+		List<Object[]> returns = returnsRepository.fetchReturnsDetails();
+		returns.forEach(obj -> returnsData.add(new EmailReturnDetails(obj)));
+		return returnsData;
+	}
 
 }

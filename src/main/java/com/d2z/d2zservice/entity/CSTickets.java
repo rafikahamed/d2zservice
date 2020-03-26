@@ -1,7 +1,6 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
-import java.sql.Blob;
 import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -94,6 +93,9 @@ public class CSTickets implements Serializable {
 	
 	@Column(name="fileName")
 	private String fileName;
+	
+	@Column(name="Client_Broker_id")
+	private int clientBrokerId;
 	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
@@ -306,5 +308,13 @@ public class CSTickets implements Serializable {
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
-	
+
+	public int getClientBrokerId() {
+		return clientBrokerId;
+	}
+
+	public void setClientBrokerId(int clientBrokerId) {
+		this.clientBrokerId = clientBrokerId;
+	}
+
 }

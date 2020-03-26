@@ -8,7 +8,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +37,7 @@ import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
+//import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
 import com.d2z.d2zservice.excelWriter.ExcelWriter;
 import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
@@ -91,7 +91,6 @@ import com.d2z.d2zservice.wrapper.ETowerWrapper;
 import com.d2z.d2zservice.wrapper.PCAWrapper;
 import com.d2z.d2zservice.wrapper.PFLWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -117,6 +116,9 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 
 	@Autowired
 	private ID2ZSuperUserDao d2zDao;
+
+//	@Autowired
+//	ShipmentDetailsWriter shipmentWriter;
 
 	@Autowired
 	private ETowerProxy proxy;
