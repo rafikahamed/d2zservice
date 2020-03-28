@@ -146,6 +146,8 @@ public class ExcelWriter {
 	}
 	
 	public byte[] generateShipmentReport(IncomingJobResponse incomingJobs, List<SurplusData> surplusData) {
+		byte[] xls = null;
+
 		try {
 
 			   Workbook workbook = new XSSFWorkbook();
@@ -209,14 +211,15 @@ public class ExcelWriter {
 			      }
 			   
 			   for(int i = 0; i < 4; i++) { sheet.autoSizeColumn(i); }
-			   File fileNm = new File("src/main/resources/ShipmentReport.xlsx");
-			   FileOutputStream fileOut =  new FileOutputStream(fileNm);
-			   workbook.write(fileOut);
-			   fileOut.close();
-			}catch (Exception e) {
-			   System.out.println(e);
+			   ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		     	workbook.write(baos);
+		     	 xls = baos.toByteArray();
+		     	workbook.close();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		return null;
+	     return xls;
 	}
 
 	private void fillShipmentSummaryData(String label, String value, int rowNo, Sheet sheet, Workbook workbook) {

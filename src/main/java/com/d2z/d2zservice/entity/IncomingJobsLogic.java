@@ -26,8 +26,20 @@ public class IncomingJobsLogic implements Serializable{
 	@Column(name = "Broker")
 	private String Broker;
 	
+	@Column(name = "email")
+	private String email;
+	
 	@Column(name = "Consignee")
 	private String Consignee;
+
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
 	public String getID() {
 		return ID;

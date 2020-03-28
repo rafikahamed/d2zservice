@@ -390,9 +390,9 @@ public class D2ZSuperUserController {
 		List<IncomingJobResponse> jobInfo = superUserD2zService.getcloseJobList();
 		return jobInfo;
 	}
-	@RequestMapping(method = RequestMethod.POST, path = "/shipmentReport/{userID}")
-	public UserMessage generateShipmentReport(@RequestBody IncomingJobResponse job,@PathVariable String userID) {
-		return superUserD2zService.generateShipmentReport(job,userID);
+	@RequestMapping(method = RequestMethod.POST, path = "/shipmentReport")
+	public UserMessage generateShipmentReport(@RequestBody IncomingJobResponse job) {
+		return superUserD2zService.generateShipmentReport(job);
 		
 	}
 	@RequestMapping( method = RequestMethod.GET, path = "/clientDetails")

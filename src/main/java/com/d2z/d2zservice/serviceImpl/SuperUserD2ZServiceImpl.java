@@ -85,6 +85,7 @@ import com.d2z.d2zservice.proxy.PFLProxy;
 import com.d2z.d2zservice.proxy.PcaProxy;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
+import com.d2z.d2zservice.util.EmailUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.wrapper.ETowerWrapper;
 //import com.d2z.d2zservice.wrapper.FreipostWrapper;
@@ -149,6 +150,9 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	
 	@Autowired
 	ExcelWriter excelWriter;
+	
+	@Autowired
+	EmailUtil emailUtil;
 	
 	@Override
 	public UserMessage uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -1849,7 +1853,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	}
 	
 	@Override
-	public UserMessage generateShipmentReport(IncomingJobResponse incomingJobs,String userID) {
+	public UserMessage generateShipmentReport(IncomingJobResponse incomingJobs) {
 			List<SurplusData> surplusData = new ArrayList<SurplusData>();
 				if(incomingJobs.getSurplus()!=null && (incomingJobs.getSurplus().equalsIgnoreCase("True") ||
 						incomingJobs.getSurplus().equalsIgnoreCase("Y")))
@@ -1857,7 +1861,9 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 					incomingJobs.setSurplus("Y");
 					surplusData = d2zDao.fetchSurplusData(incomingJobs.getMawb());
 				}
-		    excelWriter.generateShipmentReport(incomingJobs,surplusData);
+		   String toMail =	d2zDao.fetchEmailAddr(incomingJobs.getBroker());
+		   byte[] reportXL =  excelWriter.generateShipmentReport(incomingJobs,surplusData);
+		   emailUtil.sendReport("Shipment Summary", toMail,"Please find attached the Shipment summary report",reportXL,"ShipmentSummary.xlsx");
 		
 		UserMessage userMsg = new UserMessage();
 		userMsg.setMessage("Shipment Summary generated successfully");

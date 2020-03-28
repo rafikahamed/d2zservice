@@ -2154,4 +2154,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		return surplusData;
 	}
 
+	@Override
+	public String fetchEmailAddr(String broker) {
+				return incomingJobsLogicRepository.fetchEmailForBroker(broker);
+	}
+
 }

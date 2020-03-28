@@ -2677,26 +2677,8 @@ public class D2ZServiceImpl implements ID2ZService {
 		 
 		 
 		 byte[] attachmentData = excelWriter.generatePerformance(performanceReportData); 
-		 String mailBody =
-				 "<body><h4> Dear Customer,</br></br>" +
-						 "Please find attached the Performance Report." + "</h4>" +
-						 "<h4>Regards, </br>" + "D2Z Support Team</h4>" + "</body> "; 
-		 MimeMessage message = mailSender.createMimeMessage(); 
-		 try 
-		 { 
-		  MimeMessageHelper helper = new MimeMessageHelper(message, true); 
-		  helper.setFrom("report@d2z.com.au");
-		  helper.setTo("aparna@d2z.com.au");
-		  helper.setSubject("D2Z Performance Report"); 
-		  helper.setText(mailBody, true);
-		  if(attachmentData != null)
-			  helper.addAttachment("PerformanceReport.xlsx", new ByteArrayResource(attachmentData)); 
-		  mailSender.send(message); 
-		  } 
-		 catch (MessagingException e) 
-		 { 
-			 e.printStackTrace(); 
-		 } 
+		 emailUtil.sendReport("Performance Report", "aparna@d2z.com.au","Please find attached the Performance report",attachmentData,"PerformanceReport.xlsx");
+
 		 long endTime = System.currentTimeMillis();
 		 long executeTime = endTime - startTime;
 		 System.out.println("Time taken for Performance Report generation : " +executeTime);

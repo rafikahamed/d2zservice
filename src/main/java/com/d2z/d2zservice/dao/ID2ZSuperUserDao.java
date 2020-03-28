@@ -259,5 +259,7 @@ public interface ID2ZSuperUserDao {
 
 	List<SurplusData> fetchSurplusData(String mawb);
 
+	String fetchEmailAddr(String broker);
+
 }
 
