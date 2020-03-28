@@ -951,9 +951,10 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		List<SenderData> fwData = new ArrayList<SenderData>();
 
 		for (SenderData data : trackingLabelList) {
-			 if("1PM".equalsIgnoreCase(data.getServiceType())) {
-				eParcelNewData.add(data);
-			}else if("1PME".equalsIgnoreCase(data.getServiceType())) {
+			/*
+			 * if("1PM".equalsIgnoreCase(data.getServiceType())) { eParcelNewData.add(data);
+			 * }else
+			 */ if("1PME".equalsIgnoreCase(data.getServiceType())) {
 				expressNewData.add(data);
 			}else if("HKG".equalsIgnoreCase(data.getServiceType()) || "HKG2".equalsIgnoreCase(data.getServiceType())) {
 				parcelPostData.add(data);
