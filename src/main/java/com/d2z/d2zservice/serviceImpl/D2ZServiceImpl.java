@@ -48,7 +48,6 @@ import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.FFResponse;
-import com.d2z.d2zservice.entity.IncomingJobs;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Trackandtrace;
@@ -74,6 +73,7 @@ import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.EnquiryUpdate;
 import com.d2z.d2zservice.model.FDMManifestDetails;
+import com.d2z.d2zservice.model.HeldParcelDetails;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
 import com.d2z.d2zservice.model.PFLTrackEvent;
@@ -2774,6 +2774,49 @@ public class D2ZServiceImpl implements ID2ZService {
 				 UserMessage msg = new UserMessage();
 				 msg.setMessage("Returns Report generated Successfully");
 				 return msg;
+	}
+
+	@Override
+	public UserMessage parcelEmail() {
+		List<HeldParcelDetails> parcelDetails = d2zDao.parcelEmail();
+		Map<String, List<HeldParcelDetails>> parcelMap = new HashMap<String, List<HeldParcelDetails>>();
+		parcelDetails.forEach(obj -> {
+			if(parcelMap.containsKey(obj.getEmail())){
+				parcelMap.get(obj.getEmail()).add(obj);
+			}else {
+				List<HeldParcelDetails> parcelList = new ArrayList<HeldParcelDetails>();
+				parcelList.add(obj);
+				parcelMap.put(obj.getEmail(), parcelList);
+			}
+		});
+		
+		//Iterate the Email Map and send the notification
+		parcelMap.forEach((parcelEmail,parcelVal)->{
+					System.out.println("Parcel Map : " + parcelMap + " Count : " + parcelVal);
+					byte[] attachmentData = excelWriter.generateParcelReport(parcelVal); 
+					
+					 String mailBody = "<body><h4> Dear Customer,</br></br>" +
+									   "Please find attached the Held Parcel Report." + "</h4>" +
+									   "<h4>Regards, </br>" + "D2Z Support Team</h4>" + "</body> "; 
+					 MimeMessage message = mailSender.createMimeMessage(); 
+					 try 
+					 { 
+					  MimeMessageHelper helper = new MimeMessageHelper(message, true); 
+					  helper.setFrom("report@d2z.com.au");
+					  System.out.println("Sending Held Parcel Details --->"+parcelVal);
+					  helper.setTo("rafikahamed56@gmail.com");
+					  helper.setSubject("D2Z Held Parcel Report"); 
+					  helper.setText(mailBody, true);
+					  if(attachmentData != null)
+						  helper.addAttachment("Held Parcel.xlsx", new ByteArrayResource(attachmentData)); 
+					  mailSender.send(message); 
+					  }catch (MessagingException e) { 
+						 e.printStackTrace(); 
+					  } 
+				 });
+			UserMessage msg = new UserMessage();
+			msg.setMessage("Held Parcel Report generated Successfully");
+			return msg;
 	}
 
 }

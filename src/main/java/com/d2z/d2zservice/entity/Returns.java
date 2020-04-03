@@ -1,7 +1,6 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

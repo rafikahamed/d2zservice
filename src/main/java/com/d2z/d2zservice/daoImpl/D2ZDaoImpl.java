@@ -43,6 +43,7 @@ import com.d2z.d2zservice.model.EmailReturnDetails;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.EnquiryUpdate;
+import com.d2z.d2zservice.model.HeldParcelDetails;
 import com.d2z.d2zservice.model.PerformanceReportTrackingData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
@@ -70,6 +71,7 @@ import com.d2z.d2zservice.repository.CurrencyRepository;
 import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
 import com.d2z.d2zservice.repository.FastwayPostcodeRepository;
+import com.d2z.d2zservice.repository.ParcelRepository;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
 import com.d2z.d2zservice.repository.ReturnsRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
@@ -151,8 +153,8 @@ public class D2ZDaoImpl implements ID2ZDao{
 	@Autowired
 	TransitTimeRepository transitTimeRepository;
 	
-	
-	
+	@Autowired
+	ParcelRepository parcelRepository;
 	
 	@Override
 	public String exportParcel(List<SenderData> orderDetailList,Map<String, LabelData> barcodeMap) {
@@ -1356,6 +1358,14 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		List<Object[]> returns = returnsRepository.fetchReturnsDetails();
 		returns.forEach(obj -> returnsData.add(new EmailReturnDetails(obj)));
 		return returnsData;
+	}
+
+	@Override
+	public List<HeldParcelDetails> parcelEmail() {
+		List<HeldParcelDetails> parcelData = new ArrayList<HeldParcelDetails>();
+		List<Object[]> parcel = parcelRepository.fetchParcelDetails();
+		parcel.forEach(obj -> parcelData.add(new HeldParcelDetails(obj)));
+		return parcelData;
 	}
 
 }

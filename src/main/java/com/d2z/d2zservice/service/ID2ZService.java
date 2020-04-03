@@ -148,4 +148,6 @@ public interface ID2ZService {
 
 	public UserMessage returnsEmail();
 
+	public UserMessage parcelEmail();
+
 }

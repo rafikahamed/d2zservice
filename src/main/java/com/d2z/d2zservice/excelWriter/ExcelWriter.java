@@ -24,6 +24,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.model.EmailEnquiryDetails;
 import com.d2z.d2zservice.model.EmailReturnDetails;
+import com.d2z.d2zservice.model.HeldParcelDetails;
 import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.PerformanceReportData;
 import com.d2z.d2zservice.model.PerformanceReportData;
@@ -287,6 +288,12 @@ public class ExcelWriter {
 				e.printStackTrace();
 			}
 	     return xls;
+	}
+
+
+	public byte[] generateParcelReport(List<HeldParcelDetails> parcelVal) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

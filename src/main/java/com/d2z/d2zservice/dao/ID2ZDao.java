@@ -24,6 +24,7 @@ import com.d2z.d2zservice.model.EmailReturnDetails;
 import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.EnquiryUpdate;
+import com.d2z.d2zservice.model.HeldParcelDetails;
 import com.d2z.d2zservice.model.PerformanceReportData;
 import com.d2z.d2zservice.model.PerformanceReportTrackingData;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -200,5 +201,7 @@ public interface ID2ZDao {
 	public List<User> fetchEmailDetails();
 
 	public List<EmailReturnDetails> fetchReturnsDetails();
+
+	public List<HeldParcelDetails> parcelEmail();
 
 }
