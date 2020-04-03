@@ -17,7 +17,7 @@ public class HeldParcelDetails {
 		client = (String)obj[3];
 		pod = (String)obj[4];
 		status = (String)obj[5];
-		status = (String)obj[6];
+		email = (String)obj[6];
 	}
 
 	public String getMawb() {

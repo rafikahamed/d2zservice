@@ -2804,7 +2804,7 @@ public class D2ZServiceImpl implements ID2ZService {
 					  MimeMessageHelper helper = new MimeMessageHelper(message, true); 
 					  helper.setFrom("report@d2z.com.au");
 					  System.out.println("Sending Held Parcel Details --->"+parcelVal);
-					  helper.setTo("rafikahamed56@gmail.com");
+					  helper.setTo(parcelEmail);
 					  helper.setSubject("D2Z Held Parcel Report"); 
 					  helper.setText(mailBody, true);
 					  if(attachmentData != null)

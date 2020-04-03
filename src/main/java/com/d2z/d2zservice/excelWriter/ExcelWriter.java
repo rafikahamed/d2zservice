@@ -291,9 +291,50 @@ public class ExcelWriter {
 	}
 
 
-	public byte[] generateParcelReport(List<HeldParcelDetails> parcelVal) {
-		// TODO Auto-generated method stub
-		return null;
+	public byte[] generateParcelReport(List<HeldParcelDetails> parcelDetails) {
+
+		//Header for Held Reports
+		String[] columns = {"MAWB","HAWB","NOTE","CLIENT","POD","STATUS"};
+	 
+		Workbook workbook = new XSSFWorkbook();
+		Sheet sheet = workbook.createSheet("Held Report");
+		CellStyle style = workbook.createCellStyle();
+		Font font = workbook.createFont();//Create font
+	    font.setBold(true);//Make font bold
+	    style.setFont(font);
+		Row headerRow = sheet.createRow(0);
+		for(int i = 0; i < columns.length; i++) {
+         Cell cell = headerRow.createCell(i);
+         cell.setCellValue(columns[i]);
+         cell.setCellStyle(style);
+		}
+		int rowNum = 1;
+		
+		for(HeldParcelDetails enquiry : parcelDetails) {
+	         Row row = sheet.createRow(rowNum++);
+	         row.createCell(0).setCellValue(enquiry.getMawb());
+	         row.createCell(1).setCellValue(enquiry.getHawb());
+	         row.createCell(2).setCellValue(enquiry.getNote());
+	         row.createCell(3).setCellValue(enquiry.getClient());
+	         row.createCell(4).setCellValue(enquiry.getPod());
+	         row.createCell(5).setCellValue(enquiry.getStatus());
+      	}
+     
+	     for(int i = 0; i < columns.length; i++) {
+	         sheet.autoSizeColumn(i);
+	     }
+	
+	     byte[] xls = null;
+	     try {
+	     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	     	workbook.write(baos);
+	     	 xls = baos.toByteArray();
+	     	workbook.close();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	     return xls;
 	}
 
 }
