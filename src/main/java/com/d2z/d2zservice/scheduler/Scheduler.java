@@ -108,10 +108,36 @@ public class Scheduler {
 		System.out.println(e.getLocalizedMessage());
 	}}
 	
-	//@Scheduled(cron = "0 0 7 * * ?",zone="GMT")
+	@Scheduled(cron = "0 0/30 19 * * *")
 	public void enquiryEmail() {
-		System.out.println("Calling  - Enquiry Details");
-		d2zService.enquiryEmail();
+		try {
+			System.out.println("Calling  - Enquiry Details");
+			d2zService.enquiryEmail();
+		} catch (Exception e) {
+			System.out.println(e.getLocalizedMessage());
+		}
 	}
+	
+	@Scheduled(cron = "0 * 10 * * FRI")
+	public void returnsEmail() {
+		try {
+			System.out.println("Calling  - Returnd Details");
+			d2zService.returnsEmail();
+		} catch (Exception e) {
+			System.out.println(e.getLocalizedMessage());
+		}
+	}
+	
+	@Scheduled(cron = "0 0/30 19 * * *")
+	public void heldParccelEmail() {
+		try {
+			System.out.println("Calling  - Held Parcel Details");
+			d2zService.parcelEmail();
+		} catch (Exception e) {
+			System.out.println(e.getLocalizedMessage());
+		}
+	}
+	
+	
 
 }

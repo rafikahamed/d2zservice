@@ -1690,9 +1690,11 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			}else if(incomingJobDetails.getBroker().equalsIgnoreCase("SSDB") && incomingJobDetails.getConsignee().equalsIgnoreCase("PFL")) {
 				Double processNexb = Double.valueOf(incomingJobDetails.getWeight())*(0);
 				shipmemntCharge.setProcess(Double.valueOf(twoDForm.format(processNexb)));
-				shipmemntCharge.setPickUp((double) 0);
+				Double pickUpCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.16)) > 100 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.16)) : 100;
+				shipmemntCharge.setPickUp(Double.valueOf(twoDForm.format(pickUpCharge)));
 				shipmemntCharge.setDocs((double) 60);
-				shipmemntCharge.setAirport((double) 0);
+				Double airportCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.60)) > 55 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.60)) : 55;
+				shipmemntCharge.setAirport(Double.valueOf(twoDForm.format(airportCharge)));
 				Double totalNexb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
 				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalNexb)));
 			}
