@@ -154,7 +154,6 @@ public class ExcelWriter {
 			   Workbook workbook = new XSSFWorkbook();
 			   Sheet sheet = workbook.createSheet("ShipmentSummary");
 
-               System.out.println(getClass().getClassLoader().getResourceAsStream("D2Z.jpg"));
 			   InputStream inputStream = getClass().getClassLoader().getResourceAsStream("D2Z.jpg");
                System.out.println(inputStream);
 			   byte[] imageBytes = IOUtils.toByteArray(inputStream);
