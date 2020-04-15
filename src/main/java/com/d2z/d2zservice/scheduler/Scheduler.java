@@ -108,7 +108,7 @@ public class Scheduler {
 		System.out.println(e.getLocalizedMessage());
 	}}
 	
-	@Scheduled(cron = "0 0/30 19 * * *")
+	@Scheduled(cron = "0 0/30 19 * * *",zone = "GMT+10")
 	public void enquiryEmail() {
 		try {
 			System.out.println("Calling  - Enquiry Details");
@@ -118,7 +118,7 @@ public class Scheduler {
 		}
 	}
 	
-	@Scheduled(cron = "0 * 10 * * FRI")
+	@Scheduled(cron = "0 * 10 * * FRI",zone = "GMT+10")
 	public void returnsEmail() {
 		try {
 			System.out.println("Calling  - Returnd Details");
@@ -128,7 +128,7 @@ public class Scheduler {
 		}
 	}
 	
-	@Scheduled(cron = "0 0/30 19 * * *")
+	@Scheduled(cron = "0 0/30 19 * * *",zone = "GMT+10")
 	public void heldParccelEmail() {
 		try {
 			System.out.println("Calling  - Held Parcel Details");
