@@ -138,6 +138,16 @@ public class Scheduler {
 		}
 	}
 	
+	@Scheduled(cron = "0 * 9 * * MON",zone = "GMT+10")
+	public void pflSubmitOrder() {
+		try {
+			System.out.println("Calling  - PFL Submit order");
+			d2zService.pflSubmitOrder();
+		} catch (Exception e) {
+			System.out.println(e.getLocalizedMessage());
+		}
+	}
+	
 	
 
 }

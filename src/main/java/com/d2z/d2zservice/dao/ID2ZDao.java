@@ -25,6 +25,7 @@ import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.EnquiryUpdate;
 import com.d2z.d2zservice.model.HeldParcelDetails;
+import com.d2z.d2zservice.model.PFLSubmitOrderData;
 import com.d2z.d2zservice.model.PerformanceReportData;
 import com.d2z.d2zservice.model.PerformanceReportTrackingData;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -143,7 +144,7 @@ public interface ID2ZDao {
 
 	public List<FastwayPostcode> fetchFWPostCodeZone();
 
-	public List<String> fetchDataforPFLSubmitOrder(String[] refNbrs);
+	public List<PFLSubmitOrderData> fetchDataforPFLSubmitOrder(String[] refNbrs);
 
 	public String fetchUserById(int userId);
 
@@ -203,5 +204,12 @@ public interface ID2ZDao {
 	public List<EmailReturnDetails> fetchReturnsDetails();
 
 	public List<HeldParcelDetails> parcelEmail();
+
+	public void updateForPFLSubmitOrder(List<String> fastwayOrderId);
+
+	public List<PFLSubmitOrderData> fetchDataForPFLSubmitOrder();
+
+	public void updatePFLSubmitOrderStatus(List<String> orderIdsList);
+
 
 }
