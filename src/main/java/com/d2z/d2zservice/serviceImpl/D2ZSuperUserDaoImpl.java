@@ -52,6 +52,7 @@ import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
+import com.d2z.d2zservice.model.PFLSubmitOrderData;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
 import com.d2z.d2zservice.model.PerformanceReportTrackingData;
@@ -1459,9 +1460,11 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
-	public List<String> fetchDataforPFLSubmitOrder(String[] refNbrs) {
-		// TODO Auto-generated method stub
-		return senderDataRepository.fetchDataforPFLSubmitOrder(refNbrs);
+	public List<PFLSubmitOrderData> fetchDataforPFLSubmitOrder(String[] refNbrs) {
+		List<PFLSubmitOrderData> submitOrderData = new ArrayList<PFLSubmitOrderData>();
+		List<Object[]> objArr = senderDataRepository.fetchDataforPFLSubmitOrder(refNbrs);
+		objArr.forEach(obj -> submitOrderData.add(new PFLSubmitOrderData(obj)));
+		return submitOrderData;
 	}
 
 	@Override
@@ -2175,6 +2178,11 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	@Override
 	public String fetchEmailAddr(String broker) {
 				return incomingJobsLogicRepository.fetchEmailForBroker(broker);
+	}
+
+	@Override
+	public void updateForPFLSubmitOrder(List<String> fastwayOrderId) {
+		trackAndTraceRepository.updateForPFLSubmitOrder(fastwayOrderId);		
 	}
 
 }

@@ -44,6 +44,7 @@ import com.d2z.d2zservice.model.Enquiry;
 import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.EnquiryUpdate;
 import com.d2z.d2zservice.model.HeldParcelDetails;
+import com.d2z.d2zservice.model.PFLSubmitOrderData;
 import com.d2z.d2zservice.model.PerformanceReportTrackingData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
@@ -1011,8 +1012,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public List<String> fetchDataforPFLSubmitOrder(String[] refNbrs) {
-		return senderDataRepository.fetchDataforPFLSubmitOrder(refNbrs);
+	public List<PFLSubmitOrderData> fetchDataforPFLSubmitOrder(String[] refNbrs) {
+		List<PFLSubmitOrderData> submitOrderData = new ArrayList<PFLSubmitOrderData>();
+		List<Object[]> objArr = senderDataRepository.fetchDataforPFLSubmitOrder(refNbrs);
+		objArr.forEach(obj -> submitOrderData.add(new PFLSubmitOrderData(obj)));
+		return submitOrderData;
 	}
 
 	@Override
@@ -1366,6 +1370,26 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		List<Object[]> parcel = parcelRepository.fetchParcelDetails();
 		parcel.forEach(obj -> parcelData.add(new HeldParcelDetails(obj)));
 		return parcelData;
+	}
+
+	@Override
+	public void updateForPFLSubmitOrder(List<String> fastwayOrderId) {
+		trackAndTraceRepository.updateForPFLSubmitOrder(fastwayOrderId);
+		
+	}
+
+	@Override
+	public List<PFLSubmitOrderData> fetchDataForPFLSubmitOrder() {
+		List<PFLSubmitOrderData> submitOrderData = new ArrayList<PFLSubmitOrderData>();
+		List<Object[]> objArr = senderDataRepository.fetchDataForPFLSubmitOrder();
+		objArr.forEach(obj -> submitOrderData.add(new PFLSubmitOrderData(obj)));
+		return submitOrderData;
+	
+	}
+
+	@Override
+	public void updatePFLSubmitOrderStatus(List<String> orderIdsList) {
+		trackAndTraceRepository.updatePFLSubmitOrderStatus(orderIdsList);		
 	}
 
 }

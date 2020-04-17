@@ -8,7 +8,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -57,6 +59,7 @@ import com.d2z.d2zservice.model.InvoiceShipment;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
+import com.d2z.d2zservice.model.PFLSubmitOrderData;
 import com.d2z.d2zservice.model.PFLTrackingResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
@@ -1779,15 +1782,26 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 					}
 	        	}
 	        	
-	        	List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
-	        	 if(!fastwayOrderId.isEmpty()) {
-	 	        	String serviceType = d2zDao.fetchServiceTypeByMlid(fastwayOrderId.get(0));
-	        		 try {
-						pflWrapper.createSubmitOrderPFL(fastwayOrderId,serviceType);
+	        	List<PFLSubmitOrderData> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
+				if (!fastwayOrderId.isEmpty()) {
+					ZoneId zoneId = ZoneId.of ( "Australia/Sydney" );
+					int dayofWeek = LocalDate.now(zoneId).getDayOfWeek().getValue();
+					if(dayofWeek>=5) {
+						List<String> orderIds = fastwayOrderId.stream().map(PFLSubmitOrderData :: getOrderId).collect(Collectors.toList());
+						d2zDao.updateForPFLSubmitOrder(orderIds);
+					}else {
+					Map<String, List<String>> submitOrderData = fastwayOrderId.stream()
+								.collect(Collectors.groupingBy(PFLSubmitOrderData::getServiceType,
+										Collectors.mapping(PFLSubmitOrderData::getOrderId, Collectors.toList())));
+					submitOrderData.forEach((serviceType,orderIds)->{
+					try {
+						pflWrapper.createSubmitOrderPFL(orderIds, serviceType);
 					} catch (FailureResponseException e) {
 						e.printStackTrace();
 					}
-	        	 }
+					});
+				}
+				}
 	        
 	        
 	        }};

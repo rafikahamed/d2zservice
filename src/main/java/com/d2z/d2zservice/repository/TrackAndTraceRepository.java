@@ -130,5 +130,15 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 			 "(t.trackEventDetails = 'SHIPMENT ALLOCATED' AND  t.fileName = 'freipost' and t.trackEventDateOccured <= Dateadd(day,-21,Getdate())))")
 	 List<String> getArticleIDForFreiPostTracking();
 
+	 @Modifying(flushAutomatically = true,clearAutomatically = true)
+		@Transactional
+		 @Query(nativeQuery = true, value="Update Trackandtrace set fileName = 'PFLSubmitOrder' where  connoteNo = :fastwayOrderId")
+	void updateForPFLSubmitOrder(List<String> fastwayOrderId);
+
+	 @Modifying(flushAutomatically = true,clearAutomatically = true)
+		@Transactional
+		 @Query(nativeQuery = true, value="Update Trackandtrace set fileName = 'PFLSubmitOrderCompleted' where  connoteNo = :orderIdsList")
+	void updatePFLSubmitOrderStatus(List<String> orderIdsList);
+
 	 
 }

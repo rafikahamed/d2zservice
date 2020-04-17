@@ -26,6 +26,7 @@ import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
+import com.d2z.d2zservice.model.PFLSubmitOrderData;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
 import com.d2z.d2zservice.model.ProfitLossReport;
@@ -215,7 +216,7 @@ public interface ID2ZSuperUserDao {
 	
 	public List<SenderdataMaster> fetchDataBasedonSupplier(List<String> incomingRefNbr, String string);
 	
-	public List<String> fetchDataforPFLSubmitOrder(String[] refNbrs);
+	public List<PFLSubmitOrderData> fetchDataforPFLSubmitOrder(String[] refNbrs);
 	
 	public String allocateShipment(String referenceNumbers, String shipmentNumber);
 	
@@ -260,6 +261,8 @@ public interface ID2ZSuperUserDao {
 	List<SurplusData> fetchSurplusData(String mawb);
 
 	String fetchEmailAddr(String broker);
+
+	void updateForPFLSubmitOrder(List<String> fastwayOrderId);
 
 }
 

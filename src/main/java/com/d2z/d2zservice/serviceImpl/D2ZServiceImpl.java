@@ -12,9 +12,13 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -76,6 +80,7 @@ import com.d2z.d2zservice.model.FDMManifestDetails;
 import com.d2z.d2zservice.model.HeldParcelDetails;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
+import com.d2z.d2zservice.model.PFLSubmitOrderData;
 import com.d2z.d2zservice.model.PFLTrackEvent;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelStatus;
@@ -1304,16 +1309,26 @@ public class D2ZServiceImpl implements ID2ZService {
 					}
 				}
 
-				List<String> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
+				List<PFLSubmitOrderData> fastwayOrderId = d2zDao.fetchDataforPFLSubmitOrder(refNbrs);
 				if (!fastwayOrderId.isEmpty()) {
-					String serviceType = d2zDao.fetchServiceTypeByRefNbr(refNbrs[0]);
+					ZoneId zoneId = ZoneId.of ( "Australia/Sydney" );
+					int dayofWeek = LocalDate.now(zoneId).getDayOfWeek().getValue();
+					if(dayofWeek>=5) {
+						List<String> orderIds = fastwayOrderId.stream().map(PFLSubmitOrderData :: getOrderId).collect(Collectors.toList());
+						d2zDao.updateForPFLSubmitOrder(orderIds);
+					}else {
+					Map<String, List<String>> submitOrderData = fastwayOrderId.stream()
+								.collect(Collectors.groupingBy(PFLSubmitOrderData::getServiceType,
+										Collectors.mapping(PFLSubmitOrderData::getOrderId, Collectors.toList())));
+					submitOrderData.forEach((serviceType,orderIds)->{
 					try {
-						pflWrapper.createSubmitOrderPFL(fastwayOrderId, serviceType);
+						pflWrapper.createSubmitOrderPFL(orderIds, serviceType);
 					} catch (FailureResponseException e) {
 						e.printStackTrace();
 					}
+					});
 				}
-
+				}
 			}
 		};
 		new Thread(freipost).start();
@@ -2817,6 +2832,23 @@ public class D2ZServiceImpl implements ID2ZService {
 			UserMessage msg = new UserMessage();
 			msg.setMessage("Held Parcel Report generated Successfully");
 			return msg;
+	}
+
+	@Override
+	public void pflSubmitOrder() {
+		List<PFLSubmitOrderData> submitOrderdata = d2zDao.fetchDataForPFLSubmitOrder();
+		Map<String, List<String>> trackingDetails = submitOrderdata.stream()
+				.collect(Collectors.groupingBy(PFLSubmitOrderData::getServiceType,
+						Collectors.mapping(PFLSubmitOrderData::getOrderId, Collectors.toList())));
+		trackingDetails.forEach((serviceType, orderIds) -> {	
+			try {
+				pflWrapper.createSubmitOrderPFL(orderIds, serviceType);
+			} catch (FailureResponseException e) {
+				e.printStackTrace();
+			}
+		});
+		List<String> orderIdsList = submitOrderdata.stream().map(PFLSubmitOrderData :: getOrderId).collect(Collectors.toList());
+		d2zDao.updatePFLSubmitOrderStatus(orderIdsList);
 	}
 
 }

@@ -181,7 +181,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{weight}.concat("kg")]]></textFieldExpression>
 			</textField>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+			<textField isBlankWhenNull="true">
 				<reportElement x="4" y="32" width="361" height="20" uuid="4d45a4c4-8d84-4738-bc59-6549e8367841"/>
 				<textElement>
 					<font fontName="MyArial" size="8"/>

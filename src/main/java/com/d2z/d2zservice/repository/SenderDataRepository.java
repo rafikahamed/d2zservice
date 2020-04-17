@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.d2z.d2zservice.entity.Consignments;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.model.PFLSubmitOrderData;
 
 //This will be AUTO IMPLEMENTED by Spring into a Bean called FileDetailsRepository
 //CRUD refers Create, Read, Update, Delete
@@ -786,8 +787,8 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT t.cubic_Weight FROM SenderdataMaster t where  t.articleId in (:articleID)")
 	List<BigDecimal> fetchcubicweight(List<String> articleID);
 
-	@Query("SELECT s.mlid FROM SenderdataMaster s where ( s.carrier = 'FastwayM' or s.servicetype='1PS4' ) and s.reference_number in (:refNbrs)")
-	List<String> fetchDataforPFLSubmitOrder(String[] refNbrs);
+	@Query(nativeQuery = true,value ="SELECT s.mlid,s.serviceType FROM senderdata_master s where ( s.carrier = 'FastwayM' or s.servicetype='1PS4' ) and s.reference_number in (:refNbrs)")
+	List<Object[]> fetchDataforPFLSubmitOrder(String[] refNbrs);
 
 	@Modifying(flushAutomatically = true,clearAutomatically = true)
 	@Transactional
@@ -836,5 +837,9 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 			+ "and DATEPART(m, s.Timestamp) = DATEPART(m, DATEADD(m, -1, getdate())) "
 			+ "AND DATEPART(yy, s.Timestamp) = DATEPART(yy, DATEADD(m, -1, getdate()))")
 	List<Object[]> fetchArticleIdForPerformanceReport();
+
+	@Query(nativeQuery = true,value = "select s.mlid,s.serviceType	from senderdata_master s "
+			+ "where s.mlid in (select connoteNo from trackandtrace t where t.fileName = 'PFLSubmitOrder')")
+	List<Object[]> fetchDataForPFLSubmitOrder();
 
 } 
