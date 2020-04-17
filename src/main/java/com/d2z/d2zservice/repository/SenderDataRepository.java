@@ -787,7 +787,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT t.cubic_Weight FROM SenderdataMaster t where  t.articleId in (:articleID)")
 	List<BigDecimal> fetchcubicweight(List<String> articleID);
 
-	@Query(nativeQuery = true,value ="SELECT s.mlid,s.serviceType FROM SenderdataMaster s where ( s.carrier = 'FastwayM' or s.servicetype='1PS4' ) and s.reference_number in (:refNbrs)")
+	@Query(nativeQuery = true,value ="SELECT s.mlid,s.serviceType FROM senderdata_master s where ( s.carrier = 'FastwayM' or s.servicetype='1PS4' ) and s.reference_number in (:refNbrs)")
 	List<Object[]> fetchDataforPFLSubmitOrder(String[] refNbrs);
 
 	@Modifying(flushAutomatically = true,clearAutomatically = true)
