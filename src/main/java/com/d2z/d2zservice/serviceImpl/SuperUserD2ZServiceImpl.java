@@ -1878,7 +1878,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				}
 		   String toMail =	d2zDao.fetchEmailAddr(incomingJobs.getBroker());
 		   byte[] reportXL =  excelWriter.generateShipmentReport(incomingJobs,surplusData);
-		   emailUtil.sendReport("Shipment Summary", toMail,"Please find attached the Shipment summary report",reportXL,"ShipmentSummary.xlsx");
+		   emailUtil.sendReport("Shipment Summary Report", toMail,"Please find attached the Shipment summary report",reportXL,"ShipmentSummary.xlsx");
 		
 		UserMessage userMsg = new UserMessage();
 		userMsg.setMessage("Shipment Summary generated successfully");
