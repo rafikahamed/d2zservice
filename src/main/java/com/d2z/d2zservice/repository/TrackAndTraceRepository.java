@@ -132,13 +132,10 @@ public interface TrackAndTraceRepository extends CrudRepository<Trackandtrace, L
 
 	 @Modifying(flushAutomatically = true,clearAutomatically = true)
 		@Transactional
-		 @Query(nativeQuery = true, value="Update Trackandtrace set fileName = 'PFLSubmitOrder' where  connoteNo = :fastwayOrderId")
-	void updateForPFLSubmitOrder(List<String> fastwayOrderId);
+		 @Query(nativeQuery = true, value="Update Trackandtrace set fileName = :status where  connoteNo in (:fastwayOrderId)")
+	void updateForPFLSubmitOrder(List<String> fastwayOrderId,String status);
 
-	 @Modifying(flushAutomatically = true,clearAutomatically = true)
-		@Transactional
-		 @Query(nativeQuery = true, value="Update Trackandtrace set fileName = 'PFLSubmitOrderCompleted' where  connoteNo = :orderIdsList")
-	void updatePFLSubmitOrderStatus(List<String> orderIdsList);
+	 
 
 	 
 }

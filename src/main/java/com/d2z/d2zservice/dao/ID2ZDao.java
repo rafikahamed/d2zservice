@@ -205,11 +205,10 @@ public interface ID2ZDao {
 
 	public List<HeldParcelDetails> parcelEmail();
 
-	public void updateForPFLSubmitOrder(List<String> fastwayOrderId);
+	public void updateForPFLSubmitOrder(List<String> fastwayOrderId,String status);
 
 	public List<PFLSubmitOrderData> fetchDataForPFLSubmitOrder();
 
-	public void updatePFLSubmitOrderStatus(List<String> orderIdsList);
 
 
 }

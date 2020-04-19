@@ -262,7 +262,7 @@ public interface ID2ZSuperUserDao {
 
 	String fetchEmailAddr(String broker);
 
-	void updateForPFLSubmitOrder(List<String> fastwayOrderId);
+	void updateForPFLSubmitOrder(List<String> fastwayOrderId,String status);
 
 }
 

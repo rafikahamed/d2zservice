@@ -1373,8 +1373,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public void updateForPFLSubmitOrder(List<String> fastwayOrderId) {
-		trackAndTraceRepository.updateForPFLSubmitOrder(fastwayOrderId);
+	public void updateForPFLSubmitOrder(List<String> fastwayOrderId,String status) {
+		trackAndTraceRepository.updateForPFLSubmitOrder(fastwayOrderId,status);
 		
 	}
 
@@ -1387,9 +1387,6 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	
 	}
 
-	@Override
-	public void updatePFLSubmitOrderStatus(List<String> orderIdsList) {
-		trackAndTraceRepository.updatePFLSubmitOrderStatus(orderIdsList);		
-	}
+	
 
 }

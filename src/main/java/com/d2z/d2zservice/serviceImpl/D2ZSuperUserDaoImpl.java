@@ -2181,8 +2181,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
-	public void updateForPFLSubmitOrder(List<String> fastwayOrderId) {
-		trackAndTraceRepository.updateForPFLSubmitOrder(fastwayOrderId);		
+	public void updateForPFLSubmitOrder(List<String> fastwayOrderId,String status) {
+		trackAndTraceRepository.updateForPFLSubmitOrder(fastwayOrderId,status);		
 	}
 
 }

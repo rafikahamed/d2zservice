@@ -1788,7 +1788,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 					int dayofWeek = LocalDate.now(zoneId).getDayOfWeek().getValue();
 					if(dayofWeek>=5) {
 						List<String> orderIds = fastwayOrderId.stream().map(PFLSubmitOrderData :: getOrderId).collect(Collectors.toList());
-						d2zDao.updateForPFLSubmitOrder(orderIds);
+						d2zDao.updateForPFLSubmitOrder(orderIds,"PFLSubmitOrder");
 					}else {
 					Map<String, List<String>> submitOrderData = fastwayOrderId.stream()
 								.collect(Collectors.groupingBy(PFLSubmitOrderData::getServiceType,
