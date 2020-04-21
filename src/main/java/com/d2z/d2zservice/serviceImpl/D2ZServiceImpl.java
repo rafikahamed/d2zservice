@@ -2848,7 +2848,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			}
 		});
 		List<String> orderIdsList = submitOrderdata.stream().map(PFLSubmitOrderData :: getOrderId).collect(Collectors.toList());
-		d2zDao.updateForPFLSubmitOrder(orderIdsList,"PFLSubmitOrderCompleted");
+		d2zDao.updateForPFLSubmitOrderCompleted();
 	}
 
 }

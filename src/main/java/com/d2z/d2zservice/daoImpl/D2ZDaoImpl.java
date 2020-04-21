@@ -1387,6 +1387,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	
 	}
 
+	@Override
+	public void updateForPFLSubmitOrderCompleted() {
+		trackAndTraceRepository.updateForPFLSubmitOrderCompleted();	
+	}
+
 	
 
 }

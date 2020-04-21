@@ -209,6 +209,8 @@ public interface ID2ZDao {
 
 	public List<PFLSubmitOrderData> fetchDataForPFLSubmitOrder();
 
+	public void updateForPFLSubmitOrderCompleted();
+
 
 
 }

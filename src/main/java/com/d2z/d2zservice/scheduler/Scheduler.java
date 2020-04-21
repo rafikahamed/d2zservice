@@ -118,7 +118,7 @@ public class Scheduler {
 		}
 	}
 	
-	@Scheduled(cron = "0 * 10 * * FRI",zone = "GMT+10")
+	@Scheduled(cron = "0 0 10 * * FRI",zone = "GMT+10")
 	public void returnsEmail() {
 		try {
 			System.out.println("Calling  - Returnd Details");
@@ -128,7 +128,7 @@ public class Scheduler {
 		}
 	}
 	
-	@Scheduled(cron = "0 0/30 19 * * *",zone = "GMT+10")
+	@Scheduled(cron = "0 0 19 * * *",zone = "GMT+10")
 	public void heldParccelEmail() {
 		try {
 			System.out.println("Calling  - Held Parcel Details");
@@ -138,7 +138,7 @@ public class Scheduler {
 		}
 	}
 	
-	@Scheduled(cron = "0 * 9 * * MON",zone = "GMT+10")
+	@Scheduled(cron = "0 0 9 * * MON",zone = "GMT+10")
 	public void pflSubmitOrder() {
 		try {
 			System.out.println("Calling  - PFL Submit order");
