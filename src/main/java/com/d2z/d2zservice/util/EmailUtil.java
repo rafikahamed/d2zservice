@@ -32,7 +32,7 @@ public class EmailUtil {
 		try{
         	MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress("Reports@d2z.com.au"));
-        
+            toEmail = "jack@d2z.com.au";
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Contact Us -->"+subject);
             String msgBody = "HI d2z Support Team,<br><br>";

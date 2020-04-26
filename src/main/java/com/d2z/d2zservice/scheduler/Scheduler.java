@@ -118,7 +118,7 @@ public class Scheduler {
 		}
 	}
 	
-	@Scheduled(cron = "0 0 10 * * FRI",zone = "GMT+10")
+	@Scheduled(cron = "0 0 8 * * MON",zone = "GMT+10")
 	public void returnsEmail() {
 		try {
 			System.out.println("Calling  - Returnd Details");
