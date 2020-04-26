@@ -75,6 +75,8 @@ public class EmailUtil {
 		  MimeMessageHelper helper = new MimeMessageHelper(message, true); 
 		  helper.setFrom("report@d2z.com.au");
 		  helper.setTo(toMail);
+		  helper.setBcc("ranjani@d2z.com.au");
+		  helper.addBcc("IT@d2z.com.au");
 		  helper.setSubject(subject); 
 		  helper.setText(mailBody, true);
 		  if(report != null) {
