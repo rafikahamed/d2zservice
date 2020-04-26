@@ -195,7 +195,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			// trackingDetails.setTrackEventDateOccured(Timestamp.valueOf(fileDataValue.getTrackEventDateOccured()));
 			trackingDetails.setTrackEventDateOccured(fileDataValue.getTrackEventDateOccured());
 			trackingDetails.setFileName(fileDataValue.getFileName());
-			trackingDetails.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+			trackingDetails.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
 			trackingDetails.setIsDeleted("N");
 			// trackAndTraceRepository.save(trackingDetails);
 			trackingDetailsList.add(trackingDetails);
@@ -235,7 +235,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			trackingDetails.setTrackEventDateOccured(fileDataValue.getScannedDateTime());
 			System.out.println(trackingDetails.getTrackEventDateOccured());
 			trackingDetails.setFileName(fileDataValue.getFileName());
-			trackingDetails.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+			trackingDetails.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
 //			System.out.println("Instant : "+Timestamp.from(Instant.now()).toString());
 			trackingDetails.setIsDeleted("N");
 			trackingDetailsList.add(trackingDetails);
@@ -370,7 +370,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 						 */
 						trackandTrace.setTrackEventDetails(trackingDetails.getActivity());
 						trackandTrace.setCourierEvents(trackingDetails.getActivity());
-						trackandTrace.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+						trackandTrace.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
 						trackandTrace.setReference_number(trackingDetails.getTrackingNo());
 						trackandTrace.setLocation(trackingDetails.getLocation());
 						trackandTrace.setIsDeleted("N");
@@ -444,7 +444,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 					brokerRates.setMaxWeight(zoneRates.getMaxWeight());
 					brokerRates.setMinWeight(zoneRates.getMinWeight());
 					brokerRates.setBackupInd("N");
-					brokerRates.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+					brokerRates.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
 					brokerRatesList.add(brokerRates);
 
 				}
@@ -483,7 +483,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 					d2zRates.setMaxWeight(zoneRates.getMaxWeight());
 					d2zRates.setMinWeight(zoneRates.getMinWeight());
 					d2zRates.setBackupInd("N");
-					d2zRates.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+					d2zRates.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
 					d2zRatesList.add(d2zRates);
 
 				}

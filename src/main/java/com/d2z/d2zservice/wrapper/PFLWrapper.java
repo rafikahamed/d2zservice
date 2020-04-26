@@ -25,6 +25,7 @@ import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.TrackingEvents;
 import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.proxy.PFLProxy;
+import com.d2z.d2zservice.util.D2ZCommonUtil;
 
 @Service
 public class PFLWrapper {
@@ -111,7 +112,7 @@ public class PFLWrapper {
 					errorResponse.setAPIName("PFL - Create order");
 					errorResponse.setErrorCode(pflData.getCode());
 					errorResponse.setErrorMessage(pflData.getError());
-					errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+					errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 					errorResponse.setStatus("Error");
 					responseEntity.add(errorResponse);
 					d2zDao.logEtowerResponse(responseEntity);
@@ -122,7 +123,7 @@ public class PFLWrapper {
 					errorResponse.setReferenceNumber(pflData.getReference());
 					errorResponse.setOrderId(pflData.getId());
 					errorResponse.setTrackingNo(pflData.getTracking());
-					errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+					errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 					errorResponse.setStatus("Success");
 					responseEntity.add(errorResponse);
 				}
@@ -181,7 +182,7 @@ public class PFLWrapper {
 						errorResponse.setOrderId(orderIdVal);
 						errorResponse.setErrorCode(pflSubmitResponse.getCode());
 						errorResponse.setErrorMessage(pflSubmitResponse.getError());
-						errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+						errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 						errorResponse.setStatus("Error");
 						responseEntity.add(errorResponse);
 					}
@@ -192,7 +193,7 @@ public class PFLWrapper {
 						ETowerResponse errorResponse = new ETowerResponse();
 						errorResponse.setAPIName("PFL - Submit order");
 						errorResponse.setOrderId(successOrder);
-						errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+						errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 						errorResponse.setStatus("Success");
 						responseEntity.add(errorResponse);
 					}
@@ -211,7 +212,7 @@ public class PFLWrapper {
 						errorResponse.setOrderId(orderIdVal);
 						errorResponse.setErrorCode(pflSubmitResponse.getCode());
 						errorResponse.setErrorMessage(pflSubmitResponse.getError());
-						errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+						errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 						errorResponse.setStatus("Error");
 						responseEntity.add(errorResponse);
 					}
@@ -222,7 +223,7 @@ public class PFLWrapper {
 						ETowerResponse errorResponse = new ETowerResponse();
 						errorResponse.setAPIName("PFL - Delete order");
 						errorResponse.setOrderId(successOrder);
-						errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+						errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 						errorResponse.setStatus("Success");
 						responseEntity.add(errorResponse);
 					}

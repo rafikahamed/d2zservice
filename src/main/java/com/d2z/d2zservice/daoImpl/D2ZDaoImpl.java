@@ -478,9 +478,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	public synchronized  void storProcCall(String fileSeqId) {
 		System.out.println("Before calling the store procedure, Sequence Id --->"+fileSeqId);
-		System.out.println("Before the store procedure call, Timing --->"+java.time.LocalDateTime.now());
+		System.out.println("Before the store procedure call, Timing --->"+D2ZCommonUtil.getAETCurrentTimestamp());
 		senderDataRepository.inOnlyTest(fileSeqId);
-		System.out.println("After the store procedure call, Timing --->"+java.time.LocalDateTime.now());
+		System.out.println("After the store procedure call, Timing --->"+D2ZCommonUtil.getAETCurrentTimestamp());
 		System.out.println("After calling the store procedure, Sequence Id --->"+fileSeqId);
 	}
 	
@@ -569,8 +569,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		userObj.setName(userData.getContactName());
 		userObj.setPhoneNumber(userData.getContactPhoneNumber());
 		userObj.setUser_IsDeleted(false);
-		userObj.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-		userObj.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+		userObj.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
+		userObj.setModifiedTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 		userObj.setClientBrokerId(userData.getClientBroker());
 		userObj.setEBayToken(userData.geteBayToken());
 		userObj.setPassword_value(userData.getPassword());
@@ -592,8 +592,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		}else {
 			userService.setInjectionType("Direct Injection");
 		}
-		userService.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-		userService.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+		userService.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
+		userService.setModifiedTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 		userServiceList.add(userService);
 		}
 		List<UserService> savedUserService = (List<UserService>) userServiceRepository.saveAll(userServiceList);
@@ -619,14 +619,14 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					newUserService.setCompanyName(existingUser.getCompanyName());
 					newUserService.setUser_Name(existingUser.getUsername());
 					newUserService.setServiceType(serviceType);
-					newUserService.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-					newUserService.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+					newUserService.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
+					newUserService.setModifiedTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 					userServiceList.add(newUserService);			
 					}
 				else {
 					if(userService.isService_isDeleted()) {
 						userService.setService_isDeleted(false);
-						userService.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+						userService.setModifiedTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 						userServiceList.add(userService);
 					}
 				}
@@ -640,7 +640,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 			
 				if(userService!=null) {
 					userService.setService_isDeleted(true);
-					userService.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+					userService.setModifiedTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 					userServiceList.add(userService);
 				}
 				
@@ -675,13 +675,13 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		}
 		else {
 			existingUser.setUser_IsDeleted(true);
-			existingUser.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+			existingUser.setModifiedTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 			userRepository.save(existingUser);
 			List<UserService> userService_DB  = userServiceRepository.fetchbyCompanyName(companyName);
 			List<UserService> userServiceList = new ArrayList<UserService>();
 			for(UserService userService: userService_DB) {
 				userService.setService_isDeleted(true);
-				userService.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+				userService.setModifiedTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 				userServiceList.add(userService);
 			}
 			userServiceRepository.saveAll(userServiceList);
@@ -806,7 +806,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 			
 				trackandTrace.setTrackEventDetails(trackingDetails.getActivity());
 				trackandTrace.setCourierEvents(trackingDetails.getActivity());
-				trackandTrace.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+				trackandTrace.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()).toString());
 				trackandTrace.setLocation(trackingDetails.getLocation());
 				trackandTrace.setIsDeleted("N");
 				if("ARRIVED AT DESTINATION AIRPORT".equalsIgnoreCase(trackandTrace.getTrackEventDetails()) ||
@@ -876,7 +876,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
    			 	errorResponse.setOrderId(data.getOrderId());
    		 		errorResponse.setReferenceNumber(data.getReferenceNo());
    		 		errorResponse.setTrackingNo(data.getTrackingNo());
-   		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+   		 		errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
    		 		responseEntity.add(errorResponse);
    		 		barcodeMap.put(data.getReferenceNo(), data);
    				}
@@ -889,7 +889,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	     			 	errorResponse.setOrderId(data.getOrderId());
 	     		 		errorResponse.setReferenceNumber(data.getReferenceNo());
 	     		 		errorResponse.setTrackingNo(data.getTrackingNo());
-	     		 		errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+	     		 		errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
    				    errorResponse.setErrorCode(error.getCode());
    				 	errorResponse.setErrorMessage(error.getMessage());
   				 	responseEntity.add(errorResponse);
@@ -958,7 +958,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 								trackandTrace.setTrackEventDetails(trackingEvents.getDescription());
 								trackandTrace.setTrackEventDateOccured(trackingEvents.getDate().substring(0,19));
 								trackandTrace.setLocation(trackingEvents.getLocation());
-								trackandTrace.setTimestamp(Timestamp.valueOf(LocalDateTime.now()).toString());
+								trackandTrace.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
 							//	trackandTrace.setFileName("AU-Post");
 								trackandTrace.setFileName("AUPostTrack");
 								trackAndTraceList.add(trackandTrace);
@@ -1058,7 +1058,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setStatus("open");
 					tickets.setUserId( userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
 					tickets.setClientBrokerId(userRepository.fetchClientBrokerIdbyUserName(createEnquiry.getUserName()));
-					tickets.setEnquiryOpenDate(Timestamp.valueOf(LocalDateTime.now()));
+					tickets.setEnquiryOpenDate(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 					TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(tickets.getConsigneePostcode());
 					if( null != transitTimeResponse && null != transitTimeResponse.getTransitTime() && null !=timestamp) {
 						String deliveryDate = D2ZCommonUtil.getIncreasedTime(timestamp,transitTimeResponse.getTransitTime());
@@ -1089,7 +1089,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setStatus("open");
 					tickets.setUserId( userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
 					tickets.setClientBrokerId(userRepository.fetchClientBrokerIdbyUserName(createEnquiry.getUserName()));
-					tickets.setEnquiryOpenDate(Timestamp.valueOf(LocalDateTime.now()));
+					tickets.setEnquiryOpenDate(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 					TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(tickets.getConsigneePostcode());
 					if( null != transitTimeResponse && null != transitTimeResponse.getTransitTime() && null !=timestamp) {
 						String deliveryDate = D2ZCommonUtil.getIncreasedTime(timestamp,transitTimeResponse.getTransitTime());

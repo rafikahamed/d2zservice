@@ -495,7 +495,7 @@ public class PCAWrapper {
 					errorResponse.setAPIName("NEX - Create order");
 					errorResponse.setErrorCode(String.valueOf(pcaData.getStatus()));
 					errorResponse.setErrorMessage(pcaData.getMsg());
-					errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+					errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 					errorResponse.setStatus("Error");
 					responseEntity.add(errorResponse);
 				}else {
@@ -504,7 +504,7 @@ public class PCAWrapper {
 					errorResponse.setReferenceNumber(pcaData.getCustref());
 					errorResponse.setOrderId(pcaData.getConnote());
 					errorResponse.setTrackingNo(pcaData.getRef());
-					errorResponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+					errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 					errorResponse.setStatus("Success");
 					responseEntity.add(errorResponse);
 				}

@@ -1472,7 +1472,7 @@ public class D2ZServiceImpl implements ID2ZService {
 						auresponse.setItemId((String) (item.get("item_id")));
 						Map<String, Object> tracking_summary = (Map<String, Object>) item.get("tracking_details");
 						auresponse.setArticleId((String) (tracking_summary.get("article_id")));
-						auresponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+						auresponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 						AUPostResponseList.add(auresponse);
 					}
 
@@ -1494,7 +1494,7 @@ public class D2ZServiceImpl implements ID2ZService {
 					 * auresponse.setField(Field.substring(0, (Field.length()-1)));
 					 */
 
-					auresponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+					auresponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 					AUPostResponseList.add(auresponse);
 
 				}
@@ -1564,7 +1564,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			existingUser.setPassword(D2ZCommonUtil.hashPassword(userDetails.getPassword()));
 			existingUser.setPassword_value(userDetails.getPassword());
 			existingUser.setEBayToken(userDetails.geteBayToken());
-			existingUser.setModifiedTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+			existingUser.setModifiedTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 			User updatedUser = d2zDao.updateUser(existingUser);
 			d2zDao.updateUserService(updatedUser, userDetails);
 			userMsg.setMessage("Updated Successfully");
@@ -1905,7 +1905,7 @@ public class D2ZServiceImpl implements ID2ZService {
 					ffresponse.setArticleid(data.getArticleId());
 					ffresponse.setReferencenumber(data.getReference_number());
 					// ffresponse.setSupplier(data.getsu);
-					ffresponse.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+					ffresponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 					ffresponse.setSupplier("FDM");
 					ffresponse.setResponse("Pending");
 					consignment.setConnote_no(data.getArticleId());
