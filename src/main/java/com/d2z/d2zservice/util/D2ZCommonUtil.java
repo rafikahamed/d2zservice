@@ -41,7 +41,7 @@ public class D2ZCommonUtil {
 	
 	public static String getAETCurrentTimestamp() {
 		Date dt = new Date();
-	    DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	    DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	    format.setTimeZone(TimeZone.getTimeZone("Australia/Sydney"));
 	    String parsedDate = format.format(dt);
 		return parsedDate;
