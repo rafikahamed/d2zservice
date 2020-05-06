@@ -78,6 +78,7 @@ import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.EnquiryUpdate;
 import com.d2z.d2zservice.model.FDMManifestDetails;
 import com.d2z.d2zservice.model.HeldParcelDetails;
+import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
 import com.d2z.d2zservice.model.PFLSubmitOrderData;
@@ -95,7 +96,9 @@ import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
+import com.d2z.d2zservice.model.ShippingQuoteRequest;
 import com.d2z.d2zservice.model.SuperUserEnquiry;
+import com.d2z.d2zservice.model.SurplusData;
 import com.d2z.d2zservice.model.TrackParcel;
 import com.d2z.d2zservice.model.TrackParcelResponse;
 import com.d2z.d2zservice.model.TrackingDetails;
@@ -241,7 +244,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			}
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(orderDetailList, senderDataResponseList);
 			return senderDataResponseList;
-		} else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType)
+		} else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType) || "FW3".equalsIgnoreCase(serviceType)
 				|| "1PS4".equalsIgnoreCase(serviceType)) {
 			if (isPostcodeValidationReq) {
 				if ("1PS4".equalsIgnoreCase(serviceType)) {
@@ -455,7 +458,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderData> expressNewData = new ArrayList<SenderData>();
 		List<SenderData> parcelPostData = new ArrayList<SenderData>();
 		List<SenderData> fwData = new ArrayList<SenderData>();
-
+		List<SenderData> fw3Data = new ArrayList<SenderData>();
 		boolean setGS1Type = false;
 		for (SenderData data : senderData) {
 			if ("MCM1".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
@@ -479,9 +482,13 @@ public class D2ZServiceImpl implements ID2ZService {
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
 				setGS1Type = true;
 				expressData.add(data);
-			} else if ("FW".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
+			} else if (("FW".equalsIgnoreCase(data.getServiceType()))
+					&& data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				fwData.add(data);
-			} else if (data.getCarrier().equalsIgnoreCase("FastwayM")) {
+			} else if("FW3".equalsIgnoreCase(data.getServiceType())){
+				fw3Data.add(data);
+			}
+			else if (data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				fastwayData.add(data);
 			} else if (data.getCarrier().equalsIgnoreCase("FastwayS")) {
 				fastway_S_Data.add(data);
@@ -511,6 +518,8 @@ public class D2ZServiceImpl implements ID2ZService {
 		JasperReport expressNew = null;
 		JRBeanCollectionDataSource fwDataSource;
 		JasperReport fwLabel = null;
+		JRBeanCollectionDataSource fw3DataSource;
+		JasperReport fw3Label = null;
 		JRBeanCollectionDataSource parcelPostDataSource;
 		JasperReport parcelPost = null;
 
@@ -586,8 +595,15 @@ public class D2ZServiceImpl implements ID2ZService {
 				System.out.println("Generating Fastway FW..." + fwData.size());
 				fwDataSource = new JRBeanCollectionDataSource(fwData);
 				fwLabel = JasperCompileManager.compileReport(getClass().getResource("/FWLabel.jrxml").openStream());
-				JRSaver.saveObject(fastwayLabel, "FWLabel.jasper");
+				JRSaver.saveObject(fwLabel, "FWLabel.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(fwLabel, parameters, fwDataSource));
+			}
+			if (!fw3Data.isEmpty()) {
+				System.out.println("Generating Fastway FW3..." + fw3Data.size());
+				fw3DataSource = new JRBeanCollectionDataSource(fw3Data);
+				fw3Label = JasperCompileManager.compileReport(getClass().getResource("/FW3.jrxml").openStream());
+				JRSaver.saveObject(fw3Label, "FW3.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(fw3Label, parameters, fw3DataSource));
 			}
 			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
@@ -745,6 +761,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			List<SenderData> expressNewData = new ArrayList<SenderData>();
 			List<SenderData> parcelPostData = new ArrayList<SenderData>();
 			List<SenderData> fwData = new ArrayList<SenderData>();
+			List<SenderData> fw3Data = new ArrayList<SenderData>();
 
 			for (SenderData data : trackingLabelList) {
 				if ("MCM1".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
@@ -767,10 +784,13 @@ public class D2ZServiceImpl implements ID2ZService {
 					eParcelData.add(data);
 				} else if (data.getCarrier().equalsIgnoreCase("Express")) {
 					expressData.add(data);
-				} else if ("FW".equalsIgnoreCase(data.getServiceType())
+				} else if (("FW".equalsIgnoreCase(data.getServiceType()) )
 						&& data.getCarrier().equalsIgnoreCase("FastwayM")) {
 					fwData.add(data);
-				} else if (data.getCarrier().equalsIgnoreCase("FastwayM")) {
+				}else if(("FW3").equalsIgnoreCase(data.getServiceType())) {
+					fw3Data.add(data);
+				}else if (data.getCarrier().equalsIgnoreCase("FastwayM")) {
+				
 					fastwayData.add(data);
 				} else if (data.getCarrier().equalsIgnoreCase("FastwayS")) {
 					fastway_S_Data.add(data);
@@ -798,6 +818,8 @@ public class D2ZServiceImpl implements ID2ZService {
 			JasperReport parcelPost = null;
 			JRBeanCollectionDataSource fwDataSource;
 			JasperReport fwLabel = null;
+			JRBeanCollectionDataSource fw3DataSource;
+			JasperReport fw3Label = null;
 			try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 				List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 				if (!eParcelData.isEmpty()) {
@@ -840,11 +862,18 @@ public class D2ZServiceImpl implements ID2ZService {
 					JRSaver.saveObject(fastwayLabel, "FastWayLabel.jasper");
 					jasperPrintList.add(JasperFillManager.fillReport(fastwayLabel, parameters, fastwayDataSource));
 				}
+				if (!fw3Data.isEmpty()) {
+					System.out.println("Generating Fastway FW3..." + fw3Data.size());
+					fw3DataSource = new JRBeanCollectionDataSource(fw3Data);
+					fw3Label = JasperCompileManager.compileReport(getClass().getResource("/FW3.jrxml").openStream());
+					JRSaver.saveObject(fw3Label, "FW3.jasper");
+					jasperPrintList.add(JasperFillManager.fillReport(fw3Label, parameters, fw3DataSource));
+				}
 				if (!fwData.isEmpty()) {
 					System.out.println("Generating Fastway FW..." + fwData.size());
 					fwDataSource = new JRBeanCollectionDataSource(fwData);
 					fwLabel = JasperCompileManager.compileReport(getClass().getResource("/FWLabel.jrxml").openStream());
-					JRSaver.saveObject(fastwayLabel, "FWLabel.jasper");
+					JRSaver.saveObject(fwLabel, "FWLabel.jasper");
 					jasperPrintList.add(JasperFillManager.fillReport(fwLabel, parameters, fwDataSource));
 				}
 				if (!fastway_S_Data.isEmpty()) {
@@ -1066,7 +1095,7 @@ public class D2ZServiceImpl implements ID2ZService {
 				System.out.print("servicetype:" + serviceType);
 				eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail, senderDataResponseList);
 				return senderDataResponseList;
-			} else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType)
+			} else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType) || "FW3".equalsIgnoreCase(serviceType)
 					|| "1PS4".equalsIgnoreCase(serviceType)) {
 				if (isPostcodeValidationReq) {
 					if ("1PS4".equalsIgnoreCase(serviceType)) {
@@ -1196,13 +1225,16 @@ public class D2ZServiceImpl implements ID2ZService {
 			request.setRecipientName(recpName);
 			request.setAddressLine1(orderDetail.getConsigneeAddr1());
 			request.setAddressLine2(orderDetail.getConsigneeAddr2());
-			// request.setEmail(orderDetail.getConsigneeEmail());
+		    request.setEmail(orderDetail.getConsigneeEmail());
 			request.setPhone(orderDetail.getConsigneePhone());
 			request.setCity(orderDetail.getConsigneeSuburb());
 			request.setState(orderDetail.getConsigneeState());
 			request.setPostcode(orderDetail.getConsigneePostcode());
 			request.setCountry("AU");
 			request.setWeight(Double.valueOf(orderDetail.getWeight()));
+			if("FW3".equalsIgnoreCase(serviceType)) {
+				request.setDelivery_instruction("300LBX");
+			}
 			pflOrderInfoRequest.add(request);
 		}
 		pflRequest.setOrderinfo(pflOrderInfoRequest);
@@ -1238,6 +1270,9 @@ public class D2ZServiceImpl implements ID2ZService {
 			request.setPostcode(orderDetail.getConsigneePostcode());
 			request.setCountry("AU");
 			request.setWeight(Double.valueOf(orderDetail.getWeight()));
+			if("FW3".equalsIgnoreCase(serviceType)) {
+				request.setDelivery_instruction("300LBX");
+			}
 			pflOrderInfoRequest.add(request);
 		}
 		pflRequest.setOrderinfo(pflOrderInfoRequest);
@@ -2856,5 +2891,41 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<String> orderIdsList = submitOrderdata.stream().map(PFLSubmitOrderData :: getOrderId).collect(Collectors.toList());
 		d2zDao.updateForPFLSubmitOrderCompleted();
 	}
+
+	@Override
+	public UserMessage shippingQuote(ShippingQuoteRequest shippingQuoteRequest) {
+	
+				
+			   String toMail =	"IT@d2z.com.au";
+			   String body = "Shipping quote requested by,</br>"
+					   +"<b>Name:</b> "+shippingQuoteRequest.getName()
+					   +"</br><b>Company Name:</b> "+shippingQuoteRequest.getCompanyName()
+					   +"</br><b>Email Address:</b> "+shippingQuoteRequest.getEmailAddress()
+					   +"</br></br>Please find below the details,"
+					   +"</br><b>Shipping Mode:</b> "+shippingQuoteRequest.getMode()
+					   +"</br><b>Departure:</b> "+shippingQuoteRequest.getDeparture()
+			   		   +"</br><b>Departure Type:</b> "+shippingQuoteRequest.getDepartureType()
+			   		   +"</br><b>Arrival: </b>"+shippingQuoteRequest.getArrival()
+			   		   +"</br><b>Arrival Type: </b>"+shippingQuoteRequest.getArrivalType()
+			   		   +"</br><b>Cargo Ready Date: </b>"+shippingQuoteRequest.getCargoReadyDate()
+			   		   +"</br><b>Commodity: </b>"+shippingQuoteRequest.getCommodity()
+			   		   +"</br><b>Packing Type: </b>"+shippingQuoteRequest.getPackingType()
+			   		   +"</br><b>Shipping Quantity: </b>"+shippingQuoteRequest.getShippingQuantity()
+			   		   +"</br><b>Total Weight(Kg): </b>"+shippingQuoteRequest.getTotalWeight()
+			   		   +"</br><b>Incoterms: </b>"+shippingQuoteRequest.getIncoterms()
+			   		   +"</br><b>Dimensions(CM): </b>"+shippingQuoteRequest.getDimHeight()+" X "+shippingQuoteRequest.getDimLength()+" X "+shippingQuoteRequest.getDimWidth()
+			   		   +"</br><b>Stackable? </b>" +shippingQuoteRequest.getStackable()
+			   		   +"</br><b>Hazardous? </b>"+shippingQuoteRequest.getHazardous()
+			   		   +"</br><b>Cargo Insurance? </b>"+shippingQuoteRequest.getCargoInsurance()
+			   		   +"</br><b>Personal Effects? </b>"+shippingQuoteRequest.getPersonalEffects();
+			   		   
+			   		 
+			  // emailUtil.sendEmail("Shipping Quote", toMail,body);
+			
+			UserMessage userMsg = new UserMessage();
+			userMsg.setMessage("Shipping Quote requested successfully. Thank you for your enquiry, this has been received and we will endeavour to respond to you within 24 hours.");
+			return userMsg;
+		}
+	
 
 }

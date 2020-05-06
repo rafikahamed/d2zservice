@@ -26,6 +26,7 @@ import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
+import com.d2z.d2zservice.model.ShippingQuoteRequest;
 import com.d2z.d2zservice.model.SuperUserEnquiry;
 import com.d2z.d2zservice.model.TrackParcel;
 import com.d2z.d2zservice.model.TrackParcelResponse;
@@ -151,5 +152,7 @@ public interface ID2ZService {
 	public UserMessage parcelEmail();
 
 	public void pflSubmitOrder();
+
+	public UserMessage shippingQuote(ShippingQuoteRequest shippingQuoteRequest);
 
 }

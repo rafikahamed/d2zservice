@@ -15,9 +15,16 @@ public class PflCreateShippingOrderInfo {
 	private String custom_ref;
 	private Double weight;
 	private String description = "bags";
+	private String delivery_instruction;
 	
 	public String getRecipientName() {
 		return recipientName;
+	}
+	public String getDelivery_instruction() {
+		return delivery_instruction;
+	}
+	public void setDelivery_instruction(String delivery_instruction) {
+		this.delivery_instruction = delivery_instruction;
 	}
 	public void setRecipientName(String recipientName) {
 		this.recipientName = recipientName;

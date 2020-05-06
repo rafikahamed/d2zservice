@@ -952,6 +952,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		List<SenderData> expressNewData = new ArrayList<SenderData>();
 		List<SenderData> parcelPostData = new ArrayList<SenderData>();
 		List<SenderData> fwData = new ArrayList<SenderData>();
+		List<SenderData> fw3Data = new ArrayList<SenderData>();
 
 		for (SenderData data : trackingLabelList) {
 			/*
@@ -961,9 +962,14 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				expressNewData.add(data);
 			}else if("HKG".equalsIgnoreCase(data.getServiceType()) || "HKG2".equalsIgnoreCase(data.getServiceType())) {
 				parcelPostData.add(data);
-			}else if ("FW".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
+			}else if ("FW".equalsIgnoreCase(data.getServiceType()) 
+					&& data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				fwData.add(data);
-			}else if (data.getCarrier().equalsIgnoreCase("eParcel")) {
+			
+			}else if("FW3".equalsIgnoreCase(data.getServiceType())) {
+				fw3Data.add(data);
+			}
+			else  if (data.getCarrier().equalsIgnoreCase("eParcel")) {
 				eParcelData.add(data);
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
 				expressData.add(data);
@@ -994,6 +1000,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		JasperReport parcelPost = null;
 		JRBeanCollectionDataSource fwDataSource;
 		JasperReport fwLabel = null;
+		JRBeanCollectionDataSource fw3DataSource;
+		JasperReport fw3Label = null;
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 			if (!eParcelData.isEmpty()) {
@@ -1061,7 +1069,13 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				JRSaver.saveObject(fastwayLabel, "FWLabel.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(fwLabel, parameters, fwDataSource));
 			}
-			
+			if (!fw3Data.isEmpty()) {
+				System.out.println("Generating Fastway FW3..." + fw3Data.size());
+				fw3DataSource = new JRBeanCollectionDataSource(fw3Data);
+				fw3Label = JasperCompileManager.compileReport(getClass().getResource("/FW3.jrxml").openStream());
+				JRSaver.saveObject(fw3Label, "FW3.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(fw3Label, parameters, fw3DataSource));
+			}
 			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
 			JRPdfExporter exporter = new JRPdfExporter();

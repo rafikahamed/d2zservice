@@ -32,6 +32,7 @@ import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
+import com.d2z.d2zservice.model.ShippingQuoteRequest;
 import com.d2z.d2zservice.model.TrackParcel;
 import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.UserDetails;
@@ -279,6 +280,12 @@ public class D2zController {
 	public UserMessage contactUs(@RequestParam("email") String email, @RequestParam("message") String message,
 			@RequestParam("name") String name, @RequestParam("subject") String subject) {
 		UserMessage userMsg = d2zService.contactUs(email, message, name, subject);
+		return userMsg;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, path = "/shippingQuote")
+	public UserMessage contactUs(@RequestBody ShippingQuoteRequest shippingQuoteRequest) {
+		UserMessage userMsg = d2zService.shippingQuote(shippingQuoteRequest);
 		return userMsg;
 	}
 

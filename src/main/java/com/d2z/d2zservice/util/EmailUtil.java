@@ -89,6 +89,26 @@ public class EmailUtil {
 		  }
 	}
 	
+	public void sendEmail(String subject, String toMail, String body) {
+
+		 String mailBody = "<body><p> Hi Team,</br></br>" +
+						   body + "</p>" +
+						   "<p>Regards, </br>" + "D2Z Support Team</p>" + "</body> "; 
+		 MimeMessage message = mailSender.createMimeMessage(); 
+		 try 
+		 { 
+		  MimeMessageHelper helper = new MimeMessageHelper(message, true); 
+		  helper.setFrom("report@d2z.com.au");
+		  helper.setTo(toMail);
+		  helper.addBcc("IT@d2z.com.au");
+		  helper.setSubject(subject); 
+		  helper.setText(mailBody, true);
+		  mailSender.send(message); 
+		  }catch (MessagingException e) { 
+			 e.printStackTrace(); 
+		  }
+	}
+	
 	
 	
 }

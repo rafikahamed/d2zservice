@@ -85,6 +85,13 @@ public class ConsignmentValidator  implements
 			.addConstraintViolation();
 			isValid= false;
 		}
+		else if(null != value.getServiceType() && value.getServiceType().equalsIgnoreCase("FW3") && (Double.parseDouble(value.getWeight()) <= 0 || Double.parseDouble(value.getWeight()) > 0.3)) {
+
+			context.disableDefaultConstraintViolation();
+			context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getWeight()+","+"Weight should be between 0 and 0.3")
+			.addConstraintViolation();
+			isValid= false;
+		}
 		else if(null != value.getServiceType() && value.getServiceType().startsWith("FW") && (Double.parseDouble(value.getWeight()) <= 0 || Double.parseDouble(value.getWeight()) > 25)) {
 
 			context.disableDefaultConstraintViolation();
@@ -92,6 +99,7 @@ public class ConsignmentValidator  implements
 			.addConstraintViolation();
 			isValid= false;
 		}
+		
 		else if((Double.parseDouble(value.getWeight()) < 0 || Double.parseDouble(value.getWeight()) > 22)) {
 
 			context.disableDefaultConstraintViolation();

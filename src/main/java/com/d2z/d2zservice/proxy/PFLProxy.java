@@ -46,7 +46,7 @@ public class PFLProxy {
 		currentDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String currentDate = currentDateFormat.format(new Date());
 		System.out.println("US: " + currentDateFormat.format(new Date()));
-		if("FW".equalsIgnoreCase(serviceType)) {
+		if("FW".equalsIgnoreCase(serviceType) || "FW3".equalsIgnoreCase(serviceType)) {
 			SECRET_KEY = "U00T659VKM1YBHJGFE9SC326EHFKWE7B";
 			Token = "FVJMJGYLC74QIAGRPJREJBAHOQZ3H0LM";
 		}
@@ -112,7 +112,7 @@ public class PFLProxy {
 		currentDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String currentDate = currentDateFormat.format(new Date());
 		System.out.println("US: " + currentDateFormat.format(new Date()));
-		if("FW".equalsIgnoreCase(serviceType)) {
+		if("FW".equalsIgnoreCase(serviceType) || ("FW3".equalsIgnoreCase(serviceType))) {
 			SECRET_KEY = "U00T659VKM1YBHJGFE9SC326EHFKWE7B";
 			Token = "FVJMJGYLC74QIAGRPJREJBAHOQZ3H0LM";
 		}else if("1PS4".equalsIgnoreCase(serviceType)){
@@ -178,7 +178,7 @@ public class PFLProxy {
 		currentDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String currentDate = currentDateFormat.format(new Date());
 		System.out.println("US: " + currentDateFormat.format(new Date()));
-		if("FW".equalsIgnoreCase(serviceType)) {
+		if("FW".equalsIgnoreCase(serviceType) || "FW3".equalsIgnoreCase(serviceType)) {
 			SECRET_KEY = "U00T659VKM1YBHJGFE9SC326EHFKWE7B";
 			Token = "FVJMJGYLC74QIAGRPJREJBAHOQZ3H0LM";
 		}else {

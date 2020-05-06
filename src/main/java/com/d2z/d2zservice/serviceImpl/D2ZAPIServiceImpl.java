@@ -239,6 +239,9 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			request.setPostcode(orderDetail.getConsigneePostcode());
 			request.setCountry("AU");
 			request.setWeight(Double.valueOf(orderDetail.getWeight()));
+			if("FW3".equalsIgnoreCase(serviceType)) {
+				request.setDelivery_instruction("300LBX");
+			}
 			pflOrderInfoRequest.add(request);
 		}
 		pflRequest.setOrderinfo(pflOrderInfoRequest);
