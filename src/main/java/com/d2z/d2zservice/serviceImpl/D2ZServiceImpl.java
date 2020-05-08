@@ -2896,7 +2896,7 @@ public class D2ZServiceImpl implements ID2ZService {
 	public UserMessage shippingQuote(ShippingQuoteRequest shippingQuoteRequest) {
 	
 				
-			   String toMail =	"IT@d2z.com.au";
+			   String toMail =	"jack@d2z.com.au";
 			   String body = "Shipping quote requested by,</br>"
 					   +"<b>Name:</b> "+shippingQuoteRequest.getName()
 					   +"</br><b>Company Name:</b> "+shippingQuoteRequest.getCompanyName()
@@ -2920,7 +2920,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			   		   +"</br><b>Personal Effects? </b>"+shippingQuoteRequest.getPersonalEffects();
 			   		   
 			   		 
-			  // emailUtil.sendEmail("Shipping Quote", toMail,body);
+			   emailUtil.sendEmail("Shipping Quote", toMail,body);
 			
 			UserMessage userMsg = new UserMessage();
 			userMsg.setMessage("Shipping Quote requested successfully. Thank you for your enquiry, this has been received and we will endeavour to respond to you within 24 hours.");

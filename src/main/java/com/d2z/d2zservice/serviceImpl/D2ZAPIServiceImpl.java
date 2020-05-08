@@ -95,7 +95,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
 			return;
 			
-		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType) || "1PS4".equalsIgnoreCase(serviceType)) {
+		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType) || "FW3".equalsIgnoreCase(serviceType) || "1PS4".equalsIgnoreCase(serviceType)) {
 			if(isPostcodeValidationReq) {
 				if("1PS4".equalsIgnoreCase(serviceType)) {
 						d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
