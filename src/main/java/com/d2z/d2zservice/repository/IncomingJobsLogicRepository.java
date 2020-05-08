@@ -10,7 +10,7 @@ public interface IncomingJobsLogicRepository extends CrudRepository<IncomingJobs
 	@Query("SELECT distinct(Broker) from IncomingJobsLogic order by broker asc") 
 	List<String> getIncomeBrokerList();
 
-	@Query("Select distinct(email) from IncomingJobsLogic where broker = :broker" )
+	@Query("Select distinct(shipmentEmail) from IncomingJobsLogic where broker = :broker" )
 	String fetchEmailForBroker(String broker);
 
 //	@Query("SELECT distinct(broker) from IncomingJobsLogic order by broker asc") 

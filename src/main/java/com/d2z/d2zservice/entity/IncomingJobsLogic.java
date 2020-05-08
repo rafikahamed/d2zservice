@@ -1,7 +1,6 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -11,9 +10,6 @@ import javax.persistence.Table;
 @Table(name="IncomingJobsLogic")
 public class IncomingJobsLogic implements Serializable{
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -31,8 +27,10 @@ public class IncomingJobsLogic implements Serializable{
 	
 	@Column(name = "Consignee")
 	private String Consignee;
-
 	
+	@Column(name="ShipmentEmail")
+	private String shipmentEmail;
+
 	public String getEmail() {
 		return email;
 	}
@@ -73,4 +71,12 @@ public class IncomingJobsLogic implements Serializable{
 		Consignee = consignee;
 	}
 
+	public String getShipmentEmail() {
+		return shipmentEmail;
+	}
+
+	public void setShipmentEmail(String shipmentEmail) {
+		this.shipmentEmail = shipmentEmail;
+	}
+	
 }
