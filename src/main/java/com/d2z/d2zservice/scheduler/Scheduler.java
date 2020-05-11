@@ -128,7 +128,7 @@ public class Scheduler {
 		}
 	}
 	
-	@Scheduled(cron = "0 0 19 * * *",zone = "GMT+10")
+	@Scheduled(cron = "0 0 19 * * MON-FRI",zone = "GMT+10")
 	public void heldParccelEmail() {
 		try {
 			System.out.println("Calling  - Held Parcel Details");
