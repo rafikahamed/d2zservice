@@ -15,8 +15,8 @@ public interface ParcelRepository extends CrudRepository<Parcels,Long>{
 	@Query("SELECT p FROM Parcels p where  p.output = 'C' and p.status = 'CLEAR' and p.client = :client") 
 	List<Parcels>fetchreleaseparcel(String client);
 
-	@Query("SELECT p FROM Parcels p where p.hawb = :hawb ")
-	Parcels findByHAWB(String hawb);
+	@Query("SELECT p FROM Parcels p where p.hawb = :hawb and p.status = :status")
+	Parcels findByHAWB(String hawb,String status);
 
 	@Query("SELECT distinct p.hawb,p.status FROM Parcels p where p.mawb = :mawb and p.note = 'SURPLUS/SHORTAGE'")
 	List<Object[]> fetchSurplusData(String mawb);

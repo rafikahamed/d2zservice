@@ -1348,7 +1348,8 @@ public class D2ZServiceImpl implements ID2ZService {
 				if (!fastwayOrderId.isEmpty()) {
 					ZoneId zoneId = ZoneId.of ( "Australia/Sydney" );
 					int dayofWeek = LocalDate.now(zoneId).getDayOfWeek().getValue();
-					if(dayofWeek>=5) {
+					if(dayofWeek>=4) {
+						//Thrus - Sun
 						List<String> orderIds = fastwayOrderId.stream().map(PFLSubmitOrderData :: getOrderId).collect(Collectors.toList());
 						d2zDao.updateForPFLSubmitOrder(orderIds,"PFLSubmitOrder");
 					}else {
