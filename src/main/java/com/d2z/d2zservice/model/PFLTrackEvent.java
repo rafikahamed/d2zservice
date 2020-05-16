@@ -5,6 +5,7 @@ public class PFLTrackEvent {
 	private String date;
 	private String status;
 	private String status_code;
+	private String location;
 	public String getDate() {
 		return date;
 	}
@@ -23,6 +24,13 @@ public class PFLTrackEvent {
 	public void setStatus_code(String status_code) {
 		this.status_code = status_code;
 	}
+	public String getLocation() {
+		return location;
+	}
+	public void setLocation(String location) {
+		this.location = location;
+	}
+	
 
 	
 }

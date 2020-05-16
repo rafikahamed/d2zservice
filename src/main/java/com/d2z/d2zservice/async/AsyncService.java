@@ -91,6 +91,7 @@ public class AsyncService {
 				event.setStatus(response.getStatus());
 				event.setStatus_code(response.getStatus_code());
 				event.setDate(response.getDate());
+				event.setLocation(response.getLocation());
 				pflTrackEventList.add(event);
 				}
 				pflResp.setTrackEvent(pflTrackEventList);

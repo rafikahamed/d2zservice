@@ -2510,6 +2510,8 @@ public class D2ZServiceImpl implements ID2ZService {
 					TrackingEvents event = new TrackingEvents();
 					event.setTrackEventDateOccured(trackEvent.getDate());
 					event.setEventDetails(trackEvent.getStatus());
+					event.setStatusCode(trackEvent.getStatus_code());
+					event.setLocation(trackEvent.getLocation());
 					events.add(event);
 				}
 
