@@ -169,7 +169,7 @@ public interface ISuperUserD2ZService{
 
 	public ResponseMessage allocateShipment(String articleid, String shipmentNumber);
 
-	public UserMessage createParcel(List<HeldParcel> createJob);
+	public UserMessage createParcel(List<HeldParcel> createJob) throws ReferenceNumberNotUniqueException;
 
 	public List<ParcelResponse> getParcelList(String client);
 	

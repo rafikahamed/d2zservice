@@ -339,7 +339,7 @@ public class D2ZSuperUserController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/held-parcel")
-	public UserMessage createParcel(@RequestBody List<HeldParcel> createJob) {
+	public UserMessage createParcel(@RequestBody List<HeldParcel> createJob) throws ReferenceNumberNotUniqueException {
 		UserMessage jobInfo = superUserD2zService.createParcel(createJob);
 		return jobInfo;
 	}

@@ -26,6 +26,7 @@ import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.util.ValidationUtils;
 import com.d2z.d2zservice.model.ErrorDetails;
+import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.singleton.D2ZSingleton;
 
 @Service
@@ -79,7 +80,6 @@ public class D2ZValidator {
 	public void isReferenceNumberUnique(List<String> incomingRefNbr) throws ReferenceNumberNotUniqueException{
 		List<String> referenceNumber_DB = d2zDao.fetchAllReferenceNumbers();
 		referenceNumber_DB.addAll(incomingRefNbr);
-
 		List<String> duplicateRefNbr = referenceNumber_DB.stream().collect(Collectors.groupingBy(Function.identity(),     
 	              Collectors.counting()))                                             
 	          .entrySet().stream()
@@ -94,9 +94,7 @@ public class D2ZValidator {
 	
 	public void isReferenceNumberUniqueUI(List<String> incomingRefNbr) throws ReferenceNumberNotUniqueException{
 		List<String> referenceNumber_DB = d2zDao.fetchAllReferenceNumbers();
-
 		referenceNumber_DB.addAll(incomingRefNbr);
-
 		List<String> duplicateRefNbr = referenceNumber_DB.stream().collect(Collectors.groupingBy(Function.identity(),     
 			           Collectors.counting()))                                             
 			          .entrySet().stream()
@@ -114,7 +112,6 @@ public class D2ZValidator {
 			return obj.getArticleId(); })
 				.collect(Collectors.toList());
 		articleNumber_DB.addAll(articleNbr);
-
 		List<String> duplicateArticleNbr = articleNumber_DB.stream().collect(Collectors.groupingBy(Function.identity(),     
 	              Collectors.counting()))                                             
 	          .entrySet().stream()
@@ -152,6 +149,22 @@ public class D2ZValidator {
 		} 
 		if(!incorrectRefNbr.isEmpty()) {
 			throw new InvalidServiceTypeException("Invalid Service Type",incorrectRefNbr);
+		}
+	}
+	
+	public void isParcelValid(List<HeldParcel> createJob) throws ReferenceNumberNotUniqueException {
+		List<String> duplicateParcelDetails = new ArrayList<String>();
+		List<String> parcelDetails = d2zSuperUserDao.fetchParcelDetails();
+		createJob.forEach(obj -> {
+			String hawb = obj.getHawb().trim().toUpperCase();
+			String status = obj.getStat().trim().toUpperCase();
+			String combination = hawb.concat(status);
+			if(parcelDetails.contains(combination)) {
+				duplicateParcelDetails.add(obj.getHawb());
+			}
+		});
+		if(!duplicateParcelDetails.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Parcel Entry should be unique",duplicateParcelDetails);
 		}
 	}
 

@@ -1818,16 +1818,15 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 					});
 				}
 				}
-	        
-	        
 	        }};
 	        new Thread(freipost).start();
 		}
 	    return userMsg;
-	    }
+	}
+	
 	@Override
-	public UserMessage createParcel(List<HeldParcel> createJob) {
-		// TODO Auto-generated method stub
+	public UserMessage createParcel(List<HeldParcel> createJob) throws ReferenceNumberNotUniqueException{
+		d2zValidator.isParcelValid(createJob);
 		String jobInfo = d2zDao.createParcel(createJob);
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage(jobInfo);
@@ -1836,19 +1835,15 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 
 	@Override
 	public List<ParcelResponse> getParcelList(String client) {
-		// TODO Auto-generated method stub
 		return d2zDao.getParcelList(client);
 	}
 
 	@Override
 	public UserMessage updateParcel(List<ParcelResponse> parcel) {
-		// TODO Auto-generated method stub
-		
 		String jobInfo = d2zDao.updateParcel(parcel);
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage(jobInfo);
 		return usrMsg;
-
 	}
 
 	@Override

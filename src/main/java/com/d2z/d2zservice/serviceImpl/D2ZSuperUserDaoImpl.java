@@ -2177,12 +2177,25 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 
 	@Override
 	public String fetchEmailAddr(String broker) {
-				return incomingJobsLogicRepository.fetchEmailForBroker(broker);
+		return incomingJobsLogicRepository.fetchEmailForBroker(broker);
 	}
 
 	@Override
 	public void updateForPFLSubmitOrder(List<String> fastwayOrderId,String status) {
 		trackAndTraceRepository.updateForPFLSubmitOrder(fastwayOrderId,status);		
+	}
+
+	@Override
+	public List<String> fetchParcelDetails() {
+		List<String> incorrectRefNbr = new ArrayList<String>();
+		List<Parcels> parcelDetails = parcelRepository.fetchParcel();
+		parcelDetails.forEach(obj -> {
+			String parcel = obj.getHawb().trim().toUpperCase();
+			String state = obj.getStatus().trim().toUpperCase();
+			String parcelVal = parcel.concat(state);
+			incorrectRefNbr.add(parcelVal);
+		});
+		return incorrectRefNbr;
 	}
 
 }

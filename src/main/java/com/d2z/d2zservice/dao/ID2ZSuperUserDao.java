@@ -264,5 +264,7 @@ public interface ID2ZSuperUserDao {
 
 	void updateForPFLSubmitOrder(List<String> fastwayOrderId,String status);
 
+	List<String> fetchParcelDetails();
+
 }
 
