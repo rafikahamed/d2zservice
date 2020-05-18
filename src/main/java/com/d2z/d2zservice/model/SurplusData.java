@@ -4,6 +4,8 @@ public class SurplusData {
 
 	private String articleId;
 	private String status;
+	private String note;
+	
 	public String getArticleId() {
 		return articleId;
 	}
@@ -16,9 +18,17 @@ public class SurplusData {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	public String getNote() {
+		return note;
+	}
+	public void setNote(String note) {
+		this.note = note;
+	}
 	
-	 public SurplusData(Object[] row) {
+	public SurplusData(Object[] row) {
 		 articleId = (String)row[0];
 		 status = (String)row[1];
-	    }
+		 note = (String)row[2];
+	}
+	
 }

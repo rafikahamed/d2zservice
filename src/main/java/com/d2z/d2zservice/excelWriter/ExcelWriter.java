@@ -148,31 +148,22 @@ public class ExcelWriter {
 	
 	public byte[] generateShipmentReport(IncomingJobResponse incomingJobs, List<SurplusData> surplusData) {
 		byte[] xls = null;
-
 		try {
-
 			   Workbook workbook = new XSSFWorkbook();
 			   Sheet sheet = workbook.createSheet("ShipmentSummary");
-
 			   InputStream inputStream = getClass().getClassLoader().getResourceAsStream("D2Z.jpg");
                System.out.println(inputStream);
 			   byte[] imageBytes = IOUtils.toByteArray(inputStream);
-
 			   int pictureureIdx = workbook.addPicture(imageBytes, Workbook.PICTURE_TYPE_JPEG);
-
 			   inputStream.close();
 
 			   CreationHelper helper = workbook.getCreationHelper();
-
 			   Drawing drawing = sheet.createDrawingPatriarch();
-
 			   ClientAnchor anchor = helper.createClientAnchor();
-
 			   anchor.setCol1(0);
 			   anchor.setRow1(1);
 			   anchor.setCol2(2);
 			   anchor.setRow2(7);
-
 			   drawing.createPicture(anchor, pictureureIdx);
 			   
 			   Row row = sheet.createRow(8);
@@ -201,22 +192,22 @@ public class ExcelWriter {
 			   fillShipmentSummaryData("SURPLUS/SHORTAGE",incomingJobs.getSurplus(),16,sheet,workbook);
 			   fillShipmentSummaryData("DAMAGE/OTHER",incomingJobs.getDamage(),17,sheet,workbook);
 			   
-			   fillShipmentSummaryData("ARTICLE ID","SURPLUS/SHORTAGE",19,sheet,workbook);
-
-				int rowNum = 20;
+			   fillShipmentSummaryData("ARTICLE ID","STATUS","COMMENTS",19,sheet,workbook);
+			   int rowNum = 20;
 			      for(SurplusData data : surplusData) {
 			          Row surplusrow = sheet.createRow(rowNum++);
 			          surplusrow.createCell(0).setCellValue(data.getArticleId());
 			          surplusrow.createCell(1).setCellValue(data.getStatus());
+			          surplusrow.createCell(2).setCellValue(data.getNote());
 			      }
-			   
-			   for(int i = 0; i < 4; i++) { sheet.autoSizeColumn(i); }
+			   for(int i = 0; i < 4; i++){ 
+				   sheet.autoSizeColumn(i); 
+			   }
 			   ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		     	workbook.write(baos);
-		     	 xls = baos.toByteArray();
-		     	workbook.close();
+		       workbook.write(baos);
+		       xls = baos.toByteArray();
+		       workbook.close();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	     return xls;
@@ -237,10 +228,27 @@ public class ExcelWriter {
 		   
 		   labelCell.setCellStyle(style);
 		   valueCell.setCellStyle(style);
-		   
-		   
 	}
 
+	private void fillShipmentSummaryData(String label1, String label2, String label3, int rowNo, Sheet sheet, Workbook workbook) {
+		   Row row = sheet.createRow(rowNo);
+		   Cell labelCell1 = row.createCell(0);
+		   Cell labelCell2 = row.createCell(1);
+		   Cell labelCell3 = row.createCell(2);
+		   labelCell1.setCellValue(label1);
+		   labelCell2.setCellValue(label2);	
+		   labelCell3.setCellValue(label3);	
+		   
+		   CellStyle style = workbook.createCellStyle();
+		   style.setBorderBottom(BorderStyle.THIN);
+		   style.setBorderLeft(BorderStyle.THIN);
+		   style.setBorderRight(BorderStyle.THIN);
+		   style.setBorderTop(BorderStyle.THIN);
+		   
+		   labelCell1.setCellStyle(style);
+		   labelCell2.setCellStyle(style);
+		   labelCell3.setCellStyle(style);
+	}
 
 	public byte[] generateReturnsReport(List<EmailReturnDetails> enquiryVal) {
 		

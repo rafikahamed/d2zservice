@@ -1848,7 +1848,6 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 
 	@Override
 	public List<ParcelResponse> getParcelreleaseList(String client) {
-		// TODO Auto-generated method stub
 		return d2zDao.getParcelReleaseList(client);
 	}
 
@@ -1881,12 +1880,13 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	@Override
 	public UserMessage generateShipmentReport(IncomingJobResponse incomingJobs) {
 			List<SurplusData> surplusData = new ArrayList<SurplusData>();
-				if(incomingJobs.getSurplus()!=null && (incomingJobs.getSurplus().equalsIgnoreCase("True") ||
-						incomingJobs.getSurplus().equalsIgnoreCase("Y")))
-				{		
-					incomingJobs.setSurplus("Y");
-					surplusData = d2zDao.fetchSurplusData(incomingJobs.getMawb());
-				}
+//				if(incomingJobs.getSurplus()!=null && (incomingJobs.getSurplus().equalsIgnoreCase("True") ||
+//						incomingJobs.getSurplus().equalsIgnoreCase("Y")))
+//				{		
+//					incomingJobs.setSurplus("Y");
+//					surplusData = d2zDao.fetchSurplusData(incomingJobs.getMawb());
+//				}
+		   surplusData = d2zDao.fetchSurplusData(incomingJobs.getMawb());
 		   String toMail =	d2zDao.fetchEmailAddr(incomingJobs.getBroker());
 		   byte[] reportXL =  excelWriter.generateShipmentReport(incomingJobs,surplusData);
 		   emailUtil.sendReport("Shipment Summary Report"+" "+incomingJobs.getMawb(), toMail,"Please find attached the Shipment summary report."

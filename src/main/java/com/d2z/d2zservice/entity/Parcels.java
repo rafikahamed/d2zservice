@@ -1,9 +1,6 @@
 package com.d2z.d2zservice.entity;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,26 +11,22 @@ import javax.persistence.Table;
 @Entity
 @Table(name="Parcels")
 public class Parcels implements Serializable{
-	
-	
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Rowid")
 	private String ID;
 	
-	
-	
-
 	@Column(name = "MAWB")
 	private String mawb;
 	
-
-	
 	@Column(name = "HAWB")
 	private String hawb;
-	
-	
 	
 	@Column(name = "NOTE")
 	private String note;
@@ -113,6 +106,5 @@ public class Parcels implements Serializable{
 	public void setPod(String pod) {
 		this.pod = pod;
 	}
-
 
 }
