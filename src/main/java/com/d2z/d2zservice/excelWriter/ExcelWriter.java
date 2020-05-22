@@ -189,10 +189,10 @@ public class ExcelWriter {
 			   fillShipmentSummaryData("INJECTION DATE",null!=incomingJobs.getInjectionDate()?incomingJobs.getInjectionDate().toString():"",13,sheet,workbook);
 			   fillShipmentSummaryData("CLEAR",incomingJobs.getClear(),14,sheet,workbook);
 			   fillShipmentSummaryData("HELD",incomingJobs.getHeld(),15,sheet,workbook);
-			   fillShipmentSummaryData("SURPLUS/SHORTAGE",incomingJobs.getSurplus(),16,sheet,workbook);
-			   fillShipmentSummaryData("DAMAGE/OTHER",incomingJobs.getDamage(),17,sheet,workbook);
+//			   fillShipmentSummaryData("SURPLUS/SHORTAGE",incomingJobs.getSurplus(),16,sheet,workbook);
+//			   fillShipmentSummaryData("DAMAGE/OTHER",incomingJobs.getDamage(),17,sheet,workbook);
 			   
-			   fillShipmentSummaryData("ARTICLE ID","STATUS","COMMENTS",19,sheet,workbook);
+			   fillShipmentSummaryData("ARTICLE ID","STATUS","COMMENTS",17,sheet,workbook);
 			   int rowNum = 20;
 			      for(SurplusData data : surplusData) {
 			          Row surplusrow = sheet.createRow(rowNum++);
