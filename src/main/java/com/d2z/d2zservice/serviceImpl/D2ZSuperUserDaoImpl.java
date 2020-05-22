@@ -1537,7 +1537,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		List<Parcels> js = new ArrayList<Parcels>();
 		String msg = "";
 	for(ParcelResponse p : parcel){
-		Parcels par = parcelRepository.findByHAWB(p.getHawb(),p.getStat().getName());
+		Parcels par = parcelRepository.findByHAWB(p.getHawb());
 		if(null!=par) {
 		par.setHawb(p.getHawb());
 		par.setMawb(p.getMawb());
