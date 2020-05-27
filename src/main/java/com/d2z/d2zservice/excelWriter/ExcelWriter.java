@@ -193,7 +193,7 @@ public class ExcelWriter {
 //			   fillShipmentSummaryData("DAMAGE/OTHER",incomingJobs.getDamage(),17,sheet,workbook);
 			   
 			   fillShipmentSummaryData("ARTICLE ID","STATUS","COMMENTS",17,sheet,workbook);
-			   int rowNum = 20;
+			   int rowNum = 18;
 			      for(SurplusData data : surplusData) {
 			          Row surplusrow = sheet.createRow(rowNum++);
 			          surplusrow.createCell(0).setCellValue(data.getArticleId());
