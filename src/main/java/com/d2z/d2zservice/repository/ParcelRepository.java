@@ -7,13 +7,13 @@ import com.d2z.d2zservice.entity.Parcels;
 
 public interface ParcelRepository extends CrudRepository<Parcels,Long>{
 
-	@Query("SELECT p FROM Parcels p where p.output = 'C' and p.client = :client and p.status like '%HELD' ") 
+	@Query("SELECT p FROM Parcels p where p.output = 'C' and p.client = :client and p.status not in ('SHORTAGE','DAMAGED','OTHER','CLEAR') ") 
 	List<Parcels> fetchheldparcel(String client);
 	
 	@Query("SELECT p FROM Parcels p where  p.output = 'C' and p.status = 'CLEAR' and p.client = :client") 
 	List<Parcels>fetchreleaseparcel(String client);
 
-	@Query("SELECT p FROM Parcels p where p.hawb = :hawb and p.status not in ('SHORTAGE','DAMAGED','OTHER')")
+	@Query("SELECT p FROM Parcels p where p.hawb = :hawb and p.status not in ('SHORTAGE','DAMAGED','OTHER','CLEAR')")
 	Parcels findByHAWB(String hawb);
 
 	@Query("SELECT distinct p.hawb,p.status,p.note FROM Parcels p where p.mawb = :mawb")
