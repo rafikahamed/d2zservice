@@ -16,7 +16,6 @@ import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.MaxSizeCountException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.ErrorDetails;
-import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.PflCreateShippingOrderInfo;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
 import com.d2z.d2zservice.model.SenderDataApi;
@@ -65,14 +64,15 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 		
 		}
 		boolean isPostcodeValidationReq = true;
-		if(("Y").equals(userRepository.fetchPostcodeValidationIndicator(orderDetail.getUserName()))) {
+		if(("N").equals(userRepository.fetchPostcodeValidationIndicator(orderDetail.getUserName()))) {
 			isPostcodeValidationReq = false;
 		}
 		d2zValidator.isReferenceNumberUnique(orderDetail,errorMap);
 		d2zValidator.isServiceValid(orderDetail,errorMap);
-		if(isPostcodeValidationReq) {
-		d2zValidator.isPostCodeValid(orderDetail,errorMap);
-		}
+		/*
+		 * if(isPostcodeValidationReq) {
+		 * d2zValidator.isPostCodeValid(orderDetail,errorMap); }
+		 */
 		ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 		String barcodeLabelNumber =null;
 		String datamatrix=null;
@@ -98,11 +98,10 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType) || "FW3".equalsIgnoreCase(serviceType) || "1PS4".equalsIgnoreCase(serviceType)) {
 			if(isPostcodeValidationReq) {
 				if("1PS4".equalsIgnoreCase(serviceType)) {
-						d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+						d2zValidator.isPostCodeValid(orderDetail,errorMap);
 						
 				}else {
-					d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData());
-				}
+					d2zValidator.isFWPostCodeValid(orderDetail.getConsignmentData(),errorMap);				}
 			}
 			ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 			if(orderDetail.getConsignmentData().size()>0) {
