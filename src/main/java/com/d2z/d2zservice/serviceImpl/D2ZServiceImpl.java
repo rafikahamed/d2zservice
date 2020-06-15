@@ -2772,8 +2772,6 @@ public class D2ZServiceImpl implements ID2ZService {
 			  helper.setFrom("report@d2z.com.au");
 			  System.out.println("Sending Enquiry Details --->"+enquiryEmail);
 			  helper.setTo(enquiryEmail);
-			  helper.setBcc("ranjani@d2z.com.au");
-			  helper.addBcc("IT@d2z.com.au");
 			  helper.setSubject("D2Z Outstanding Enquiry Report"); 
 			  helper.setText(mailBody, true);
 			  if(attachmentData != null)
