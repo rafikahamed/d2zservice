@@ -301,9 +301,13 @@ public class D2ZDaoImpl implements ID2ZDao{
 	}
 
 	@Override
-	public List<String> trackingLabel(List<String> refBarNum) {
-		//String trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNum);
-		List<String> trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNum);
+	public List<String> trackingLabel(List<String> refBarNum,String identifier) {
+		List<String> trackingDetails = new ArrayList<String>();
+		if("articleId".equalsIgnoreCase(identifier)) {
+			trackingDetails= senderDataRepository.fetchTrackingLabelByArticleId(refBarNum);
+		}else if("reference_number".equalsIgnoreCase(identifier)) {
+			trackingDetails= senderDataRepository.fetchTrackingLabelByReferenceNbr(refBarNum);
+		}
 		System.out.println(trackingDetails.size());
 		return trackingDetails;
 	}

@@ -853,10 +853,10 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	}
 
 	@Override
-	public byte[] trackingLabel(List<String> refBarNumArray) {
+	public byte[] trackingLabel(List<String> refBarNumArray,String identifier) {
 
 		List<SenderData> trackingLabelList = new ArrayList<SenderData>();
-		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNumArray);
+		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNumArray,identifier);
 		Iterator itr = trackingLabelData.iterator();
 		while (itr.hasNext()) {
 			SenderData trackingLabel = new SenderData();

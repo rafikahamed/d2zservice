@@ -116,7 +116,7 @@ public interface ISuperUserD2ZService{
 
 	public List<?> fetchApiLogs(String client, String fromDate, String toDate);
 
-	public byte[] trackingLabel(List<String> refBarNumArray);
+	public byte[] trackingLabel(List<String> refBarNumArray, String identifier);
 
 	public UserMessage deleteMLID(String service);
 	

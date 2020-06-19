@@ -742,8 +742,13 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	}
 
 	@Override
-	public List<String> trackingLabel(List<String> refBarNumArray) {
-		List<String> trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNumArray);
+	public List<String> trackingLabel(List<String> refBarNumArray,String identifier) {
+		List<String> trackingDetails = new ArrayList<String>();
+		if("articleId".equalsIgnoreCase(identifier)) {
+			trackingDetails= senderDataRepository.fetchTrackingLabelByArticleId(refBarNumArray);
+		}else if("reference_number".equalsIgnoreCase(identifier)) {
+			trackingDetails= senderDataRepository.fetchTrackingLabelByReferenceNbr(refBarNumArray);
+		}
 		System.out.println(trackingDetails.size());
 		return trackingDetails;
 	}

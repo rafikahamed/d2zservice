@@ -664,10 +664,10 @@ public class D2ZServiceImpl implements ID2ZService {
 	}
 
 	@Override
-	public byte[] trackingLabel(List<String> refBarNum) throws PCAlabelException {
+	public byte[] trackingLabel(List<String> refBarNum, String identifier) throws PCAlabelException {
 		List<SenderData> trackingLabelList = new ArrayList<SenderData>();
 		System.out.println("size:" + refBarNum.size());
-		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNum);
+		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNum,identifier);
 		boolean pcalabel = false;
 		Iterator itr = trackingLabelData.iterator();
 		while (itr.hasNext()) {

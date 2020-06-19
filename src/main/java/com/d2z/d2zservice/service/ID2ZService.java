@@ -51,7 +51,7 @@ public interface ID2ZService {
 
 	public List<TrackingDetails> trackingDetails(String fileName);
 
-	public byte[] trackingLabel(List<String> refBarNum) throws PCAlabelException;
+	public byte[] trackingLabel(List<String> refBarNum, String identifier) throws PCAlabelException;
 
 	public UserMessage manifestCreation(String manifestNumber, String refrenceNumber);
 

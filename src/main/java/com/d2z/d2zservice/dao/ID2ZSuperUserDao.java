@@ -150,7 +150,7 @@ public interface ID2ZSuperUserDao {
 
 	List<FFResponse> fetchFreiPostResponseResponse(String fromDate, String toDate);
 
-	List<String> trackingLabel(List<String> refBarNumArray);
+	List<String> trackingLabel(List<String> refBarNumArray,String identifier);
 
 	UserMessage deleteMlid(String service);
 	

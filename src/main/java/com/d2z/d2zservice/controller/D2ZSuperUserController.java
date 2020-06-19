@@ -275,11 +275,11 @@ public class D2ZSuperUserController {
 		return superUserD2zService.fetchApiLogs(client, fromDate, toDate);
     }
 	
-	@RequestMapping(method = RequestMethod.POST, path = "/tracking-label")
-	public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum) {
+	@RequestMapping(method = RequestMethod.POST, path = "/tracking-label/{identifier}")
+	public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum,@PathVariable String identifier) {
 		System.out.println("Incoming refBarNum :: " + refBarNum);
 		List<String> refBarNumArray = Stream.of(refBarNum.split(",")).collect(Collectors.toList());
-		byte[] bytes = superUserD2zService.trackingLabel(refBarNumArray);
+		byte[] bytes = superUserD2zService.trackingLabel(refBarNumArray,identifier);
 		return ResponseEntity.ok()
 				// Specify content type as PDF
 				.header("Content-Type", "application/pdf; charset=UTF-8")

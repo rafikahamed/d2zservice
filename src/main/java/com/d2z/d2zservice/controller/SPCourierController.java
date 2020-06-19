@@ -114,11 +114,11 @@ public class SPCourierController {
 		return trackingDetails;
 	}
 
-	@RequestMapping(method = RequestMethod.POST, path = "/tracking-label")
-	public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum) throws PCAlabelException{
+	@RequestMapping(method = RequestMethod.POST, path = "/tracking-label/{identifier}")
+	public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum,@PathVariable String identifier) throws PCAlabelException{
 		System.out.println("Incoming refBarNum :: " + refBarNum);
 		List<String> refBarNumArray = Stream.of(refBarNum.split(",")).collect(Collectors.toList());
-		byte[] bytes = d2zService.trackingLabel(refBarNumArray);
+		byte[] bytes = d2zService.trackingLabel(refBarNumArray,identifier);
 		return ResponseEntity.ok()
 				// Specify content type as PDF
 				.header("Content-Type", "application/pdf; charset=UTF-8")
