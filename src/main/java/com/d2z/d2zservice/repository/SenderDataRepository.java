@@ -50,15 +50,18 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query(nativeQuery = true, value="Select reference_number, datamatrix, articleId, BarcodelabelNumber, Carrier,injectionState from senderdata_master t where sender_Files_ID=:senderFileID") 
 	List<String> fetchBySenderFileId(@Param("senderFileID") String senderFileID);
 	 
-//	@Query(nativeQuery = true, value="SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
-//	 		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
-//	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions, consigneeCompany, carrier, consignee_addr2,returnAddress1,returnAddress2,Product_Description,Servicetype,User_ID FROM senderdata_master\n" + 
-//	 		" WHERE reference_number IN (:refBarNum) and isDeleted != 'Y'" + 
-//	 		" UNION\n" + 
-//	 		" SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
-//	 		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
-//	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions,consigneeCompany, carrier,consignee_addr2,returnAddress1,returnAddress2,Product_Description,Servicetype,User_ID FROM senderdata_master\n" + 
-//	 		" WHERE articleId IN (:refBarNum) and isDeleted != 'Y'") 
+	@Query(nativeQuery = true, value="SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
+		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
+		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions, consigneeCompany, carrier, consignee_addr2,returnAddress1,returnAddress2,Product_Description,Servicetype,User_ID FROM senderdata_master\n" + 
+		" WHERE reference_number IN (:refBarNum) and isDeleted != 'Y'" + 
+		" UNION\n" + 
+		" SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
+		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
+		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions,consigneeCompany, carrier,consignee_addr2,returnAddress1,returnAddress2,Product_Description,Servicetype,User_ID FROM senderdata_master\n" + 
+	    " WHERE articleId IN (:refBarNum) and isDeleted != 'Y'") 
+
+    List<String> fetchTrackingLabel(@Param("refBarNum") List<String> refBarNum);
+
 	@Query(nativeQuery = true, value="SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
 	 		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
 	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions, consigneeCompany, carrier, consignee_addr2,returnAddress1,returnAddress2,Product_Description,Servicetype,User_ID FROM senderdata_master\n" + 

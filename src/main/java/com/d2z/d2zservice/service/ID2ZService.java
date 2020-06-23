@@ -155,4 +155,5 @@ public interface ID2ZService {
 
 	public UserMessage shippingQuote(ShippingQuoteRequest shippingQuoteRequest);
 
+
 }

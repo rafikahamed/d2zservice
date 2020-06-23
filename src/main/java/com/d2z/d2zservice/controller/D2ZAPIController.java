@@ -134,12 +134,12 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 		return d2zService.getRates(request);
     }
 	
-	@RequestMapping( method = RequestMethod.POST, path = "/tracking-label/{identifier}")
-    public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum,@PathVariable String identifier) throws PCAlabelException {
+	@RequestMapping( method = RequestMethod.POST, path = "/tracking-label")
+    public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum) throws PCAlabelException {
     	List<String> refBarNumArray =
     			  Stream.of(refBarNum.split(","))
     			  .collect(Collectors.toList());
-		byte[] bytes = d2zService.trackingLabel(refBarNumArray,identifier);
+		byte[] bytes = d2zService.trackingLabel(refBarNumArray,"");
 	    return ResponseEntity
 	      .ok()
 	      // Specify content type as PDF

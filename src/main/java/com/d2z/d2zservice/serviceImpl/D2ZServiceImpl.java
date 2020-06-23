@@ -665,10 +665,30 @@ public class D2ZServiceImpl implements ID2ZService {
 
 	@Override
 	public byte[] trackingLabel(List<String> refBarNum, String identifier) throws PCAlabelException {
-		List<SenderData> trackingLabelList = new ArrayList<SenderData>();
 		System.out.println("size:" + refBarNum.size());
 		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNum,identifier);
 		boolean pcalabel = false;
+		List<SenderData> trackingLabelList = populateDataForLabelGeneration(trackingLabelData);
+		byte[] bytes = null;
+		if (trackingLabelList.get(0).getCarrier().equalsIgnoreCase("StarTrack")) {
+			if (trackingLabelList.size() > 1) {
+				throw new PCAlabelException("Starttrack Label request can contain only one reference number",
+						refBarNum);
+			} else {
+				pcalabel = true;
+			}
+
+		}
+		if (!pcalabel) {
+			bytes = generateLabel(trackingLabelList);
+		} else {
+			bytes = pcaWrapper.pcalabel(trackingLabelList.get(0).getReferenceNumber());
+		}
+		return bytes;
+	}
+
+	private List<SenderData> populateDataForLabelGeneration(List<String> trackingLabelData){
+		List<SenderData> trackingLabelList = new ArrayList<SenderData>();
 		Iterator itr = trackingLabelData.iterator();
 		while (itr.hasNext()) {
 			SenderData trackingLabel = new SenderData();
@@ -727,198 +747,23 @@ public class D2ZServiceImpl implements ID2ZService {
 				trackingLabel.setProductDescription(trackingArray[25].toString());
 			if (trackingArray[26] != null)
 				trackingLabel.setServiceType(trackingArray[26].toString());
-			boolean setGS1DataType = false;
-			if (trackingLabel.getCarrier().equalsIgnoreCase("Express")
-					|| trackingLabel.getCarrier().equalsIgnoreCase("eParcel")) {
-				setGS1DataType = true;
-			}
-			if (trackingLabel.getCarrier().equalsIgnoreCase("StarTrack")) {
-				if (trackingLabelData.size() > 1) {
-					throw new PCAlabelException("Starttradk Label request can contain only one reference number",
-							refBarNum);
-				} else {
-					pcalabel = true;
-				}
-
-			}
-			trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.getDatamatrix(), setGS1DataType));
-
-			String user = d2zDao.fetchUserById(Integer.parseInt(trackingArray[27].toString()));
-			if ("VELC".equalsIgnoreCase(user)) {
-				trackingLabel.setLabelSenderName("SW4");
-			}
+			/*
+			 * boolean setGS1DataType = false; if
+			 * (trackingLabel.getCarrier().equalsIgnoreCase("Express") ||
+			 * trackingLabel.getCarrier().equalsIgnoreCase("eParcel")) { setGS1DataType =
+			 * true; }
+			 * 
+			 * trackingLabel.setDatamatrixImage(generateDataMatrix(trackingLabel.
+			 * getDatamatrix(), setGS1DataType));
+			 * 
+			 * String user =
+			 * d2zDao.fetchUserById(Integer.parseInt(trackingArray[27].toString())); if
+			 * ("VELC".equalsIgnoreCase(user)) { trackingLabel.setLabelSenderName("SW4"); }
+			 */
 			trackingLabelList.add(trackingLabel);
 		}
-		byte[] bytes = null;
-		if (!pcalabel) {
-			List<SenderData> eParcelData = new ArrayList<SenderData>();
-
-			List<SenderData> expressData = new ArrayList<SenderData>();
-			List<SenderData> fastwayData = new ArrayList<SenderData>();
-			List<SenderData> fastway_S_Data = new ArrayList<SenderData>();
-			List<SenderData> whiteLabelData = new ArrayList<SenderData>();
-			List<SenderData> eParcelNewData = new ArrayList<SenderData>();
-			List<SenderData> expressNewData = new ArrayList<SenderData>();
-			List<SenderData> parcelPostData = new ArrayList<SenderData>();
-			List<SenderData> fwData = new ArrayList<SenderData>();
-			List<SenderData> fw3Data = new ArrayList<SenderData>();
-
-			for (SenderData data : trackingLabelList) {
-				if ("MCM1".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
-					whiteLabelData.add(data);
-				} else if ("MCM2".equalsIgnoreCase(data.getServiceType())
-						&& (data.getCarrier().equalsIgnoreCase("Express")
-								|| data.getCarrier().equalsIgnoreCase("eParcel"))) {
-					whiteLabelData.add(data);
-				} else if ("MCM3".equalsIgnoreCase(data.getServiceType())) {
-					whiteLabelData.add(data);
-				} /*
-					 * else if ("1PM".equalsIgnoreCase(data.getServiceType())) {
-					 * eParcelNewData.add(data); }
-					 */ else if ("1PME".equalsIgnoreCase(data.getServiceType())) {
-					expressNewData.add(data);
-				} else if ("HKG".equalsIgnoreCase(data.getServiceType())
-						|| "HKG2".equalsIgnoreCase(data.getServiceType())) {
-					parcelPostData.add(data);
-				} else if (data.getCarrier().equalsIgnoreCase("eParcel")) {
-					eParcelData.add(data);
-				} else if (data.getCarrier().equalsIgnoreCase("Express")) {
-					expressData.add(data);
-				} else if (("FW".equalsIgnoreCase(data.getServiceType()) )
-						&& data.getCarrier().equalsIgnoreCase("FastwayM")) {
-					fwData.add(data);
-				}else if(("FW3").equalsIgnoreCase(data.getServiceType())) {
-					fw3Data.add(data);
-				}else if (data.getCarrier().equalsIgnoreCase("FastwayM")) {
-				
-					fastwayData.add(data);
-				} else if (data.getCarrier().equalsIgnoreCase("FastwayS")) {
-					fastway_S_Data.add(data);
-				}
-			}
-
-			Map<String, Object> parameters = new HashMap<>();
-
-			// Blob blob = null;
-			JRBeanCollectionDataSource eParcelDataSource;
-			JRBeanCollectionDataSource expressDataSource;
-			JasperReport eParcelLabel = null;
-			JasperReport expressLabel = null;
-			JRBeanCollectionDataSource fastwayDataSource;
-			JasperReport fastwayLabel = null;
-			JRBeanCollectionDataSource fastway_S_DataSource;
-			JasperReport fastway_S_Label = null;
-			JRBeanCollectionDataSource whiteLabelDataSource;
-			JasperReport whiteLabel = null;
-			JRBeanCollectionDataSource eParcelNewDataSource;
-			JasperReport eParcelNew = null;
-			JRBeanCollectionDataSource expressNewDataSource;
-			JasperReport expressNew = null;
-			JRBeanCollectionDataSource parcelPostDataSource;
-			JasperReport parcelPost = null;
-			JRBeanCollectionDataSource fwDataSource;
-			JasperReport fwLabel = null;
-			JRBeanCollectionDataSource fw3DataSource;
-			JasperReport fw3Label = null;
-			try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
-				List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
-				if (!eParcelData.isEmpty()) {
-					System.out.println("Generating eParcel..." + eParcelData.size());
-					eParcelDataSource = new JRBeanCollectionDataSource(eParcelData);
-					eParcelLabel = JasperCompileManager
-							.compileReport(getClass().getResource("/eparcelLabel.jrxml").openStream());
-					JRSaver.saveObject(eParcelLabel, "label.jasper");
-					jasperPrintList.add(JasperFillManager.fillReport(eParcelLabel, parameters, eParcelDataSource));
-				}
-				if (!expressData.isEmpty()) {
-					System.out.println("Generating Express..." + expressData.size());
-					expressDataSource = new JRBeanCollectionDataSource(expressData);
-					expressLabel = JasperCompileManager
-							.compileReport(getClass().getResource("/ExpressLabel.jrxml").openStream());
-					JRSaver.saveObject(expressLabel, "express.jasper");
-					jasperPrintList.add(JasperFillManager.fillReport(expressLabel, parameters, expressDataSource));
-				}
-				if (!expressNewData.isEmpty()) {
-					System.out.println("Generating Express new..." + expressNewData.size());
-					expressNewDataSource = new JRBeanCollectionDataSource(expressNewData);
-					expressNew = JasperCompileManager
-							.compileReport(getClass().getResource("/ExpressNew.jrxml").openStream());
-					JRSaver.saveObject(expressNew, "expressNew.jasper");
-					jasperPrintList.add(JasperFillManager.fillReport(expressNew, parameters, expressNewDataSource));
-				}
-				if (!parcelPostData.isEmpty()) {
-					System.out.println("Generating Parcel Post..." + parcelPostData.size());
-					parcelPostDataSource = new JRBeanCollectionDataSource(parcelPostData);
-					parcelPost = JasperCompileManager
-							.compileReport(getClass().getResource("/ParcelPost.jrxml").openStream());
-					JRSaver.saveObject(parcelPost, "parcelPost.jasper");
-					jasperPrintList.add(JasperFillManager.fillReport(parcelPost, parameters, parcelPostDataSource));
-				}
-				if (!fastwayData.isEmpty()) {
-					System.out.println("Generating Fastway..." + fastwayData.size());
-					fastwayDataSource = new JRBeanCollectionDataSource(fastwayData);
-					fastwayLabel = JasperCompileManager
-							.compileReport(getClass().getResource("/FastWayLabel.jrxml").openStream());
-					JRSaver.saveObject(fastwayLabel, "FastWayLabel.jasper");
-					jasperPrintList.add(JasperFillManager.fillReport(fastwayLabel, parameters, fastwayDataSource));
-				}
-				if (!fw3Data.isEmpty()) {
-					System.out.println("Generating Fastway FW3..." + fw3Data.size());
-					fw3DataSource = new JRBeanCollectionDataSource(fw3Data);
-					fw3Label = JasperCompileManager.compileReport(getClass().getResource("/FW3.jrxml").openStream());
-					JRSaver.saveObject(fw3Label, "FW3.jasper");
-					jasperPrintList.add(JasperFillManager.fillReport(fw3Label, parameters, fw3DataSource));
-				}
-				if (!fwData.isEmpty()) {
-					System.out.println("Generating Fastway FW..." + fwData.size());
-					fwDataSource = new JRBeanCollectionDataSource(fwData);
-					fwLabel = JasperCompileManager.compileReport(getClass().getResource("/FWLabel.jrxml").openStream());
-					JRSaver.saveObject(fwLabel, "FWLabel.jasper");
-					jasperPrintList.add(JasperFillManager.fillReport(fwLabel, parameters, fwDataSource));
-				}
-				if (!fastway_S_Data.isEmpty()) {
-					System.out.println("Generating FastwayS..." + fastway_S_Data.size());
-					fastway_S_DataSource = new JRBeanCollectionDataSource(fastway_S_Data);
-					fastway_S_Label = JasperCompileManager
-							.compileReport(getClass().getResource("/FastwayPCA.jrxml").openStream());
-					JRSaver.saveObject(fastway_S_Label, "FastwayPCA.jasper");
-					jasperPrintList
-							.add(JasperFillManager.fillReport(fastway_S_Label, parameters, fastway_S_DataSource));
-				}
-				if (!whiteLabelData.isEmpty()) {
-					System.out.println("Generating WhiteLabel..." + whiteLabelData.size());
-					whiteLabelDataSource = new JRBeanCollectionDataSource(whiteLabelData);
-					whiteLabel = JasperCompileManager
-							.compileReport(getClass().getResource("/WhiteLabel.jrxml").openStream());
-					JRSaver.saveObject(whiteLabel, "whiteLabel.jasper");
-					jasperPrintList.add(JasperFillManager.fillReport(whiteLabel, parameters, whiteLabelDataSource));
-				}
-				if (!eParcelNewData.isEmpty()) {
-					System.out.println("Generating EParcel new..." + eParcelNewData.size());
-					eParcelNewDataSource = new JRBeanCollectionDataSource(eParcelNewData);
-					eParcelNew = JasperCompileManager
-							.compileReport(getClass().getResource("/eParcelNew.jrxml").openStream());
-					JRSaver.saveObject(eParcelNew, "eParcelNew.jasper");
-					jasperPrintList.add(JasperFillManager.fillReport(eParcelNew, parameters, eParcelNewDataSource));
-				}
-				final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-				SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
-				JRPdfExporter exporter = new JRPdfExporter();
-				exporter.setExporterInput(SimpleExporterInput.getInstance(jasperPrintList));
-				exporter.setExporterOutput(exporterOutput);
-				exporter.exportReport();
-				// return the PDF in bytes
-				bytes = outputStream.toByteArray();
-
-			} catch (JRException | IOException e) {
-				e.printStackTrace();
-			}
-		} else {
-			bytes = pcaWrapper.pcalabel(trackingLabelList.get(0).getReferenceNumber());
-		}
-		return bytes;
+		return trackingLabelList;
 	}
-
 	@Override
 	public UserMessage manifestCreation(String manifestNumber, String referenceNumber) {
 		String[] refNbrs = referenceNumber.split(",");
@@ -2927,6 +2772,8 @@ public class D2ZServiceImpl implements ID2ZService {
 			userMsg.setMessage("Shipping Quote requested successfully. Thank you for your enquiry, this has been received and we will endeavour to respond to you within 24 hours.");
 			return userMsg;
 		}
+
+	
 	
 
 }
