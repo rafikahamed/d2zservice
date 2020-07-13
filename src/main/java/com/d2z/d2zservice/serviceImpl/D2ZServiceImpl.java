@@ -2646,8 +2646,6 @@ public class D2ZServiceImpl implements ID2ZService {
 					  helper.setFrom("report@d2z.com.au");
 					  System.out.println("Sending Enquiry Details --->"+returnsEmail);
 					  helper.setTo(returnsEmail);
-					  helper.setBcc("ranjani@d2z.com.au");
-					  helper.addBcc("IT@d2z.com.au");
 					  helper.setSubject("D2Z Outstanding Returns Report"); 
 					  helper.setText(mailBody, true);
 					  if(attachmentData != null)
@@ -2691,8 +2689,6 @@ public class D2ZServiceImpl implements ID2ZService {
 					  helper.setFrom("report@d2z.com.au");
 					  System.out.println("Sending Held Parcel Details --->"+parcelVal);
 					  helper.setTo(parcelEmail);
-					  helper.setBcc("ranjani@d2z.com.au");
-					  helper.addBcc("IT@d2z.com.au");
 					  helper.setSubject("D2Z Held Parcel Report"); 
 					  helper.setText(mailBody, true);
 					  if(attachmentData != null)
