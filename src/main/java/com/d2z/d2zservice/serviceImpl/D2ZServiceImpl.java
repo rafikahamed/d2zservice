@@ -1717,28 +1717,14 @@ public class D2ZServiceImpl implements ID2ZService {
 	public UserMessage contactUs(String email, String messageData, String name, String subject) {
 		UserMessage userMsg = new UserMessage();
 		System.out.print("email:" + email + "message:" + messageData);
-
-		final String fromEmail = "";
-
-		final String password = "";
-
-		Properties props = new Properties();
-
-		props.put("mail.smtp.host", "smtp.office365.com");
-
-		props.put("mail.smtp.port", "587"); // TLS Port
-		props.put("mail.smtp.auth", "true"); // enable authentication
-		props.put("mail.smtp.starttls.enable", "true"); // enable STARTTLS
-
-		Authenticator auth = new Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(fromEmail, password);
-			}
-		};
-
-		Session session = Session.getInstance(props, auth);
-		emailUtil.sendEmail(session, email, fromEmail, name, messageData, subject);
-		emailUtil.senderEmail(session, email, fromEmail, name, subject);
+		 String body = "Hi D2Z Support Team,<br><br>";
+		 body += "Name : "+name+"<br><br>";
+		 body += "From Email: "+email+"<br><br>";
+		 body += "Message: "+messageData+"<br><br>";
+		 emailUtil.sendEmail("Contact Us --> "+subject, "jack@d2z.com.au",body);
+		 String msgBody = "Dear "+name+",<br><br>";
+	        msgBody += " Thank you for your enquiry, this has been received and we will endeavour to respond to you within 24 hours.  <br><br>";
+		 emailUtil.sendEmail("Acknowledgement --> "+subject, email,msgBody);
 		userMsg.setMessage("Thanks for contacting us,D2Z team will reach you soon");
 		return userMsg;
 
