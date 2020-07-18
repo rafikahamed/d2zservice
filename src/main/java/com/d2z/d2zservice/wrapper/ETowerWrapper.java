@@ -430,7 +430,7 @@ s);
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 
 		if (response == null) {
-			throw new FailureResponseException("Failed. Please contact D2Z");
+			throw new FailureResponseException("Failed. Please contact us");
 		} else {
 			if (response.getStatus().equalsIgnoreCase("Success")) {
 				for (ResponseData data : response.getData()) {
@@ -501,7 +501,7 @@ s);
 					}
 				}
 				d2zDao.logEtowerResponse(responseEntity);
-				throw new FailureResponseException("Internal Server Error. Please contact D2Z");
+				throw new FailureResponseException("Internal Server Error. Please contact us");
 			}
 
 		}

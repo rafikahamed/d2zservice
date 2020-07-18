@@ -93,7 +93,7 @@ public class PFLProxy {
 			System.out.println("error code :" + e.getStatusCode());
 			jsonResponse = e.getResponseBodyAsString();
 			System.out.println(jsonResponse);
-			 throw new FailureResponseException("Shipment Error. Please contact D2Z");
+			 throw new FailureResponseException("Shipment Error. Please contact us");
 		}
 		System.out.println("Response :: " + jsonResponse);
 		return response;

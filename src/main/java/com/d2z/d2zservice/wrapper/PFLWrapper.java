@@ -104,7 +104,7 @@ public class PFLWrapper {
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 		if(pflResponse != null) {
 			if(null==pflResponse.getResult()) {
-				throw new FailureResponseException("Shipment Error. Please contact D2Z");
+				throw new FailureResponseException("Shipment Error. Please contact us");
 			}else {
 			for(PFLResponseData pflData: pflResponse.getResult()) {
 				if(pflData.getCode() != null) {
