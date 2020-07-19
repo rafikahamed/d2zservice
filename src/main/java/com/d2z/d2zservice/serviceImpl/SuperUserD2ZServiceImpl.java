@@ -1801,8 +1801,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 					ZoneId zoneId = ZoneId.of ( "Australia/Sydney" );
 					int dayofWeek = LocalDate.now(zoneId).getDayOfWeek().getValue();
 					
-					if(dayofWeek>=4) {
-						//Thrus - Sun
+					if(dayofWeek>=6) {
+						//sat - Sun
 						List<String> orderIds = fastwayOrderId.stream().map(PFLSubmitOrderData :: getOrderId).collect(Collectors.toList());
 						d2zDao.updateForPFLSubmitOrder(orderIds,"PFLSubmitOrder");
 					}else {
