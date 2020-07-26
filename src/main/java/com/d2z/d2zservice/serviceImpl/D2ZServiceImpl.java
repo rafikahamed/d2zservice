@@ -484,12 +484,17 @@ public class D2ZServiceImpl implements ID2ZService {
 				expressData.add(data);
 			} else if (("FW".equalsIgnoreCase(data.getServiceType()))
 					&& data.getCarrier().equalsIgnoreCase("FastwayM")) {
+				data.setSku(D2ZSingleton.getInstance().getFwPostCodeZoneNoMap().get(data.getConsigneePostcode()));
 				fwData.add(data);
+				System.out.println("FW : "+data.getSku());
 			} else if("FW3".equalsIgnoreCase(data.getServiceType())){
 				fw3Data.add(data);
 			}
 			else if (data.getCarrier().equalsIgnoreCase("FastwayM")) {
+				data.setProductDescription(D2ZSingleton.getInstance().getFwPostCodeZoneNoMap().get(data.getConsigneePostcode()));
 				fastwayData.add(data);
+				System.out.println("FWM : "+data.getProductDescription());
+
 			} else if (data.getCarrier().equalsIgnoreCase("FastwayS")) {
 				fastway_S_Data.add(data);
 			}
@@ -1193,8 +1198,8 @@ public class D2ZServiceImpl implements ID2ZService {
 				if (!fastwayOrderId.isEmpty()) {
 					ZoneId zoneId = ZoneId.of ( "Australia/Sydney" );
 					int dayofWeek = LocalDate.now(zoneId).getDayOfWeek().getValue();
-					if(dayofWeek>=4) {
-						//Thrus - Sun
+					if(dayofWeek>=6) {
+						//sat - Sun
 						List<String> orderIds = fastwayOrderId.stream().map(PFLSubmitOrderData :: getOrderId).collect(Collectors.toList());
 						d2zDao.updateForPFLSubmitOrder(orderIds,"PFLSubmitOrder");
 					}else {

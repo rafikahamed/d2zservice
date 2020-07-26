@@ -27,6 +27,9 @@ public class FastwayPostcode implements Serializable{
 	@Column(name="StateName")
 	private String stateName;
 	
+	@Column(name="ZoneNo")
+	private String zoneNo;
+	
 	public int getRowId() {
 		return rowId;
 	}
@@ -50,5 +53,15 @@ public class FastwayPostcode implements Serializable{
 	public void setFwPostCodeId(FWPostCodeId fwPostCodeId) {
 		this.fwPostCodeId = fwPostCodeId;
 	}
+
+	public String getZoneNo() {
+		return zoneNo;
+	}
+
+	public void setZoneNo(String zoneNo) {
+		this.zoneNo = zoneNo;
+	}
+	
+	
 	
 }

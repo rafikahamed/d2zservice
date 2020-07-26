@@ -52,7 +52,8 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 
 	
 	@Override
-	public void createConsignments(CreateConsignmentRequest orderDetail,  List<SenderDataResponse> senderDataResponseList ,Map<String, List<ErrorDetails>> errorMap) throws FailureResponseException {
+	public void createConsignments(CreateConsignmentRequest orderDetail,  List<SenderDataResponse> senderDataResponseList ,
+			Map<String, List<ErrorDetails>> errorMap,List<String> autoShipRefNbrs) throws FailureResponseException {
 		
 		Integer userId = userRepository.fetchUserIdbyUserName(orderDetail.getUserName());
 		if (userId == null) {
@@ -74,6 +75,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 		 * d2zValidator.isPostCodeValid(orderDetail,errorMap); }
 		 */
 		ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
+		boolean autoShipment = false;
 		String barcodeLabelNumber =null;
 		String datamatrix=null;
 		String serviceType = null;
@@ -184,7 +186,9 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			}
 			}
 			return;
-		}*/}
+		}*/}else {
+			autoShipment = ("Y").equals(userRepository.fetchAutoShipmentIndicator(userId));
+		}
 		if(isPostcodeValidationReq) {
     		d2zValidator.isPostCodeValid(orderDetail,errorMap);
     		}	
@@ -202,6 +206,8 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			senderDataResponse.setCarrier(obj[4].toString());
 			senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 			senderDataResponseList.add(senderDataResponse);
+			if (autoShipment)
+				autoShipRefNbrs.add(senderDataResponse.getReferenceNumber());
 		}
 		}
 		return; //senderDataResponseList;

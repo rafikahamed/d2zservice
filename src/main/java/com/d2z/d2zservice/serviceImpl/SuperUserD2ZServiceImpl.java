@@ -94,6 +94,7 @@ import com.d2z.d2zservice.wrapper.ETowerWrapper;
 //import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.d2zservice.wrapper.PCAWrapper;
 import com.d2z.d2zservice.wrapper.PFLWrapper;
+import com.d2z.singleton.D2ZSingleton;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -964,6 +965,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				parcelPostData.add(data);
 			}else if ("FW".equalsIgnoreCase(data.getServiceType()) 
 					&& data.getCarrier().equalsIgnoreCase("FastwayM")) {
+				data.setSku(D2ZSingleton.getInstance().getFwPostCodeZoneNoMap().get(data.getConsigneePostcode()));
 				fwData.add(data);
 			
 			}else if("FW3".equalsIgnoreCase(data.getServiceType())) {
@@ -974,6 +976,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
 				expressData.add(data);
 			}else if(data.getCarrier().equalsIgnoreCase("FastwayM")) {
+				data.setProductDescription(D2ZSingleton.getInstance().getFwPostCodeZoneNoMap().get(data.getConsigneePostcode()));
 				fastwayData.add(data);
 			}
 			else if(data.getCarrier().equalsIgnoreCase("FastwayS")) {

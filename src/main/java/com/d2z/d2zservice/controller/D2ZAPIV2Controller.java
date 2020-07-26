@@ -1,6 +1,8 @@
 package com.d2z.d2zservice.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,9 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.MaxSizeCountException;
+import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.service.ID2ZAPIService;
+import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.util.ValidationUtils;
 import com.d2z.d2zservice.model.CreateConsignmentResponse;
 import com.d2z.d2zservice.model.ErrorDetails;
@@ -37,6 +41,9 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIV2Controller.class);
 
 @Autowired
 private  ID2ZAPIService d2zApiService;
+
+@Autowired
+private  ID2ZService d2zService;
 
 @RequestMapping(method = RequestMethod.POST, path = "/consignments-create")
 public ResponseEntity<Object> createConsignments(@Valid @RequestBody CreateConsignmentRequest orderDetail,Errors errors) throws FailureResponseException {
@@ -60,7 +67,9 @@ public ResponseEntity<Object> createConsignments(@Valid @RequestBody CreateConsi
 	}
 	
 		try {
-		d2zApiService.createConsignments(orderDetail,responseList,errorMap);
+			List<String> autoShipRefNbrs = new ArrayList<String>();
+
+		d2zApiService.createConsignments(orderDetail,responseList,errorMap,autoShipRefNbrs);
 		List<String> invalidData = new ArrayList<String>();
 		if(errorMap.size() > 0) {
 
@@ -79,6 +88,18 @@ public ResponseEntity<Object> createConsignments(@Valid @RequestBody CreateConsi
     	if(null!=incomingRefNbr && incomingRefNbr.size()>0) {
     		status = HttpStatus.OK;
     		response.setStatus("Success");
+    		if(null!=autoShipRefNbrs && !autoShipRefNbrs.isEmpty()) {
+    			System.out.println("Auto-Shipment Allocation");
+    			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+    			String shipmentNumber = orderDetail.getUserName()+simpleDateFormat.format(new Date());
+    			try {
+					d2zService.allocateShipment(String.join(",", autoShipRefNbrs), shipmentNumber);
+				} catch (ReferenceNumberNotUniqueException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}        
+            	
+    		}
     	d2zApiService.makeCallToEtowerBasedonSupplierUI(incomingRefNbr);
     	}else {
     		response.setStatus("Failure");

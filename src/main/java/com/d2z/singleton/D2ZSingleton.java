@@ -23,6 +23,8 @@ public class D2ZSingleton {
 	private static Map<String,String> postCodeStateMap;
 	private static Map<String,Double> postCodeWeightMap = new HashMap<String,Double>(); ;
 	private static Map<String,String> postCodeZoneMap;
+	private static Map<String,String> fwPostCodeZoneNoMap;
+
 	
 	
 	public static List<String> getFWPostCodeStateNameList() {
@@ -90,7 +92,8 @@ public class D2ZSingleton {
 			postCodeZoneMap = new HashMap<String,String>();
 			postCodeZoneDaoObj.forEach(obj -> {
 				postCodeZoneMap.put(obj.getPostcodeId().getSuburb()+obj.getPostcodeId().getPostcode(), obj.getZone());
-			});	
+			});
+			
 	}
 	
 	private void getFWPostCodeZone(){
@@ -103,6 +106,15 @@ public class D2ZSingleton {
 			return daoObj.getStateName().concat(daoObj.getFwPostCodeId().getSuburb().concat(daoObj.getFwPostCodeId().getPostcode()));
 		}).collect(Collectors.toList());
 		System.out.println(FWPostCodeZoneList.size());
+		
+		fwPostCodeZoneNoMap = new HashMap<String,String>();
+		postCodeFWZoneDaoObj.forEach(obj -> {
+			if(null != obj.getZoneNo()) {
+			fwPostCodeZoneNoMap.put(obj.getFwPostCodeId().getPostcode(), obj.getZoneNo());
+			}
+		});
+		System.out.println(fwPostCodeZoneNoMap.size());
+
 	}
 
 	private void getSTPostCodeZone(){
@@ -121,6 +133,9 @@ public class D2ZSingleton {
 	}
 	public static Map<String, String> getPostCodeZoneMap() {
 		return postCodeZoneMap;
+	}
+	public static Map<String, String> getFwPostCodeZoneNoMap() {
+		return fwPostCodeZoneNoMap;
 	}
 
 }

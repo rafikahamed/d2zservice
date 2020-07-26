@@ -11,7 +11,7 @@ import com.d2z.d2zservice.model.SenderDataResponse;
 
 public interface ID2ZAPIService {
 
-	public void createConsignments(CreateConsignmentRequest orderDetail, List<SenderDataResponse> responseList,Map<String, List<ErrorDetails>> errorMap) throws FailureResponseException;
+	public void createConsignments(CreateConsignmentRequest orderDetail, List<SenderDataResponse> responseList,Map<String, List<ErrorDetails>> errorMap, List<String> autoShipRefNbrs) throws FailureResponseException;
 
 	public void makeCallToEtowerBasedonSupplierUI(List<String> refNbrs);
 
