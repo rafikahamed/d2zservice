@@ -88,9 +88,13 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 		if(null==barcodeLabelNumber || barcodeLabelNumber.trim().isEmpty() || null==datamatrix || datamatrix.trim().isEmpty()) {
 	    if( "1PM3E".equalsIgnoreCase(serviceType) 
 				|| "1PS3".equalsIgnoreCase(serviceType) 
-				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
+				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType) || "NZ".equalsIgnoreCase(serviceType)) {
 	    	if(isPostcodeValidationReq) {
-	    		d2zValidator.isPostCodeValid(orderDetail,errorMap);
+	    		if("NZ".equalsIgnoreCase(serviceType)) {
+	    			d2zValidator.isNZPostCodeValid(orderDetail,errorMap);
+	    		}else {
+	    			d2zValidator.isPostCodeValid(orderDetail,errorMap);
+	    		}
 	    		}			
 	    	ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
 			

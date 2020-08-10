@@ -72,6 +72,7 @@ import com.d2z.d2zservice.repository.CurrencyRepository;
 import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
 import com.d2z.d2zservice.repository.FastwayPostcodeRepository;
+import com.d2z.d2zservice.repository.NzPostcodesRepository;
 import com.d2z.d2zservice.repository.ParcelRepository;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
 import com.d2z.d2zservice.repository.ReturnsRepository;
@@ -84,6 +85,7 @@ import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
+import com.d2z.d2zservice.entity.NZPostcodes;
 //import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
@@ -156,6 +158,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 	
 	@Autowired
 	ParcelRepository parcelRepository;
+	
+	@Autowired
+	NzPostcodesRepository nzPostcodesRepository;
 	
 	@Override
 	public String exportParcel(List<SenderData> orderDetailList,Map<String, LabelData> barcodeMap) {
@@ -1396,6 +1401,14 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public void updateForPFLSubmitOrderCompleted() {
 		trackAndTraceRepository.updateForPFLSubmitOrderCompleted();	
+	}
+
+	@Override
+	public List<NZPostcodes> fetchAllNZPostCodeZone() {
+
+    	List<NZPostcodes> postCodeZoneList= (List<NZPostcodes>) nzPostcodesRepository.findAll();
+    	System.out.println(postCodeZoneList.size());
+    	return postCodeZoneList;
 	}
 
 	

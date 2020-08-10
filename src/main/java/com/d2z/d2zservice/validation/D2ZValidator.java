@@ -497,4 +497,72 @@ public class D2ZValidator {
 			
 	}
 
+	public void isNZPostCodeValid(List<SenderDataApi> senderData) {
+
+		List<String> postCodeZoneList = D2ZSingleton.getInstance().getNZPostCodeZoneList();
+		List<String> incorrectPostcode_Suburb = new ArrayList<String>();
+		senderData.forEach(obj -> {
+			String state = obj.getConsigneeState().trim().toUpperCase();
+			String suburb = obj.getConsigneeSuburb().trim().toUpperCase();
+			String postcode = obj.getConsigneePostcode().trim();
+			
+			String combination = state.concat(suburb.concat(postcode));
+			System.out.println(postCodeZoneList);
+			if(!postCodeZoneList.contains(combination)) {
+				incorrectPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim());
+				
+			}
+		});
+		if(!incorrectPostcode_Suburb.isEmpty()) {
+			throw new InvalidSuburbPostcodeException("Invalid Combination of Consignee Postcode and Suburb",incorrectPostcode_Suburb);
+		}
+		
+			
+	}
+
+	public void isNZPostCodeValidUI(List<SenderData> senderData) {
+
+		List<String> postCodeZoneList = D2ZSingleton.getInstance().getNZPostCodeZoneList();
+		List<String> incorrectPostcode_Suburb = new ArrayList<String>();
+		senderData.forEach(obj -> {
+			String state = obj.getConsigneeState().trim().toUpperCase();
+			String suburb = obj.getConsigneeSuburb().trim().toUpperCase();
+			String postcode = obj.getConsigneePostcode().trim();
+			String combination = state.concat(suburb.concat(postcode));
+			if(!postCodeZoneList.contains(combination) ) {
+				incorrectPostcode_Suburb.add(obj.getReferenceNumber()+"-"+obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim());
+			}
+		});
+		if(!incorrectPostcode_Suburb.isEmpty()) {
+			throw new InvalidSuburbPostcodeException("Invalid Combination of Consignee State, Postcode and Suburb",incorrectPostcode_Suburb);
+		}
+			
+	}
+
+	public void isNZPostCodeValid(CreateConsignmentRequest orderDetail, Map<String, List<ErrorDetails>> errorMap) {
+
+		List<SenderDataApi> senderData = orderDetail.getConsignmentData();
+		List<String> postCodeZoneList = D2ZSingleton.getInstance().getNZPostCodeZoneList();
+
+		senderData.forEach(obj -> {
+			if(null!=obj.getConsigneeSuburb() && null!=obj.getConsigneePostcode()
+					 && !obj.getConsigneeSuburb().isEmpty() && !obj.getConsigneePostcode().isEmpty()) {
+				
+			String state = obj.getConsigneeState().trim().toUpperCase();
+			String suburb = obj.getConsigneeSuburb().trim().toUpperCase();
+			String postcode = obj.getConsigneePostcode().trim();
+			String combination = state.concat(suburb.concat(postcode));
+			if(!postCodeZoneList.contains(combination)) {
+		   				 ValidationUtils.populateErrorDetails(obj.getReferenceNumber(),obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim(),
+						 "Invalid combination of Consignee State, Postcode and Suburb",errorMap) ;
+		
+			}
+			}
+		});
+		
+	
+		
+			
+	}
+
 }

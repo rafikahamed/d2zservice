@@ -38,6 +38,7 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
+import com.d2z.d2zservice.entity.NZPostcodes;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
 public interface ID2ZDao {
@@ -210,6 +211,8 @@ public interface ID2ZDao {
 	public List<PFLSubmitOrderData> fetchDataForPFLSubmitOrder();
 
 	public void updateForPFLSubmitOrderCompleted();
+
+	public List<NZPostcodes> fetchAllNZPostCodeZone();
 
 
 

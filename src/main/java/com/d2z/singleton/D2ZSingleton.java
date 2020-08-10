@@ -11,6 +11,7 @@ import com.d2z.d2zservice.entity.FastwayPostcode;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.StarTrackPostcode;
 import com.d2z.d2zservice.util.BeanUtil;
+import com.d2z.d2zservice.entity.NZPostcodes;
 
 public class D2ZSingleton {
 	
@@ -24,6 +25,8 @@ public class D2ZSingleton {
 	private static Map<String,Double> postCodeWeightMap = new HashMap<String,Double>(); ;
 	private static Map<String,String> postCodeZoneMap;
 	private static Map<String,String> fwPostCodeZoneNoMap;
+	private static List<String> nzPostCodeZoneList;
+
 
 	
 	
@@ -54,6 +57,7 @@ public class D2ZSingleton {
 		getRates_PostCodeWeight();
 		getFWPostCodeZone();
 		getSTPostCodeZone();
+		getNZPostCodeZone();
 	}
 	
 	private void getRates_PostCodeWeight() {
@@ -96,6 +100,14 @@ public class D2ZSingleton {
 			
 	}
 	
+	private void getNZPostCodeZone() {
+		List<NZPostcodes> postCodeZoneDaoObj = d2zDao.fetchAllNZPostCodeZone();
+		nzPostCodeZoneList = postCodeZoneDaoObj.stream().map(daoObj -> {
+			return daoObj.getPostcodeId().getState().toUpperCase().concat(daoObj.getPostcodeId().getSuburb().toUpperCase().concat
+					(daoObj.getPostcodeId().getPostcode()));
+		}).collect(Collectors.toList());		
+}
+	
 	private void getFWPostCodeZone(){
 		List<FastwayPostcode> postCodeFWZoneDaoObj = d2zDao.fetchFWPostCodeZone();
 		FWPostCodeZoneList = postCodeFWZoneDaoObj.stream().map(daoObj -> {
@@ -136,6 +148,11 @@ public class D2ZSingleton {
 	}
 	public static Map<String, String> getFwPostCodeZoneNoMap() {
 		return fwPostCodeZoneNoMap;
+	}
+
+	public List<String> getNZPostCodeZoneList() {
+		// TODO Auto-generated method stub
+		return nzPostCodeZoneList;
 	}
 
 }

@@ -238,9 +238,13 @@ public class D2ZServiceImpl implements ID2ZService {
 		SenderDataResponse senderDataResponse = null;
 		String serviceType = orderDetailList.get(0).getServiceType();
 		if ("1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType)
-				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
+				|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType) || "NZ".equalsIgnoreCase(serviceType)) {
 			if (isPostcodeValidationReq) {
-				d2zValidator.isPostCodeValidUI(orderDetailList);
+				if("NZ".equalsIgnoreCase(serviceType)) {
+					d2zValidator.isNZPostCodeValidUI(orderDetailList);
+				}else {
+					d2zValidator.isPostCodeValidUI(orderDetailList);
+				}
 			}
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(orderDetailList, senderDataResponseList);
 			return senderDataResponseList;
@@ -938,9 +942,14 @@ public class D2ZServiceImpl implements ID2ZService {
 			String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
 			System.out.print("servicetype:" + serviceType);
 			if ("1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType)
-					|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType)) {
+					|| "1PM5".equalsIgnoreCase(serviceType) || "TST1".equalsIgnoreCase(serviceType) || "NZ".equalsIgnoreCase(serviceType)) {
 				if (isPostcodeValidationReq) {
+					if("NZ".equalsIgnoreCase(serviceType)) {
+					d2zValidator.isNZPostCodeValid(orderDetail.getConsignmentData());
+
+					}else {
 					d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
+					}
 				}
 				System.out.print("servicetype:" + serviceType);
 				eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail, senderDataResponseList);

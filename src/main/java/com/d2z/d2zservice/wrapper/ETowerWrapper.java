@@ -392,6 +392,10 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 				request.setServiceOption("E-Parcel");
 
 			}
+			if(("NZ").equalsIgnoreCase(orderDetail.getServiceType())) {
+				request.setServiceCode("UBI.AU2NZ.NZPOST");
+				request.setCountry("NZ");
+			}
 			request.setWeight(weight);
 			request.setInvoiceValue(orderDetail.getValue());
 			request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
@@ -727,6 +731,10 @@ s);
 			} else {
 				request.setServiceOption("E-Parcel");
 
+			}
+			if(("NZ").equalsIgnoreCase(orderDetail.getServiceType())) {
+				request.setServiceCode("UBI.AU2NZ.NZPOST");
+				request.setCountry("NZ");
 			}
 			request.setWeight(weight);
 			request.setInvoiceValue(orderDetail.getValue());
