@@ -451,6 +451,15 @@ public class D2ZServiceImpl implements ID2ZService {
 
 	@Override
 	public byte[] generateLabel(List<SenderData> senderData) {
+		byte[] bytes = null;
+		 if("NZ".equalsIgnoreCase(senderData.get(0).getServiceType())) {
+			 List<String> articleIds = senderData.stream().map(obj -> {
+					return obj.getBarcodeLabelNumber(); })
+						.collect(Collectors.toList());
+				bytes = eTowerWrapper.printLabel(articleIds);
+				return bytes;
+			}
+	
 
 		List<SenderData> eParcelData = new ArrayList<SenderData>();
 
@@ -510,7 +519,6 @@ public class D2ZServiceImpl implements ID2ZService {
 		}
 
 		Map<String, Object> parameters = new HashMap<>();
-		byte[] bytes = null;
 		JRBeanCollectionDataSource eParcelDataSource;
 		JRBeanCollectionDataSource expressDataSource;
 		JasperReport eParcelLabel = null;
@@ -674,11 +682,28 @@ public class D2ZServiceImpl implements ID2ZService {
 
 	@Override
 	public byte[] trackingLabel(List<String> refBarNum, String identifier) throws PCAlabelException {
+		byte[] bytes = null;
+		String serviceType = d2zDao.fetchServiceTypeByArticleID(refBarNum.get(0));
+			
+		if("NZ".equalsIgnoreCase(serviceType)) {
+			
+			if("reference_number".equalsIgnoreCase(identifier)) { 
+				List<String> artileIDList = d2zDao.fetchArticleIDbyRefNbr(refBarNum);
+					 bytes = eTowerWrapper.printLabel(artileIDList);
+						return bytes;
+				 }
+			else {
+				 bytes = eTowerWrapper.printLabel(refBarNum);
+					return bytes;
+			}
+					
+		}
+		
+		
 		System.out.println("size:" + refBarNum.size());
 		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNum,identifier);
 		boolean pcalabel = false;
 		List<SenderData> trackingLabelList = populateDataForLabelGeneration(trackingLabelData);
-		byte[] bytes = null;
 		if (trackingLabelList.get(0).getCarrier().equalsIgnoreCase("StarTrack")) {
 			if (trackingLabelList.size() > 1) {
 				throw new PCAlabelException("Starttrack Label request can contain only one reference number",

@@ -2202,5 +2202,13 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		});
 		return incorrectRefNbr;
 	}
+	@Override
+	public String fetchServiceTypeByArticleID(String articleID) {
+		return senderDataRepository.fetchServiceType(articleID);
+	}
+	@Override
+	public List<String> fetchArticleIDbyRefNbr(List<String> refBarNum) {
+		return senderDataRepository.fetchArticleIDforRefNbr(refBarNum);
+	}
 
 }

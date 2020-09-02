@@ -1,5 +1,6 @@
 package com.d2z.d2zservice.daoImpl;
 
+import java.awt.Label;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -235,8 +236,14 @@ public class D2ZDaoImpl implements ID2ZDao{
 					&& barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData labelData= barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setBarcodelabelNumber(labelData.getBarCode());
-				senderDataObj.setArticleId(labelData.getArticleId());		        
-				senderDataObj.setDatamatrix(D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
+				senderDataObj.setArticleId(labelData.getArticleId());	
+				if(labelData.getBarCode2D().equals(labelData.getArticleId())) {
+					senderDataObj.setBarcodelabelNumber(labelData.getArticleId());
+					senderDataObj.setDatamatrix(labelData.getArticleId());
+					senderDataObj.setCarrier("FastwayNZ");
+				}else {
+					senderDataObj.setDatamatrix(D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
+				}
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
 			}else if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PFL") && 
 					barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
@@ -413,8 +420,14 @@ public class D2ZDaoImpl implements ID2ZDao{
 						barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData labelData= barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setBarcodelabelNumber(labelData.getBarCode());
-				senderDataObj.setArticleId(labelData.getArticleId());		        
-				senderDataObj.setDatamatrix(D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
+				senderDataObj.setArticleId(labelData.getArticleId());	
+				if(labelData.getBarCode2D().equals(labelData.getArticleId())) {
+					senderDataObj.setBarcodelabelNumber(labelData.getArticleId());
+					senderDataObj.setDatamatrix(labelData.getArticleId());
+					senderDataObj.setCarrier("FastwayNZ");
+				}else {
+					senderDataObj.setDatamatrix(D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
+				}
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
 			}else if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PFL") && 
 						barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
@@ -1300,6 +1313,10 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
+	public String fetchServiceTypeByArticleID(String articleID) {
+		return senderDataRepository.fetchServiceType(articleID);
+	}
+	@Override
 	public List<String> fetchMlidsBasedOnSupplier(String supplier) {
 		return consigneeCountRepository.getMlidBasedonSupplier(supplier);
 	}
@@ -1409,6 +1426,12 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
     	List<NZPostcodes> postCodeZoneList= (List<NZPostcodes>) nzPostcodesRepository.findAll();
     	System.out.println(postCodeZoneList.size());
     	return postCodeZoneList;
+	}
+
+	@Override
+	public List<String> fetchArticleIDbyRefNbr(List<String> refBarNum) {
+		// TODO Auto-generated method stub
+		return senderDataRepository.fetchArticleIDforRefNbr(refBarNum);
 	}
 
 	

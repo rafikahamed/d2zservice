@@ -266,5 +266,9 @@ public interface ID2ZSuperUserDao {
 
 	List<String> fetchParcelDetails();
 
+	String fetchServiceTypeByArticleID(String string);
+
+	List<String> fetchArticleIDbyRefNbr(List<String> refBarNumArray);
+
 }
 

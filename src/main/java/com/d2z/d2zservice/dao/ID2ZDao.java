@@ -214,6 +214,10 @@ public interface ID2ZDao {
 
 	public List<NZPostcodes> fetchAllNZPostCodeZone();
 
+	public String fetchServiceTypeByArticleID(String string);
+
+	public List<String> fetchArticleIDbyRefNbr(List<String> refBarNum);
+
 
 
 }

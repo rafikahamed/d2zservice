@@ -163,6 +163,25 @@ public class ETowerProxy {
         System.out.println("Response :: " + jsonResponse);
         return gainLabelsresponse;
 	}
+	public byte[] makeCallToPrintLabels(List<String> referenceNumbers) {
+
+
+		String url = baseURL+"services/integration/shipper/labels/";
+		//Prod URL
+		//SSL cert issue fix
+		//String url = "http://au.etowertech.com/services/shipper/labelSpecs/";
+			//"https://au.etowertech.com/services/integration/shipper/trackingEvents/";
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		requestFactory.setOutputStreaming(false);
+        RestTemplate restTemplate = new RestTemplate(requestFactory);
+        restTemplate.setInterceptors(Collections.singletonList(new ETowerHeaderRequestInterceptor(key,token)));
+        HttpEntity<List<String>> httpEntity = new HttpEntity<List<String>>(referenceNumbers);
+
+        System.out.println("Making call to etower");
+        ResponseEntity<byte[]> response = restTemplate.exchange(url,HttpMethod.POST,httpEntity,byte[].class);
+        byte[] bytes = response.getBody();
+        return bytes;
+	}
 	public CreateShippingResponse makeCallForForeCast(List<String> trackingNumber) {
 
 

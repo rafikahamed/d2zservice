@@ -856,6 +856,23 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	@Override
 	public byte[] trackingLabel(List<String> refBarNumArray,String identifier) {
 
+		byte[] bytes = null;
+		String serviceType = d2zDao.fetchServiceTypeByArticleID(refBarNumArray.get(0));
+			
+		if("NZ".equalsIgnoreCase(serviceType)) {
+			
+			if("reference_number".equalsIgnoreCase(identifier)) { 
+				List<String> artileIDList = d2zDao.fetchArticleIDbyRefNbr(refBarNumArray);
+				bytes = eTowerWrapper.printLabel(artileIDList);
+				return bytes;
+				 }
+			else {
+				bytes = eTowerWrapper.printLabel(refBarNumArray);
+				return bytes;
+			}
+					
+		}
+		
 		List<SenderData> trackingLabelList = new ArrayList<SenderData>();
 		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNumArray,identifier);
 		Iterator itr = trackingLabelData.iterator();
@@ -985,7 +1002,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		}
 
 		Map<String, Object> parameters = new HashMap<>();
-		byte[] bytes = null;
+		//byte[] bytes = null;
 		// Blob blob = null;
 		JRBeanCollectionDataSource eParcelDataSource;
 		JRBeanCollectionDataSource expressDataSource;

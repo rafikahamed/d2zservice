@@ -833,6 +833,9 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT s.servicetype FROM SenderdataMaster s where s.reference_number = :refNbr")
 	String fetchServiceTypeByRefNbr(String refNbr);
 	
+	@Query("SELECT s.servicetype FROM SenderdataMaster s where s.reference_number = :identifier or s.articleId = :identifier")
+	String fetchServiceType(String identifier);
+	
 	@Query("SELECT s.servicetype FROM SenderdataMaster s where s.mlid = :mlid")
 	String fetchServiceTypeByMlid(String mlid);
 
@@ -854,5 +857,8 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query(nativeQuery = true,value = "select s.mlid,s.serviceType	from senderdata_master s "
 			+ "where s.mlid in (select connoteNo from trackandtrace t where t.fileName = 'PFLSubmitOrder')")
 	List<Object[]> fetchDataForPFLSubmitOrder();
+
+	@Query("SELECT t.articleId FROM SenderdataMaster t where t.reference_number in (:refBarNum) ")
+	List<String> fetchArticleIDforRefNbr(List<String> refBarNum);
 
 } 

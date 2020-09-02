@@ -176,7 +176,7 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 			com.d2z.d2zservice.model.etower.CreateShippingRequest request = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
 			//Random rnd = new Random();
 			int uniqueNumber = SingletonCounter.getInstance().getEtowerCount();
-			request.setReferenceNo("SW10A" + uniqueNumber);
+			request.setReferenceNo("SW10B" + uniqueNumber);
 			systemRefNbrMap.put(request.getReferenceNo(), orderDetail.getReferenceNumber());
 			//request.setReferenceNo(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
@@ -198,6 +198,9 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 			 		String description = (orderDetail.getProductDescription()).replaceAll("[^a-zA-Z0-9\\s+]", "");
 							description = description.length()>50 ? description.substring(0, 50):description ;
 							request.setDescription(description);
+							if(("NZ").equalsIgnoreCase(orderDetail.getServiceType())) {
+								request.setNativeDescription(description);
+								}
 					}
 			request.setDangerousGoods(orderDetail.isDangerousGoods());
 			request.setEmail(orderDetail.getConsigneeEmail());
@@ -395,6 +398,9 @@ System.out.println("ttt"+eTowerRequest.isEmpty());
 			if(("NZ").equalsIgnoreCase(orderDetail.getServiceType())) {
 				request.setServiceCode("UBI.AU2NZ.NZPOST");
 				request.setCountry("NZ");
+				request.setFacility("AU");
+				request.setServiceOption("");
+
 			}
 			request.setWeight(weight);
 			request.setInvoiceValue(orderDetail.getValue());
@@ -522,7 +528,7 @@ s);
 			com.d2z.d2zservice.model.etower.CreateShippingRequest request = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
 			//Random rnd = new Random();
 			int uniqueNumber = SingletonCounter.getInstance().getEtowerCount();
-			request.setReferenceNo("SW10A" + uniqueNumber);
+			request.setReferenceNo("SW10B" + uniqueNumber);
 			systemRefNbrMap.put(request.getReferenceNo(), orderDetail.getReferenceNumber());
 			//request.setReferenceNo(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
@@ -543,6 +549,9 @@ s);
 			 		String description = (orderDetail.getProductDescription()).replaceAll("[^a-zA-Z0-9\\s+]", "");
 							description = description.length()>50 ? description.substring(0, 50):description ;
 							request.setDescription(description);
+							if(("NZ").equalsIgnoreCase(orderDetail.getServiceType())) {
+							request.setNativeDescription(description);
+							}
 					}
 			request.setEmail(orderDetail.getConsigneeEmail());
 			request.setCity(orderDetail.getConsigneeSuburb());
@@ -735,6 +744,9 @@ s);
 			if(("NZ").equalsIgnoreCase(orderDetail.getServiceType())) {
 				request.setServiceCode("UBI.AU2NZ.NZPOST");
 				request.setCountry("NZ");
+				request.setFacility("AU");
+				request.setServiceOption("");
+
 			}
 			request.setWeight(weight);
 			request.setInvoiceValue(orderDetail.getValue());
@@ -1031,6 +1043,11 @@ s);
 			}
 			}
 		
+	}
+
+	public byte[] printLabel(List<String> artileIDList) {
+		// TODO Auto-generated method stub
+		return eTowerProxy.makeCallToPrintLabels(artileIDList);
 	}
 
 }

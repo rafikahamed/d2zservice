@@ -21,6 +21,7 @@ public class CreateShippingRequest {
 	private Double invoiceValue;
 	private String invoiceCurrency = "AUD";
 	private String description = "Bags";
+	private String nativeDescription = "Bags";
 	private String shipperName = "Test company";
 	private String shipperAddressLine1 = "1 fake st";
 	private String shipperCity = "Petaling Jaya";
@@ -31,6 +32,14 @@ public class CreateShippingRequest {
 	private boolean authorityToleave;
 	private String vendorid;
 	
+	public String getNativeDescription() {
+		return nativeDescription;
+	}
+
+	public void setNativeDescription(String nativeDescription) {
+		this.nativeDescription = nativeDescription;
+	}
+
 	public String getVendorid() {
 		return vendorid;
 	}
