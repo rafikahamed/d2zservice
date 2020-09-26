@@ -151,8 +151,7 @@ public class ConsignmentValidator  implements
 	}
 	
 	public boolean isFastwayAddressValid(String address) {
-		System.out.println(address);
-		String regex = "\\Bpo|po\\B|\\BBx|Bx\\B|\\Bparcel|parcel\\B";
+		String regex = "\\Bpobox|pobox\\B|\\Bpocase|pocase\\B|\\Bbox|box\\B|\\BBx|Bx\\B|\\Bparcel|parcel\\B";
 		Pattern p = Pattern.compile(regex,Pattern.CASE_INSENSITIVE); 
 		Matcher m = p.matcher(address); 
 		return m.find();
