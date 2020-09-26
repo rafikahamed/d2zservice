@@ -18,6 +18,7 @@ import com.d2z.d2zservice.model.PFLSubmitOrderRequest;
 import com.d2z.d2zservice.model.PFLSubmitOrderResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponse;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
+import com.d2z.d2zservice.model.PflPrintLabelRequest;
 import com.d2z.d2zservice.model.PflTrackEventRequest;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
@@ -245,6 +246,19 @@ public class PFLWrapper {
 
 			}
 		}
+	}
+
+	public byte[] printLabel(List<String> artileIDList) {
+		PflPrintLabelRequest request = new PflPrintLabelRequest();
+		request.setIds(artileIDList);
+		byte[] bytes = null;
+		try {
+			bytes =  pflProxy.makeCallForPrintLabel(request);
+		} catch (FailureResponseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return bytes;
 	}
 	
 	

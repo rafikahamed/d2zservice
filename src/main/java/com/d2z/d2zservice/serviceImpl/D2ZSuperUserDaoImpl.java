@@ -2211,4 +2211,9 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		return senderDataRepository.fetchArticleIDforRefNbr(refBarNum);
 	}
 
+	@Override
+	public List<String> fetchMlid(List<String> refBarNumArray) {
+		return senderDataRepository.fetchMlid(refBarNumArray);
+	}
+
 }

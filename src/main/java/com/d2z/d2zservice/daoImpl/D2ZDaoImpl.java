@@ -1313,7 +1313,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public String fetchServiceTypeByArticleID(String articleID) {
+	public String fetchServiceType(String articleID) {
 		return senderDataRepository.fetchServiceType(articleID);
 	}
 	@Override
@@ -1432,6 +1432,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public List<String> fetchArticleIDbyRefNbr(List<String> refBarNum) {
 		// TODO Auto-generated method stub
 		return senderDataRepository.fetchArticleIDforRefNbr(refBarNum);
+	}
+
+	@Override
+	public List<String> fetchMlid(List<String> refBarNum) {
+		return senderDataRepository.fetchMlid(refBarNum);
 	}
 
 	

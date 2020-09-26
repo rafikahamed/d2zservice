@@ -270,5 +270,7 @@ public interface ID2ZSuperUserDao {
 
 	List<String> fetchArticleIDbyRefNbr(List<String> refBarNumArray);
 
+	List<String> fetchMlid(List<String> refBarNumArray);
+
 }
 

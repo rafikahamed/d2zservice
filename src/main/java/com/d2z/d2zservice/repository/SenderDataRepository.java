@@ -860,5 +860,12 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 
 	@Query("SELECT t.articleId FROM SenderdataMaster t where t.reference_number in (:refBarNum) ")
 	List<String> fetchArticleIDforRefNbr(List<String> refBarNum);
+	
+	@Query(nativeQuery = true, value="SELECT mlid FROM senderdata_master\n" + 
+			" WHERE reference_number IN (:refBarNum) and isDeleted != 'Y'" + 
+			" UNION\n" + 
+			" SELECT mlid FROM senderdata_master\n" + 
+		    " WHERE articleId IN (:refBarNum) and isDeleted != 'Y'") 
+	List<String> fetchMlid(List<String> refBarNum);
 
 } 

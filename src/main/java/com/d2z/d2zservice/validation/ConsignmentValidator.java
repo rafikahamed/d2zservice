@@ -1,5 +1,8 @@
 package com.d2z.d2zservice.validation;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -49,21 +52,20 @@ public class ConsignmentValidator  implements
 			.addConstraintViolation();
 			isValid= false;
 		}
-			else if(null != value.getServiceType() && (value.getServiceType().startsWith("FW") || value.getServiceType().startsWith("MC")) 
-					&& (value.getConsigneeAddr1().toUpperCase().contains("PO BOX") || value.getConsigneeAddr1().toUpperCase().contains("POBOX") || value.getConsigneeAddr1().toUpperCase().contains("P O BOX") 
-							|| value.getConsigneeAddr1().toUpperCase().contains("PARCEL COLLECT") || value.getConsigneeAddr1().toUpperCase().contains("PARCEL LOCKER"))) {
-			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getConsigneeAddr1()+","+"PO Box and Parcel collect/Parcel Locker not accepted on this service")
-			.addConstraintViolation();
-			isValid= false;
-		}
-		if(null != value.getServiceType() && (value.getServiceType().startsWith("FW") || value.getServiceType().startsWith("MC")) && null != value.getConsigneeAddr2() 
-				&& (value.getConsigneeAddr2().toUpperCase().contains("PO BOX") || value.getConsigneeAddr2().toUpperCase().contains("POBOX") || value.getConsigneeAddr2().toUpperCase().contains("P O BOX") 
-						|| value.getConsigneeAddr2().toUpperCase().contains("PARCEL COLLECT") || value.getConsigneeAddr2().toUpperCase().contains("PARCEL LOCKER"))) {
-			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getConsigneeAddr2()+","+"PO Box and Parcel collect/Parcel Locker not accepted on this service")
-			.addConstraintViolation();
-			isValid= false;
+			else if(null != value.getServiceType() && (value.getServiceType().startsWith("FW") || value.getServiceType().startsWith("MC"))) {
+					if(isFastwayAddressValid(value.getConsigneeAddr1().replaceAll("[^a-zA-Z0-9]", ""))){
+						System.out.println(value.getReferenceNumber()+","+value.getConsigneeAddr1());
+						context.disableDefaultConstraintViolation();
+						context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getConsigneeAddr1()+","+"PO Box and Parcel collect/Parcel Locker not accepted on this service")
+						.addConstraintViolation();
+						isValid= false;
+					}
+					if(null != value.getConsigneeAddr2() && (isFastwayAddressValid(value.getConsigneeAddr2().replaceAll("[^a-zA-Z0-9]", "")))){
+						context.disableDefaultConstraintViolation();
+						context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getConsigneeAddr2()+","+"PO Box and Parcel collect/Parcel Locker not accepted on this service")
+						.addConstraintViolation();
+						isValid= false;	
+			}
 		}
 		if(null == value.getProductDescription() || value.getProductDescription().isEmpty()) {
 			context.disableDefaultConstraintViolation();
@@ -146,6 +148,14 @@ public class ConsignmentValidator  implements
 			isValid= false;
 		}
 		return isValid;
+	}
+	
+	public boolean isFastwayAddressValid(String address) {
+		System.out.println(address);
+		String regex = "\\Bpo|po\\B|\\BBx|Bx\\B|\\Bparcel|parcel\\B";
+		Pattern p = Pattern.compile(regex,Pattern.CASE_INSENSITIVE); 
+		Matcher m = p.matcher(address); 
+		return m.find();
 	}
 
 }

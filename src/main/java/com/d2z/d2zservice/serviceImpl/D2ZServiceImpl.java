@@ -452,6 +452,14 @@ public class D2ZServiceImpl implements ID2ZService {
 	@Override
 	public byte[] generateLabel(List<SenderData> senderData) {
 		byte[] bytes = null;
+		if ("1PS4".equalsIgnoreCase(senderData.get(0).getServiceType())) {
+			 List<String> articleIds = senderData.stream().map(obj -> {
+					return obj.getBarcodeLabelNumber(); })
+						.collect(Collectors.toList());
+			List<String> mlidList = d2zDao.fetchMlid(articleIds);
+			bytes = pflWrapper.printLabel(mlidList);
+			return bytes;
+	}
 		 if("NZ".equalsIgnoreCase(senderData.get(0).getServiceType())) {
 			 List<String> articleIds = senderData.stream().map(obj -> {
 					return obj.getBarcodeLabelNumber(); })
@@ -683,8 +691,15 @@ public class D2ZServiceImpl implements ID2ZService {
 	@Override
 	public byte[] trackingLabel(List<String> refBarNum, String identifier) throws PCAlabelException {
 		byte[] bytes = null;
-		String serviceType = d2zDao.fetchServiceTypeByArticleID(refBarNum.get(0));
-			
+		String serviceType = d2zDao.fetchServiceType(refBarNum.get(0));
+		
+		
+		if ("1PS4".equalsIgnoreCase(serviceType)) {
+				List<String> mlidList = d2zDao.fetchMlid(refBarNum);
+				bytes = pflWrapper.printLabel(mlidList);
+				return bytes;
+		}
+
 		if("NZ".equalsIgnoreCase(serviceType)) {
 			
 			if("reference_number".equalsIgnoreCase(identifier)) { 

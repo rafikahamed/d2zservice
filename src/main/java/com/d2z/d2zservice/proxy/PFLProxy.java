@@ -20,6 +20,7 @@ import com.d2z.d2zservice.model.PFLSubmitOrderRequest;
 import com.d2z.d2zservice.model.PFLSubmitOrderResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponse;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
+import com.d2z.d2zservice.model.PflPrintLabelRequest;
 import com.d2z.d2zservice.model.PflTrackEventRequest;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.security.HMACGenerator;
@@ -274,6 +275,64 @@ public class PFLProxy {
 			System.out.println("error code :" + e.getStatusCode());
 			jsonResponse = e.getResponseBodyAsString();
 		}
+		return response;
+	}
+	public byte[] makeCallForPrintLabel(PflPrintLabelRequest request) throws FailureResponseException {
+		RestTemplate template = new RestTemplate();
+		String jsonResponse = null;
+		String SECRET_KEY = null;
+		String Token = null;
+		byte[] response = null;
+		String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
+		String uri = "/app/services/multicourier/printlabel";
+		
+		SimpleDateFormat currentDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+		currentDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		String currentDate = currentDateFormat.format(new Date());
+		System.out.println("US: " + currentDateFormat.format(new Date()));
+		
+		//SECRET_KEY = "3VXSOS7WUSF4DS6V5LXS8ER14KR2TMP6";
+		//Token = "QT6P9I85LHETLYP43G7J440GD6W77TFX";
+		SECRET_KEY = "U00T659VKM1YBHJGFE9SC326EHFKWE7B";
+		Token = "FVJMJGYLC74QIAGRPJREJBAHOQZ3H0LM";
+		String url = baseURL + uri;
+		String authorizationHeader = hmacGenerator.calculatePFLHMAC(SECRET_KEY,uri,Token);
+		HttpHeaders headers = new HttpHeaders();
+
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add("SHIPMENTAPI-DATE", currentDate);
+		headers.add("SHIPMENTAPI-AUTH", Token + ":" + authorizationHeader);
+
+		System.out.println("Request Headers:: " + headers.toString());
+		ObjectWriter ow1 = new ObjectMapper().writer();
+		String jsonReq = null;
+		try {
+			jsonReq = ow1.writeValueAsString(request);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Request Body:: " + jsonReq);
+
+		HttpEntity<String> httpEntity = new HttpEntity<String>(jsonReq, headers);
+		try {
+			ResponseEntity<byte[]> responseEntity = template.exchange(url, HttpMethod.POST,
+					httpEntity, byte[].class);
+			System.out.println(responseEntity.getStatusCode());
+			response = responseEntity.getBody();
+			ObjectWriter ow = new ObjectMapper().writer();
+			try {
+				jsonResponse = ow.writeValueAsString(response);
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+		} catch (HttpStatusCodeException e) {
+			System.out.println("error code :" + e.getStatusCode());
+			jsonResponse = e.getResponseBodyAsString();
+			System.out.println(jsonResponse);
+			 throw new FailureResponseException("Shipment Error. Please contact us");
+		}
+		System.out.println("Response :: " + jsonResponse);
 		return response;
 	}
 }

@@ -858,7 +858,13 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 
 		byte[] bytes = null;
 		String serviceType = d2zDao.fetchServiceTypeByArticleID(refBarNumArray.get(0));
-			
+		
+		if ("1PS4".equalsIgnoreCase(serviceType)) {
+			List<String> mlidList = d2zDao.fetchMlid(refBarNumArray);
+			bytes = pflWrapper.printLabel(mlidList);
+			return bytes;
+		}
+		
 		if("NZ".equalsIgnoreCase(serviceType)) {
 			
 			if("reference_number".equalsIgnoreCase(identifier)) { 
