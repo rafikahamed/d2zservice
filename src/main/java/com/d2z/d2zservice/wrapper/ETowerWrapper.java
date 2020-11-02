@@ -67,7 +67,6 @@ public class ETowerWrapper {
 		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		
 		List<String> gainLabelTrackingNo = new ArrayList<String>();
-System.out.println("ttt"+eTowerRequest.isEmpty());
 		if (!eTowerRequest.isEmpty()) {
 			
 			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest,null);
@@ -571,10 +570,10 @@ s);
 				orderDetail.setInjectionType("MEL3");
 				orderDetail.setCarrier("Express");
 			} 
-			/*else if ("1PS2".equalsIgnoreCase(orderDetail.getServiceType())) {
+			else if ("MCS".equalsIgnoreCase(orderDetail.getServiceType())) {
 				request.setFacility("SYD2");
 				orderDetail.setInjectionType("SYD2");
-			} */else if ("1PS3".equalsIgnoreCase(orderDetail.getServiceType())) {
+			} else if ("1PS3".equalsIgnoreCase(orderDetail.getServiceType())) {
 				String zoneId = postCodeZoneMap
 						.get(orderDetail.getConsigneeSuburb().trim().toUpperCase().concat(orderDetail.getConsigneePostcode().trim()));
 				if (weight > 3) {

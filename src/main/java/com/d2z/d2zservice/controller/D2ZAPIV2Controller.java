@@ -88,6 +88,12 @@ public ResponseEntity<Object> createConsignments(@Valid @RequestBody CreateConsi
     	if(null!=incomingRefNbr && incomingRefNbr.size()>0) {
     		status = HttpStatus.OK;
     		response.setStatus("Success");
+    		if(invalidData.size()>0) {
+    			response.setStatus("Partial Success");
+    			ErrorDetails err = new ErrorDetails();
+    			err.setValue(invalidData.toString());
+    			response.setErrors(err);
+    		}
     		if(null!=autoShipRefNbrs && !autoShipRefNbrs.isEmpty()) {
     			System.out.println("Auto-Shipment Allocation");
     			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");

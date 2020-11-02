@@ -420,7 +420,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 						barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData labelData= barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setBarcodelabelNumber(labelData.getBarCode());
-				senderDataObj.setArticleId(labelData.getArticleId());	
+				senderDataObj.setArticleId(labelData.getArticleId());
 				if(labelData.getBarCode2D().equals(labelData.getArticleId())) {
 					senderDataObj.setBarcodelabelNumber(labelData.getArticleId());
 					senderDataObj.setDatamatrix(labelData.getArticleId());
@@ -429,6 +429,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 					senderDataObj.setDatamatrix(D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
 				}
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
+				if("MCS".equalsIgnoreCase(senderDataValue.getServiceType())) {
+					senderDataObj.setInjectionState("SYD");
+				}
 			}else if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PFL") && 
 						barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData pflLabel= barcodeMap.get(senderDataValue.getReferenceNumber());
@@ -437,7 +440,10 @@ public class D2ZDaoImpl implements ID2ZDao{
 				senderDataObj.setArticleId(pflLabel.getTrackingNo());
 				senderDataObj.setMlid(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
-				if(!"1PS4".equalsIgnoreCase(senderDataValue.getServiceType())) {
+				if("MCS".equalsIgnoreCase(senderDataValue.getServiceType())) {
+					senderDataObj.setCarrier("Fastway");
+				}
+				else if(!"1PS4".equalsIgnoreCase(senderDataValue.getServiceType())) {
 				senderDataObj.setCarrier("FastwayM");
 				}
 			}else if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PCA") && 

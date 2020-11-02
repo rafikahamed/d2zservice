@@ -32,10 +32,17 @@ public class D2ZCommonUtil {
 		formattedDatamatrix.insert(3, ']');
 		formattedDatamatrix.insert(18, '[');
 		formattedDatamatrix.insert(21, ']');
+		if(datamatrix.length()>63) {
+			formattedDatamatrix.insert(45, '[');
+			formattedDatamatrix.insert(49, ']');
+			formattedDatamatrix.insert(54, '[');
+			formattedDatamatrix.insert(59, ']');
+		}else {
 		formattedDatamatrix.insert(43, '[');
 		formattedDatamatrix.insert(47, ']');
 		formattedDatamatrix.insert(52, '[');
 		formattedDatamatrix.insert(57, ']');
+		}
 		return formattedDatamatrix.toString();
 	}
 	

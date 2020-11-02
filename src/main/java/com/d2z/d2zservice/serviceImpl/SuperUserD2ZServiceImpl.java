@@ -991,6 +991,11 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				data.setSku(D2ZSingleton.getInstance().getFwPostCodeZoneNoMap().get(data.getConsigneePostcode()));
 				fwData.add(data);
 			
+			}else if ("MCS".equalsIgnoreCase(data.getServiceType()) 
+					&& data.getCarrier().equalsIgnoreCase("Fastway")) {
+				data.setSku(D2ZSingleton.getInstance().getFwPostCodeZoneNoMap().get(data.getConsigneePostcode()));
+				fwData.add(data);
+			
 			}else if("FW3".equalsIgnoreCase(data.getServiceType())) {
 				fw3Data.add(data);
 			}

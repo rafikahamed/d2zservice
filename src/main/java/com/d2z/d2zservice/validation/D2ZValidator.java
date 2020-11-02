@@ -325,9 +325,8 @@ public class D2ZValidator {
 			
 	}
 
-	public void isPostCodeValid(CreateConsignmentRequest orderDetail,
+	public void isPostCodeValid(List<SenderDataApi> senderData,
 			Map<String, List<ErrorDetails>> errorMap) {
-		List<SenderDataApi> senderData = orderDetail.getConsignmentData();
 		List<String> postCodeStateNameList = D2ZSingleton.getInstance().getPostCodeStateNameList();
 		List<String> postCodeZoneList = D2ZSingleton.getInstance().getPostCodeZoneList();
 

@@ -6,7 +6,14 @@ public class PFLSenderDataRequest {
 	
 	private List<SenderDataApi> pflSenderDataApi;
 	private List<SenderDataApi> nonPflSenderDataApi;
+	private List<SenderDataApi> etowerSenderData;
 	
+	public List<SenderDataApi> getEtowerSenderData() {
+		return etowerSenderData;
+	}
+	public void setEtowerSenderData(List<SenderDataApi> etowerSenderData) {
+		this.etowerSenderData = etowerSenderData;
+	}
 	public List<SenderDataApi> getPflSenderDataApi() {
 		return pflSenderDataApi;
 	}

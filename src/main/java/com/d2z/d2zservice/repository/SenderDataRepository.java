@@ -131,7 +131,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 List<SenderdataMaster> fetchDeletedConsignments(@Param("fromTimestamp") String fromTimestamp , @Param("toTimestamp") String toTimestamp);*/
 	 
 	 
-	 @Query(nativeQuery = true, value = "SELECT A.Client_BrokerName, \r\n" + 
+	 @Query(nativeQuery = true, value = "SELECT distinct A.Client_BrokerName, \r\n" + 
 	 		"       S.reference_number, \r\n" + 
 	 		"       S.articleid,\r\n" + 
 	 		"	   S.Timestamp\r\n" + 
@@ -163,7 +163,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 
 
 	 //@Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.trackEventDateOccured between :fromTime and :toTime") 
-	 @Query(nativeQuery = true, value ="SELECT A.Client_BrokerName,   B.articleid,B.reference_number,  B.consignee_postcode,B.weight, B.servicetype, B.airwayBill ,   B.TrackEventDateOccured, \n"
+	 @Query(nativeQuery = true, value ="SELECT distinct A.Client_BrokerName,   B.articleid,B.reference_number,  B.consignee_postcode,B.weight, B.servicetype, B.airwayBill ,   B.TrackEventDateOccured, \n"
 	 		+ " B.value,	 B.consignee_name, B.consignee_addr1,B.consignee_addr2, B.consignee_suburb, B.consignee_state, B.product_description\n" + 
 	 		"FROM   \n" + 
 	 		"(SELECT S.reference_number, S.value, S.consignee_name, S.consignee_addr1, S.consignee_addr2, S.consignee_suburb, S.consignee_state, "
@@ -174,7 +174,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 List<Object> exportConsignments(@Param("fromTime") String fromTime , @Param("toTime") String toTime);
 	 
 	 //@Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.reference_number in (:Ref)") 
-	 @Query(nativeQuery = true, value ="SELECT A.Client_BrokerName,   B.articleid,B.reference_number,  B.consignee_postcode,B.weight, B.servicetype, B.airwayBill ,   B.TrackEventDateOccured, \n"
+	 @Query(nativeQuery = true, value ="SELECT distinct A.Client_BrokerName,   B.articleid,B.reference_number,  B.consignee_postcode,B.weight, B.servicetype, B.airwayBill ,   B.TrackEventDateOccured, \n"
 		 		+ " B.value,	 B.consignee_name, B.consignee_addr1,B.consignee_addr2, B.consignee_suburb, B.consignee_state, B.product_description\n" + 
 		 		"FROM   \n" + 
 		 		"(SELECT S.reference_number, S.value, S.consignee_name, S.consignee_addr1, S.consignee_addr2, S.consignee_suburb, S.consignee_state, "
@@ -185,7 +185,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 		 List<Object> exportConsignmentsRef(@Param("Ref") List<String> Reference);
 	 
 	 //@Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.articleID in (:Articleid)") 
-	 @Query(nativeQuery = true, value ="SELECT A.Client_BrokerName,   B.articleid,B.reference_number,  B.consignee_postcode,B.weight, B.servicetype, B.airwayBill ,   B.TrackEventDateOccured, \n"
+	 @Query(nativeQuery = true, value ="SELECT distinct A.Client_BrokerName,   B.articleid,B.reference_number,  B.consignee_postcode,B.weight, B.servicetype, B.airwayBill ,   B.TrackEventDateOccured, \n"
 		 		+ " B.value,	 B.consignee_name, B.consignee_addr1,B.consignee_addr2, B.consignee_suburb, B.consignee_state, B.product_description\n" + 
 		 		"FROM   \n" + 
 		 		"(SELECT S.reference_number, S.value, S.consignee_name, S.consignee_addr1, S.consignee_addr2, S.consignee_suburb, S.consignee_state, "
@@ -196,7 +196,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 List<Object> exportConsignmentsArticleid(@Param("Articleid") List<String> Article);
 	 
 	// @Query("SELECT s FROM SenderdataMaster s JOIN s.trackAndTrace t where t.trackEventDetails = 'CONSIGNMENT CREATED' and t.isDeleted != 'Y' and t.barcodelabelNumber in (:Barcode)") 
-	 @Query(nativeQuery = true, value ="SELECT A.Client_BrokerName,   B.articleid,B.reference_number,  B.consignee_postcode,B.weight, B.servicetype, B.airwayBill ,   B.TrackEventDateOccured, \n"
+	 @Query(nativeQuery = true, value ="SELECT distinct A.Client_BrokerName,   B.articleid,B.reference_number,  B.consignee_postcode,B.weight, B.servicetype, B.airwayBill ,   B.TrackEventDateOccured, \n"
 		 		+ " B.value,	 B.consignee_name, B.consignee_addr1,B.consignee_addr2, B.consignee_suburb, B.consignee_state, B.product_description\n" + 
 		 		"FROM   \n" + 
 		 		"(SELECT S.reference_number, S.value, S.consignee_name, S.consignee_addr1, S.consignee_addr2, S.consignee_suburb, S.consignee_state, "
@@ -238,7 +238,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 		"       INNER JOIN users D \r\n" + 
 	 		"               ON D.user_id = C.client_broker_id ") */
 	 
-	 @Query(nativeQuery = true, value ="SELECT A.Client_BrokerName, \r\n" + 
+	 @Query(nativeQuery = true, value ="SELECT distinct A.Client_BrokerName, \r\n" + 
 	 		"               B.reference_number, \r\n" + 
 	 		"               B.value, \r\n" + 
 	 		"               B.shipped_quantity, \r\n" + 
@@ -325,7 +325,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 		 		"       INNER JOIN users D \r\n" + 
 		 		"               ON D.user_id = C.client_broker_id ") */
 	 
-	 @Query(nativeQuery = true, value ="SELECT A.Client_BrokerName, \r\n" + 
+	 @Query(nativeQuery = true, value ="SELECT distinct A.Client_BrokerName, \r\n" + 
 	 		"               B.reference_number, \r\n" + 
 	 		"               B.value, \r\n" + 
 	 		"               B.shipped_quantity, \r\n" + 
@@ -410,7 +410,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 		 		"       INNER JOIN users D \r\n" + 
 		 		"               ON D.user_id = C.client_broker_id ") */
 	 
-	 @Query(nativeQuery = true, value ="SELECT A.Client_BrokerName, \r\n" + 
+	 @Query(nativeQuery = true, value ="SELECT distinct A.Client_BrokerName, \r\n" + 
 	 		"               B.reference_number, \r\n" + 
 	 		"               B.value, \r\n" + 
 	 		"               B.shipped_quantity, \r\n" + 
@@ -494,7 +494,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 		 		"                          AND A.role_id = '3') C \r\n" + 
 		 		"       INNER JOIN users D \r\n" + 
 		 		"               ON D.user_id = C.client_broker_id ") */
-	 @Query(nativeQuery = true, value ="SELECT A.Client_BrokerName, \r\n" + 
+	 @Query(nativeQuery = true, value ="SELECT distinct A.Client_BrokerName, \r\n" + 
 	 		"               B.reference_number, \r\n" + 
 	 		"               B.value, \r\n" + 
 	 		"               B.shipped_quantity, \r\n" + 
@@ -585,7 +585,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 
 	 
 	 
-	 @Query(nativeQuery = true, value ="SELECT U.Client_BrokerName, senderdata0_.reference_number,  senderdata0_.value, senderdata0_.shipped_quantity, \r\n" + 
+	 @Query(nativeQuery = true, value ="SELECT distinct U.Client_BrokerName, senderdata0_.reference_number,  senderdata0_.value, senderdata0_.shipped_quantity, \r\n" + 
 	 		"     senderdata0_.consignee_name, \r\n" + 
 	 		"     senderdata0_.consignee_addr1, \r\n" + 
 	 		"     senderdata0_.consignee_suburb, \r\n" + 
