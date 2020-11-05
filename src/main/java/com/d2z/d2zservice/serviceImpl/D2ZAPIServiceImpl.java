@@ -95,8 +95,10 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 				d2zValidator.isPostCodeValid(request.getEtowerSenderData(),errorMap);
 				ValidationUtils.removeInvalidEtowerconsignments(request,errorMap);
 				if(request.getEtowerSenderData().size()>0) {
-					orderDetail.setConsignmentData(request.getEtowerSenderData());
-					eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail, senderDataResponseList);
+					CreateConsignmentRequest requestDetail = new CreateConsignmentRequest();
+					requestDetail.setConsignmentData(request.getEtowerSenderData());
+					requestDetail.setUserName(orderDetail.getUserName());
+					eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(requestDetail, senderDataResponseList);
 				}
 				if(request.getPflSenderDataApi().size()>0) {
 					makeCreateShippingOrderPFLCall(request.getPflSenderDataApi(), senderDataResponseList,orderDetail.getUserName(), serviceType);	

@@ -245,6 +245,10 @@ public class D2ZDaoImpl implements ID2ZDao{
 					senderDataObj.setDatamatrix(D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
 				}
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
+				if("MCS".equalsIgnoreCase(senderDataValue.getServiceType())) {
+					senderDataObj.setMlid(senderDataObj.getArticleId().substring(0, 5));
+					senderDataObj.setInjectionState("SYD");
+				}
 			}else if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PFL") && 
 					barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
 				LabelData pflLabel= barcodeMap.get(senderDataValue.getReferenceNumber());
@@ -430,6 +434,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 				}
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
 				if("MCS".equalsIgnoreCase(senderDataValue.getServiceType())) {
+					senderDataObj.setMlid(senderDataObj.getArticleId().substring(0, 5));
 					senderDataObj.setInjectionState("SYD");
 				}
 			}else if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PFL") && 

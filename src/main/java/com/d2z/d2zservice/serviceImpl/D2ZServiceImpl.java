@@ -541,8 +541,9 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderData> parcelPostData = new ArrayList<SenderData>();
 		List<SenderData> fwData = new ArrayList<SenderData>();
 		List<SenderData> fw3Data = new ArrayList<SenderData>();
-		boolean setGS1Type = false;
+		boolean setGS1Type;
 		for (SenderData data : senderData) {
+			setGS1Type = false;
 			if ("MCM1".equalsIgnoreCase(data.getServiceType()) && data.getCarrier().equalsIgnoreCase("FastwayM")) {
 				whiteLabelData.add(data);
 			} else if ("MCM2".equalsIgnoreCase(data.getServiceType()) && (data.getCarrier().equalsIgnoreCase("Express")
@@ -1049,8 +1050,10 @@ public class D2ZServiceImpl implements ID2ZService {
 				d2zValidator.isPostCodeValid(request.getEtowerSenderData());
 			
 				if(request.getEtowerSenderData().size()>0) {
-					orderDetail.setConsignmentData(request.getEtowerSenderData());
-					eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail, senderDataResponseList);
+					CreateConsignmentRequest requestDetail = new CreateConsignmentRequest();
+					requestDetail.setUserName(orderDetail.getUserName());
+					requestDetail.setConsignmentData(request.getEtowerSenderData());
+					eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(requestDetail, senderDataResponseList);
 
 				}
 				if(request.getPflSenderDataApi().size()>0) {
