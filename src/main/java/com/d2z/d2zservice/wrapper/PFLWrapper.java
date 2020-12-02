@@ -242,6 +242,7 @@ public class PFLWrapper {
 				TrackingEvents event = new TrackingEvents();
 				event.setEventDetails(pflTrackResp.getResult().get(0).getStatus());
 				event.setTrackEventDateOccured(pflTrackResp.getResult().get(0).getDate());
+				d2zDao.saveTrackingEvents(pflTrackEvent.getTracking_number(),event);
 				trackingDataMap.put(pflTrackEvent.getTracking_number(),event);
 
 			}

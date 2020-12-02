@@ -31,6 +31,7 @@ import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.StarTrackPostcode;
 import com.d2z.d2zservice.entity.SystemRefCount;
 import com.d2z.d2zservice.entity.Trackandtrace;
+import com.d2z.d2zservice.entity.TrackingEvent;
 import com.d2z.d2zservice.entity.TransitTime;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
@@ -81,6 +82,7 @@ import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.StarTrackPostcodeRepository;
 import com.d2z.d2zservice.repository.SystemRefCountRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
+import com.d2z.d2zservice.repository.TrackingEventRepository;
 import com.d2z.d2zservice.repository.TransitTimeRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
@@ -107,6 +109,9 @@ public class D2ZDaoImpl implements ID2ZDao{
 
 	@Autowired
 	TrackAndTraceRepository trackAndTraceRepository;
+	
+	@Autowired
+	TrackingEventRepository trackingEventRepository;
 	
 	@Autowired
 	PostcodeZoneRepository postcodeZoneRepository;
@@ -1374,9 +1379,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public List<PerformanceReportTrackingData> fetchArticleIdForPerformanceReport() {
+	public List<PerformanceReportTrackingData> fetchArticleIdForPerformanceReport(int day,int month) {
 		List<PerformanceReportTrackingData> trackingData = new ArrayList<PerformanceReportTrackingData>();
-		List<Object[]> objArr = senderDataRepository.fetchArticleIdForPerformanceReport();
+		List<Object[]> objArr = senderDataRepository.fetchArticleIdForPerformanceReport(month);
 		objArr.forEach(obj -> trackingData.add(new PerformanceReportTrackingData(obj)));
 		return trackingData;
 	}
@@ -1440,15 +1445,47 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public List<String> fetchArticleIDbyRefNbr(List<String> refBarNum) {
+	public List<String> fetchArticleID(List<String> refBarNum) {
 		// TODO Auto-generated method stub
-		return senderDataRepository.fetchArticleIDforRefNbr(refBarNum);
+		return senderDataRepository.fetchArticleId(refBarNum);
 	}
 
 	@Override
 	public List<String> fetchMlid(List<String> refBarNum) {
 		return senderDataRepository.fetchMlid(refBarNum);
 	}
+
+	@Override
+	public List<String> fetchPerformanceReportDataByArticleId(List<String> articleIds) {
+		// TODO Auto-generated method stub
+		return senderDataRepository.fetchPerformanceReportDataByArticleId(articleIds) ;
+	}
+
+	@Override
+	public Map<String, com.d2z.d2zservice.model.TrackingEvents> fetchTrackingEvents(List<String> articleIds) {
+		List<TrackingEvent> data = trackingEventRepository.findbyArticleIds(articleIds);
+		Map<String, com.d2z.d2zservice.model.TrackingEvents>  trackingDataMap = new HashMap<String, com.d2z.d2zservice.model.TrackingEvents>();
+		data.forEach(obj->{
+			com.d2z.d2zservice.model.TrackingEvents events = new com.d2z.d2zservice.model.TrackingEvents();
+			events.setEventDetails(obj.getTrackEventDetails());
+			events.setTrackEventDateOccured(obj.getTrackEventDateOccured());
+			trackingDataMap.put(obj.getOrderId(), events);
+		});
+		return trackingDataMap;
+	}
+
+	@Override
+	public void saveTrackingEvents(String articleId,com.d2z.d2zservice.model.TrackingEvents trackEvents) {
+		
+			TrackingEvent event= new TrackingEvent();
+			event.setOrderId(articleId);
+			event.setTrackEventDateOccured(trackEvents.getTrackEventDateOccured());
+			event.setTrackEventDetails(trackEvents.getEventDetails());
+		
+		trackingEventRepository.save(event);
+	}
+
+	
 
 	
 

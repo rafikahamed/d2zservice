@@ -106,7 +106,11 @@ public class ETowerWrapper {
 				senderDataresponse.setReferenceNumber(obj[0].toString());
 				//senderDataresponse.setBarcodeLabelNumber(obj[2] != null ? obj[2].toString() : "");
 				String barcode = obj[1].toString();
+				if(barcode.length()>25) {
 				senderDataresponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+				}else {
+					senderDataresponse.setBarcodeLabelNumber(barcode);
+				}
 				senderDataresponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 				senderDataResponseList.add(senderDataresponse);
 			}
@@ -155,7 +159,13 @@ public class ETowerWrapper {
 				Object[] obj = (Object[]) itr.next();
 				SenderDataResponse senderDataresponse = new SenderDataResponse();
 				senderDataresponse.setReferenceNumber(obj[0].toString());
-				senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
+				//senderDataresponse.setBarcodeLabelNumber(obj[3] != null ? obj[3].toString() : "");
+				String barcode = obj[3] != null ? obj[3].toString() : "";
+				if(barcode.length()>25) {
+					senderDataresponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+					}else {
+						senderDataresponse.setBarcodeLabelNumber(barcode);
+					}
 				//senderDataresponse.setBarcodeLabelNumber(obj[2] != null ? obj[2].toString() : "");
 				senderDataresponse.setCarrier(obj[4] != null ? obj[4].toString() : "");
 				senderDataresponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
@@ -1034,6 +1044,7 @@ s);
 								event.setTrackEventDateOccured(etowerEvents.get(0).getEventTime());
 								event.setEventDetails(etowerEvents.get(0).getActivity());
 								}
+								d2zDao.saveTrackingEvents(data.getOrderId(), event);
 								trackingEvents.put(data.getOrderId(), event);
 							}
 							

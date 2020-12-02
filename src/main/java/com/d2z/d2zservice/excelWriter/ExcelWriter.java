@@ -20,6 +20,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.model.EmailEnquiryDetails;
@@ -37,11 +38,11 @@ import com.d2z.d2zservice.model.SurplusData;
 public class ExcelWriter {
 
 	public byte[] generatePerformance(List<PerformanceReportData> performanceReportData) {
-	      String[] columns = {"ArticleID","Consignee Name","Consignee Address1","Consignee Adress2","City","State","Postcode","Arrive Date",
+	      String[] columns = {"ArticleID","Consignee Name","Consignee Address1","Consignee Adress2","City","State","Postcode","Arrive Date","MAWB",
 	    		  "Clearance Date","Lodgement Date","Latest Trackin Status","Latest Tracking Date/Time"};
 	      
 	 
-		Workbook workbook = new XSSFWorkbook();
+		Workbook workbook = new SXSSFWorkbook();
 		Sheet sheet = workbook.createSheet("Performance Report");
 		CellStyle style = workbook.createCellStyle();
 		Font font = workbook.createFont();//Create font
@@ -64,12 +65,13 @@ public class ExcelWriter {
           row.createCell(5).setCellValue(data.getState());
           row.createCell(6).setCellValue(data.getPostcode());
           row.createCell(7).setCellValue(data.getArriveDate());
-          row.createCell(8).setCellValue(data.getClearanceDate());
-          row.createCell(9).setCellValue(data.getLodgementDate());
-          row.createCell(10).setCellValue(data.getLatestTrackingStatus());
-          row.createCell(11).setCellValue(data.getLatestTrackingTimestamp());
+          row.createCell(8).setCellValue(data.getMawb());
+          row.createCell(9).setCellValue(data.getClearanceDate());
+          row.createCell(10).setCellValue(data.getLodgementDate());
+          row.createCell(11).setCellValue(data.getLatestTrackingStatus());
+          row.createCell(12).setCellValue(data.getLatestTrackingTimestamp());
        }
-      sheet.autoSizeColumn(0);
+     // sheet.autoSizeColumn(0);
 		/*
 		 * for(int i = 0; i < columns.length; i++) { sheet.autoSizeColumn(i); }
 		 */

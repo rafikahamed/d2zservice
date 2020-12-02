@@ -33,6 +33,7 @@ import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SuperUserEnquiry;
+import com.d2z.d2zservice.model.TrackingEvents;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
@@ -196,7 +197,7 @@ public interface ID2ZDao {
 
 	public List<String> fetchPerformanceReportData();
 
-	public List<PerformanceReportTrackingData> fetchArticleIdForPerformanceReport();
+	public List<PerformanceReportTrackingData> fetchArticleIdForPerformanceReport(int day,int month);
 
 	public List<EmailEnquiryDetails> fetchEmailEnquiryDetails();
 
@@ -216,9 +217,17 @@ public interface ID2ZDao {
 
 	public String fetchServiceType(String string);
 
-	public List<String> fetchArticleIDbyRefNbr(List<String> refBarNum);
+	public List<String> fetchArticleID(List<String> refBarNum);
 
 	public List<String> fetchMlid(List<String> refBarNum);
+
+	public List<String> fetchPerformanceReportDataByArticleId(List<String> articleIds);
+
+	public Map<String, TrackingEvents> fetchTrackingEvents(List<String> articleIds);
+
+	//public void saveTrackingEvents(Map<String, TrackingEvents> trackingDataMap);
+
+	public void saveTrackingEvents(String article_id, TrackingEvents events);
 
 
 

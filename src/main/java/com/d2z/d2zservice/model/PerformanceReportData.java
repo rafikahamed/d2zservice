@@ -9,11 +9,19 @@ public class PerformanceReportData {
 	private String city;
 	private String state;
 	private String postcode;
+	private String mawb;
 	private String arriveDate;
 	private String clearanceDate;
 	private String lodgementDate;
 	private String latestTrackingStatus;
 	private String latestTrackingTimestamp;
+	
+	public String getMawb() {
+		return mawb;
+	}
+	public void setMawb(String mawb) {
+		this.mawb = mawb;
+	}
 	public String getArticleId() {
 		return articleId;
 	}

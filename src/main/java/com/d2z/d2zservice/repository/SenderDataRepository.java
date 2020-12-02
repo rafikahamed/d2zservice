@@ -839,27 +839,64 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT s.servicetype FROM SenderdataMaster s where s.mlid = :mlid")
 	String fetchServiceTypeByMlid(String mlid);
 
-	@Query(nativeQuery = true,value = "select s.articleId,s.consignee_name,s.consignee_addr1,s.consignee_addr2,s.consignee_suburb,"
-			+ "s.consignee_state,s.consignee_postcode,i.ata,\n" + 
-			"i.clearanceDate,injectionDate	from senderdata_master "
-			+ "s FULL OUTER JOIN Incomingjobs i ON s.airwayBill = i.mawb "
-			+ "where s.user_id in (189762,189765) and s.IsDeleted = 'N' and s.Status = 'SHIPMENT ALLOCATED' "
-			+ "and DATEPART(m, s.Timestamp) = DATEPART(m, DATEADD(m, -1, getdate())) "
-			+ "AND DATEPART(yy, s.Timestamp) = DATEPART(yy, DATEADD(m, -1, getdate()))")
+	
+	  @Query(nativeQuery = true,value =
+	  "select s.articleId,s.consignee_name,s.consignee_addr1,s.consignee_addr2,s.consignee_suburb,"
+	  + "s.consignee_state,s.consignee_postcode,s.airwayBill,i.ata,\n" +
+	  "i.clearanceDate,injectionDate	from senderdata_master " +
+	  "s FULL OUTER JOIN Incomingjobs i ON s.airwayBill = i.mawb " +
+	  "where s.user_id in (189762,189765) and s.IsDeleted = 'N' and s.Status = 'SHIPMENT ALLOCATED' "
+	  + "and DATEPART(m, s.Timestamp) = 11 " +
+	  "AND DATEPART(yy, s.Timestamp) = 2020")
+	  
+		/*
+		 * + "and DATEPART(m, s.Timestamp) = DATEPART(m, DATEADD(m, -1, getdate())) " +
+		 * "AND DATEPART(yy, s.Timestamp) = DATEPART(yy, DATEADD(m, -1, getdate()))")
+		 */
+	 
+	/*
+	 * @Query(nativeQuery = true,value =
+	 * "select s.articleId,s.consignee_name,s.consignee_addr1,s.consignee_addr2,s.consignee_suburb,"
+	 * + "s.consignee_state,s.consignee_postcode,i.ata,\n" +
+	 * "i.clearanceDate,injectionDate	from senderdata_master " +
+	 * "s FULL OUTER JOIN Incomingjobs i ON s.airwayBill = i.mawb " +
+	 * "where s.user_id in (189762,189765) and s.IsDeleted = 'N' and s.Status = 'SHIPMENT ALLOCATED' "
+	 * + "and s.timestamp between '2020-08-01 00:00:00' and '2020-08-31 23:59:59'")
+	 */
 	List<String> fetchPerformanceReportData();
 
-	@Query(nativeQuery = true,value = "select s.articleId,s.serviceType	from senderdata_master s "
-			+ "where s.user_id in (189762,189765) and s.IsDeleted = 'N' and s.Status = 'SHIPMENT ALLOCATED' "
-			+ "and DATEPART(m, s.Timestamp) = DATEPART(m, DATEADD(m, -1, getdate())) "
-			+ "AND DATEPART(yy, s.Timestamp) = DATEPART(yy, DATEADD(m, -1, getdate()))")
-	List<Object[]> fetchArticleIdForPerformanceReport();
+	
+	 @Query(nativeQuery = true,value =
+	 "select s.articleId,s.serviceType	from senderdata_master s " +
+	 "where s.user_id in (189762,189765) and s.IsDeleted = 'N' and s.Status = 'SHIPMENT ALLOCATED' "
+	// + "and DATEPART(d, s.Timestamp) = :day " 
+	 + "and DATEPART(m, s.Timestamp) = :month " +
+	 "AND DATEPART(yy, s.Timestamp) = 2020")
+	 
+	
+	/*
+	 * @Query(nativeQuery = true,value =
+	 * "select s.articleId,s.serviceType	from senderdata_master s " +
+	 * "where s.user_id in (189762,189765) and s.IsDeleted = 'N' and s.Status = 'SHIPMENT ALLOCATED' "
+	 * + "and DATEPART(d, s.Timestamp) = :month " +
+	 * "and DATEPART(m, s.Timestamp) = 8 " + "AND DATEPART(yy, s.Timestamp) = 2020")
+	 */
+	 
+	
+	/*
+	 * @Query(nativeQuery = true,value =
+	 * "select s.articleId,s.serviceType	from senderdata_master s " +
+	 * "where s.user_id in (189762,189765) and s.IsDeleted = 'N' and s.Status = 'SHIPMENT ALLOCATED' "
+	 * + "and s.timestamp between '2020-08-01 00:00:00' and '2020-08-31 23:59:59'")
+	 */
+	List<Object[]> fetchArticleIdForPerformanceReport(Integer month);
 
 	@Query(nativeQuery = true,value = "select s.mlid,s.serviceType	from senderdata_master s "
 			+ "where s.mlid in (select connoteNo from trackandtrace t where t.fileName = 'PFLSubmitOrder')")
 	List<Object[]> fetchDataForPFLSubmitOrder();
 
-	@Query("SELECT t.articleId FROM SenderdataMaster t where t.reference_number in (:refBarNum) ")
-	List<String> fetchArticleIDforRefNbr(List<String> refBarNum);
+	@Query("SELECT t.articleId FROM SenderdataMaster t where t.reference_number in (:refBarNum) or t.articleId in (:refBarNum)")
+	List<String> fetchArticleId(List<String> refBarNum);
 	
 	@Query(nativeQuery = true, value="SELECT mlid FROM senderdata_master\n" + 
 			" WHERE reference_number IN (:refBarNum) and isDeleted != 'Y'" + 
@@ -867,5 +904,13 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 			" SELECT mlid FROM senderdata_master\n" + 
 		    " WHERE articleId IN (:refBarNum) and isDeleted != 'Y'") 
 	List<String> fetchMlid(List<String> refBarNum);
+
+	@Query(nativeQuery = true,value = "select s.articleId,s.consignee_name,s.consignee_addr1,s.consignee_addr2,s.consignee_suburb,"
+			+ "s.consignee_state,s.consignee_postcode,i.ata,\n" + 
+			"i.clearanceDate,injectionDate	from senderdata_master "
+			+ "s FULL OUTER JOIN Incomingjobs i ON s.airwayBill = i.mawb "
+			+ "where s.user_id in (189762,189765) and s.IsDeleted = 'N' and s.Status = 'SHIPMENT ALLOCATED' "
+			+  "and s.articleId in (:articleIds)")
+	List<String> fetchPerformanceReportDataByArticleId(List<String> articleIds);
 
 } 

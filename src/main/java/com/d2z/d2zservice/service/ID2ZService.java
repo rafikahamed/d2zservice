@@ -155,5 +155,7 @@ public interface ID2ZService {
 
 	public UserMessage shippingQuote(ShippingQuoteRequest shippingQuoteRequest);
 
+	UserMessage generateDataForPerformanceReport(int date,int month);
+
 
 }

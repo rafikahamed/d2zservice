@@ -866,17 +866,9 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		}
 		
 		if("NZ".equalsIgnoreCase(serviceType)) {
-			
-			if("reference_number".equalsIgnoreCase(identifier)) { 
-				List<String> artileIDList = d2zDao.fetchArticleIDbyRefNbr(refBarNumArray);
+				List<String> artileIDList = d2zDao.fetchArticleId(refBarNumArray);
 				bytes = eTowerWrapper.printLabel(artileIDList);
 				return bytes;
-				 }
-			else {
-				bytes = eTowerWrapper.printLabel(refBarNumArray);
-				return bytes;
-			}
-					
 		}
 		
 		List<SenderData> trackingLabelList = new ArrayList<SenderData>();

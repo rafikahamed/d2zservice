@@ -766,17 +766,9 @@ public class D2ZServiceImpl implements ID2ZService {
 		}
 
 		if("NZ".equalsIgnoreCase(serviceType)) {
-			
-			if("reference_number".equalsIgnoreCase(identifier)) { 
-				List<String> artileIDList = d2zDao.fetchArticleIDbyRefNbr(refBarNum);
-					 bytes = eTowerWrapper.printLabel(artileIDList);
-						return bytes;
-				 }
-			else {
-				 bytes = eTowerWrapper.printLabel(refBarNum);
-					return bytes;
-			}
-					
+				List<String> artileIDList = d2zDao.fetchArticleID(refBarNum);
+				bytes = eTowerWrapper.printLabel(artileIDList);
+				return bytes;
 		}
 		
 		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNum,identifier);
@@ -2661,9 +2653,11 @@ public class D2ZServiceImpl implements ID2ZService {
 	}
 
 	@Override
-	public UserMessage generatePerformanceReport() {
+	public UserMessage generateDataForPerformanceReport(int day,int month) {
 		long startTime = System.currentTimeMillis();
-		List<PerformanceReportTrackingData> trackingNumbers = d2zDao.fetchArticleIdForPerformanceReport();
+		//int monthArr[] = {3,8,10,12,17,20,24,25,26,31};
+		//for(int month:monthArr) {
+		List<PerformanceReportTrackingData> trackingNumbers = d2zDao.fetchArticleIdForPerformanceReport(day,month);
 		Map<String, List<String>> trackingDetails = trackingNumbers.stream()
 				.collect(Collectors.groupingBy(PerformanceReportTrackingData::getServiceType,
 						Collectors.mapping(PerformanceReportTrackingData::getArticleID, Collectors.toList())));
@@ -2696,6 +2690,7 @@ public class D2ZServiceImpl implements ID2ZService {
 										TrackingEvents events = new TrackingEvents();
 										events.setTrackEventDateOccured(eventDateOccuredAuPost);
 										events.setEventDetails(trackingLabel.getStatus());
+										d2zDao.saveTrackingEvents(trackingLabel.getArticle_id(),events);
 										trackingDataMap.put(trackingLabel.getArticle_id(),events);
 									}
 								}
@@ -2713,9 +2708,24 @@ public class D2ZServiceImpl implements ID2ZService {
 			}
 
 		});
-		
-		 List<String> reportData = d2zDao.fetchPerformanceReportData();
+		//}
+		UserMessage msg = new UserMessage();
+		 msg.setMessage("Data Stored Successfully");
+		return msg;
+	}
+	
+	public UserMessage generatePerformanceReport() {
+	
+		long startTime = System.currentTimeMillis();
+
+			List<PerformanceReportTrackingData> trackingNumbers = d2zDao.fetchArticleIdForPerformanceReport(8,9);
+			List<String> articleIds = trackingNumbers.stream().map(obj -> {
+				return obj.getArticleID();
+			}).collect(Collectors.toList());
+			 List<String> reportData = d2zDao.fetchPerformanceReportData();
 		 List<PerformanceReportData> performanceReportData = new ArrayList<PerformanceReportData>(); 
+			Map<String, TrackingEvents> trackingDataMap = d2zDao.fetchTrackingEvents(articleIds);
+         
 		 Iterator reportDataItr = reportData.iterator(); 
 		 while (reportDataItr.hasNext()) 
 		 { 
@@ -2729,9 +2739,10 @@ public class D2ZServiceImpl implements ID2ZService {
 			 data.setCity(obj[4] != null?obj[4].toString():"");
 			 data.setState(obj[5]!=null?obj[5].toString():""); 
 			 data.setPostcode(obj[6] !=null?obj[6].toString():"");
-			 data.setArriveDate(obj[7]!=null?obj[7].toString():"");
-			 data.setClearanceDate(obj[8] != null?obj[8].toString():"");
-			 data.setLodgementDate(obj[9]!=null?obj[9].toString():"");
+			 data.setMawb(obj[7]!=null?obj[7].toString():"");
+			 data.setArriveDate(obj[8]!=null?obj[8].toString():"");
+			 data.setClearanceDate(obj[9] != null?obj[9].toString():"");
+			 data.setLodgementDate(obj[10]!=null?obj[10].toString():"");
 			 if(trackingDataMap.containsKey(articleId) && null!=trackingDataMap.get(articleId))
 			 { 
 				 data.setLatestTrackingStatus(trackingDataMap.get(articleId).getEventDetails());
@@ -2743,12 +2754,12 @@ public class D2ZServiceImpl implements ID2ZService {
 		 
 		 
 		 byte[] attachmentData = excelWriter.generatePerformance(performanceReportData); 
-		 emailUtil.sendReport("Performance Report", "aparna@d2z.com.au","Please find attached the Performance report",attachmentData,"PerformanceReport.xlsx");
+		 emailUtil.sendReport("Performance Report", "IT@d2z.com.au","Please find attached the Performance report",attachmentData,"PerformanceReport.xlsx");
 
 		 long endTime = System.currentTimeMillis();
 		 long executeTime = endTime - startTime;
 		 System.out.println("Time taken for Performance Report generation : " +executeTime);
-		  
+		//}
 		 UserMessage msg = new UserMessage();
 		 msg.setMessage("Report generated Successfully");
 		 return msg;

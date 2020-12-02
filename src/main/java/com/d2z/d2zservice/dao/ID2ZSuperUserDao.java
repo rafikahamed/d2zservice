@@ -268,7 +268,7 @@ public interface ID2ZSuperUserDao {
 
 	String fetchServiceTypeByArticleID(String string);
 
-	List<String> fetchArticleIDbyRefNbr(List<String> refBarNumArray);
+	List<String> fetchArticleId(List<String> refBarNumArray);
 
 	List<String> fetchMlid(List<String> refBarNumArray);
 
