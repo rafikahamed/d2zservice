@@ -1714,6 +1714,17 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				Double totalNexb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
 				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalNexb)));
 			}
+			else if(incomingJobDetails.getBroker().equalsIgnoreCase("PFLB") && incomingJobDetails.getConsignee().equalsIgnoreCase("BLUE")) {
+				Double processNexb = Double.valueOf(incomingJobDetails.getHawb())*(0.1);
+				shipmemntCharge.setProcess(Double.valueOf(twoDForm.format(processNexb)));
+				Double pickUpCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.4)) > 60 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.4)) : 60;
+				shipmemntCharge.setPickUp(Double.valueOf(twoDForm.format(pickUpCharge)));
+				shipmemntCharge.setDocs((double) 60);
+				Double airportCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.6)) > 60 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.6)) : 60;
+				shipmemntCharge.setAirport(Double.valueOf(twoDForm.format(airportCharge)));
+				Double totalNexb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
+				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalNexb)));
+			}
 			shipmentChargesList.add(shipmemntCharge);
 		}
 		return shipmentChargesList;

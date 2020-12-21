@@ -136,8 +136,9 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 	    		}
 	    		}			
 	    	ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
-			
+	    	if(orderDetail.getConsignmentData().size()>0) {
 			eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
+	    	}
 			return;
 			
 		}else if ("FWM".equalsIgnoreCase(serviceType) || "FW".equalsIgnoreCase(serviceType) || "FW3".equalsIgnoreCase(serviceType) || "1PS4".equalsIgnoreCase(serviceType)) {
@@ -231,6 +232,8 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			return;
 		}*/}else {
 			autoShipment = ("Y").equals(userRepository.fetchAutoShipmentIndicator(userId));
+			System.out.println(userId+" : "+autoShipment);
+
 		}
 		if(isPostcodeValidationReq) {
     		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData(),errorMap);
