@@ -55,7 +55,7 @@ public class SPCourierController {
 	@RequestMapping( method = RequestMethod.POST, path = "/consignment-fileUpload")
     public List<SenderDataResponse> consignmentFileUpload( @RequestBody List<@Valid SenderData> orderDetailList) throws ReferenceNumberNotUniqueException, FailureResponseException{
 
-		List<SenderDataResponse> successMsg = d2zService.exportParcel(orderDetailList);
+		List<SenderDataResponse> successMsg = d2zService.exportParcel(orderDetailList,null);
 		return successMsg;
 	}
 

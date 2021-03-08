@@ -101,6 +101,13 @@ public class ConsignmentValidator  implements
 			.addConstraintViolation();
 			isValid= false;
 		}
+		else if(null != value.getServiceType() && value.getServiceType().equalsIgnoreCase("MCS") && (Double.parseDouble(value.getWeight()) <= 0 || Double.parseDouble(value.getWeight()) >= 5)) {
+
+			context.disableDefaultConstraintViolation();
+			context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getWeight()+","+"Weight should be between 0 and 5")
+			.addConstraintViolation();
+			isValid= false;
+		}
 		
 		else if((Double.parseDouble(value.getWeight()) < 0 || Double.parseDouble(value.getWeight()) > 22)) {
 
@@ -115,7 +122,7 @@ public class ConsignmentValidator  implements
 			.addConstraintViolation();
 			isValid= false;
 		}
-		if("STS".equalsIgnoreCase(value.getServiceType())){
+		if("STS".equalsIgnoreCase(value.getServiceType()) || "TL1".equalsIgnoreCase(value.getServiceType())){
 			if(null == value.getDimensionsHeight()) {
 				context.disableDefaultConstraintViolation();
 				context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getDimensionsHeight()+","+"Dimensions Height is mandatory")
@@ -146,6 +153,14 @@ public class ConsignmentValidator  implements
 			context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getBarcodeLabelNumber()+","+"Please provide valid BarcodeLabelNumber")
 			.addConstraintViolation();
 			isValid= false;
+		}
+		if("RC1".equalsIgnoreCase(value.getServiceType())) {
+			if(null != value.getBarcodeLabelNumber() && value.getBarcodeLabelNumber().length() != 20) {
+				context.disableDefaultConstraintViolation();
+				context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getBarcodeLabelNumber()+","+"BarcodeLabelNumber must have 20 characters")
+				.addConstraintViolation();
+				isValid= false;
+			}
 		}
 		return isValid;
 	}

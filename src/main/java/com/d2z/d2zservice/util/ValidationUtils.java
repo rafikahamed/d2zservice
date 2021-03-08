@@ -11,6 +11,7 @@ import org.springframework.validation.FieldError;
 
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.ErrorDetails;
+import com.d2z.d2zservice.model.MCSSenderDataRequest;
 import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.SenderDataApi;
 
@@ -69,12 +70,12 @@ public class ValidationUtils {
 		 orderDetail.setConsignmentData(data);
 		
 	}
-	public static void removeInvalidconsignments(PFLSenderDataRequest orderDetail,
+	public static void removeInvalidconsignments(MCSSenderDataRequest orderDetail,
 			Map<String, List<ErrorDetails>> errorMap) {
 		 Set<String> incorrectRefNbrs = errorMap.keySet();
-		 List<SenderDataApi> data = orderDetail.getNonPflSenderDataApi();
+		 List<SenderDataApi> data = orderDetail.getEparcelSenderData();
 		 data.removeIf(obj -> incorrectRefNbrs.contains(obj.getReferenceNumber()));
-		 orderDetail.setNonPflSenderDataApi(data);
+		 orderDetail.setEparcelSenderData(data);
 		
 	}
 	public static void removeInvalidEtowerconsignments(PFLSenderDataRequest orderDetail,

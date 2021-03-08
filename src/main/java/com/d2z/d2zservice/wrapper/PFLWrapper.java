@@ -142,6 +142,9 @@ public class PFLWrapper {
 			labelData.setHub(data.getHub());
 			labelData.setMatrix(data.getMatrix());
 			labelData.setProvider("PFL");
+			labelData.setCarrier(data.getCourier());
+			labelData.setHeader(data.getHeader());
+			labelData.setFooter(data.getFooter());
 			barcodeMap.put(labelData.getReferenceNo(), labelData);
 		}
 		return barcodeMap;

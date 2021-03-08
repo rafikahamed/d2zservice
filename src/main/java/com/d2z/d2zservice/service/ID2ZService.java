@@ -36,7 +36,7 @@ import com.d2z.d2zservice.model.UserMessage;
 
 public interface ID2ZService {
 	
-	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList) 
+	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList, List<String> autoShipRefNbrs) 
 			throws ReferenceNumberNotUniqueException, FailureResponseException;
 
 	public List<DropDownModel> fileList(Integer userId);
@@ -156,6 +156,12 @@ public interface ID2ZService {
 	public UserMessage shippingQuote(ShippingQuoteRequest shippingQuoteRequest);
 
 	UserMessage generateDataForPerformanceReport(int date,int month);
+
+	public void triggerFDMLabel();
+
+	public ResponseMessage createTrackEvents(List<TrackParcelResponse> request);
+
+
 
 
 }

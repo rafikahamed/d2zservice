@@ -212,6 +212,7 @@ public class ETowerWrapper {
 								}
 					}
 			request.setDangerousGoods(orderDetail.isDangerousGoods());
+			request.setPhone(orderDetail.getConsigneePhone());
 			request.setEmail(orderDetail.getConsigneeEmail());
 			request.setCity(orderDetail.getConsigneeSuburb());
 			request.setState(orderDetail.getConsigneeState());
@@ -411,6 +412,15 @@ public class ETowerWrapper {
 				request.setServiceOption("");
 
 			}
+			if ("TL1".equalsIgnoreCase(orderDetail.getServiceType())) {
+				request.setFacility("SYD");
+				orderDetail.setInjectionType("SYD");
+				request.setServiceCode("UBI.AU2AU.IPEC");
+				request.setShipperCity("Edwardstown");
+				request.setShipperState("SA");
+				request.setShipperCountry("AU");
+
+			}
 			request.setWeight(weight);
 			request.setInvoiceValue(orderDetail.getValue());
 			request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
@@ -502,7 +512,7 @@ s);
 				}
 				d2zDao.logEtowerResponse(responseEntity);
 
-			} else if (response.getStatus().equalsIgnoreCase("Failure")) {
+			} else if (response.getStatus().equalsIgnoreCase("Failure") && null!=response.getData()) {
 				for (ResponseData data : response.getData()) {
 					List<EtowerErrorResponse> errors = data.getErrors();
 					for (EtowerErrorResponse error : errors) {
@@ -537,7 +547,7 @@ s);
 			com.d2z.d2zservice.model.etower.CreateShippingRequest request = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
 			//Random rnd = new Random();
 			int uniqueNumber = SingletonCounter.getInstance().getEtowerCount();
-			request.setReferenceNo("SW10B" + uniqueNumber);
+			request.setReferenceNo("SW10C" + uniqueNumber);
 			systemRefNbrMap.put(request.getReferenceNo(), orderDetail.getReferenceNumber());
 			//request.setReferenceNo(orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
@@ -562,6 +572,7 @@ s);
 							request.setNativeDescription(description);
 							}
 					}
+			request.setPhone(orderDetail.getConsigneePhone());
 			request.setEmail(orderDetail.getConsigneeEmail());
 			request.setCity(orderDetail.getConsigneeSuburb());
 			request.setState(orderDetail.getConsigneeState());
@@ -755,6 +766,16 @@ s);
 				request.setCountry("NZ");
 				request.setFacility("AU");
 				request.setServiceOption("");
+
+			}
+			if ("TL1".equalsIgnoreCase(orderDetail.getServiceType())) {
+				request.setFacility("SYD");
+				orderDetail.setInjectionType("SYD");
+				request.setServiceCode("UBI.AU2AU.IPEC");
+				request.setShipperAddressLine1("Unit E1, 350 Parramatta Road");
+				request.setShipperCity("Homebush West");
+				request.setShipperState("NSW");
+				request.setShipperCountry("AU");
 
 			}
 			request.setWeight(weight);

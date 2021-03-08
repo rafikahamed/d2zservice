@@ -31,7 +31,16 @@ public class Consignment {
 	private String signature_required;
 	private String total_weight;
 	private String total_volume;
+	private String route_code;
 	private ArrayofDetail details;
+	
+	
+	public String getRoute_code() {
+		return route_code;
+	}
+	public void setRoute_code(String route_code) {
+		this.route_code = route_code;
+	}
 	public String getConnote_no() {
 		return connote_no;
 	}

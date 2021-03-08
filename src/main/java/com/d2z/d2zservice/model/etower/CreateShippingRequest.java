@@ -10,6 +10,7 @@ public class CreateShippingRequest {
 	private String addressLine2;
 	private String recipientName;
 	private String recipientCompany;
+	private String phone;
 	private String city ;
 	private String state;
 	private String postcode;
@@ -32,6 +33,14 @@ public class CreateShippingRequest {
 	private boolean authorityToleave;
 	private String vendorid;
 	
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
 	public String getNativeDescription() {
 		return nativeDescription;
 	}

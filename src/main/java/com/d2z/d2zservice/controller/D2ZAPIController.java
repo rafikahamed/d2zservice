@@ -64,6 +64,10 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 		}
 		return trackParcelResponse;
     }
+	@RequestMapping( method = RequestMethod.POST, path = "/trackEvents")
+    public ResponseMessage trackEvents(@RequestBody List<TrackParcelResponse> request) {
+		return d2zService.createTrackEvents(request);
+    }
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/trackParcel/referenceNumber/{referenceNumbers}")
     public List<ParcelStatus> trackParcel(@PathVariable List<String> referenceNumbers) {
@@ -81,6 +85,8 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 	@RequestMapping(method = RequestMethod.POST, path = "/consignments-create")
 	 public List<SenderDataResponse> createConsignments(@Valid @RequestBody CreateConsignmentRequest orderDetail) throws ReferenceNumberNotUniqueException, FailureResponseException {
 		List<String> autoShipRefNbrs = new ArrayList<String>();
+		List<String> fdmOrders = new ArrayList<String>();
+
 		List<SenderDataResponse> senderDataResponse = d2zService.createConsignments(orderDetail,autoShipRefNbrs);
 		 Runnable r = new Runnable( ) {			
 		        public void run() {

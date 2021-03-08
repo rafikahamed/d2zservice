@@ -16,10 +16,10 @@ public class FFResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	/*@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "RoWID")
-	private int rowId;*/
+//	@Id
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//@Column(name = "RoWID")
+	//private int rowId;
 	
 	@Column(name = "Reference_number")
 	private String referencenumber;

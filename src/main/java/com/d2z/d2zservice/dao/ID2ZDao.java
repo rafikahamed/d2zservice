@@ -8,11 +8,13 @@ import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FastwayPostcode;
 import com.d2z.d2zservice.entity.IncomingJobs;
+import com.d2z.d2zservice.entity.MasterPostCode;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.StarTrackPostcode;
 import com.d2z.d2zservice.entity.SystemRefCount;
+import com.d2z.d2zservice.entity.TrackEvents;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
@@ -33,6 +35,7 @@ import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SuperUserEnquiry;
+import com.d2z.d2zservice.model.TrackParcelResponse;
 import com.d2z.d2zservice.model.TrackingEvents;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
@@ -40,6 +43,7 @@ import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.entity.NZPostcodes;
+import com.d2z.d2zservice.entity.PFLPostcode;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
 public interface ID2ZDao {
@@ -228,6 +232,16 @@ public interface ID2ZDao {
 	//public void saveTrackingEvents(Map<String, TrackingEvents> trackingDataMap);
 
 	public void saveTrackingEvents(String article_id, TrackingEvents events);
+
+	public List<PFLPostcode> fetchAllPFLPostCodeZone();
+
+	public List<String> fetchDataForFDMCall(String[] refNbrs);
+
+	public List<MasterPostCode> fetchAllMasterPostCodeZone();
+
+	public ResponseMessage createTrackEvents(List<TrackParcelResponse> request);
+
+	public List<TrackEvents> fetchEventsFromTrackEvents(List<String> d2zArticleIds);
 
 
 

@@ -46,6 +46,8 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import com.beust.jcommander.Strings;
 import com.d2z.d2zservice.async.AsyncService;
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZDao;
@@ -54,6 +56,7 @@ import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.FFResponse;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.entity.TrackEvents;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
@@ -79,6 +82,7 @@ import com.d2z.d2zservice.model.EnquiryUpdate;
 import com.d2z.d2zservice.model.FDMManifestDetails;
 import com.d2z.d2zservice.model.HeldParcelDetails;
 import com.d2z.d2zservice.model.IncomingJobResponse;
+import com.d2z.d2zservice.model.MCSSenderDataRequest;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
 import com.d2z.d2zservice.model.PFLSenderDataRequest;
@@ -120,7 +124,9 @@ import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 import com.d2z.d2zservice.model.fdm.ArrayOfConsignment;
 import com.d2z.d2zservice.model.fdm.ArrayofDetail;
 import com.d2z.d2zservice.model.fdm.Consignment;
+import com.d2z.d2zservice.model.fdm.FDMLabelRequest;
 import com.d2z.d2zservice.model.fdm.FDMManifestRequest;
+import com.d2z.d2zservice.model.fdm.LabelRequest;
 import com.d2z.d2zservice.model.fdm.Line;
 import com.d2z.d2zservice.proxy.AusPostProxy;
 import com.d2z.d2zservice.proxy.EbayProxy;
@@ -129,6 +135,7 @@ import com.d2z.d2zservice.proxy.PcaProxy;
 import com.d2z.d2zservice.repository.FFResponseRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
+import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.util.EmailUtil;
@@ -171,6 +178,9 @@ public class D2ZServiceImpl implements ID2ZService {
 	@Autowired
 	UserRepository userRepository;
 
+	@Autowired
+	UserServiceRepository userServiceRepository;
+	
 	@Autowired
 	FFResponseRepository ffresponseRepository;
 
@@ -220,11 +230,12 @@ public class D2ZServiceImpl implements ID2ZService {
 	private JavaMailSender mailSender;
 
 	@Override
-	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList)
+	public List<SenderDataResponse> exportParcel(List<SenderData> orderDetailList,List<String> autoShipRefNbrs)
 			throws ReferenceNumberNotUniqueException, FailureResponseException {
 		List<String> incomingRefNbr = orderDetailList.stream().map(obj -> {
 			return obj.getReferenceNumber();
 		}).collect(Collectors.toList());
+		User userInfo = userRepository.findByUsername(orderDetailList.get(0).getUserName());
 		boolean isPostcodeValidationReq = true;
 		if (("N").equals(userRepository.fetchPostcodeValidationIndicator(orderDetailList.get(0).getUserName()))) {
 			isPostcodeValidationReq = false;
@@ -238,19 +249,21 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 		String serviceType = orderDetailList.get(0).getServiceType();
-		if(("MCS").equalsIgnoreCase(serviceType)){
-			PFLSenderDataFileRequest request = constructMCSRequestUI(orderDetailList);
-			d2zValidator.isPostCodeValidUI(request.getNonPflSenderDataApi());
-			d2zValidator.isPostCodeValidUI(request.getEtowerSenderDataApi());
-			
-			if(request.getEtowerSenderDataApi().size()>0) {
-				eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(request.getEtowerSenderDataApi(), senderDataResponseList);
+		if (("MCS").equalsIgnoreCase(
+				serviceType)) {
+
+			MCSSenderDataRequest request = constructMCSRequest(orderDetailList);
+			d2zValidator.isPostCodeZone4ValidUI(request.getEparcelSenderDataUI());
+		
+			if(request.getPflSenderDataUI().size()>0) {
+				makeCreateShippingOrderFilePFLCall(request.getPflSenderDataUI(),senderDataResponseList,orderDetailList.get(0).getUserName(), "MC1"); 	
+				}
+			if(request.getFastwaySenderDataUI().size()>0) {
+				makeCreateShippingOrderFilePFLCall(request.getPflSenderDataUI(),senderDataResponseList,orderDetailList.get(0).getUserName(), "FW"); 	
 			}
-			if(request.getPflSenderDataApi().size()>0) {
-				makeCreateShippingOrderFilePFLCall(request.getPflSenderDataApi(), senderDataResponseList,orderDetailList.get(0).getUserName(), serviceType);	
-			}
-			if(request.getNonPflSenderDataApi().size()>0) {
-				String senderFileID = d2zDao.exportParcel(request.getNonPflSenderDataApi(), null);
+			if(request.getEparcelSenderData().size()>0) {
+
+				String senderFileID = d2zDao.exportParcel(request.getEparcelSenderDataUI(), null); 
 				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 
 				Iterator itr = insertedOrder.iterator();
@@ -261,12 +274,54 @@ public class D2ZServiceImpl implements ID2ZService {
 					senderDataResponse.setReferenceNumber(obj[0].toString());
 					String barcode = obj[1].toString();
 
-					senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+				senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
 					senderDataResponse.setCarrier(obj[4].toString());
 					senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 					senderDataResponseList.add(senderDataResponse);
+				
 				}
 			}
+			/*
+								 * PFLSenderDataFileRequest request = constructMCSRequestUI(orderDetailList);
+								 * d2zValidator.isPostCodeValidUI(request.getNonPflSenderDataApi());
+								 * d2zValidator.isPostCodeValidUI(request.getEtowerSenderDataApi());
+								 * 
+								 * if(request.getEtowerSenderDataApi().size()>0) {
+								 * eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(request.
+								 * getEtowerSenderDataApi(), senderDataResponseList); }
+								 * if(request.getPflSenderDataApi().size()>0) {
+								 * makeCreateShippingOrderFilePFLCall(request.getPflSenderDataApi(),
+								 * senderDataResponseList,orderDetailList.get(0).getUserName(), serviceType); }
+								 * if(request.getNonPflSenderDataApi().size()>0) { String senderFileID =
+								 * d2zDao.exportParcel(request.getNonPflSenderDataApi(), null); List<String>
+								 * insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
+								 * 
+								 * Iterator itr = insertedOrder.iterator(); while (itr.hasNext()) {
+								 * 
+								 * Object[] obj = (Object[]) itr.next(); senderDataResponse = new
+								 * SenderDataResponse();
+								 * senderDataResponse.setReferenceNumber(obj[0].toString()); String barcode =
+								 * obj[1].toString();
+								 * 
+								 * senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll(
+								 * "\\[|\\]", ""))); senderDataResponse.setCarrier(obj[4].toString());
+								 * senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
+								 * senderDataResponseList.add(senderDataResponse); } }
+								 */
+			return senderDataResponseList;
+		}
+		if("MC1".equalsIgnoreCase(serviceType)) {
+			if (isPostcodeValidationReq) {
+				d2zValidator.isPFLPostCodeValidUI(orderDetailList);
+			}
+			makeCreateShippingOrderFilePFLCall(orderDetailList, senderDataResponseList, null, serviceType);
+			return senderDataResponseList;
+		}
+		if("TL1".equalsIgnoreCase(serviceType)) {
+			if (isPostcodeValidationReq) {
+			d2zValidator.isTollPostCodeValidUI(orderDetailList);
+			}
+			eTowerWrapper.makeCreateShippingOrderEtowerCallForFileData(orderDetailList, senderDataResponseList);
 			return senderDataResponseList;
 		}
 		if ("1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType)
@@ -368,6 +423,8 @@ public class D2ZServiceImpl implements ID2ZService {
 		if (isPostcodeValidationReq) {
 			d2zValidator.isPostCodeValidUI(orderDetailList);
 		}
+		boolean autoShipment = ("Y").equals(userServiceRepository.fetchAutoShipmentIndicator(userInfo.getUser_Id(),serviceType));
+
 		String senderFileID = d2zDao.exportParcel(orderDetailList, null);
 		List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 		Iterator itr = insertedOrder.iterator();
@@ -379,8 +436,43 @@ public class D2ZServiceImpl implements ID2ZService {
 			senderDataResponse.setCarrier(obj[4].toString());
 			senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 			senderDataResponseList.add(senderDataResponse);
+			if(autoShipment) {
+				autoShipRefNbrs.add(senderDataResponse.getReferenceNumber());
+			}
 		}
 		return senderDataResponseList;
+	}
+
+	private MCSSenderDataRequest constructMCSRequest(List<SenderData> orderDetailList) {
+
+
+		MCSSenderDataRequest request = new MCSSenderDataRequest();
+		List<SenderData> pflSenderData = new ArrayList<SenderData>();
+		List<SenderData> fastwaySenderData = new ArrayList<SenderData>();
+		List<SenderData> eparcelSenderData = new ArrayList<SenderData>();
+
+		List<String> pflPostcodeList = D2ZSingleton.getInstance().getMasterPflPostCodeZoneList();
+		List<String> fastwayPostcodeList = D2ZSingleton.getInstance().getMasterFWPostCodeZoneList();
+		List<String> postcodeZone3List = D2ZSingleton.getInstance().getMasterPostCodeZone3List();
+
+		orderDetailList.forEach(obj -> {
+			String requestData = obj.getConsigneeState().trim().toUpperCase()
+					.concat(obj.getConsigneeSuburb().trim().toUpperCase()).concat(obj.getConsigneePostcode().trim());
+			if(pflPostcodeList.contains(requestData)) {
+				pflSenderData.add(obj);
+			}else if(fastwayPostcodeList.contains(requestData)) {
+				fastwaySenderData.add(obj);
+			}else if(postcodeZone3List.contains(requestData)) {
+				pflSenderData.add(obj);
+			}else {
+				eparcelSenderData.add(obj);
+			}
+		});
+		request.setPflSenderDataUI(pflSenderData);
+		request.setFastwaySenderDataUI(fastwaySenderData);
+		request.setEparcelSenderDataUI(eparcelSenderData);
+		return request;
+	
 	}
 
 	private PFLSenderDataFileRequest constructMCSRequestUI(List<SenderData> orderDetailList) {
@@ -521,7 +613,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			bytes = pflWrapper.printLabel(mlidList);
 			return bytes;
 	}
-		 if("NZ".equalsIgnoreCase(senderData.get(0).getServiceType())) {
+		 if("NZ".equalsIgnoreCase(senderData.get(0).getServiceType()) || "TL1".equalsIgnoreCase(senderData.get(0).getServiceType()) ) {
 			 List<String> articleIds = senderData.stream().map(obj -> {
 					return obj.getBarcodeLabelNumber(); })
 						.collect(Collectors.toList());
@@ -540,7 +632,10 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderData> expressNewData = new ArrayList<SenderData>();
 		List<SenderData> parcelPostData = new ArrayList<SenderData>();
 		List<SenderData> fwData = new ArrayList<SenderData>();
+		List<SenderData> mcsData = new ArrayList<SenderData>();
 		List<SenderData> fw3Data = new ArrayList<SenderData>();
+		List<SenderData> fdmData = new ArrayList<SenderData>();
+
 		boolean setGS1Type;
 		for (SenderData data : senderData) {
 			setGS1Type = false;
@@ -559,7 +654,15 @@ public class D2ZServiceImpl implements ID2ZService {
 			} else if ("HKG".equalsIgnoreCase(data.getServiceType())
 					|| "HKG2".equalsIgnoreCase(data.getServiceType())) {
 				parcelPostData.add(data);
-			} else if (data.getCarrier().equalsIgnoreCase("eParcel")) {
+			}	else if ("RC1".equalsIgnoreCase(data.getServiceType())) {
+				Map<String,String> routeMap = D2ZSingleton.getInstance().getPostCodeFDMRouteMap();
+				String state = data.getConsigneeState().trim().toUpperCase();
+				String suburb = data.getConsigneeSuburb().trim().toUpperCase();
+				String postcode = data.getConsigneePostcode().trim();
+				String key = state.concat(suburb).concat(postcode);
+				data.setLabelSenderName(routeMap.get(key));
+				fdmData.add(data);
+			}  else if (data.getCarrier().equalsIgnoreCase("eParcel")) {
 				setGS1Type = true;
 				eParcelData.add(data);
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
@@ -574,6 +677,15 @@ public class D2ZServiceImpl implements ID2ZService {
 					&& data.getCarrier().equalsIgnoreCase("Fastway")) {
 				data.setSku(D2ZSingleton.getInstance().getFwPostCodeZoneNoMap().get(data.getConsigneePostcode()));
 				fwData.add(data);
+			} 
+			else if (("MCS".equalsIgnoreCase(data.getServiceType()))
+					&& data.getCarrier().equalsIgnoreCase("PFL")) {
+				mcsData.add(data);
+			} 
+		
+			else if (("MC1".equalsIgnoreCase(data.getServiceType()))
+					&& data.getCarrier().equalsIgnoreCase("PFL")) {
+				mcsData.add(data);
 			} else if("FW3".equalsIgnoreCase(data.getServiceType())){
 				fw3Data.add(data);
 			}
@@ -588,7 +700,9 @@ public class D2ZServiceImpl implements ID2ZService {
 			if ("VELC".equalsIgnoreCase(data.getUserName())) {
 				data.setLabelSenderName("SW4");
 			}
+			if(null!=data.getDatamatrix()) {
 			data.setDatamatrixImage(generateDataMatrix(data.getDatamatrix(), setGS1Type));
+			}
 		}
 
 		Map<String, Object> parameters = new HashMap<>();
@@ -608,8 +722,12 @@ public class D2ZServiceImpl implements ID2ZService {
 		JasperReport expressNew = null;
 		JRBeanCollectionDataSource fwDataSource;
 		JasperReport fwLabel = null;
+		JRBeanCollectionDataSource mcsDataSource;
+		JasperReport mcsLabel = null;
 		JRBeanCollectionDataSource fw3DataSource;
 		JasperReport fw3Label = null;
+		JRBeanCollectionDataSource fdmDataSource;
+		JasperReport fdmLabel = null;
 		JRBeanCollectionDataSource parcelPostDataSource;
 		JasperReport parcelPost = null;
 
@@ -688,12 +806,26 @@ public class D2ZServiceImpl implements ID2ZService {
 				JRSaver.saveObject(fwLabel, "FWLabel.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(fwLabel, parameters, fwDataSource));
 			}
+			if (!mcsData.isEmpty()) {
+				System.out.println("Generating MCS FW..." + mcsData.size());
+				mcsDataSource = new JRBeanCollectionDataSource(mcsData);
+				mcsLabel = JasperCompileManager.compileReport(getClass().getResource("/MCSLabel.jrxml").openStream());
+				JRSaver.saveObject(mcsLabel, "MCS.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(mcsLabel, parameters, mcsDataSource));
+			}
 			if (!fw3Data.isEmpty()) {
 				System.out.println("Generating Fastway FW3..." + fw3Data.size());
 				fw3DataSource = new JRBeanCollectionDataSource(fw3Data);
 				fw3Label = JasperCompileManager.compileReport(getClass().getResource("/FW3.jrxml").openStream());
 				JRSaver.saveObject(fw3Label, "FW3.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(fw3Label, parameters, fw3DataSource));
+			}
+			if (!fdmData.isEmpty()) {
+				System.out.println("Generating FDM..." + fdmData.size());
+				fdmDataSource = new JRBeanCollectionDataSource(fdmData);
+				fdmLabel = JasperCompileManager.compileReport(getClass().getResource("/FDM.jrxml").openStream());
+				JRSaver.saveObject(fdmLabel, "FDM.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(fdmLabel, parameters, fdmDataSource));
 			}
 			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
@@ -765,7 +897,7 @@ public class D2ZServiceImpl implements ID2ZService {
 				return bytes;
 		}
 
-		if("NZ".equalsIgnoreCase(serviceType)) {
+		if("NZ".equalsIgnoreCase(serviceType) || "TL1".equalsIgnoreCase(serviceType)) {
 				List<String> artileIDList = d2zDao.fetchArticleID(refBarNum);
 				bytes = eTowerWrapper.printLabel(artileIDList);
 				return bytes;
@@ -851,6 +983,10 @@ public class D2ZServiceImpl implements ID2ZService {
 				trackingLabel.setProductDescription(trackingArray[25].toString());
 			if (trackingArray[26] != null)
 				trackingLabel.setServiceType(trackingArray[26].toString());
+			if (trackingArray[28] != null)
+				trackingLabel.setD2zRate(trackingArray[28].toString());
+			if (trackingArray[29] != null)
+				trackingLabel.setBrokerRate(trackingArray[29].toString());
 			/*
 			 * boolean setGS1DataType = false; if
 			 * (trackingLabel.getCarrier().equalsIgnoreCase("Express") ||
@@ -1035,24 +1171,19 @@ public class D2ZServiceImpl implements ID2ZService {
 		if (null == barcodeLabelNumber || barcodeLabelNumber.trim().isEmpty() || null == datamatrix
 				|| datamatrix.trim().isEmpty()) {
 			String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
-			System.out.print("servicetype:" + serviceType);
 			if(("MCS").equalsIgnoreCase(serviceType)){
-				PFLSenderDataRequest request = constructMCSRequest(orderDetail);
-				d2zValidator.isPostCodeValid(request.getNonPflSenderDataApi());
-				d2zValidator.isPostCodeValid(request.getEtowerSenderData());
+				MCSSenderDataRequest request = constructMCSRequest(orderDetail);
+				d2zValidator.isPostCodeZone4Valid(request.getEparcelSenderData());
 			
-				if(request.getEtowerSenderData().size()>0) {
-					CreateConsignmentRequest requestDetail = new CreateConsignmentRequest();
-					requestDetail.setUserName(orderDetail.getUserName());
-					requestDetail.setConsignmentData(request.getEtowerSenderData());
-					eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(requestDetail, senderDataResponseList);
+				if(request.getPflSenderData().size()>0) {
+					makeCreateShippingOrderPFLCall(request.getPflSenderData(), senderDataResponseList,orderDetail.getUserName(), "MC1");	
+				}
+				if(request.getFastwaySenderData().size()>0) {
+					makeCreateShippingOrderPFLCall(request.getFastwaySenderData(), senderDataResponseList,orderDetail.getUserName(), "FW");	
+				}
+				if(request.getEparcelSenderData().size()>0) {
 
-				}
-				if(request.getPflSenderDataApi().size()>0) {
-					makeCreateShippingOrderPFLCall(request.getPflSenderDataApi(), senderDataResponseList,orderDetail.getUserName(), serviceType);	
-				}
-				if(request.getNonPflSenderDataApi().size()>0) {
-					String senderFileID = d2zDao.createConsignments(request.getNonPflSenderDataApi(), userId,
+					String senderFileID = d2zDao.createConsignments(request.getEparcelSenderData(), userId,
 							orderDetail.getUserName(), null);
 					List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 
@@ -1064,13 +1195,58 @@ public class D2ZServiceImpl implements ID2ZService {
 						senderDataResponse.setReferenceNumber(obj[0].toString());
 						String barcode = obj[1].toString();
 
-						senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+					senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
 						senderDataResponse.setCarrier(obj[4].toString());
 						senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 						senderDataResponseList.add(senderDataResponse);
 					
 					}
 				}
+//				if(request.getEtowerSenderData().size()>0) {
+//					CreateConsignmentRequest requestDetail = new CreateConsignmentRequest();
+//					requestDetail.setUserName(orderDetail.getUserName());
+//					requestDetail.setConsignmentData(request.getEtowerSenderData());
+//					eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(requestDetail, senderDataResponseList);
+//
+//				}
+//				if(request.getPflSenderData().size()>0) {
+//					makeCreateShippingOrderPFLCall(request.getPflSenderData(), senderDataResponseList,orderDetail.getUserName(), serviceType);	
+//				}
+//				if(request.getNonPflSenderDataApi().size()>0) {
+//					String senderFileID = d2zDao.createConsignments(request.getNonPflSenderDataApi(), userId,
+//							orderDetail.getUserName(), null);
+//					List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
+//
+//					Iterator itr = insertedOrder.iterator();
+//					while (itr.hasNext()) {
+//
+//						Object[] obj = (Object[]) itr.next();
+//						senderDataResponse = new SenderDataResponse();
+//						senderDataResponse.setReferenceNumber(obj[0].toString());
+//						String barcode = obj[1].toString();
+//
+//						senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+//						senderDataResponse.setCarrier(obj[4].toString());
+//						senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
+//						senderDataResponseList.add(senderDataResponse);
+//					
+//					}
+//				}
+				return senderDataResponseList;
+			}
+			if("MC1".equalsIgnoreCase(serviceType)) {
+				if (isPostcodeValidationReq) {
+					d2zValidator.isPFLPostCodeValid(orderDetail.getConsignmentData());
+				}
+				makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(), senderDataResponseList,
+						orderDetail.getUserName(), serviceType);
+				return senderDataResponseList;
+			}
+			if("TL1".equalsIgnoreCase(serviceType)) {
+				if (isPostcodeValidationReq) {
+				d2zValidator.isTollPostCodeValid(orderDetail.getConsignmentData());
+				}
+				eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail, senderDataResponseList);
 				return senderDataResponseList;
 			}
 			if ("1PM3E".equalsIgnoreCase(serviceType) || "1PS3".equalsIgnoreCase(serviceType)
@@ -1166,7 +1342,10 @@ public class D2ZServiceImpl implements ID2ZService {
 
 		} else if (barcodeLabelNumber != null && !barcodeLabelNumber.trim().isEmpty() && datamatrix != null
 				&& !datamatrix.trim().isEmpty()) {
-			autoShipment = ("Y").equals(userRepository.fetchAutoShipmentIndicator(userId));
+			autoShipment = ("Y").equals(userServiceRepository.fetchAutoShipmentIndicator(userId,orderDetail.getConsignmentData().get(0).getServiceType()));
+			if("RC1".equalsIgnoreCase(orderDetail.getConsignmentData().get(0).getServiceType())) {
+				isPostcodeValidationReq = false;
+			}
 		}
 		if (isPostcodeValidationReq) {
 			d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
@@ -1192,6 +1371,37 @@ public class D2ZServiceImpl implements ID2ZService {
 		}
 
 		return senderDataResponseList;
+	}
+
+	private MCSSenderDataRequest constructMCSRequest(CreateConsignmentRequest orderDetail) {
+
+		List<SenderDataApi> orderDetailList = orderDetail.getConsignmentData();
+		MCSSenderDataRequest request = new MCSSenderDataRequest();
+		List<SenderDataApi> pflSenderData = new ArrayList<SenderDataApi>();
+		List<SenderDataApi> fastwaySenderData = new ArrayList<SenderDataApi>();
+		List<SenderDataApi> eparcelSenderData = new ArrayList<SenderDataApi>();
+
+		List<String> pflPostcodeList = D2ZSingleton.getInstance().getMasterPflPostCodeZoneList();
+		List<String> fastwayPostcodeList = D2ZSingleton.getInstance().getMasterFWPostCodeZoneList();
+		List<String> postcodeZone3List = D2ZSingleton.getInstance().getMasterPostCodeZone3List();
+
+		orderDetailList.forEach(obj -> {
+			String requestData = obj.getConsigneeState().trim().toUpperCase()
+					.concat(obj.getConsigneeSuburb().trim().toUpperCase()).concat(obj.getConsigneePostcode().trim());
+			if(pflPostcodeList.contains(requestData)) {
+				pflSenderData.add(obj);
+			}else if(fastwayPostcodeList.contains(requestData)) {
+				fastwaySenderData.add(obj);
+			}else if(postcodeZone3List.contains(requestData)) {
+				pflSenderData.add(obj);
+			}else {
+				eparcelSenderData.add(obj);
+			}
+		});
+		request.setPflSenderData(pflSenderData);
+		request.setFastwaySenderData(fastwaySenderData);
+		request.setEparcelSenderData(eparcelSenderData);
+		return request;
 	}
 
 	private void makeCreateShippingOrderPFLCall(List<SenderDataApi> data,
@@ -1317,6 +1527,10 @@ public class D2ZServiceImpl implements ID2ZService {
 				if (!articleIDS.isEmpty()) {
 					eTowerWrapper.makeEtowerForecastCall(articleIDS);
 				}
+				List<String> referenceNbrs = d2zDao.fetchDataForFDMCall(refNbrs);
+				if (!referenceNbrs.isEmpty()) {
+					triggerFDM(referenceNbrs);
+				}
 
 				/*
 				 * List<SenderdataMaster> senderMasterData =
@@ -1339,8 +1553,8 @@ public class D2ZServiceImpl implements ID2ZService {
 				if (!fastwayOrderId.isEmpty()) {
 					ZoneId zoneId = ZoneId.of ( "Australia/Sydney" );
 					int dayofWeek = LocalDate.now(zoneId).getDayOfWeek().getValue();
-					if(dayofWeek>=6) {
-						//sat - Sun
+					if(dayofWeek>=5) {
+						//Fri - Sun
 						List<String> orderIds = fastwayOrderId.stream().map(PFLSubmitOrderData :: getOrderId).collect(Collectors.toList());
 						d2zDao.updateForPFLSubmitOrder(orderIds,"PFLSubmitOrder");
 					}else {
@@ -1383,33 +1597,29 @@ public class D2ZServiceImpl implements ID2ZService {
 		}
 		makeCalltoAusPost(articleIDs);
 	}
-	private PFLSenderDataRequest constructMCSRequest(CreateConsignmentRequest orderDetail) {
-		PFLSenderDataRequest request = new PFLSenderDataRequest();
-		List<SenderDataApi> pflSenderData = new ArrayList<SenderDataApi>();
-		List<SenderDataApi> nonPflSenderData = new ArrayList<SenderDataApi>();
-		List<SenderDataApi> etowerSenderData = new ArrayList<SenderDataApi>();
-
-		List<String> postCodeFWSubList = D2ZSingleton.getInstance().getFWPostCodeZoneList();
-		Map<String, String> postCodeZoneMap = D2ZSingleton.getInstance().getPostCodeZoneMap();
-		orderDetail.getConsignmentData().forEach(obj -> {
-			String suburbState = obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim());
-			if("N0".equalsIgnoreCase(postCodeZoneMap.get(suburbState))) { 
-				etowerSenderData.add(obj);
-			}
-			else if("V0".equalsIgnoreCase(postCodeZoneMap.get(suburbState))) {
-				nonPflSenderData.add(obj);
-			}
-			else if(postCodeFWSubList.contains(obj.getConsigneeState().trim().toUpperCase().concat(obj.getConsigneeSuburb().trim().toUpperCase()).concat(obj.getConsigneePostcode().trim()))) {
-				pflSenderData.add(obj);
-			}else {
-				etowerSenderData.add(obj);
-			}
-		});
-		request.setPflSenderDataApi(pflSenderData);
-		request.setNonPflSenderDataApi(nonPflSenderData);
-		request.setEtowerSenderData(etowerSenderData);
-		return request;
-	}
+	/*
+	 * private PFLSenderDataRequest constructMCSRequest(CreateConsignmentRequest
+	 * orderDetail) { PFLSenderDataRequest request = new PFLSenderDataRequest();
+	 * List<SenderDataApi> pflSenderData = new ArrayList<SenderDataApi>();
+	 * List<SenderDataApi> nonPflSenderData = new ArrayList<SenderDataApi>();
+	 * List<SenderDataApi> etowerSenderData = new ArrayList<SenderDataApi>();
+	 * 
+	 * List<String> postCodeFWSubList =
+	 * D2ZSingleton.getInstance().getFWPostCodeZoneList(); Map<String, String>
+	 * postCodeZoneMap = D2ZSingleton.getInstance().getPostCodeZoneMap();
+	 * orderDetail.getConsignmentData().forEach(obj -> { String suburbState =
+	 * obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode
+	 * ().trim()); if("N0".equalsIgnoreCase(postCodeZoneMap.get(suburbState))) {
+	 * etowerSenderData.add(obj); } else
+	 * if("V0".equalsIgnoreCase(postCodeZoneMap.get(suburbState))) {
+	 * nonPflSenderData.add(obj); } else
+	 * if(postCodeFWSubList.contains(obj.getConsigneeState().trim().toUpperCase().
+	 * concat(obj.getConsigneeSuburb().trim().toUpperCase()).concat(obj.
+	 * getConsigneePostcode().trim()))) { pflSenderData.add(obj); }else {
+	 * etowerSenderData.add(obj); } }); request.setPflSenderDataApi(pflSenderData);
+	 * request.setNonPflSenderDataApi(nonPflSenderData);
+	 * request.setEtowerSenderData(etowerSenderData); return request; }
+	 */
 
 	public void makeCalltoAusPost(List<String> articleIDs) {
 		System.out.println(articleIDs.get(0));
@@ -1916,17 +2126,15 @@ public class D2ZServiceImpl implements ID2ZService {
 	}
 
 	@Override
-	public void triggerFDM(List<String> refNumbers) {
-		// List<String> refNumbers = d2zDao.fetchArticleIDForFDMCall();
-		System.out.println("Track and trace:" + refNumbers.size());
-		List<List<String>> refNbrList = ListUtils.partition(refNumbers, 2000);
-		for (List<String> referenceNumbers : refNbrList) {
-			List<SenderdataMaster> senderData = d2zDao.fetchDataForAusPost(referenceNumbers);
-			System.out.println("Sender Data:" + senderData.size());
+	public void triggerFDM(List<String> articleIds) {
+		List<List<String>> articleIdList = ListUtils.partition(articleIds, 2000);
+		Map<String,String> routeMap = D2ZSingleton.getInstance().getPostCodeFDMRouteMap();
+		for (List<String> articleIDs : articleIdList) {
+			List<SenderdataMaster> senderData = d2zDao.fetchDataForAusPost(articleIDs);
 			if (!senderData.isEmpty()) {
 				FDMManifestRequest request = new FDMManifestRequest();
 				Date dNow = new Date();
-				SimpleDateFormat ft = new SimpleDateFormat("yyMMddhhmm");
+				SimpleDateFormat ft = new SimpleDateFormat("yyyyMMddhhmm");
 				String orderRef = ft.format(dNow);
 				FDMManifestDetails fdmDetails = new FDMManifestDetails();
 				fdmDetails.setMessage_no(orderRef);
@@ -1940,30 +2148,32 @@ public class D2ZServiceImpl implements ID2ZService {
 					FFResponse ffresponse = new FFResponse();
 					ffresponse.setMessage(orderRef);
 					ffresponse.setBarcodelabelnumber(data.getBarcodelabelNumber());
-					ffresponse.setWeight(String.valueOf(data.getCubic_Weight()));
+					ffresponse.setWeight(String.valueOf(data.getWeight()));
 					ffresponse.setArticleid(data.getArticleId());
 					ffresponse.setReferencenumber(data.getReference_number());
 					// ffresponse.setSupplier(data.getsu);
 					ffresponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 					ffresponse.setSupplier("FDM");
 					ffresponse.setResponse("Pending");
-					consignment.setConnote_no(data.getArticleId());
-					consignment.setTracking_connote(data.getReference_number());
+					consignment.setConnote_no(data.getArticleId().substring(3,19));
+					consignment.setTracking_connote(data.getArticleId());
 
-					String date = data.getTimestamp();
-					try {
-						Date dateFormat = new SimpleDateFormat("YYMMDDHHMMSS").parse(date);
-						consignment.setConnote_date(dateFormat.toString());
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+					consignment.setConnote_date(format.format(dNow));
+					
+					
 					consignment.setCustname(data.getConsignee_name());
 					consignment.setCust_street1(data.getConsignee_addr1());
 					consignment.setCust_street2(data.getConsignee_addr2());
-					consignment.setCust_suburb(data.getConsignee_Suburb());
-					consignment.setCust_pcode(data.getConsignee_Postcode());
-					consignment.setCust_state(data.getConsignee_State());
+					
+					String state = data.getConsignee_State().trim().toUpperCase();
+					String suburb = data.getConsignee_Suburb().trim().toUpperCase();
+					String postcode = data.getConsignee_Postcode().trim();
+					consignment.setCust_suburb(suburb);
+					consignment.setCust_pcode(postcode);
+					consignment.setCust_state(state);
+					String key = state.concat(suburb).concat(postcode);
+					consignment.setRoute_code(routeMap.get(key));
 					consignment.setCust_country("AU");
 					consignment.setCust_ph(data.getConsignee_Phone());
 					consignment.setCust_email(data.getConsignee_Email());
@@ -1971,12 +2181,19 @@ public class D2ZServiceImpl implements ID2ZService {
 					consignment.setCustomer_code("D2Z");
 					consignment.setCarrier("AUSPOST");
 					consignment.setVendor_name("D2Z");
-					consignment.setVendor_street1("Ground Floor, Suite 3, 410 Church Street");
-					consignment.setVendor_suburb("North Parramatta");
-					consignment.setVendor_pcode("2151");
-					consignment.setVendor_state("NSW");
+					if(state.equalsIgnoreCase("VIC")) {
+					consignment.setVendor_street1("5 Buckland Street");
+					consignment.setVendor_suburb("CLAYTON SOUTH");
+					consignment.setVendor_pcode("3168");
+					consignment.setVendor_state("VIC");
+					}else {
+						consignment.setVendor_street1("PO Box 6566");
+						consignment.setVendor_suburb("Wetherill Park");
+						consignment.setVendor_pcode("2164");
+						consignment.setVendor_state("NSW");
+					}
 					consignment.setVendor_country("AU");
-					consignment.setTotal_weight(String.valueOf(data.getCubic_Weight()));
+					consignment.setTotal_weight(String.valueOf(data.getWeight()));
 					ArrayofDetail details = new ArrayofDetail();
 					List<Line> itemList = new ArrayList<Line>();
 					Line lineItem = new Line();
@@ -1984,7 +2201,7 @@ public class D2ZServiceImpl implements ID2ZService {
 
 					lineItem.setArticle_no(data.getArticleId());
 					lineItem.setDescription(data.getProduct_Description());
-					lineItem.setWeight(String.valueOf(data.getCubic_Weight()));
+					lineItem.setWeight(String.valueOf(data.getWeight()));
 					lineItem.setDim_height(
 							data.getDimensions_Height() == null ? "" : data.getDimensions_Height().toString());
 					lineItem.setDim_length(
@@ -2001,28 +2218,26 @@ public class D2ZServiceImpl implements ID2ZService {
 				fdmDetails.setConsignments(consignmentsArray);
 				request.setManifest(fdmDetails);
 
-				Gson gson = new Gson();
-				String jsonStr = gson.toJson(request);
-				JSONObject json = new JSONObject(jsonStr);
-				String requestXml = XML.toString(json);
-				byte[] contentInBytes = requestXml.getBytes();
-				InputStream targetStream = new ByteArrayInputStream(contentInBytes);
-				System.out.println("in:" + targetStream + "request:" + request);
-				// ftpUploader.fdmFileCreation(request);
-				System.out.println("FDM Request ---->");
-				System.out.println(request);
-				// ftpUploader.ftpUpload(targetStream);
-				// ffresponseRepository.saveAll(FFResponseList);
-				ftpUploader.fdmFileCreation(request);
-				// ffresponseRepository.saveAll(FFResponseList);
-				// String response = fdmProxy.makeCallToFDMManifestMapping(request);
 				/*
-				 * List <FFResponse> FFresponsequery =
-				 * ffresponseRepository.findByMessageNoIs(orderRef); List <FFResponse>
-				 * FFResponseUpdaList = new ArrayList<FFResponse>(); for (FFResponse temp :
-				 * FFresponsequery) { temp.setResponse(response); FFResponseUpdaList .add(temp);
-				 * } ffresponseRepository.saveAll(FFResponseUpdaList);
+				 * Gson gson = new Gson(); String jsonStr = gson.toJson(request); JSONObject
+				 * json = new JSONObject(jsonStr); String requestXml = XML.toString(json);
+				 * byte[] contentInBytes = requestXml.getBytes();
 				 */
+				//InputStream targetStream = new ByteArrayInputStream(contentInBytes);
+				// ftpUploader.fdmFileCreation(request);
+				// ftpUploader.ftpUpload(targetStream);
+				 //ffresponseRepository.saveAll(FFResponseList);
+				//ftpUploader.fdmFileCreation(request);
+				 ffresponseRepository.saveAll(FFResponseList);
+				 String response = fdmProxy.makeCallToFDMManifestMapping(request);
+				 List <FFResponse> FFresponsequery = ffresponseRepository.findByMessageNoIs(orderRef); 
+				 List <FFResponse>	 FFResponseUpdaList = new ArrayList<FFResponse>(); 
+				 for (FFResponse temp :FFresponsequery) { 
+					 temp.setResponse(response);
+					 FFResponseUpdaList .add(temp);
+					 } 
+				 ffresponseRepository.saveAll(FFResponseUpdaList);
+					
 			}
 		}
 	}
@@ -2407,14 +2622,13 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<String> eTowerHKGArticleIds = new ArrayList<String>();
 		List<String> eTowerHKG2ArticleIds = new ArrayList<String>();
 		List<String> auPostArticleIds = new ArrayList<String>();
-		List<String> pcaArticleIds = new ArrayList<String>();
+		List<String> d2zArticleIds = new ArrayList<String>();
 		List<String> pflArticleIds = new ArrayList<String>();
 		List<String> eParcelMlids = d2zDao.fetchMlidsBasedOnSupplier("eTower");
 		List<String> auPostMlids = d2zDao.fetchMlidsBasedOnSupplier("FDM");
-		List<String> pcaMlids = d2zDao.fetchMlidsBasedOnSupplier("PCA");
 		CompletableFuture<List<TrackingEventResponse>> eTowerResponse = new CompletableFuture<List<TrackingEventResponse>>();
 		CompletableFuture<TrackingResponse> auPostResponse = new CompletableFuture<TrackingResponse>();
-		CompletableFuture<List<PCATrackEventResponse>> pcaResponse = new CompletableFuture<List<PCATrackEventResponse>>();
+		CompletableFuture<List<TrackEvents>> trackEvents = new CompletableFuture<List<TrackEvents>>();
 		CompletableFuture<List<PFLTrackingResponseDetails>> pflResponse = new CompletableFuture<List<PFLTrackingResponseDetails>>();
 		Map<String, List<String>> eTowerMap = new HashMap<String, List<String>>();
 		for (String articleId : articleIds) {
@@ -2423,7 +2637,6 @@ public class D2ZServiceImpl implements ID2ZService {
 
 			boolean isEParcel = eParcelMlids.stream().anyMatch(mlid::equalsIgnoreCase);
 			boolean isAuPost = auPostMlids.stream().anyMatch(mlid::equalsIgnoreCase);
-			boolean isPCA = pcaMlids.stream().anyMatch(mlid::equalsIgnoreCase);
 			if (isEParcel) {
 				if (mlid.equalsIgnoreCase("33XH8") || mlid.equalsIgnoreCase("33XCT") || mlid.equalsIgnoreCase("33XH7")
 						|| mlid.equalsIgnoreCase("33XCR")) {
@@ -2436,12 +2649,10 @@ public class D2ZServiceImpl implements ID2ZService {
 				}
 			} else if (isAuPost) {
 				auPostArticleIds.add(articleId);
-			} else if (isPCA) {
-				pcaArticleIds.add(articleId);
-			} else if (articleId.startsWith("BN") || articleId.startsWith("MP") || articleId.startsWith("WJY")) {
+			} else if (articleId.startsWith("BN") || articleId.startsWith("MP") || articleId.startsWith("MS")  || articleId.startsWith("WJY")) {
 				pflArticleIds.add(articleId);
 			} else {
-				pcaArticleIds.add(articleId);
+				d2zArticleIds.add(articleId);
 			}
 		}
 		if (eTowerArticleIds.size() > 0) {
@@ -2463,27 +2674,27 @@ public class D2ZServiceImpl implements ID2ZService {
 		} else {
 			auPostResponse.complete(null);
 		}
-		if (pcaArticleIds.size() > 0) {
-			pcaResponse = aysncService.makeCalltoPCA(pcaArticleIds);
+		if (d2zArticleIds.size() > 0) {
+			trackEvents = aysncService.makeCalltoDB(d2zArticleIds);
 		} else {
-			pcaResponse.complete(null);
+			trackEvents.complete(null);
 		}
 		if (pflArticleIds.size() > 0) {
 			pflResponse = aysncService.makeCalltoPFL(pflArticleIds);
 		} else {
 			pflResponse.complete(null);
 		}
-		CompletableFuture.allOf(eTowerResponse, auPostResponse, pcaResponse, pflResponse).join();
+		CompletableFuture.allOf(eTowerResponse, auPostResponse, trackEvents, pflResponse).join();
 		List<TrackParcelResponse> trackPracelsResponse = new ArrayList<TrackParcelResponse>();
 
-		aggreateTrackParcelResponse(eTowerResponse.get(), auPostResponse.get(), pcaResponse.get(), pflResponse.get(),
+		aggreateTrackParcelResponse(eTowerResponse.get(), auPostResponse.get(), trackEvents.get(), pflResponse.get(),
 				trackPracelsResponse);
 
 		return trackPracelsResponse;
 	}
 
 	private List<TrackParcelResponse> aggreateTrackParcelResponse(List<TrackingEventResponse> eTowerResponse,
-			TrackingResponse auPostResponse, List<PCATrackEventResponse> pcaResponse,
+			TrackingResponse auPostResponse, List<TrackEvents> trackEvents,
 			List<PFLTrackingResponseDetails> pflResponse, List<TrackParcelResponse> trackPracelResponse) {
 
 		if (null != eTowerResponse) {
@@ -2493,13 +2704,42 @@ public class D2ZServiceImpl implements ID2ZService {
 		if (null != auPostResponse) {
 			parseAuPostTrackingResponse(trackPracelResponse, auPostResponse);
 		}
-		if (null != pcaResponse) {
-			parsePCAResponse(trackPracelResponse, pcaResponse);
+		if (null != trackEvents) {
+			parseTrackEventsResponse(trackPracelResponse, trackEvents);
 		}
 		if (null != pflResponse) {
 			parsePFLResponse(trackPracelResponse, pflResponse);
 		}
 		return trackPracelResponse;
+	}
+
+	private void parseTrackEventsResponse(List<TrackParcelResponse> trackPracelResponse,
+			List<TrackEvents> trackEvents) {
+		// TODO Auto-generated method stub
+		Map<String,List<TrackEvents>> trackEventsMap = new HashMap<String,List<TrackEvents>>();
+		trackEvents.forEach(obj->{
+			if(trackEventsMap.containsKey(obj.getArticleID())) {
+			trackEventsMap.get(obj.getArticleID()).add(obj);
+			}else {
+				List<TrackEvents> eventList = new ArrayList<TrackEvents>();
+				trackEventsMap.put(obj.getArticleID(), eventList);
+			}
+		});
+		trackEventsMap.forEach((k,v)->{
+			TrackParcelResponse parcelStatus = new TrackParcelResponse();
+			parcelStatus.setArticleId(k);
+			List<TrackingEvents> events = new ArrayList<TrackingEvents>();
+			for (TrackEvents trackEvent : v) {
+				TrackingEvents event = new TrackingEvents();
+				event.setTrackEventDateOccured(trackEvent.getTrackEventDateOccured());
+				event.setEventDetails(trackEvent.getTrackEventDetails());
+				event.setStatusCode(trackEvent.getTrackEventCode());
+				event.setLocation(trackEvent.getLocation());
+				events.add(event);
+			}
+			parcelStatus.setTrackingEvents(events);
+			trackPracelResponse.add(parcelStatus);
+		});
 	}
 
 	private void parsePFLResponse(List<TrackParcelResponse> trackParcelResponse,
@@ -2945,6 +3185,27 @@ public class D2ZServiceImpl implements ID2ZService {
 			userMsg.setMessage("Shipping Quote requested successfully. Thank you for your enquiry, this has been received and we will endeavour to respond to you within 24 hours.");
 			return userMsg;
 		}
+
+	@Override
+	public void triggerFDMLabel() {
+		FDMLabelRequest request = new FDMLabelRequest();
+		LabelRequest labelRequest = new LabelRequest();
+		labelRequest.setRefno("33G7K710001901000935102");
+		labelRequest.setCust_country("");
+		labelRequest.setCust_postcode("");
+		labelRequest.setCust_state("");
+		labelRequest.setCust_suburb("");
+		labelRequest.setNumber_of_labels(1);
+		request.setLabel_request(labelRequest);
+		
+		 String response = fdmProxy.makeCallToFDMLabel(request);
+	}
+
+	@Override
+	public ResponseMessage createTrackEvents(List<TrackParcelResponse> request) {
+		// TODO Auto-generated method stub
+		return d2zDao.createTrackEvents(request);
+	}
 
 	
 	

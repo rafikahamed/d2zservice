@@ -244,6 +244,13 @@ public class SenderdataMaster implements Serializable {
 	@Column(name="ReturnAddress2")
 	private String returnAddress2;
 	
+	@Column(name="D2ZRate")
+	private String d2zRate;
+	
+	@Column(name="BrokerRate")
+	private String brokerRate;
+	
+	
 	/*@Column(name="DangerousGoods")
 	private boolean dangerousGoods;*/
 	
@@ -266,6 +273,22 @@ public class SenderdataMaster implements Serializable {
 	public void setDangerousGoods(boolean dangerousGoods) {
 		this.dangerousGoods = dangerousGoods;
 	}*/
+
+	public String getD2zRate() {
+		return d2zRate;
+	}
+
+	public void setD2zRate(String d2zRate) {
+		this.d2zRate = d2zRate;
+	}
+
+	public String getBrokerRate() {
+		return brokerRate;
+	}
+
+	public void setBrokerRate(String brokerRate) {
+		this.brokerRate = brokerRate;
+	}
 
 	public String getMlid() {
 		return mlid;

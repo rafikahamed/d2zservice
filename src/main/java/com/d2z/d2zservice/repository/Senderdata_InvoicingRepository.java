@@ -89,7 +89,9 @@ public interface Senderdata_InvoicingRepository extends CrudRepository<Senderdat
 			"                S.fuelsurcharge      AS Fuelsurcharge, \r\n" + 
 			"                S.brokerrate         AS total, \r\n" + 
 			"                S.servicetype        AS servicetype, \r\n" + 
-			"                S.airwaybill         AS ShipmentNumber \r\n" + 
+			"                S.airwaybill         AS ShipmentNumber, \r\n" +
+			"				 S.Consignee_Suburb  AS Suburb, \r\n"+
+			"				 S.Zone  AS Zone \r\n"+
 			"FROM   [D2Z].[dbo].[senderdata_invoicing] S \r\n" + 
 			"WHERE  S.airwaybill IN ( :airwayBill ) \r\n" + 
 			"       AND S.brokerusername IN ( :broker ) \r\n" + 

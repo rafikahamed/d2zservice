@@ -25,11 +25,13 @@ import com.d2z.d2zservice.entity.Currency;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.EbayResponse;
 import com.d2z.d2zservice.entity.FastwayPostcode;
+import com.d2z.d2zservice.entity.MasterPostCode;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.StarTrackPostcode;
 import com.d2z.d2zservice.entity.SystemRefCount;
+import com.d2z.d2zservice.entity.TrackEvents;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.TrackingEvent;
 import com.d2z.d2zservice.entity.TransitTime;
@@ -53,6 +55,7 @@ import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SuperUserEnquiry;
+import com.d2z.d2zservice.model.TrackParcelResponse;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.auspost.TrackableItems;
@@ -74,7 +77,9 @@ import com.d2z.d2zservice.repository.CurrencyRepository;
 import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
 import com.d2z.d2zservice.repository.FastwayPostcodeRepository;
+import com.d2z.d2zservice.repository.MasterPostcodeRepository;
 import com.d2z.d2zservice.repository.NzPostcodesRepository;
+import com.d2z.d2zservice.repository.PFLPostcodeRepository;
 import com.d2z.d2zservice.repository.ParcelRepository;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
 import com.d2z.d2zservice.repository.ReturnsRepository;
@@ -82,6 +87,7 @@ import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.StarTrackPostcodeRepository;
 import com.d2z.d2zservice.repository.SystemRefCountRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
+import com.d2z.d2zservice.repository.TrackEventsRepository;
 import com.d2z.d2zservice.repository.TrackingEventRepository;
 import com.d2z.d2zservice.repository.TransitTimeRepository;
 import com.d2z.d2zservice.repository.UserRepository;
@@ -89,94 +95,105 @@ import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.entity.NZPostcodes;
+import com.d2z.d2zservice.entity.PFLPostcode;
 //import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
 @Repository
-public class D2ZDaoImpl implements ID2ZDao{
-	
-	//private final Logger log = LoggerFactory.getLogger(this.getClass());
-	
+public class D2ZDaoImpl implements ID2ZDao {
+
+	// private final Logger log = LoggerFactory.getLogger(this.getClass());
+
 	@Autowired
 	SenderDataRepository senderDataRepository;
-	
+
 	@Autowired
 	SystemRefCountRepository systemRefCountRepository;
-	
+
 	@Autowired
 	CSTicketsRepository csticketsRepository;
 
 	@Autowired
 	TrackAndTraceRepository trackAndTraceRepository;
-	
+
 	@Autowired
 	TrackingEventRepository trackingEventRepository;
-	
+
 	@Autowired
 	PostcodeZoneRepository postcodeZoneRepository;
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	UserServiceRepository userServiceRepository;
-	
+
 	@Autowired
 	EbayResponseRepository ebayResponseRepository;
-	
+
 	@Autowired
 	ETowerResponseRepository eTowerResponseRepository;
-	
+
 	@Autowired
 	APIRatesRepository apiRatesRepository;
-	
-	/*@Autowired
-	FreipostWrapper freipostWrapper;*/
-	
+
+	/*
+	 * @Autowired FreipostWrapper freipostWrapper;
+	 */
+
 	@Autowired
 	AUPostResponseRepository aupostresponseRepository;
-	
+
 	@Autowired
 	FastwayPostcodeRepository fastwayPostcodeRepository;
-	
+
 	@Autowired
 	StarTrackPostcodeRepository starTrackPostcodeRepository;
-	
+
 	@Autowired
 	CurrencyRepository currencyRepository;
-	
+
 	@Autowired
 	ConsigneeCountRepository consigneeCountRepository;
-	
+
 	@Autowired
 	CurrencyProxy currencyproxy;
-	
+
 	@Autowired
 	ReturnsRepository returnsRepository;
-	
+
 	@Autowired
 	@Lazy
 	private D2ZValidator d2zValidator;
-	
+
 	@Autowired
 	TransitTimeRepository transitTimeRepository;
-	
+
 	@Autowired
 	ParcelRepository parcelRepository;
-	
+
 	@Autowired
 	NzPostcodesRepository nzPostcodesRepository;
+
+	@Autowired
+	PFLPostcodeRepository pflPostcodesRepository;
+
+	@Autowired
+	MasterPostcodeRepository masterPostcodesRepository;
 	
+	@Autowired
+	TrackEventsRepository trackEventsRepository;
+
 	@Override
-	public String exportParcel(List<SenderData> orderDetailList,Map<String, LabelData> barcodeMap) {
-		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
+	public String exportParcel(List<SenderData> orderDetailList, Map<String, LabelData> barcodeMap) {
+		Map<String, String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
 		List<String> incomingRefNbr = new ArrayList<String>();
 		LabelData provider = null;
 		User userInfo = userRepository.findByUsername(orderDetailList.get(0).getUserName());
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
-		String fileSeqId = "D2ZUI"+senderDataRepository.fetchNextSeq().toString();
-		for(SenderData senderDataValue: orderDetailList) {
+		String fileSeqId = "D2ZUI" + senderDataRepository.fetchNextSeq().toString();
+		for (SenderData senderDataValue : orderDetailList) {
 			incomingRefNbr.add(senderDataValue.getReferenceNumber());
 			SenderdataMaster senderDataObj = new SenderdataMaster();
 			senderDataObj.setSender_Files_ID(fileSeqId);
@@ -199,17 +216,29 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setDimensions_Height(senderDataValue.getDimensionsHeight());
 			senderDataObj.setServicetype(senderDataValue.getServiceType());
 			senderDataObj.setDeliverytype(senderDataValue.getDeliverytype());
-			String shipperName = (senderDataValue.getShipperName() != null && !senderDataValue.getShipperName().isEmpty()) ? senderDataValue.getShipperName() : userInfo.getCompanyName();
+			String shipperName = (senderDataValue.getShipperName() != null
+					&& !senderDataValue.getShipperName().isEmpty()) ? senderDataValue.getShipperName()
+							: userInfo.getCompanyName();
 			senderDataObj.setShipper_Name(shipperName);
-			String shipperAddress = (senderDataValue.getShipperAddr1() != null && !senderDataValue.getShipperAddr1().isEmpty()) ? senderDataValue.getShipperAddr1() : userInfo.getAddress();
+			String shipperAddress = (senderDataValue.getShipperAddr1() != null
+					&& !senderDataValue.getShipperAddr1().isEmpty()) ? senderDataValue.getShipperAddr1()
+							: userInfo.getAddress();
 			senderDataObj.setShipper_Addr1(shipperAddress);
-			String shipperCity = (senderDataValue.getShipperCity() != null && !senderDataValue.getShipperCity().isEmpty()) ? senderDataValue.getShipperCity() : userInfo.getSuburb();
+			String shipperCity = (senderDataValue.getShipperCity() != null
+					&& !senderDataValue.getShipperCity().isEmpty()) ? senderDataValue.getShipperCity()
+							: userInfo.getSuburb();
 			senderDataObj.setShipper_City(shipperCity);
-			String shipperState = (senderDataValue.getShipperState() != null && !senderDataValue.getShipperState().isEmpty()) ? senderDataValue.getShipperState() : userInfo.getState();
+			String shipperState = (senderDataValue.getShipperState() != null
+					&& !senderDataValue.getShipperState().isEmpty()) ? senderDataValue.getShipperState()
+							: userInfo.getState();
 			senderDataObj.setShipper_State(shipperState);
-			String shipperPostcode = (senderDataValue.getShipperPostcode() != null && !senderDataValue.getShipperPostcode().isEmpty()) ? senderDataValue.getShipperPostcode() : userInfo.getPostcode();
+			String shipperPostcode = (senderDataValue.getShipperPostcode() != null
+					&& !senderDataValue.getShipperPostcode().isEmpty()) ? senderDataValue.getShipperPostcode()
+							: userInfo.getPostcode();
 			senderDataObj.setShipper_Postcode(shipperPostcode);
-			String shipperCountry = (senderDataValue.getShipperCountry() != null && !senderDataValue.getShipperCountry().isEmpty()) ? senderDataValue.getShipperCountry() : userInfo.getCountry();
+			String shipperCountry = (senderDataValue.getShipperCountry() != null
+					&& !senderDataValue.getShipperCountry().isEmpty()) ? senderDataValue.getShipperCountry()
+							: userInfo.getCountry();
 			senderDataObj.setShipper_Country(shipperCountry);
 			senderDataObj.setFilename(senderDataValue.getFileName());
 			senderDataObj.setInnerItem(1);
@@ -218,9 +247,10 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setUser_ID(senderDataValue.getUserID());
 			senderDataObj.setSku(senderDataValue.getSku());
 			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
-			senderDataObj.setDeliveryInstructions((senderDataValue.getDeliveryInstructions()!=null && senderDataValue.getDeliveryInstructions().length() > 250)	
-			        ? senderDataValue.getDeliveryInstructions().substring(0,250)
-					:senderDataValue.getDeliveryInstructions());
+			senderDataObj.setDeliveryInstructions((senderDataValue.getDeliveryInstructions() != null
+					&& senderDataValue.getDeliveryInstructions().length() > 250)
+							? senderDataValue.getDeliveryInstructions().substring(0, 250)
+							: senderDataValue.getDeliveryInstructions());
 			senderDataObj.setCarrier(senderDataValue.getCarrier());
 			senderDataObj.setConsignee_addr2(senderDataValue.getConsigneeAddr2());
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
@@ -228,46 +258,59 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
 			senderDataObj.setStatus("CONSIGNMENT CREATED");
 			senderDataObj.setInjectionType("Direct Injection");
-			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType()) || "1PME".equalsIgnoreCase(senderDataValue.getServiceType())
-					|| "1PSE".equalsIgnoreCase(senderDataValue.getServiceType())){
+			if ("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType())
+					|| "1PME".equalsIgnoreCase(senderDataValue.getServiceType())
+					|| "1PSE".equalsIgnoreCase(senderDataValue.getServiceType())) {
 				senderDataObj.setCarrier("Express");
-			}else{
+			} else {
 				senderDataObj.setCarrier("eParcel");
 			}
-			if(barcodeMap != null && !barcodeMap.isEmpty())
+			if (barcodeMap != null && !barcodeMap.isEmpty())
 				provider = barcodeMap.get(barcodeMap.keySet().toArray()[0]);
-			
-			if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("Etower") 
+
+			if (null != barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("Etower")
 					&& barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
-				LabelData labelData= barcodeMap.get(senderDataValue.getReferenceNumber());
+				LabelData labelData = barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setBarcodelabelNumber(labelData.getBarCode());
-				senderDataObj.setArticleId(labelData.getArticleId());	
-				if(labelData.getBarCode2D().equals(labelData.getArticleId())) {
+				senderDataObj.setArticleId(labelData.getArticleId());
+				if (labelData.getBarCode2D().equals(labelData.getArticleId())) {
 					senderDataObj.setBarcodelabelNumber(labelData.getArticleId());
 					senderDataObj.setDatamatrix(labelData.getArticleId());
 					senderDataObj.setCarrier("FastwayNZ");
-				}else {
-					senderDataObj.setDatamatrix(D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
+				} else if (senderDataValue.getServiceType().equalsIgnoreCase("TL1")) {
+					senderDataObj.setDatamatrix(labelData.getBarCode2D());
+				} else {
+					senderDataObj.setDatamatrix(
+							D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
 				}
+
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
-				if("MCS".equalsIgnoreCase(senderDataValue.getServiceType())) {
+				if ("MCS".equalsIgnoreCase(senderDataValue.getServiceType())) {
 					senderDataObj.setMlid(senderDataObj.getArticleId().substring(0, 5));
 					senderDataObj.setInjectionState("SYD");
 				}
-			}else if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PFL") && 
-					barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
-				LabelData pflLabel= barcodeMap.get(senderDataValue.getReferenceNumber());
+			} else if (null != barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PFL")
+					&& barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
+				LabelData pflLabel = barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setInjectionState(pflLabel.getHub());
 				senderDataObj.setBarcodelabelNumber(pflLabel.getTrackingNo());
 				senderDataObj.setArticleId(pflLabel.getTrackingNo());
 				senderDataObj.setMlid(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
-				if(!"1PS4".equalsIgnoreCase(senderDataValue.getServiceType())) {
+				if ("MCS".equalsIgnoreCase(senderDataValue.getServiceType())) {
+					senderDataObj.setCarrier("Fastway");
+				}
+				if (!"1PS4".equalsIgnoreCase(senderDataValue.getServiceType())) {
 					senderDataObj.setCarrier("FastwayM");
-					}
-			}else if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PCA") && 
-					barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
-				LabelData pflLabel= barcodeMap.get(senderDataValue.getReferenceNumber());
+				}
+				if ("PFL".equalsIgnoreCase(pflLabel.getCarrier())) {
+					senderDataObj.setD2zRate(pflLabel.getHeader());
+					senderDataObj.setBrokerRate(pflLabel.getFooter());
+					senderDataObj.setCarrier(pflLabel.getCarrier());
+				}
+			} else if (null != barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PCA")
+					&& barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
+				LabelData pflLabel = barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setInjectionState(pflLabel.getHub());
 				senderDataObj.setBarcodelabelNumber(pflLabel.getTrackingNo());
 				senderDataObj.setArticleId(pflLabel.getTrackingNo());
@@ -278,58 +321,59 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataList.add(senderDataObj);
 		}
 		senderDataRepository.saveAll(senderDataList);
-		System.out.println("create consignment UI object construction Done data got inserted--->"+senderDataList.size());
+		System.out.println(
+				"create consignment UI object construction Done data got inserted--->" + senderDataList.size());
 		storProcCall(fileSeqId);
-		updateTrackAndTrace(fileSeqId,userInfo.getUser_Id());
+		updateTrackAndTrace(fileSeqId, userInfo.getUser_Id());
 		return fileSeqId;
 	}
 
 	@Override
 	public List<String> fileList(Integer userId) {
-		List<String> listOfFileNames= senderDataRepository.fetchFileName(userId);
+		List<String> listOfFileNames = senderDataRepository.fetchFileName(userId);
 		return listOfFileNames;
 	}
-	
+
 	@Override
 	public List<String> labelFileList(Integer userId) {
-		List<String> listOfFileNames= senderDataRepository.fetchLabelFileName(userId);
+		List<String> listOfFileNames = senderDataRepository.fetchLabelFileName(userId);
 		return listOfFileNames;
 	}
 
 	@Override
 	public List<SenderdataMaster> consignmentFileData(String fileName) {
-		List<SenderdataMaster> listOfFileNames= senderDataRepository.fetchConsignmentData(fileName);
+		List<SenderdataMaster> listOfFileNames = senderDataRepository.fetchConsignmentData(fileName);
 		return listOfFileNames;
 	}
-	
+
 	@Override
 	public List<SenderdataMaster> fetchManifestData(String fileName) {
-		List<SenderdataMaster> allConsignmentData= senderDataRepository.fetchManifestData(fileName);
+		List<SenderdataMaster> allConsignmentData = senderDataRepository.fetchManifestData(fileName);
 		return allConsignmentData;
 	}
 
 	@Override
 	public String consignmentDelete(String refrenceNumlist) {
-		//Calling Delete Store Procedure
+		// Calling Delete Store Procedure
 		senderDataRepository.consigneeDelete(refrenceNumlist);
 		return "Selected Consignments Deleted Successfully";
 	}
 
 	@Override
 	public List<String> trackingDetails(String fileName) {
-		List<String> trackingDetails= senderDataRepository.fetchTrackingDetails(fileName);
+		List<String> trackingDetails = senderDataRepository.fetchTrackingDetails(fileName);
 		return trackingDetails;
 	}
 
 	@Override
-	public List<String> trackingLabel(List<String> refBarNum,String identifier) {
+	public List<String> trackingLabel(List<String> refBarNum, String identifier) {
 		List<String> trackingDetails = new ArrayList<String>();
-		if("articleId".equalsIgnoreCase(identifier)) {
-			trackingDetails= senderDataRepository.fetchTrackingLabelByArticleId(refBarNum);
-		}else if("reference_number".equalsIgnoreCase(identifier)) {
-			trackingDetails= senderDataRepository.fetchTrackingLabelByReferenceNbr(refBarNum);
-		}else {
-			trackingDetails= senderDataRepository.fetchTrackingLabel(refBarNum);
+		if ("articleId".equalsIgnoreCase(identifier)) {
+			trackingDetails = senderDataRepository.fetchTrackingLabelByArticleId(refBarNum);
+		} else if ("reference_number".equalsIgnoreCase(identifier)) {
+			trackingDetails = senderDataRepository.fetchTrackingLabelByReferenceNbr(refBarNum);
+		} else {
+			trackingDetails = senderDataRepository.fetchTrackingLabel(refBarNum);
 		}
 		System.out.println(trackingDetails.size());
 		return trackingDetails;
@@ -337,7 +381,7 @@ public class D2ZDaoImpl implements ID2ZDao{
 
 	@Override
 	public String manifestCreation(String manifestNumber, String[] refrenceNumber) {
-		//Calling Delete Store Procedure
+		// Calling Delete Store Procedure
 		senderDataRepository.manifestCreation(manifestNumber, refrenceNumber);
 		return "Manifest Updated Successfully";
 	}
@@ -348,15 +392,16 @@ public class D2ZDaoImpl implements ID2ZDao{
 	}
 
 	@Override
-	public String createConsignments(List<SenderDataApi> orderDetailList, int userId, String userName, Map<String,LabelData> barcodeMap) {
-		Map<String,String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
+	public String createConsignments(List<SenderDataApi> orderDetailList, int userId, String userName,
+			Map<String, LabelData> barcodeMap) {
+		Map<String, String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
 		LabelData provider = null;
 		User userInfo = userRepository.findByUsername(userName);
-		
-		String fileSeqId = "D2ZAPI"+senderDataRepository.fetchNextSeq();
-		System.out.println("create consignment API object construction --->"+orderDetailList.size());
-		for(SenderDataApi senderDataValue: orderDetailList) {
+
+		String fileSeqId = "D2ZAPI" + senderDataRepository.fetchNextSeq();
+		System.out.println("create consignment API object construction --->" + orderDetailList.size());
+		for (SenderDataApi senderDataValue : orderDetailList) {
 			SenderdataMaster senderDataObj = new SenderdataMaster();
 			senderDataObj.setUser_ID(userId);
 			senderDataObj.setSender_Files_ID(fileSeqId);
@@ -377,45 +422,66 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setDimensions_Length(senderDataValue.getDimensionsLength());
 			senderDataObj.setDimensions_Width(senderDataValue.getDimensionsWidth());
 			senderDataObj.setDimensions_Height(senderDataValue.getDimensionsHeight());
+			senderDataObj.setCubic_Weight(senderDataValue.getCubicWeight());
 			senderDataObj.setServicetype(senderDataValue.getServiceType());
 			senderDataObj.setDeliverytype(senderDataValue.getDeliverytype());
-			String shipperName = (senderDataValue.getShipperName() != null && !senderDataValue.getShipperName().isEmpty()) ? senderDataValue.getShipperName() : userInfo.getCompanyName();
+			String shipperName = (senderDataValue.getShipperName() != null
+					&& !senderDataValue.getShipperName().isEmpty()) ? senderDataValue.getShipperName()
+							: userInfo.getCompanyName();
 			senderDataObj.setShipper_Name(shipperName);
-			String shipperAddress = (senderDataValue.getShipperAddr1() != null && !senderDataValue.getShipperAddr1().isEmpty()) ? senderDataValue.getShipperAddr1() : userInfo.getAddress();
+			String shipperAddress = (senderDataValue.getShipperAddr1() != null
+					&& !senderDataValue.getShipperAddr1().isEmpty()) ? senderDataValue.getShipperAddr1()
+							: userInfo.getAddress();
 			senderDataObj.setShipper_Addr1(shipperAddress);
-			String shipperCity = (senderDataValue.getShipperCity() != null && !senderDataValue.getShipperCity().isEmpty()) ? senderDataValue.getShipperCity() : userInfo.getSuburb();
+			String shipperCity = (senderDataValue.getShipperCity() != null
+					&& !senderDataValue.getShipperCity().isEmpty()) ? senderDataValue.getShipperCity()
+							: userInfo.getSuburb();
 			senderDataObj.setShipper_City(shipperCity);
-			String shipperState = (senderDataValue.getShipperState() != null && !senderDataValue.getShipperState().isEmpty()) ? senderDataValue.getShipperState() : userInfo.getState();
+			String shipperState = (senderDataValue.getShipperState() != null
+					&& !senderDataValue.getShipperState().isEmpty()) ? senderDataValue.getShipperState()
+							: userInfo.getState();
 			senderDataObj.setShipper_State(shipperState);
-			String shipperPostcode = (senderDataValue.getShipperPostcode() != null && !senderDataValue.getShipperPostcode().isEmpty()) ? senderDataValue.getShipperPostcode() : userInfo.getPostcode();
+			String shipperPostcode = (senderDataValue.getShipperPostcode() != null
+					&& !senderDataValue.getShipperPostcode().isEmpty()) ? senderDataValue.getShipperPostcode()
+							: userInfo.getPostcode();
 			senderDataObj.setShipper_Postcode(shipperPostcode);
-			String shipperCountry = (senderDataValue.getShipperCountry() != null && !senderDataValue.getShipperCountry().isEmpty()) ? senderDataValue.getShipperCountry() : userInfo.getCountry();
+			String shipperCountry = (senderDataValue.getShipperCountry() != null
+					&& !senderDataValue.getShipperCountry().isEmpty()) ? senderDataValue.getShipperCountry()
+							: userInfo.getCountry();
 			senderDataObj.setShipper_Country(shipperCountry);
-			senderDataObj.setFilename("D2ZAPI"+D2ZCommonUtil.getCurrentTimestamp());
-			//senderDataObj.setFilename(senderDataValue.getFileName());
+			senderDataObj.setFilename("D2ZAPI" + D2ZCommonUtil.getCurrentTimestamp());
+			// senderDataObj.setFilename(senderDataValue.getFileName());
 			senderDataObj.setSku(senderDataValue.getSku());
 			senderDataObj.setLabelSenderName(senderDataValue.getLabelSenderName());
-			senderDataObj.setDeliveryInstructions((senderDataValue.getDeliveryInstructions()!=null && senderDataValue.getDeliveryInstructions().length() > 250)	
-			        ? senderDataValue.getDeliveryInstructions().substring(0,250)
-					:senderDataValue.getDeliveryInstructions());
-			if(senderDataValue.getBarcodeLabelNumber()!=null && !senderDataValue.getBarcodeLabelNumber().trim().isEmpty()
-					&& senderDataValue.getDatamatrix()!=null && !senderDataValue.getDatamatrix().trim().isEmpty()){
+			senderDataObj.setDeliveryInstructions((senderDataValue.getDeliveryInstructions() != null
+					&& senderDataValue.getDeliveryInstructions().length() > 250)
+							? senderDataValue.getDeliveryInstructions().substring(0, 250)
+							: senderDataValue.getDeliveryInstructions());
+			if (senderDataValue.getBarcodeLabelNumber() != null
+					&& !senderDataValue.getBarcodeLabelNumber().trim().isEmpty()
+					&& senderDataValue.getDatamatrix() != null && !senderDataValue.getDatamatrix().trim().isEmpty()) {
 				senderDataObj.setBarcodelabelNumber(senderDataValue.getBarcodeLabelNumber());
-				senderDataObj.setArticleId(senderDataValue.getBarcodeLabelNumber().substring(18));
-				if(senderDataValue.getBarcodeLabelNumber().length() == 41)
-				senderDataObj.setMlid(senderDataValue.getBarcodeLabelNumber().substring(18,23));
-				else if(senderDataValue.getBarcodeLabelNumber().length() == 39)
-				senderDataObj.setMlid(senderDataValue.getBarcodeLabelNumber().substring(18,21));
+				if (senderDataValue.getBarcodeLabelNumber().length() == 20) {
+					senderDataObj.setArticleId(senderDataValue.getBarcodeLabelNumber());
+					senderDataObj.setMlid(senderDataValue.getBarcodeLabelNumber());
+				} else {
+					senderDataObj.setArticleId(senderDataValue.getBarcodeLabelNumber().substring(18));
+				}
+				if (senderDataValue.getBarcodeLabelNumber().length() == 41)
+					senderDataObj.setMlid(senderDataValue.getBarcodeLabelNumber().substring(18, 23));
+				else if (senderDataValue.getBarcodeLabelNumber().length() == 39)
+					senderDataObj.setMlid(senderDataValue.getBarcodeLabelNumber().substring(18, 21));
 				senderDataObj.setDatamatrix(senderDataValue.getDatamatrix());
-				
+
 			}
-			if(senderDataValue.getInjectionState()!=null){
+			if (senderDataValue.getInjectionState() != null) {
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
 			}
-			if("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType()) || "1PME".equalsIgnoreCase(senderDataValue.getServiceType())
-					|| "1PSE".equalsIgnoreCase(senderDataValue.getServiceType())){
+			if ("1PM3E".equalsIgnoreCase(senderDataValue.getServiceType())
+					|| "1PME".equalsIgnoreCase(senderDataValue.getServiceType())
+					|| "1PSE".equalsIgnoreCase(senderDataValue.getServiceType())) {
 				senderDataObj.setCarrier("Express");
-			}else{
+			} else {
 				senderDataObj.setCarrier("eParcel");
 			}
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
@@ -423,42 +489,51 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataObj.setInjectionType("Direct Injection");
 			senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
 			senderDataObj.setIsDeleted("N");
-			if(barcodeMap != null && !barcodeMap.isEmpty())
+			if (barcodeMap != null && !barcodeMap.isEmpty())
 				provider = barcodeMap.get(barcodeMap.keySet().toArray()[0]);
-			if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("Etower") && 
-						barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
-				LabelData labelData= barcodeMap.get(senderDataValue.getReferenceNumber());
+			if (null != barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("Etower")
+					&& barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
+				LabelData labelData = barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setBarcodelabelNumber(labelData.getBarCode());
 				senderDataObj.setArticleId(labelData.getArticleId());
-				if(labelData.getBarCode2D().equals(labelData.getArticleId())) {
+
+				if (labelData.getBarCode2D().equals(labelData.getArticleId())) {
 					senderDataObj.setBarcodelabelNumber(labelData.getArticleId());
 					senderDataObj.setDatamatrix(labelData.getArticleId());
 					senderDataObj.setCarrier("FastwayNZ");
-				}else {
-					senderDataObj.setDatamatrix(D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
+				} else if (senderDataValue.getServiceType().equalsIgnoreCase("TL1")) {
+					senderDataObj.setDatamatrix(labelData.getBarCode2D());
+				} else {
+					senderDataObj.setDatamatrix(
+							D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
 				}
+
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
-				if("MCS".equalsIgnoreCase(senderDataValue.getServiceType())) {
+				if ("MCS".equalsIgnoreCase(senderDataValue.getServiceType())) {
 					senderDataObj.setMlid(senderDataObj.getArticleId().substring(0, 5));
 					senderDataObj.setInjectionState("SYD");
 				}
-			}else if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PFL") && 
-						barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
-				LabelData pflLabel= barcodeMap.get(senderDataValue.getReferenceNumber());
+			} else if (null != barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PFL")
+					&& barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
+				LabelData pflLabel = barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setInjectionState(pflLabel.getHub());
 				senderDataObj.setBarcodelabelNumber(pflLabel.getTrackingNo());
 				senderDataObj.setArticleId(pflLabel.getTrackingNo());
 				senderDataObj.setMlid(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
-				if("MCS".equalsIgnoreCase(senderDataValue.getServiceType())) {
+				if ("MCS".equalsIgnoreCase(senderDataValue.getServiceType())) {
 					senderDataObj.setCarrier("Fastway");
+				} else if (!"1PS4".equalsIgnoreCase(senderDataValue.getServiceType())) {
+					senderDataObj.setCarrier("FastwayM");
 				}
-				else if(!"1PS4".equalsIgnoreCase(senderDataValue.getServiceType())) {
-				senderDataObj.setCarrier("FastwayM");
+				if ("PFL".equalsIgnoreCase(pflLabel.getCarrier())) {
+					senderDataObj.setD2zRate(pflLabel.getHeader());
+					senderDataObj.setBrokerRate(pflLabel.getFooter());
+					senderDataObj.setCarrier(pflLabel.getCarrier());
 				}
-			}else if(null!= barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PCA") && 
-						barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
-				LabelData pflLabel= barcodeMap.get(senderDataValue.getReferenceNumber());
+			} else if (null != barcodeMap && !barcodeMap.isEmpty() && provider.getProvider().equalsIgnoreCase("PCA")
+					&& barcodeMap.containsKey(senderDataValue.getReferenceNumber())) {
+				LabelData pflLabel = barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setInjectionState(pflLabel.getHub());
 				senderDataObj.setBarcodelabelNumber(pflLabel.getTrackingNo());
 				senderDataObj.setArticleId(pflLabel.getTrackingNo());
@@ -469,71 +544,76 @@ public class D2ZDaoImpl implements ID2ZDao{
 			senderDataList.add(senderDataObj);
 		}
 		List<SenderdataMaster> insertedOrder = (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataList);
-		System.out.println("create consignment API object construction Done data got inserted--->"+insertedOrder.size());
-		if(orderDetailList.get(0).getBarcodeLabelNumber()==null || orderDetailList.get(0).getBarcodeLabelNumber().trim().isEmpty()
-				|| orderDetailList.get(0).getDatamatrix()==null || orderDetailList.get(0).getDatamatrix().trim().isEmpty()){
+		System.out.println(
+				"create consignment API object construction Done data got inserted--->" + insertedOrder.size());
+		if (orderDetailList.get(0).getBarcodeLabelNumber() == null
+				|| orderDetailList.get(0).getBarcodeLabelNumber().trim().isEmpty()
+				|| orderDetailList.get(0).getDatamatrix() == null
+				|| orderDetailList.get(0).getDatamatrix().trim().isEmpty()) {
 			storProcCall(fileSeqId);
 		}
-		updateTrackAndTrace(fileSeqId,userId);
+		updateTrackAndTrace(fileSeqId, userId);
 		return fileSeqId;
 	}
-	
+
 	/**
 	 * @param senderDataList
 	 */
 
-	public void updateTrackAndTrace(String fileSeqId,int userId) {
-		Runnable r = new Runnable() {			
-	        public void run() {
-	        	
-	        	List<String> insertedOrder = fetchBySenderFileID(fileSeqId);
-	        	List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
-	        	Iterator itr = insertedOrder.iterator();
+	public void updateTrackAndTrace(String fileSeqId, int userId) {
+		Runnable r = new Runnable() {
+			public void run() {
+
+				List<String> insertedOrder = fetchBySenderFileID(fileSeqId);
+				List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
+				Iterator itr = insertedOrder.iterator();
 				while (itr.hasNext()) {
 					Object[] obj = (Object[]) itr.next();
-	    			Trackandtrace trackAndTrace = new Trackandtrace();
-	    			//trackAndTrace.setRowId(D2ZCommonUtil.generateTrackID());
-	    			trackAndTrace.setUser_Id(String.valueOf(userId));
-	    			trackAndTrace.setReference_number(obj[0].toString());
-	    			trackAndTrace.setTrackEventCode("CC");
-	    			trackAndTrace.setTrackEventDetails("CONSIGNMENT CREATED");
-	    			trackAndTrace.setTrackEventDateOccured(D2ZCommonUtil.getAETCurrentTimestamp());
-	    			trackAndTrace.setCourierEvents(null);
-	    			trackAndTrace.setTrackSequence(1);
-	    			trackAndTrace.setBarcodelabelNumber(obj[3].toString());
-	    			trackAndTrace.setFileName("SP");
-	    			trackAndTrace.setAirwayBill(null);
-	    			trackAndTrace.setSignerName(null);
-	    			trackAndTrace.setSignature(null);
-	    			trackAndTrace.setIsDeleted("N");
-	    			trackAndTrace.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
-	    			trackAndTrace.setArticleID(obj[2].toString());
-	    			trackAndTraceList.add(trackAndTrace);
-	    		}
-	    		List<Trackandtrace> trackAndTraceInsert = (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackAndTraceList);
-	    		
-	        }};
-	        new Thread(r).start();
+					Trackandtrace trackAndTrace = new Trackandtrace();
+					// trackAndTrace.setRowId(D2ZCommonUtil.generateTrackID());
+					trackAndTrace.setUser_Id(String.valueOf(userId));
+					trackAndTrace.setReference_number(obj[0].toString());
+					trackAndTrace.setTrackEventCode("CC");
+					trackAndTrace.setTrackEventDetails("CONSIGNMENT CREATED");
+					trackAndTrace.setTrackEventDateOccured(D2ZCommonUtil.getAETCurrentTimestamp());
+					trackAndTrace.setCourierEvents(null);
+					trackAndTrace.setTrackSequence(1);
+					trackAndTrace.setBarcodelabelNumber(obj[3].toString());
+					trackAndTrace.setFileName("SP");
+					trackAndTrace.setAirwayBill(null);
+					trackAndTrace.setSignerName(null);
+					trackAndTrace.setSignature(null);
+					trackAndTrace.setIsDeleted("N");
+					trackAndTrace.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
+					trackAndTrace.setArticleID(obj[2].toString());
+					trackAndTraceList.add(trackAndTrace);
+				}
+				List<Trackandtrace> trackAndTraceInsert = (List<Trackandtrace>) trackAndTraceRepository
+						.saveAll(trackAndTraceList);
+
+			}
+		};
+		new Thread(r).start();
 	}
-	
-	public synchronized  void storProcCall(String fileSeqId) {
-		System.out.println("Before calling the store procedure, Sequence Id --->"+fileSeqId);
-		System.out.println("Before the store procedure call, Timing --->"+D2ZCommonUtil.getAETCurrentTimestamp());
+
+	public synchronized void storProcCall(String fileSeqId) {
+		System.out.println("Before calling the store procedure, Sequence Id --->" + fileSeqId);
+		System.out.println("Before the store procedure call, Timing --->" + D2ZCommonUtil.getAETCurrentTimestamp());
 		senderDataRepository.inOnlyTest(fileSeqId);
-		System.out.println("After the store procedure call, Timing --->"+D2ZCommonUtil.getAETCurrentTimestamp());
-		System.out.println("After calling the store procedure, Sequence Id --->"+fileSeqId);
+		System.out.println("After the store procedure call, Timing --->" + D2ZCommonUtil.getAETCurrentTimestamp());
+		System.out.println("After calling the store procedure, Sequence Id --->" + fileSeqId);
 	}
-	
-    public List<PostcodeZone> fetchAllPostCodeZone(){
-    	List<PostcodeZone> postCodeZoneList= (List<PostcodeZone>) postcodeZoneRepository.findAll();
-    	System.out.println(postCodeZoneList.size());
-    	return postCodeZoneList;
-    }
-    
-    public List<String> fetchAllReferenceNumbers(){
-    	List<String> referenceNumber_DB= senderDataRepository.fetchAllReferenceNumbers();
-    	return referenceNumber_DB;
-    }
+
+	public List<PostcodeZone> fetchAllPostCodeZone() {
+		List<PostcodeZone> postCodeZoneList = (List<PostcodeZone>) postcodeZoneRepository.findAll();
+		System.out.println(postCodeZoneList.size());
+		return postCodeZoneList;
+	}
+
+	public List<String> fetchAllReferenceNumbers() {
+		List<String> referenceNumber_DB = senderDataRepository.fetchAllReferenceNumbers();
+		return referenceNumber_DB;
+	}
 
 	@Override
 	public List<String> fetchBySenderFileID(String senderFileID) {
@@ -549,36 +629,38 @@ public class D2ZDaoImpl implements ID2ZDao{
 
 	@Override
 
-public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList) {
-		/*requestList.forEach(obj->{
-			senderDataRepository.editConsignments(obj.getReferenceNumber(), obj.getWeight());
-		});*/
+	public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList) {
+		/*
+		 * requestList.forEach(obj->{
+		 * senderDataRepository.editConsignments(obj.getReferenceNumber(),
+		 * obj.getWeight()); });
+		 */
 		List<String> incorrectRefNbrs = new ArrayList<String>();
-		int updatedRows=0;
-		//Timestamp start = Timestamp.from(Instant.now());
+		int updatedRows = 0;
+		// Timestamp start = Timestamp.from(Instant.now());
 		List<SenderdataMaster> senderDataList = new ArrayList<SenderdataMaster>();
-		for(EditConsignmentRequest obj : requestList) {
+		for (EditConsignmentRequest obj : requestList) {
 			SenderdataMaster senderData = senderDataRepository.fetchByReferenceNumbers(obj.getReferenceNumber());
-			if(senderData!=null) {
-			updatedRows++;
-			senderData.setWeight(obj.getWeight());
-			senderDataList.add(senderData);
-		}
-			else {
+			if (senderData != null) {
+				updatedRows++;
+				senderData.setWeight(obj.getWeight());
+				senderDataList.add(senderData);
+			} else {
 				incorrectRefNbrs.add(obj.getReferenceNumber());
 			}
 		}
 		senderDataRepository.saveAll(senderDataList);
-		/*Timestamp end = Timestamp.from(Instant.now());
-		long callDuration = end.getTime() - start.getTime();
-		System.out.println("Call Duration : "+callDuration);*/
+		/*
+		 * Timestamp end = Timestamp.from(Instant.now()); long callDuration =
+		 * end.getTime() - start.getTime();
+		 * System.out.println("Call Duration : "+callDuration);
+		 */
 		ResponseMessage responseMsg = new ResponseMessage();
-		if(updatedRows==0) {
+		if (updatedRows == 0) {
 			responseMsg.setResponseMessage("Update failed");
-		}else if(updatedRows == requestList.size()) {
+		} else if (updatedRows == requestList.size()) {
 			responseMsg.setResponseMessage("Weight updated successfully");
-		}
-		else {
+		} else {
 			responseMsg.setResponseMessage("Partially updated");
 		}
 		responseMsg.setMessageDetail(incorrectRefNbrs);
@@ -587,15 +669,15 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public String allocateShipment(String referenceNumbers, String shipmentNumber) {
-		senderDataRepository.updateAirwayBill(referenceNumbers.split(","), shipmentNumber,D2ZCommonUtil.getAETCurrentTimestamp());
+		senderDataRepository.updateAirwayBill(referenceNumbers.split(","), shipmentNumber,
+				D2ZCommonUtil.getAETCurrentTimestamp());
 		senderDataRepository.allocateShipment(referenceNumbers, shipmentNumber);
 		return "Shipment Allocated Successfully";
 	}
-	
 
 	@Override
 	public User addUser(UserDetails userData) {
-		User userObj =new User();
+		User userObj = new User();
 		userObj.setCompanyName(userData.getCompanyName());
 		userObj.setAddress(userData.getAddress());
 		userObj.setSuburb(userData.getSuburb());
@@ -619,27 +701,26 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public List<UserService> addUserService(User user,List<String> serviceTypeList) {
+	public List<UserService> addUserService(User user, List<String> serviceTypeList) {
 		List<UserService> userServiceList = new ArrayList<UserService>();
-		for(String serviceType : serviceTypeList) {
-		UserService userService = new UserService();
-		userService.setUserId(user.getUser_Id());
-		userService.setCompanyName(user.getCompanyName());
-		userService.setUser_Name(user.getUsername());
-		userService.setServiceType(serviceType);
-		if(serviceType.equalsIgnoreCase("UnTracked")) {
-			userService.setInjectionType("Origin Injection");
-		}else {
-			userService.setInjectionType("Direct Injection");
-		}
-		userService.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
-		userService.setModifiedTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
-		userServiceList.add(userService);
+		for (String serviceType : serviceTypeList) {
+			UserService userService = new UserService();
+			userService.setUserId(user.getUser_Id());
+			userService.setCompanyName(user.getCompanyName());
+			userService.setUser_Name(user.getUsername());
+			userService.setServiceType(serviceType);
+			if (serviceType.equalsIgnoreCase("UnTracked")) {
+				userService.setInjectionType("Origin Injection");
+			} else {
+				userService.setInjectionType("Direct Injection");
+			}
+			userService.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
+			userService.setModifiedTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
+			userServiceList.add(userService);
 		}
 		List<UserService> savedUserService = (List<UserService>) userServiceRepository.saveAll(userServiceList);
 		return savedUserService;
 	}
-
 
 	@Override
 	public User updateUser(User existingUser) {
@@ -650,10 +731,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public void updateUserService(User existingUser, UserDetails userDetails) {
 		List<UserService> userServiceList = new ArrayList<UserService>();
-		if(!userDetails.getServiceType().isEmpty()) {
-			for(String serviceType : userDetails.getServiceType() ) {
-				UserService userService  = userServiceRepository.fetchbyCompanyNameAndServiceType(existingUser.getCompanyName(), serviceType,userDetails.getUserName());
-				if(userService == null) {
+		if (!userDetails.getServiceType().isEmpty()) {
+			for (String serviceType : userDetails.getServiceType()) {
+				UserService userService = userServiceRepository.fetchbyCompanyNameAndServiceType(
+						existingUser.getCompanyName(), serviceType, userDetails.getUserName());
+				if (userService == null) {
 					UserService newUserService = new UserService();
 					newUserService.setUserId(existingUser.getUser_Id());
 					newUserService.setCompanyName(existingUser.getCompanyName());
@@ -661,10 +743,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					newUserService.setServiceType(serviceType);
 					newUserService.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 					newUserService.setModifiedTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
-					userServiceList.add(newUserService);			
-					}
-				else {
-					if(userService.isService_isDeleted()) {
+					userServiceList.add(newUserService);
+				} else {
+					if (userService.isService_isDeleted()) {
 						userService.setService_isDeleted(false);
 						userService.setModifiedTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 						userServiceList.add(userService);
@@ -672,54 +753,52 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 				}
 			}
 		}
-		if(!userDetails.getDeletedServiceTypes().isEmpty()) {
-			
-			for(String serviceType : userDetails.getDeletedServiceTypes() ) {
-				
-				UserService userService  = userServiceRepository.fetchbyCompanyNameAndServiceType(existingUser.getCompanyName(), serviceType,userDetails.getUserName());
-			
-				if(userService!=null) {
+		if (!userDetails.getDeletedServiceTypes().isEmpty()) {
+
+			for (String serviceType : userDetails.getDeletedServiceTypes()) {
+
+				UserService userService = userServiceRepository.fetchbyCompanyNameAndServiceType(
+						existingUser.getCompanyName(), serviceType, userDetails.getUserName());
+
+				if (userService != null) {
 					userService.setService_isDeleted(true);
 					userService.setModifiedTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 					userServiceList.add(userService);
 				}
-				
-		}
-		}
-	
-		userServiceRepository.saveAll(userServiceList);
 
-	}
-
-	/*private void deleteUserService(User existingUser, List<String> deletedServiceTypes) {
-		List<UserService> userServiceList = new ArrayList<UserService>();
-		if(!deletedServiceTypes.isEmpty()) {
-		for(String serviceType : deletedServiceTypes ) {
-			UserService userService  = userServiceRepository.fetchbyCompanyNameAndServiceType(existingUser.getCompanyName(), serviceType);
-			if(userService!=null) {
-				userService.setService_isDeleted(true);
-				userService.setModifiedTimestamp(Timestamp.from(Instant.now()));
-				userServiceList.add(userService);
 			}
-			
-	}
+		}
+
 		userServiceRepository.saveAll(userServiceList);
+
 	}
-	}*/
+
+	/*
+	 * private void deleteUserService(User existingUser, List<String>
+	 * deletedServiceTypes) { List<UserService> userServiceList = new
+	 * ArrayList<UserService>(); if(!deletedServiceTypes.isEmpty()) { for(String
+	 * serviceType : deletedServiceTypes ) { UserService userService =
+	 * userServiceRepository.fetchbyCompanyNameAndServiceType(existingUser.
+	 * getCompanyName(), serviceType); if(userService!=null) {
+	 * userService.setService_isDeleted(true);
+	 * userService.setModifiedTimestamp(Timestamp.from(Instant.now()));
+	 * userServiceList.add(userService); }
+	 * 
+	 * } userServiceRepository.saveAll(userServiceList); } }
+	 */
 
 	@Override
 	public String deleteUser(String companyName, String roleId) {
 		User existingUser = userRepository.fetchUserbyCompanyName(companyName, Integer.parseInt(roleId));
-		if(existingUser==null) {
+		if (existingUser == null) {
 			return "Company Name does not exist";
-		}
-		else {
+		} else {
 			existingUser.setUser_IsDeleted(true);
 			existingUser.setModifiedTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 			userRepository.save(existingUser);
-			List<UserService> userService_DB  = userServiceRepository.fetchbyCompanyName(companyName);
+			List<UserService> userService_DB = userServiceRepository.fetchbyCompanyName(companyName);
 			List<UserService> userServiceList = new ArrayList<UserService>();
-			for(UserService userService: userService_DB) {
+			for (UserService userService : userService_DB) {
 				userService.setService_isDeleted(true);
 				userService.setModifiedTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 				userServiceList.add(userService);
@@ -748,14 +827,14 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public Trackandtrace getLatestStatusByReferenceNumber(String referenceNumber) {
-		List<Trackandtrace> trackAndTraceList =  trackAndTraceRepository.fetchTrackEventByRefNbr(referenceNumber);
+		List<Trackandtrace> trackAndTraceList = trackAndTraceRepository.fetchTrackEventByRefNbr(referenceNumber);
 		Trackandtrace trackandTrace = null;
-		if(!trackAndTraceList.isEmpty()) {
+		if (!trackAndTraceList.isEmpty()) {
 			trackandTrace = trackAndTraceList.get(0);
 		}
 		return trackandTrace;
 	}
-	
+
 	@Override
 	public List<String> fetchReferenceNumberByUserId(Integer userId) {
 		List<String> referenceNumbers_DB = senderDataRepository.fetchReferenceNumberByUserId(userId);
@@ -764,9 +843,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public Trackandtrace getLatestStatusByArticleID(String articleID) {
-		List<Trackandtrace> trackAndTraceList =  trackAndTraceRepository.fetchTrackEventByArticleID(articleID);
+		List<Trackandtrace> trackAndTraceList = trackAndTraceRepository.fetchTrackEventByArticleID(articleID);
 		Trackandtrace trackandTrace = null;
-		if(!trackAndTraceList.isEmpty()) {
+		if (!trackAndTraceList.isEmpty()) {
 			trackandTrace = trackAndTraceList.get(0);
 		}
 		return trackandTrace;
@@ -779,15 +858,15 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public void logEbayResponse(CompleteSaleResponseType response) {
-				EbayResponse resp = new EbayResponse();
-				resp.setAck(response.getAck().toString());
-				if(null!= response.getErrors() && response.getErrors().length>0) {
-				resp.setShortMessage(response.getErrors(0).getShortMessage());
-				resp.setLongMessage(response.getErrors(0).getLongMessage());
-				}
-				ebayResponseRepository.save(resp);
+		EbayResponse resp = new EbayResponse();
+		resp.setAck(response.getAck().toString());
+		if (null != response.getErrors() && response.getErrors().length > 0) {
+			resp.setShortMessage(response.getErrors(0).getShortMessage());
+			resp.setLongMessage(response.getErrors(0).getLongMessage());
+		}
+		ebayResponseRepository.save(resp);
 	}
-	
+
 	public ClientDashbaord clientDahbaord(Integer userId) {
 		ClientDashbaord clientDashbaord = new ClientDashbaord();
 		clientDashbaord.setConsignmentsCreated(senderDataRepository.fecthConsignmentsCreated(userId));
@@ -811,63 +890,65 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public List<APIRates> fetchAllAPIRates() {
-		List<APIRates> apiRates= (List<APIRates>) apiRatesRepository.findAll();
-    	System.out.println(apiRates.size());
-    	return apiRates;
+		List<APIRates> apiRates = (List<APIRates>) apiRatesRepository.findAll();
+		System.out.println(apiRates.size());
+		return apiRates;
 	}
 
 	@Override
 	public void logEtowerResponse(List<ETowerResponse> responseEntity) {
 		eTowerResponseRepository.saveAll(responseEntity);
-		
+
 	}
+
 	@Override
 	public ResponseMessage insertTrackingDetails(TrackingEventResponse trackEventresponse) {
 		List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
 		List<TrackEventResponseData> responseData = trackEventresponse.getData();
-		ResponseMessage responseMsg =  new ResponseMessage();
+		ResponseMessage responseMsg = new ResponseMessage();
 
-		if(responseData!=null && responseData.isEmpty()) {
+		if (responseData != null && responseData.isEmpty()) {
 			responseMsg.setResponseMessage("No Data from ETower");
-		}
-		else {
-		
-		for(TrackEventResponseData data : responseData ) {
-		if(data!=null &&  data.getEvents()!=null) {
-			
-			for(ETowerTrackingDetails trackingDetails : data.getEvents()) {
-				
-				Trackandtrace trackandTrace = new Trackandtrace();
-				trackandTrace.setArticleID(trackingDetails.getTrackingNo());
-				trackandTrace.setFileName("eTowerAPI");
-		
-                trackandTrace.setTrackEventDateOccured(trackingDetails.getEventTime());
-				trackandTrace.setTrackEventCode(trackingDetails.getEventCode());
-			
-				trackandTrace.setTrackEventDetails(trackingDetails.getActivity());
-				trackandTrace.setCourierEvents(trackingDetails.getActivity());
-				trackandTrace.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()).toString());
-				trackandTrace.setLocation(trackingDetails.getLocation());
-				trackandTrace.setIsDeleted("N");
-				if("ARRIVED AT DESTINATION AIRPORT".equalsIgnoreCase(trackandTrace.getTrackEventDetails()) ||
-						("COLLECTED FROM AIRPORT TERMINAL".equalsIgnoreCase(trackandTrace.getTrackEventDetails())) ||
-							("PREPARING TO DISPATCH".equalsIgnoreCase(trackandTrace.getTrackEventDetails())))
-					{
-					trackandTrace.setIsDeleted("Y");
+		} else {
+
+			for (TrackEventResponseData data : responseData) {
+				if (data != null && data.getEvents() != null) {
+
+					for (ETowerTrackingDetails trackingDetails : data.getEvents()) {
+
+						Trackandtrace trackandTrace = new Trackandtrace();
+						trackandTrace.setArticleID(trackingDetails.getTrackingNo());
+						trackandTrace.setFileName("eTowerAPI");
+
+						trackandTrace.setTrackEventDateOccured(trackingDetails.getEventTime());
+						trackandTrace.setTrackEventCode(trackingDetails.getEventCode());
+
+						trackandTrace.setTrackEventDetails(trackingDetails.getActivity());
+						trackandTrace.setCourierEvents(trackingDetails.getActivity());
+						trackandTrace
+								.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()).toString());
+						trackandTrace.setLocation(trackingDetails.getLocation());
+						trackandTrace.setIsDeleted("N");
+						if ("ARRIVED AT DESTINATION AIRPORT".equalsIgnoreCase(trackandTrace.getTrackEventDetails())
+								|| ("COLLECTED FROM AIRPORT TERMINAL"
+										.equalsIgnoreCase(trackandTrace.getTrackEventDetails()))
+								|| ("PREPARING TO DISPATCH".equalsIgnoreCase(trackandTrace.getTrackEventDetails()))) {
+							trackandTrace.setIsDeleted("Y");
+						}
+						trackAndTraceList.add(trackandTrace);
 					}
-				trackAndTraceList.add(trackandTrace);
+
+				}
 			}
-			
-		}
-		}
-		trackAndTraceRepository.saveAll(trackAndTraceList);
-		trackAndTraceRepository.updateTracking();
-		trackAndTraceRepository.deleteDuplicates();
-		responseMsg.setResponseMessage("Data uploaded successfully from ETower");
+			trackAndTraceRepository.saveAll(trackAndTraceList);
+			trackAndTraceRepository.updateTracking();
+			trackAndTraceRepository.deleteDuplicates();
+			responseMsg.setResponseMessage("Data uploaded successfully from ETower");
 		}
 		return responseMsg;
 	}
-	public List<SenderdataMaster> fetchConsignmentsManifestShippment(List<String> incomingRefNbr){
+
+	public List<SenderdataMaster> fetchConsignmentsManifestShippment(List<String> incomingRefNbr) {
 		return senderDataRepository.fetchConsignmentsManifestShippment(incomingRefNbr);
 	}
 
@@ -877,131 +958,132 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return senderDataRepository.fetchDataForAusPost(refNbrs);
 	}
 
-
 	@Override
 	public int fetchUserIdByReferenceNumber(String reference_number) {
 		int userID = senderDataRepository.fetchUserIdByReferenceNumber(reference_number);
 		return userID;
 	}
 
-
 	@Override
-	public List<String>  fetchArticleIDForFDMCall() {
+	public List<String> fetchArticleIDForFDMCall() {
 		List<String> referenceNumber = trackAndTraceRepository.fetchArticleIDForFDMCall();
 		return referenceNumber;
 	}
 
 	private Map<String, LabelData> processGainLabelsResponse(GainLabelsResponse response) {
-		Map<String, LabelData> barcodeMap= new HashMap<String,LabelData>();
+		Map<String, LabelData> barcodeMap = new HashMap<String, LabelData>();
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
-		 if(response!=null) {
-   			List<LabelData> responseData = response.getData();
-   			if(responseData== null && null!=response.getErrors()) {
-   				 for(EtowerErrorResponse error : response.getErrors()) {
-	     				ETowerResponse errorResponse  = new ETowerResponse();
-   				 	errorResponse.setAPIName("Gain Labels");
-	     			 	errorResponse.setStatus(response.getStatus());
-   				 	errorResponse.setErrorCode(error.getCode());
-   				 	errorResponse.setErrorMessage(error.getMessage());
-   				 	responseEntity.add(errorResponse);
-   				}
-   			}
-   			
-   			for(LabelData data : responseData) {
-   				List<EtowerErrorResponse> errors = data.getErrors();
-   				if(null == errors) {
-   				ETowerResponse errorResponse  = new ETowerResponse();
-				 	errorResponse.setAPIName("Gain Labels");
-   			 	errorResponse.setStatus(data.getStatus());
-   			 	errorResponse.setOrderId(data.getOrderId());
-   		 		errorResponse.setReferenceNumber(data.getReferenceNo());
-   		 		errorResponse.setTrackingNo(data.getTrackingNo());
-   		 		errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
-   		 		responseEntity.add(errorResponse);
-   		 		barcodeMap.put(data.getReferenceNo(), data);
-   				}
-   				else {
-   				 for(EtowerErrorResponse error : errors) {
-   					ETowerResponse errorResponse  = new ETowerResponse();
-	     			 	errorResponse.setAPIName("Gain Labels");
-	     			 	errorResponse.setStatus(response.getStatus());
-	     			 	errorResponse.setStatus(data.getStatus());
-	     			 	errorResponse.setOrderId(data.getOrderId());
-	     		 		errorResponse.setReferenceNumber(data.getReferenceNo());
-	     		 		errorResponse.setTrackingNo(data.getTrackingNo());
-	     		 		errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
-   				    errorResponse.setErrorCode(error.getCode());
-   				 	errorResponse.setErrorMessage(error.getMessage());
-  				 	responseEntity.add(errorResponse);
-   				}
-   				}
-   			}
-   			}
-   				logEtowerResponse(responseEntity);
-   				
+		if (response != null) {
+			List<LabelData> responseData = response.getData();
+			if (responseData == null && null != response.getErrors()) {
+				for (EtowerErrorResponse error : response.getErrors()) {
+					ETowerResponse errorResponse = new ETowerResponse();
+					errorResponse.setAPIName("Gain Labels");
+					errorResponse.setStatus(response.getStatus());
+					errorResponse.setErrorCode(error.getCode());
+					errorResponse.setErrorMessage(error.getMessage());
+					responseEntity.add(errorResponse);
+				}
+			}
+
+			for (LabelData data : responseData) {
+				List<EtowerErrorResponse> errors = data.getErrors();
+				if (null == errors) {
+					ETowerResponse errorResponse = new ETowerResponse();
+					errorResponse.setAPIName("Gain Labels");
+					errorResponse.setStatus(data.getStatus());
+					errorResponse.setOrderId(data.getOrderId());
+					errorResponse.setReferenceNumber(data.getReferenceNo());
+					errorResponse.setTrackingNo(data.getTrackingNo());
+					errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
+					responseEntity.add(errorResponse);
+					barcodeMap.put(data.getReferenceNo(), data);
+				} else {
+					for (EtowerErrorResponse error : errors) {
+						ETowerResponse errorResponse = new ETowerResponse();
+						errorResponse.setAPIName("Gain Labels");
+						errorResponse.setStatus(response.getStatus());
+						errorResponse.setStatus(data.getStatus());
+						errorResponse.setOrderId(data.getOrderId());
+						errorResponse.setReferenceNumber(data.getReferenceNo());
+						errorResponse.setTrackingNo(data.getTrackingNo());
+						errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
+						errorResponse.setErrorCode(error.getCode());
+						errorResponse.setErrorMessage(error.getMessage());
+						responseEntity.add(errorResponse);
+					}
+				}
+			}
+		}
+		logEtowerResponse(responseEntity);
+
 		return barcodeMap;
-		
+
 	}
 
 	@Override
-	public List<String>  fetchDataForAUPost() {
+	public List<String> fetchDataForAUPost() {
 		List<Trackandtrace> trackandtraceData = trackAndTraceRepository.fetchArticleIDForAUPost();
 		List<Trackandtrace> updatedData = new ArrayList<Trackandtrace>();
-		List<String> articleID = new ArrayList<String>(); 
-		if(trackandtraceData.size() >= 10) {
-			for(Trackandtrace data : trackandtraceData) {
+		List<String> articleID = new ArrayList<String>();
+		if (trackandtraceData.size() >= 10) {
+			for (Trackandtrace data : trackandtraceData) {
 				data.setFileName("AUPost");
 				updatedData.add(data);
 				articleID.add(data.getArticleID());
 			}
 			trackAndTraceRepository.saveAll(updatedData);
 		}
-		
+
 		return articleID;
 	}
-	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails,Map<String,String> map) {
+
+	public ResponseMessage insertAUTrackingDetails(TrackingResponse auTrackingDetails, Map<String, String> map) {
 		List<Trackandtrace> trackAndTraceList = new ArrayList<Trackandtrace>();
 		List<TrackingResults> trackingData = auTrackingDetails.getTracking_results();
-		ResponseMessage responseMsg =  new ResponseMessage();
-		if(trackingData.isEmpty()) {
+		ResponseMessage responseMsg = new ResponseMessage();
+		if (trackingData.isEmpty()) {
 			responseMsg.setResponseMessage("No Data from AUPost");
-		}else {
+		} else {
 			SimpleDateFormat output = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-			for(TrackingResults data : trackingData ) {
-				if(data!=null && data.getTrackable_items()!=null) {
-					for(TrackableItems trackingLabel : data.getTrackable_items()) {
-					    Date latestTime = null;
+			for (TrackingResults data : trackingData) {
+				if (data != null && data.getTrackable_items() != null) {
+					for (TrackableItems trackingLabel : data.getTrackable_items()) {
+						Date latestTime = null;
 						try {
 							latestTime = output.parse(map.get(trackingLabel.getArticle_id()));
 						} catch (ParseException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-						
-						if(trackingLabel != null && trackingLabel.getEvents() != null) {
-							for(TrackingEvents trackingEvents: trackingLabel.getEvents()) {
-							    Date eventTime = null;
+
+						if (trackingLabel != null && trackingLabel.getEvents() != null) {
+							for (TrackingEvents trackingEvents : trackingLabel.getEvents()) {
+								Date eventTime = null;
 								try {
-									eventTime = inputFormat.parse(trackingEvents.getDate().substring(0,19));
+									eventTime = inputFormat.parse(trackingEvents.getDate().substring(0, 19));
 								} catch (ParseException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
 
-								if(eventTime.after(latestTime)) {
-								/*System.out.println("Inserting..." + trackingLabel.getArticle_id() +" : "+trackingEvents.getDate().substring(0,19)
-										+ " : "+trackingEvents.getDescription());*/
-								Trackandtrace trackandTrace = new Trackandtrace();
-								//trackandTrace.setRowId(D2ZCommonUtil.generateTrackID());
-								trackandTrace.setArticleID(trackingLabel.getArticle_id());
-								trackandTrace.setTrackEventDetails(trackingEvents.getDescription());
-								trackandTrace.setTrackEventDateOccured(trackingEvents.getDate().substring(0,19));
-								trackandTrace.setLocation(trackingEvents.getLocation());
-								trackandTrace.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
-							//	trackandTrace.setFileName("AU-Post");
-								trackandTrace.setFileName("AUPostTrack");
-								trackAndTraceList.add(trackandTrace);
+								if (eventTime.after(latestTime)) {
+									/*
+									 * System.out.println("Inserting..." + trackingLabel.getArticle_id()
+									 * +" : "+trackingEvents.getDate().substring(0,19) +
+									 * " : "+trackingEvents.getDescription());
+									 */
+									Trackandtrace trackandTrace = new Trackandtrace();
+									// trackandTrace.setRowId(D2ZCommonUtil.generateTrackID());
+									trackandTrace.setArticleID(trackingLabel.getArticle_id());
+									trackandTrace.setTrackEventDetails(trackingEvents.getDescription());
+									trackandTrace.setTrackEventDateOccured(trackingEvents.getDate().substring(0, 19));
+									trackandTrace.setLocation(trackingEvents.getLocation());
+									trackandTrace.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
+									// trackandTrace.setFileName("AU-Post");
+									trackandTrace.setFileName("AUPostTrack");
+									trackAndTraceList.add(trackandTrace);
 								}
 							}
 						}
@@ -1013,16 +1095,15 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		}
 		return responseMsg;
 	}
-	
+
 	@Override
-	public void logAUPostResponse(List<AUPostResponse> aupostresponse)
-	{
+	public void logAUPostResponse(List<AUPostResponse> aupostresponse) {
 		aupostresponseRepository.saveAll(aupostresponse);
 	}
 
 	@Override
 	public void updateCubicWeight() {
-		senderDataRepository.updateCubicWeight();		
+		senderDataRepository.updateCubicWeight();
 	}
 
 	@Override
@@ -1047,8 +1128,8 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public List<FastwayPostcode> fetchFWPostCodeZone() {
-		List<FastwayPostcode> postCodeFWZoneList= (List<FastwayPostcode>) fastwayPostcodeRepository.findAll();
-    	return postCodeFWZoneList;
+		List<FastwayPostcode> postCodeFWZoneList = (List<FastwayPostcode>) fastwayPostcodeRepository.findAll();
+		return postCodeFWZoneList;
 	}
 
 	@Override
@@ -1061,7 +1142,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public String fetchUserById(int userId) {
-		return userRepository.fetchUserById( userId);
+		return userRepository.fetchUserById(userId);
 	}
 
 	@Override
@@ -1069,15 +1150,16 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public List<String> getArticleIDForFreiPostTracking() {
 		return trackAndTraceRepository.getArticleIDForFreiPostTracking();
 	}
-	
+
 	public EnquiryResponse createEnquiry(Enquiry createEnquiry) throws ReferenceNumberNotUniqueException {
 		List<CSTickets> csTctList = new ArrayList<CSTickets>();
-		for(CreateEnquiryRequest enquiryRequest:createEnquiry.getEnquiryDetails()) {
+		for (CreateEnquiryRequest enquiryRequest : createEnquiry.getEnquiryDetails()) {
 			CSTickets tickets = new CSTickets();
 			String timestamp = null;
-			if(enquiryRequest.getType().equalsIgnoreCase("Article Id")) {
-				SenderdataMaster senderArticleId = senderDataRepository.fetchDataArticleId(enquiryRequest.getIdentifier());
-				if(null != senderArticleId) {
+			if (enquiryRequest.getType().equalsIgnoreCase("Article Id")) {
+				SenderdataMaster senderArticleId = senderDataRepository
+						.fetchDataArticleId(enquiryRequest.getIdentifier());
+				if (null != senderArticleId) {
 					tickets.setArticleID(senderArticleId.getArticleId());
 					tickets.setReferenceNumber(senderArticleId.getReference_number());
 					tickets.setConsigneeName(senderArticleId.getConsignee_name());
@@ -1088,27 +1170,32 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setProductDescription(senderArticleId.getProduct_Description());
 					tickets.setBarcodelabelNumber(senderArticleId.getBarcodelabelNumber());
 					tickets.setCarrier(senderArticleId.getCarrier());
-					if(senderArticleId.getAirwayBill() !=null) {
-					timestamp = senderArticleId.getTimestamp();
+					if (senderArticleId.getAirwayBill() != null) {
+						timestamp = senderArticleId.getTimestamp();
 					}
-					tickets.setTicketID("INC"+D2ZCommonUtil.getday()+csticketsRepository.fetchNextSeq().toString());
+					tickets.setTicketID("INC" + D2ZCommonUtil.getday() + csticketsRepository.fetchNextSeq().toString());
 					tickets.setComments(enquiryRequest.getComments());
 					tickets.setDeliveryEnquiry(enquiryRequest.getEnquiry());
 					tickets.setPod(enquiryRequest.getPod());
 					tickets.setStatus("open");
-					tickets.setUserId( userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
-					tickets.setClientBrokerId(userRepository.fetchClientBrokerIdbyUserName(createEnquiry.getUserName()));
+					tickets.setUserId(userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
+					tickets.setClientBrokerId(
+							userRepository.fetchClientBrokerIdbyUserName(createEnquiry.getUserName()));
 					tickets.setEnquiryOpenDate(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
-					TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(tickets.getConsigneePostcode());
-					if( null != transitTimeResponse && null != transitTimeResponse.getTransitTime() && null !=timestamp) {
-						String deliveryDate = D2ZCommonUtil.getIncreasedTime(timestamp,transitTimeResponse.getTransitTime());
+					TransitTime transitTimeResponse = transitTimeRepository
+							.fetchTransitTime(tickets.getConsigneePostcode());
+					if (null != transitTimeResponse && null != transitTimeResponse.getTransitTime()
+							&& null != timestamp) {
+						String deliveryDate = D2ZCommonUtil.getIncreasedTime(timestamp,
+								transitTimeResponse.getTransitTime());
 						tickets.setExpectedDeliveryDate(deliveryDate);
 					}
 					csTctList.add(tickets);
 				}
-			}else if(enquiryRequest.getType().equalsIgnoreCase("Reference Number")) {
-				SenderdataMaster senderRefId = senderDataRepository.fetchDataReferenceNum(enquiryRequest.getIdentifier());
-				if(null != senderRefId) {
+			} else if (enquiryRequest.getType().equalsIgnoreCase("Reference Number")) {
+				SenderdataMaster senderRefId = senderDataRepository
+						.fetchDataReferenceNum(enquiryRequest.getIdentifier());
+				if (null != senderRefId) {
 					tickets.setArticleID(senderRefId.getArticleId());
 					tickets.setReferenceNumber(senderRefId.getReference_number());
 					tickets.setConsigneeName(senderRefId.getConsignee_name());
@@ -1119,20 +1206,24 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 					tickets.setProductDescription(senderRefId.getProduct_Description());
 					tickets.setBarcodelabelNumber(senderRefId.getBarcodelabelNumber());
 					tickets.setCarrier(senderRefId.getCarrier());
-					if(senderRefId.getAirwayBill() !=null) {
+					if (senderRefId.getAirwayBill() != null) {
 						timestamp = senderRefId.getTimestamp();
 					}
-					tickets.setTicketID("INC"+D2ZCommonUtil.getday()+csticketsRepository.fetchNextSeq().toString());
+					tickets.setTicketID("INC" + D2ZCommonUtil.getday() + csticketsRepository.fetchNextSeq().toString());
 					tickets.setComments(enquiryRequest.getComments());
 					tickets.setDeliveryEnquiry(enquiryRequest.getEnquiry());
 					tickets.setPod(enquiryRequest.getPod());
 					tickets.setStatus("open");
-					tickets.setUserId( userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
-					tickets.setClientBrokerId(userRepository.fetchClientBrokerIdbyUserName(createEnquiry.getUserName()));
+					tickets.setUserId(userRepository.fetchUserIdbyUserName(createEnquiry.getUserName()));
+					tickets.setClientBrokerId(
+							userRepository.fetchClientBrokerIdbyUserName(createEnquiry.getUserName()));
 					tickets.setEnquiryOpenDate(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
-					TransitTime transitTimeResponse = transitTimeRepository.fetchTransitTime(tickets.getConsigneePostcode());
-					if( null != transitTimeResponse && null != transitTimeResponse.getTransitTime() && null !=timestamp) {
-						String deliveryDate = D2ZCommonUtil.getIncreasedTime(timestamp,transitTimeResponse.getTransitTime());
+					TransitTime transitTimeResponse = transitTimeRepository
+							.fetchTransitTime(tickets.getConsigneePostcode());
+					if (null != transitTimeResponse && null != transitTimeResponse.getTransitTime()
+							&& null != timestamp) {
+						String deliveryDate = D2ZCommonUtil.getIncreasedTime(timestamp,
+								transitTimeResponse.getTransitTime());
 						tickets.setExpectedDeliveryDate(deliveryDate);
 					}
 					csTctList.add(tickets);
@@ -1140,69 +1231,65 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 			}
 		}
 		EnquiryResponse usrMsg = new EnquiryResponse();
-		if(csTctList.size() > 0 ) {
-			List<String> incomingRefNbr = csTctList.stream().map(obj -> { return obj.getReferenceNumber(); }).collect(Collectors.toList());
+		if (csTctList.size() > 0) {
+			List<String> incomingRefNbr = csTctList.stream().map(obj -> {
+				return obj.getReferenceNumber();
+			}).collect(Collectors.toList());
 			isReferenceNumberUniqueUI(incomingRefNbr);
-			for(CSTickets csTicket: csTctList) {
-				if(null ==  csTicket.getReferenceNumber()) {
-					throw new ReferenceNumberNotUniqueException("Reference Number (or) Article Id is not avilable in the system",null);
+			for (CSTickets csTicket : csTctList) {
+				if (null == csTicket.getReferenceNumber()) {
+					throw new ReferenceNumberNotUniqueException(
+							"Reference Number (or) Article Id is not avilable in the system", null);
 				}
 			}
 			csticketsRepository.saveAll(csTctList);
 			List<String> tickets = new ArrayList<String>();
-			for(CSTickets csTicket:csTctList) {
+			for (CSTickets csTicket : csTctList) {
 				tickets.add(csTicket.getTicketID());
 			}
 			usrMsg.setMessage("Enquiry created Successfully");
 			usrMsg.setTicketId(tickets);
 			return usrMsg;
-		}else {
+		} else {
 			usrMsg.setMessage("Records are Not avilable for the given Enquiry");
 			return usrMsg;
 		}
-		
+
 	}
-	
-	
-	public void isReferenceNumberUniqueUI(List<String> incomingRefNbr) throws ReferenceNumberNotUniqueException{
+
+	public void isReferenceNumberUniqueUI(List<String> incomingRefNbr) throws ReferenceNumberNotUniqueException {
 		System.out.println(incomingRefNbr.toString());
 		List<String> referenceNumber_DB = csticketsRepository.fetchAllReferenceNumbers();
 		referenceNumber_DB.addAll(incomingRefNbr);
-		
+
 		System.out.println(referenceNumber_DB);
-		List<String> duplicateRefNbr = referenceNumber_DB.stream().collect(Collectors.groupingBy(Function.identity(),     
-	              Collectors.counting()))                                             
-	          .entrySet().stream()
-	          .filter(e -> e.getValue() > 1)                                      
-	          .map(e -> e.getKey())                                                  
-	          .collect(Collectors.toList());
-		
-		if(!duplicateRefNbr.isEmpty()) {
-			throw new ReferenceNumberNotUniqueException("Reference Number or Article Id must be unique",duplicateRefNbr);
+		List<String> duplicateRefNbr = referenceNumber_DB.stream()
+				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).entrySet().stream()
+				.filter(e -> e.getValue() > 1).map(e -> e.getKey()).collect(Collectors.toList());
+
+		if (!duplicateRefNbr.isEmpty()) {
+			throw new ReferenceNumberNotUniqueException("Reference Number or Article Id must be unique",
+					duplicateRefNbr);
 		}
 	}
 
 	@Override
 	public List<CSTickets> fetchEnquiry(String status, String fromDate, String toDate, String userId) {
 		List<CSTickets> enquiryDetails = null;
-		Integer[] userIds = Arrays.stream(userId.split(","))
-		        .map(String::trim)
-		        .map(Integer::valueOf)
-		        .toArray(Integer[]::new);
-		if(!fromDate.equals("null") && !toDate.equals("null") ) {
-			enquiryDetails = csticketsRepository.fetchEnquiry( fromDate, toDate, userIds);
-		}else {
-			enquiryDetails = csticketsRepository.fetchEnquiry( userIds);
+		Integer[] userIds = Arrays.stream(userId.split(",")).map(String::trim).map(Integer::valueOf)
+				.toArray(Integer[]::new);
+		if (!fromDate.equals("null") && !toDate.equals("null")) {
+			enquiryDetails = csticketsRepository.fetchEnquiry(fromDate, toDate, userIds);
+		} else {
+			enquiryDetails = csticketsRepository.fetchEnquiry(userIds);
 		}
 		return enquiryDetails;
 	}
 
 	@Override
 	public List<CSTickets> fetchCompletedEnquiry(String userId) {
-		Integer[] userIds = Arrays.stream(userId.split(","))
-		        .map(String::trim)
-		        .map(Integer::valueOf)
-		        .toArray(Integer[]::new);
+		Integer[] userIds = Arrays.stream(userId.split(",")).map(String::trim).map(Integer::valueOf)
+				.toArray(Integer[]::new);
 		List<CSTickets> enquiryDetails = csticketsRepository.fetchCompletedEnquiry(userIds);
 		return enquiryDetails;
 	}
@@ -1223,20 +1310,20 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public void logcurrencyRate() {
 		// TODO Auto-generated method stub
-		List<CurrencyDetails> currencyList =currencyproxy.currencyRate();
+		List<CurrencyDetails> currencyList = currencyproxy.currencyRate();
 		currencyRepository.deleteAll();
 		List<Currency> currencyObjList = new ArrayList<Currency>();
-		for(CurrencyDetails currencyValue: currencyList) {
-		Currency currencyObj = new Currency();
-		currencyObj.setAudCurrencyRate(currencyValue.getAudCurrencyRate().doubleValue());
-		currencyObj.setCountry(currencyValue.getCountry());
-		currencyObj.setCurrencyCode(currencyValue.getCurrencyCode());
-		currencyObj.setLastUpdated(new Date());
-		currencyObjList.add(currencyObj);
+		for (CurrencyDetails currencyValue : currencyList) {
+			Currency currencyObj = new Currency();
+			currencyObj.setAudCurrencyRate(currencyValue.getAudCurrencyRate().doubleValue());
+			currencyObj.setCountry(currencyValue.getCountry());
+			currencyObj.setCurrencyCode(currencyValue.getCurrencyCode());
+			currencyObj.setLastUpdated(new Date());
+			currencyObjList.add(currencyObj);
 		}
 
 		currencyRepository.saveAll(currencyObjList);
-		
+
 	}
 
 	@Override
@@ -1249,7 +1336,6 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		return senderDataRepository.fetchConsignmentsByRefNbr(incomingRefNbr);
 	}
 
-
 	@Override
 	public List<SenderdataMaster> fetchConsignmentsByRefNbr(List<String> refNbrs) {
 		return senderDataRepository.fetchConsignmentsByRefNbr(refNbrs);
@@ -1257,11 +1343,12 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public List<Returns> returnsOutstanding(String fromDate, String toDate, String userId) {
-		Integer[] userIds = Arrays.stream(userId.split(",")).map(String::trim).map(Integer::valueOf).toArray(Integer[]::new);
+		Integer[] userIds = Arrays.stream(userId.split(",")).map(String::trim).map(Integer::valueOf)
+				.toArray(Integer[]::new);
 		List<Returns> returnsDetails = new ArrayList<Returns>();
-		if(!fromDate.equals("null")  && !toDate.equals("null")) {
-			returnsDetails = returnsRepository.fetchOutstandingDetails(fromDate,toDate,userIds);
-		}else {
+		if (!fromDate.equals("null") && !toDate.equals("null")) {
+			returnsDetails = returnsRepository.fetchOutstandingDetails(fromDate, toDate, userIds);
+		} else {
 			returnsDetails = returnsRepository.fetchOutstandingCompleteDetails(userIds);
 		}
 		return returnsDetails;
@@ -1271,12 +1358,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public List<SenderdataMaster> fetchShipmentDatabyType(List<String> number, List<Integer> listOfClientId,
 			String type) {
 		List<SenderdataMaster> senderData;
-		if(type.equals("articleid")){
+		if (type.equals("articleid")) {
 			senderData = senderDataRepository.fetchShipmentDatabyArticleId(number, listOfClientId);
-		}
-		else if(type.equals("barcodelabel")){
+		} else if (type.equals("barcodelabel")) {
 			senderData = senderDataRepository.fetchShipmentDatabyBarcode(number, listOfClientId);
-		}else{
+		} else {
 			System.out.print("in else");
 			senderData = senderDataRepository.fetchShipmentDatabyReference(number, listOfClientId);
 		}
@@ -1285,8 +1371,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public UserMessage returnAction(List<ReturnsAction> returnsAction) {
-		for(ReturnsAction actionRequest:returnsAction) {
-			returnsRepository.updateReturnAction(actionRequest.getAction(), actionRequest.getResendRefNumber(), actionRequest.getArticleId());
+		for (ReturnsAction actionRequest : returnsAction) {
+			returnsRepository.updateReturnAction(actionRequest.getAction(), actionRequest.getResendRefNumber(),
+					actionRequest.getArticleId());
 		}
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage("Return Action Updated Successfully");
@@ -1304,20 +1391,20 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public void updateSystemRefCount(Map<String, Integer> currentSysRefCount) {
 		List<SystemRefCount> systemRefCountList = new ArrayList<SystemRefCount>();
-		for(String supplier : currentSysRefCount.keySet() ) {
-			if(currentSysRefCount.get(supplier)>0) {
-			SystemRefCount sysRefCount = new SystemRefCount();
-			sysRefCount.setSupplier(supplier);
-			sysRefCount.setSystemRefNo(currentSysRefCount.get(supplier));
-			systemRefCountList.add(sysRefCount);
+		for (String supplier : currentSysRefCount.keySet()) {
+			if (currentSysRefCount.get(supplier) > 0) {
+				SystemRefCount sysRefCount = new SystemRefCount();
+				sysRefCount.setSupplier(supplier);
+				sysRefCount.setSystemRefNo(currentSysRefCount.get(supplier));
+				systemRefCountList.add(sysRefCount);
 			}
 		}
 		systemRefCountRepository.saveAll(systemRefCountList);
 	}
 
 	@Override
-	public UserMessage enquiryFileUpload(byte[] blob,String fileName, String ticketNumber) {
-		csticketsRepository.enquiryFileUpload(blob, fileName,ticketNumber);
+	public UserMessage enquiryFileUpload(byte[] blob, String fileName, String ticketNumber) {
+		csticketsRepository.enquiryFileUpload(blob, fileName, ticketNumber);
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage("Enquiry Data Updated Successfully");
 		return usrMsg;
@@ -1332,6 +1419,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	public String fetchServiceType(String articleID) {
 		return senderDataRepository.fetchServiceType(articleID);
 	}
+
 	@Override
 	public List<String> fetchMlidsBasedOnSupplier(String supplier) {
 		return consigneeCountRepository.getMlidBasedonSupplier(supplier);
@@ -1339,14 +1427,15 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public List<StarTrackPostcode> fetchSTPostCodeZone() {
-		List<StarTrackPostcode> postCodeSTZoneList= (List<StarTrackPostcode>) starTrackPostcodeRepository.findAll();
-    	return postCodeSTZoneList;
+		List<StarTrackPostcode> postCodeSTZoneList = (List<StarTrackPostcode>) starTrackPostcodeRepository.findAll();
+		return postCodeSTZoneList;
 	}
 
 	@Override
 	public UserMessage enquiryFileUpload(List<SuperUserEnquiry> SuperUserEnquiry) {
-		for(SuperUserEnquiry enquiry:SuperUserEnquiry) {
-			csticketsRepository.enquiryUpdate(enquiry.getTicketNumber(), enquiry.getComments(), enquiry.getD2zComments(), enquiry.getSendUpdate(), enquiry.getStatus());
+		for (SuperUserEnquiry enquiry : SuperUserEnquiry) {
+			csticketsRepository.enquiryUpdate(enquiry.getTicketNumber(), enquiry.getComments(),
+					enquiry.getD2zComments(), enquiry.getSendUpdate(), enquiry.getStatus());
 		}
 		UserMessage usrMsg = new UserMessage();
 		usrMsg.setMessage("Enquiry Data Updated Successfully");
@@ -1359,7 +1448,7 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		usrMsg.setMessage("Enquiry Comments Updated Successfully");
 		return usrMsg;
 	}
-	
+
 	public UserMessage enquiryUpdate(String ticketNum, String cmts, String d2zCmts, String update, String sts) {
 		csticketsRepository.enquiryUpdate(ticketNum, cmts, d2zCmts, update, sts);
 		UserMessage usrMsg = new UserMessage();
@@ -1375,11 +1464,11 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 
 	@Override
 	public List<String> fetchPerformanceReportData() {
-		return senderDataRepository.fetchPerformanceReportData() ;
+		return senderDataRepository.fetchPerformanceReportData();
 	}
 
 	@Override
-	public List<PerformanceReportTrackingData> fetchArticleIdForPerformanceReport(int day,int month) {
+	public List<PerformanceReportTrackingData> fetchArticleIdForPerformanceReport(int day, int month) {
 		List<PerformanceReportTrackingData> trackingData = new ArrayList<PerformanceReportTrackingData>();
 		List<Object[]> objArr = senderDataRepository.fetchArticleIdForPerformanceReport(month);
 		objArr.forEach(obj -> trackingData.add(new PerformanceReportTrackingData(obj)));
@@ -1417,9 +1506,9 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public void updateForPFLSubmitOrder(List<String> fastwayOrderId,String status) {
-		trackAndTraceRepository.updateForPFLSubmitOrder(fastwayOrderId,status);
-		
+	public void updateForPFLSubmitOrder(List<String> fastwayOrderId, String status) {
+		trackAndTraceRepository.updateForPFLSubmitOrder(fastwayOrderId, status);
+
 	}
 
 	@Override
@@ -1428,20 +1517,20 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 		List<Object[]> objArr = senderDataRepository.fetchDataForPFLSubmitOrder();
 		objArr.forEach(obj -> submitOrderData.add(new PFLSubmitOrderData(obj)));
 		return submitOrderData;
-	
+
 	}
 
 	@Override
 	public void updateForPFLSubmitOrderCompleted() {
-		trackAndTraceRepository.updateForPFLSubmitOrderCompleted();	
+		trackAndTraceRepository.updateForPFLSubmitOrderCompleted();
 	}
 
 	@Override
 	public List<NZPostcodes> fetchAllNZPostCodeZone() {
 
-    	List<NZPostcodes> postCodeZoneList= (List<NZPostcodes>) nzPostcodesRepository.findAll();
-    	System.out.println(postCodeZoneList.size());
-    	return postCodeZoneList;
+		List<NZPostcodes> postCodeZoneList = (List<NZPostcodes>) nzPostcodesRepository.findAll();
+		System.out.println(postCodeZoneList.size());
+		return postCodeZoneList;
 	}
 
 	@Override
@@ -1458,14 +1547,14 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	@Override
 	public List<String> fetchPerformanceReportDataByArticleId(List<String> articleIds) {
 		// TODO Auto-generated method stub
-		return senderDataRepository.fetchPerformanceReportDataByArticleId(articleIds) ;
+		return senderDataRepository.fetchPerformanceReportDataByArticleId(articleIds);
 	}
 
 	@Override
 	public Map<String, com.d2z.d2zservice.model.TrackingEvents> fetchTrackingEvents(List<String> articleIds) {
 		List<TrackingEvent> data = trackingEventRepository.findbyArticleIds(articleIds);
-		Map<String, com.d2z.d2zservice.model.TrackingEvents>  trackingDataMap = new HashMap<String, com.d2z.d2zservice.model.TrackingEvents>();
-		data.forEach(obj->{
+		Map<String, com.d2z.d2zservice.model.TrackingEvents> trackingDataMap = new HashMap<String, com.d2z.d2zservice.model.TrackingEvents>();
+		data.forEach(obj -> {
 			com.d2z.d2zservice.model.TrackingEvents events = new com.d2z.d2zservice.model.TrackingEvents();
 			events.setEventDetails(obj.getTrackEventDetails());
 			events.setTrackEventDateOccured(obj.getTrackEventDateOccured());
@@ -1475,18 +1564,96 @@ public ResponseMessage editConsignments(List<EditConsignmentRequest> requestList
 	}
 
 	@Override
-	public void saveTrackingEvents(String articleId,com.d2z.d2zservice.model.TrackingEvents trackEvents) {
-		
-			TrackingEvent event= new TrackingEvent();
-			event.setOrderId(articleId);
-			event.setTrackEventDateOccured(trackEvents.getTrackEventDateOccured());
-			event.setTrackEventDetails(trackEvents.getEventDetails());
-		
+	public void saveTrackingEvents(String articleId, com.d2z.d2zservice.model.TrackingEvents trackEvents) {
+
+		TrackingEvent event = new TrackingEvent();
+		event.setOrderId(articleId);
+		event.setTrackEventDateOccured(trackEvents.getTrackEventDateOccured());
+		event.setTrackEventDetails(trackEvents.getEventDetails());
+
 		trackingEventRepository.save(event);
 	}
 
-	
+	@Override
+	public List<PFLPostcode> fetchAllPFLPostCodeZone() {
 
+		List<PFLPostcode> postCodeZoneList = (List<PFLPostcode>) pflPostcodesRepository.findAll();
+		return postCodeZoneList;
+	}
+
+	@Override
+	public List<String> fetchDataForFDMCall(String[] refNbrs) {
+		return senderDataRepository.fetchDataForFDMCall(refNbrs);
+	}
+
+	@Override
+	public List<MasterPostCode> fetchAllMasterPostCodeZone() {
+		// TODO Auto-generated method stub
+		return (List<MasterPostCode>) masterPostcodesRepository.findAll();
+	}
+
+	@Override
+	public ResponseMessage createTrackEvents(List<TrackParcelResponse> request) {
+
+		
+		ResponseMessage responseMsg = new ResponseMessage();
+
+		SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat output = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		Date eventTime = null;
+		Date latestTime = null;
+		List<TrackEvents> events = new ArrayList<TrackEvents>();
+		for (TrackParcelResponse data : request) {
+			TrackEvents eventDB = trackEventsRepository.fetchLatestStatus(data.getArticleId());
+			List<com.d2z.d2zservice.model.TrackingEvents> trackingEvents = data.getTrackingEvents();
+			for (com.d2z.d2zservice.model.TrackingEvents trackingEvent : trackingEvents) {
+				if (eventDB != null) {
+
+					try {
+						eventTime = inputFormat.parse(trackingEvent.getTrackEventDateOccured());
+						latestTime = output.parse(eventDB.getTrackEventDateOccured());
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+					if (eventTime.after(latestTime)) {
+						System.out.println(eventTime+"::::::"+latestTime);
+						insertTrackEvents(events,data.getArticleId(),trackingEvent);
+					}
+
+				}else {
+					 insertTrackEvents(events,data.getArticleId(),trackingEvent);
+				}
+			}
+			if(events.size()>0) {
+			trackEventsRepository.saveAll(events);
+			}
+			responseMsg.setResponseMessage("Events updated successfully");
+		}
+		return responseMsg;
+
+	}
+
+	private void insertTrackEvents(List<TrackEvents> events,String articleId, com.d2z.d2zservice.model.TrackingEvents trackingEvent) {
+		
+		TrackEvents trackandTrace = new TrackEvents();
+		trackandTrace.setArticleID(articleId);
+		trackandTrace.setFileName("FDMTracking");
+		trackandTrace.setTrackEventDateOccured(trackingEvent.getTrackEventDateOccured());
+		trackandTrace.setTrackEventDetails(trackingEvent.getEventDetails());
+		trackandTrace.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
+		trackandTrace.setReference_number(articleId);
+		trackandTrace.setLocation(trackingEvent.getLocation());
+		trackandTrace.setTrackEventCode(trackingEvent.getStatusCode());
+		trackandTrace.setIsDeleted("N");
+		events.add(trackandTrace);		
+	}
+
+	@Override
+	public List<TrackEvents> fetchEventsFromTrackEvents(List<String> articleIds) {
+		// TODO Auto-generated method stub
+		return trackEventsRepository.fetchEventsFromTrackEvents(articleIds);
+	}
 	
 
 }

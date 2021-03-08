@@ -12,7 +12,21 @@ public class DownloadInvice {
 	private String total;
 	private String serviceType;
 	private String airwaybill;
+	private String suburb;
+	private String zone;
 	
+	public String getSuburb() {
+		return suburb;
+	}
+	public void setSuburb(String suburb) {
+		this.suburb = suburb;
+	}
+	public String getZone() {
+		return zone;
+	}
+	public void setZone(String zone) {
+		this.zone = zone;
+	}
 	public String getBrokerName() {
 		return brokerName;
 	}

@@ -98,9 +98,25 @@ public class SenderData {
 	private String returnAddress2;
 	private boolean dangerousGoods;
 	private String vendorId;
+	private String d2zRate;
+	private String brokerRate;
 	
-	
-	
+	public String getD2zRate() {
+		return d2zRate;
+	}
+
+	public void setD2zRate(String d2zRate) {
+		this.d2zRate = d2zRate;
+	}
+
+	public String getBrokerRate() {
+		return brokerRate;
+	}
+
+	public void setBrokerRate(String brokerRate) {
+		this.brokerRate = brokerRate;
+	}
+
 	public String getVendorId() {
 		return vendorId;
 	}

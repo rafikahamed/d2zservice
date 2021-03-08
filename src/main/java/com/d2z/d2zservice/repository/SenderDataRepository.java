@@ -52,25 +52,25 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 
 	@Query(nativeQuery = true, value="SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
 		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
-		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions, consigneeCompany, carrier, consignee_addr2,returnAddress1,returnAddress2,Product_Description,Servicetype,User_ID FROM senderdata_master\n" + 
+		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions, consigneeCompany, carrier, consignee_addr2,returnAddress1,returnAddress2,Product_Description,Servicetype,User_ID,D2ZRate,BrokerRate FROM senderdata_master\n" + 
 		" WHERE reference_number IN (:refBarNum) and isDeleted != 'Y'" + 
 		" UNION\n" + 
 		" SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
 		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
-		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions,consigneeCompany, carrier,consignee_addr2,returnAddress1,returnAddress2,Product_Description,Servicetype,User_ID FROM senderdata_master\n" + 
+		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions,consigneeCompany, carrier,consignee_addr2,returnAddress1,returnAddress2,Product_Description,Servicetype,User_ID,D2ZRate,BrokerRate FROM senderdata_master\n" + 
 	    " WHERE articleId IN (:refBarNum) and isDeleted != 'Y'") 
 
     List<String> fetchTrackingLabel(@Param("refBarNum") List<String> refBarNum);
 
 	@Query(nativeQuery = true, value="SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
 	 		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
-	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions, consigneeCompany, carrier, consignee_addr2,returnAddress1,returnAddress2,Product_Description,Servicetype,User_ID FROM senderdata_master\n" + 
+	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions, consigneeCompany, carrier, consignee_addr2,returnAddress1,returnAddress2,Product_Description,Servicetype,User_ID,D2ZRate,BrokerRate FROM senderdata_master\n" + 
 	 		" WHERE articleId IN (:refBarNum) and isDeleted != 'Y'") 
 	List<String> fetchTrackingLabelByArticleId(@Param("refBarNum") List<String> refBarNum);
 	 
 	@Query(nativeQuery = true, value="SELECT reference_number, consignee_name, consignee_addr1, consignee_Suburb, consignee_State, consignee_Postcode, consignee_Phone,\n" + 
 	 		" weight, shipper_Name, shipper_Addr1, shipper_City, shipper_State, shipper_Country,\n" + 
-	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions, consigneeCompany, carrier, consignee_addr2,returnAddress1,returnAddress2,Product_Description,Servicetype,User_ID FROM senderdata_master\n" + 
+	 		" shipper_Postcode, barcodelabelNumber, datamatrix, injectionState, sku, labelSenderName, deliveryInstructions, consigneeCompany, carrier, consignee_addr2,returnAddress1,returnAddress2,Product_Description,Servicetype,User_ID,D2ZRate,BrokerRate FROM senderdata_master\n" + 
 	 		" WHERE reference_number IN (:refBarNum) and isDeleted != 'Y'") 
 	List<String> fetchTrackingLabelByReferenceNbr(@Param("refBarNum") List<String> refBarNum);
 	 
@@ -912,5 +912,8 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 			+ "where s.user_id in (189762,189765) and s.IsDeleted = 'N' and s.Status = 'SHIPMENT ALLOCATED' "
 			+  "and s.articleId in (:articleIds)")
 	List<String> fetchPerformanceReportDataByArticleId(List<String> articleIds);
+
+	@Query("SELECT t.articleId FROM SenderdataMaster t where t.reference_number in (:Reference_number) and t.servicetype = 'RC1'")
+	List<String> fetchDataForFDMCall(@Param("Reference_number")String[] refNbrs);
 
 } 

@@ -19,8 +19,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.d2z.d2zservice.interceptor.RequestResponseLoggingInterceptor;
+import com.d2z.d2zservice.model.fdm.FDMLabelRequest;
+import com.d2z.d2zservice.model.fdm.FDMLabelResponse;
 import com.d2z.d2zservice.model.fdm.FDMManifestRequest;
 import com.d2z.d2zservice.model.fdm.FDMManifestResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.gson.Gson;
 
 @Service
@@ -30,6 +35,50 @@ public class FDMProxy {
     private String url;
 	public String makeCallToFDMManifestMapping(FDMManifestRequest request) 
 	{
+		Gson gson = new Gson();
+		String jsonStr = gson.toJson(request); 
+		JSONObject json = new JSONObject(jsonStr);
+		String requestXml = XML.toString(json);
+		System.out.println("FDM Request XML --> "+requestXml); 
+		System.out.println("FDM URL--> "+url);
+		//String url = "https://my.fdm.com/TestWebAPI/api/ManifestMessaging"; //test url
+		//String url = "https://my.fdm.com.au/MyFdmWebAPI/api/ManifestMessaging";//prod url
+		ClientHttpRequestFactory factory = new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory());
+		RestTemplate template = new RestTemplate(factory);
+		template.setInterceptors(Collections.singletonList(new RequestResponseLoggingInterceptor()));
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_XML);
+		 String base64encodedString = null;
+		try {
+			String userName = "D2Z";
+			String password = "khdgh780EFW8ge34Dv";
+			String auth = userName+":"+password;
+			base64encodedString = Base64.getEncoder().encodeToString(auth.getBytes("utf-8"));
+			System.out.println("base64encodedString ::: "+ base64encodedString);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		headers.add("Authorization","Basic "+ base64encodedString);
+		
+		HttpEntity<String> requestEntity = new HttpEntity<>(requestXml, headers);
+		
+		ResponseEntity<FDMManifestResponse> responseEntity = template.exchange(url, HttpMethod.POST, requestEntity, FDMManifestResponse.class);
+		System.out.println("FDM Status Code --->"+responseEntity.getStatusCode());
+		FDMManifestResponse response = responseEntity.getBody();
+	    //re
+		
+		 ObjectWriter ow = new ObjectMapper().writer();
+	        String jsonResponse = null;
+			try {
+				jsonResponse = ow.writeValueAsString(response);
+				System.out.println(jsonResponse);
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+		return ""+responseEntity.getStatusCodeValue();
+	}
+	public String makeCallToFDMLabel(FDMLabelRequest request) {
 		Gson gson = new Gson();
 		String jsonStr = gson.toJson(request); 
 		JSONObject json = new JSONObject(jsonStr);
@@ -57,10 +106,19 @@ public class FDMProxy {
 		
 		HttpEntity<String> requestEntity = new HttpEntity<>(requestXml, headers);
 		
-		ResponseEntity<FDMManifestResponse> responseEntity = template.exchange(url, HttpMethod.POST, requestEntity, FDMManifestResponse.class);
+		ResponseEntity<FDMLabelResponse> responseEntity = template.exchange("https://api.fdmlogistics.com.au/FDM/api/Label", HttpMethod.POST, requestEntity, FDMLabelResponse.class);
 		System.out.println("FDM Status Code --->"+responseEntity.getStatusCode());
-		FDMManifestResponse response = responseEntity.getBody();
+		FDMLabelResponse response = responseEntity.getBody();
 	    //re
+		
+		 ObjectWriter ow = new ObjectMapper().writer();
+	        String jsonResponse = null;
+			try {
+				jsonResponse = ow.writeValueAsString(response);
+				System.out.println(jsonResponse);
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
 		return ""+responseEntity.getStatusCodeValue();
 	}
 }

@@ -3,15 +3,18 @@ package com.d2z.singleton;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.FastwayPostcode;
+import com.d2z.d2zservice.entity.MasterPostCode;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.StarTrackPostcode;
 import com.d2z.d2zservice.util.BeanUtil;
 import com.d2z.d2zservice.entity.NZPostcodes;
+import com.d2z.d2zservice.entity.PFLPostcode;
 
 public class D2ZSingleton {
 	
@@ -26,10 +29,21 @@ public class D2ZSingleton {
 	private static Map<String,String> postCodeZoneMap;
 	private static Map<String,String> fwPostCodeZoneNoMap;
 	private static List<String> nzPostCodeZoneList;
+	private static List<String> pflPostCodeZoneList;
+	
+	private static List<String> masterPflPostCodeZoneList;
+	private static List<String> masterFWPostCodeZoneList;
+	private static List<String> masterPostCodeZone3List;
+	private static List<String> masterPostCodeZone4List;
+	private static List<String> masterTollPostCodeList;
+	
+	private static Map<String,String> postCodeFDMRouteMap = new HashMap<String,String>();
+
+	public static Map<String, String> getPostCodeFDMRouteMap() {
+		return postCodeFDMRouteMap;
+	}
 
 
-	
-	
 	public static List<String> getFWPostCodeStateNameList() {
 		return FWPostCodeStateNameList;
 	}
@@ -49,7 +63,29 @@ public class D2ZSingleton {
     public List<String> getSTPostCodeZoneList() {
 		return STPostCodeZoneList;
 	}
+    public List<String> getPFLPostCodeZoneList() {
+		return pflPostCodeZoneList;
+	}
+   
+    public static List<String> getMasterPflPostCodeZoneList() {
+		return masterPflPostCodeZoneList;
+	}
+
+    public static List<String> getMasterFWPostCodeZoneList() {
+		return masterFWPostCodeZoneList;
+	}
     
+    public static List<String> getMasterPostCodeZone3List() {
+		return masterPostCodeZone3List;
+	}
+
+	public static List<String> getMasterPostCodeZone4List() {
+		return masterPostCodeZone4List;
+	}
+
+	public static List<String> getMasterTollPostCodeList() {
+		return masterTollPostCodeList;
+	}
 	private ID2ZDao d2zDao = BeanUtil.getBean(ID2ZDao.class);
 	
 	private D2ZSingleton() {
@@ -58,8 +94,61 @@ public class D2ZSingleton {
 		getFWPostCodeZone();
 		getSTPostCodeZone();
 		getNZPostCodeZone();
+		getPFLPostCodeZone();
+		getMasterPostcode();
+		}
+	
+	private void getMasterPostcode() {
+		List<MasterPostCode> postCodeZoneDaoObj = d2zDao.fetchAllMasterPostCodeZone();
+		masterPflPostCodeZoneList = postCodeZoneDaoObj.stream().filter(obj -> obj.getPflZone().equalsIgnoreCase("1"))
+				.map(daoObj -> {
+					return daoObj.getPostcodeId().getState().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
+				}).collect(Collectors.toList());
+		masterPflPostCodeZoneList.addAll( postCodeZoneDaoObj.stream().filter(obj -> obj.getPflZone().equalsIgnoreCase("1") && obj.getStateName()!=null)
+				.map(daoObj -> {
+					return daoObj.getStateName().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
+				}).collect(Collectors.toList()));
+		masterFWPostCodeZoneList = postCodeZoneDaoObj.stream().filter(obj -> obj.getFastwayZone().equalsIgnoreCase("Fast"))
+				.map(daoObj -> {
+					return daoObj.getPostcodeId().getState().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
+				}).collect(Collectors.toList());
+		masterFWPostCodeZoneList.addAll(postCodeZoneDaoObj.stream().filter(obj -> obj.getFastwayZone().equalsIgnoreCase("Fast") && obj.getStateName()!=null)
+				.map(daoObj -> {
+					return daoObj.getStateName().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
+				}).collect(Collectors.toList()));
+		masterPostCodeZone3List = postCodeZoneDaoObj.stream().filter(obj -> obj.getMcLogic().equalsIgnoreCase("3"))
+				.map(daoObj -> {
+					return daoObj.getPostcodeId().getState().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
+				}).collect(Collectors.toList());
+		masterPostCodeZone3List.addAll(postCodeZoneDaoObj.stream().filter(obj -> obj.getMcLogic().equalsIgnoreCase("3") && obj.getStateName()!=null)
+				.map(daoObj -> {
+					return daoObj.getStateName().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
+				}).collect(Collectors.toList()));
+		masterPostCodeZone4List = postCodeZoneDaoObj.stream().filter(obj -> obj.getMcLogic().equalsIgnoreCase("4"))
+				.map(daoObj -> {
+					return daoObj.getPostcodeId().getState().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
+				}).collect(Collectors.toList());
+		masterPostCodeZone4List.addAll(postCodeZoneDaoObj.stream().filter(obj -> obj.getMcLogic().equalsIgnoreCase("4") && obj.getStateName()!=null)
+				.map(daoObj -> {
+					return daoObj.getStateName().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
+				}).collect(Collectors.toList()));
+		masterTollPostCodeList = postCodeZoneDaoObj.stream().filter(obj -> obj.getTollZone() != "0")
+				.map(daoObj -> {
+					return daoObj.getPostcodeId().getState().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
+				}).collect(Collectors.toList());
+		masterTollPostCodeList.addAll(postCodeZoneDaoObj.stream().filter(obj -> obj.getTollZone() != "0" && obj.getStateName()!=null)
+				.map(daoObj -> {
+					return daoObj.getStateName().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
+				}).collect(Collectors.toList()));
+		
+		postCodeZoneDaoObj.forEach(daoObj -> {
+			postCodeFDMRouteMap.put(daoObj.getPostcodeId().getState().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode()),daoObj.getFdmRoute());
+		});
+		
 	}
 	
+	
+
 	private void getRates_PostCodeWeight() {
 	List<APIRates> apiRates = d2zDao.fetchAllAPIRates();
 		apiRates.forEach(obj -> {
@@ -106,6 +195,12 @@ public class D2ZSingleton {
 			return daoObj.getPostcodeId().getState().toUpperCase().concat(daoObj.getPostcodeId().getSuburb().toUpperCase().concat
 					(daoObj.getPostcodeId().getPostcode()));
 		}).collect(Collectors.toList());		
+}
+	private void getPFLPostCodeZone() {
+		List<PFLPostcode> postCodeZoneDaoObj = d2zDao.fetchAllPFLPostCodeZone();
+		pflPostCodeZoneList = postCodeZoneDaoObj.stream().map(obj -> {
+			return obj.getFwPostCodeId().getState().concat(obj.getFwPostCodeId().getSuburb().concat(obj.getFwPostCodeId().getPostcode()));
+		}).collect(Collectors.toList());
 }
 	
 	private void getFWPostCodeZone(){

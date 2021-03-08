@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,14 @@ import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.MaxSizeCountException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.ErrorDetails;
+import com.d2z.d2zservice.model.MCSSenderDataRequest;
 import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.PflCreateShippingOrderInfo;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.repository.UserRepository;
+import com.d2z.d2zservice.repository.UserServiceRepository;
 import com.d2z.d2zservice.service.ID2ZAPIService;
 import com.d2z.d2zservice.util.ValidationUtils;
 import com.d2z.d2zservice.validation.D2ZValidator;
@@ -39,6 +42,9 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 	
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	UserServiceRepository userServiceRepository;
 	
 	@Autowired
 	private D2ZValidator d2zValidator;
@@ -88,41 +94,111 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 
 		}
 		if(null==barcodeLabelNumber || barcodeLabelNumber.trim().isEmpty() || null==datamatrix || datamatrix.trim().isEmpty()) {
-			if(("MCS").equalsIgnoreCase(serviceType)){
-				PFLSenderDataRequest request = constructMCSRequest(orderDetail);
-				d2zValidator.isPostCodeValid(request.getNonPflSenderDataApi(),errorMap);
+			if (("MCS").equalsIgnoreCase(serviceType)) {
+
+				MCSSenderDataRequest request = constructMCSRequest(orderDetail);
+				d2zValidator.isPostCodeZone4Valid(request.getEparcelSenderData(),errorMap);
 				ValidationUtils.removeInvalidconsignments(request,errorMap);
-				d2zValidator.isPostCodeValid(request.getEtowerSenderData(),errorMap);
-				ValidationUtils.removeInvalidEtowerconsignments(request,errorMap);
-				if(request.getEtowerSenderData().size()>0) {
-					CreateConsignmentRequest requestDetail = new CreateConsignmentRequest();
-					requestDetail.setConsignmentData(request.getEtowerSenderData());
-					requestDetail.setUserName(orderDetail.getUserName());
-					eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(requestDetail, senderDataResponseList);
+
+				if(request.getPflSenderData().size()>0) {
+					try {
+					makeCreateShippingOrderPFLCall(request.getPflSenderData(), senderDataResponseList,orderDetail.getUserName(), "MC1");
+					}
+					catch(Exception e) {
+						List<String> refNbrList = request.getPflSenderData().stream().map(obj->{
+							return obj.getReferenceNumber();
+						}).collect(Collectors.toList());
+						for(String referenceNumber : refNbrList)
+						ValidationUtils.populateErrorDetails(referenceNumber, "", "Shipment Error. Please contact us", errorMap);
+					}
 				}
-				if(request.getPflSenderDataApi().size()>0) {
-					makeCreateShippingOrderPFLCall(request.getPflSenderDataApi(), senderDataResponseList,orderDetail.getUserName(), serviceType);	
+				if(request.getFastwaySenderData().size()>0) {
+					try {
+						makeCreateShippingOrderPFLCall(request.getFastwaySenderData(), senderDataResponseList,orderDetail.getUserName(), "FW");	
+					}
+					catch(Exception e) {
+						List<String> refNbrList = request.getFastwaySenderData().stream().map(obj->{
+							return obj.getReferenceNumber();
+						}).collect(Collectors.toList());
+						for(String referenceNumber : refNbrList)
+						ValidationUtils.populateErrorDetails(referenceNumber, "", "Shipment Error. Please contact us", errorMap);
+					}
 				}
-				
-				if(request.getNonPflSenderDataApi().size()>0) {
-					String senderFileID = d2zDao.createConsignments(request.getNonPflSenderDataApi(), userId,
+				if(request.getEparcelSenderData().size()>0) {
+
+					String senderFileID = d2zDao.createConsignments(request.getEparcelSenderData(), userId,
 							orderDetail.getUserName(), null);
 					List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
-
+					SenderDataResponse senderDataResponse = null;
 					Iterator itr = insertedOrder.iterator();
 					while (itr.hasNext()) {
 
 						Object[] obj = (Object[]) itr.next();
-						SenderDataResponse senderDataResponse = new SenderDataResponse();
+						senderDataResponse = new SenderDataResponse();
 						senderDataResponse.setReferenceNumber(obj[0].toString());
 						String barcode = obj[1].toString();
 
-						senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
+					senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll("\\[|\\]", "")));
 						senderDataResponse.setCarrier(obj[4].toString());
 						senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 						senderDataResponseList.add(senderDataResponse);
+					
 					}
 				}
+				/*
+									 * PFLSenderDataRequest request = constructMCSRequest(orderDetail);
+									 * d2zValidator.isPostCodeValid(request.getNonPflSenderDataApi(),errorMap);
+									 * ValidationUtils.removeInvalidconsignments(request,errorMap);
+									 * d2zValidator.isPostCodeValid(request.getEtowerSenderData(),errorMap);
+									 * ValidationUtils.removeInvalidEtowerconsignments(request,errorMap);
+									 * if(request.getEtowerSenderData().size()>0) { CreateConsignmentRequest
+									 * requestDetail = new CreateConsignmentRequest();
+									 * requestDetail.setConsignmentData(request.getEtowerSenderData());
+									 * requestDetail.setUserName(orderDetail.getUserName());
+									 * eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(requestDetail,
+									 * senderDataResponseList); } if(request.getPflSenderDataApi().size()>0) {
+									 * makeCreateShippingOrderPFLCall(request.getPflSenderDataApi(),
+									 * senderDataResponseList,orderDetail.getUserName(), serviceType); }
+									 * 
+									 * if(request.getNonPflSenderDataApi().size()>0) { String senderFileID =
+									 * d2zDao.createConsignments(request.getNonPflSenderDataApi(), userId,
+									 * orderDetail.getUserName(), null); List<String> insertedOrder =
+									 * d2zDao.fetchBySenderFileID(senderFileID);
+									 * 
+									 * Iterator itr = insertedOrder.iterator(); while (itr.hasNext()) {
+									 * 
+									 * Object[] obj = (Object[]) itr.next(); SenderDataResponse senderDataResponse =
+									 * new SenderDataResponse();
+									 * senderDataResponse.setReferenceNumber(obj[0].toString()); String barcode =
+									 * obj[1].toString();
+									 * 
+									 * senderDataResponse.setBarcodeLabelNumber("]d2".concat(barcode.replaceAll(
+									 * "\\[|\\]", ""))); senderDataResponse.setCarrier(obj[4].toString());
+									 * senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
+									 * senderDataResponseList.add(senderDataResponse); } }
+									 */
+				return;
+			}
+			if("MC1".equalsIgnoreCase(serviceType)) {
+				if (isPostcodeValidationReq) {
+					d2zValidator.isPFLPostCodeValid(orderDetail,errorMap);
+				}
+		    	ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
+				if(orderDetail.getConsignmentData().size()>0) {
+				makeCreateShippingOrderPFLCall(orderDetail.getConsignmentData(),senderDataResponseList,orderDetail.getUserName(), serviceType);
+				}
+				return;
+			}
+			if( "TL1".equalsIgnoreCase(serviceType)) {
+		    	if(isPostcodeValidationReq) {
+		    		
+		    			d2zValidator.isTollPostCodeValid(orderDetail.getConsignmentData(),errorMap);
+		    		}
+		    				
+		    	ValidationUtils.removeInvalidconsignments(orderDetail,errorMap);
+		    	if(orderDetail.getConsignmentData().size()>0) {
+				eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
+		    	}
 				return;
 			}
 	    if( "1PM3E".equalsIgnoreCase(serviceType) 
@@ -231,9 +307,11 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			}
 			return;
 		}*/}else {
-			autoShipment = ("Y").equals(userRepository.fetchAutoShipmentIndicator(userId));
+			autoShipment = ("Y").equals(userServiceRepository.fetchAutoShipmentIndicator(userId,serviceType));
 			System.out.println(userId+" : "+autoShipment);
-
+			if("RC1".equalsIgnoreCase(serviceType)) {
+				isPostcodeValidationReq = false;
+			}
 		}
 		if(isPostcodeValidationReq) {
     		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData(),errorMap);
@@ -260,35 +338,67 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 	}
 	
 
-	private PFLSenderDataRequest constructMCSRequest(CreateConsignmentRequest orderDetail) {
+	private MCSSenderDataRequest constructMCSRequest(CreateConsignmentRequest orderDetail) {
 
-		PFLSenderDataRequest request = new PFLSenderDataRequest();
+
+		List<SenderDataApi> orderDetailList = orderDetail.getConsignmentData();
+		MCSSenderDataRequest request = new MCSSenderDataRequest();
 		List<SenderDataApi> pflSenderData = new ArrayList<SenderDataApi>();
-		List<SenderDataApi> nonPflSenderData = new ArrayList<SenderDataApi>();
-		List<SenderDataApi> etowerData = new ArrayList<SenderDataApi>();
+		List<SenderDataApi> fastwaySenderData = new ArrayList<SenderDataApi>();
+		List<SenderDataApi> etowerSenderData = new ArrayList<SenderDataApi>();
 
-		List<String> postCodeFWSubList = D2ZSingleton.getInstance().getFWPostCodeZoneList();
-		Map<String, String> postCodeZoneMap = D2ZSingleton.getInstance().getPostCodeZoneMap();
-		orderDetail.getConsignmentData().forEach(obj -> {
-			String suburbState = obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode().trim());
-			if("N0".equalsIgnoreCase(postCodeZoneMap.get(suburbState))) { 
-				etowerData.add(obj);
-			}
-			else if("V0".equalsIgnoreCase(postCodeZoneMap.get(suburbState))) {
-				nonPflSenderData.add(obj);
-			}
-			else if(postCodeFWSubList.contains(obj.getConsigneeState().trim().toUpperCase().concat(obj.getConsigneeSuburb().trim().toUpperCase()).concat(obj.getConsigneePostcode().trim()))) {
+		List<String> pflPostcodeList = D2ZSingleton.getInstance().getMasterPflPostCodeZoneList();
+		List<String> fastwayPostcodeList = D2ZSingleton.getInstance().getMasterFWPostCodeZoneList();
+		List<String> postcodeZone3List = D2ZSingleton.getInstance().getMasterPostCodeZone3List();
+
+		orderDetailList.forEach(obj -> {
+			String requestData = obj.getConsigneeState().trim().toUpperCase()
+					.concat(obj.getConsigneeSuburb().trim().toUpperCase()).concat(obj.getConsigneePostcode().trim());
+			if(pflPostcodeList.contains(requestData)) {
+				pflSenderData.add(obj);
+			}else if(fastwayPostcodeList.contains(requestData)) {
+				fastwaySenderData.add(obj);
+			}else if(postcodeZone3List.contains(requestData)) {
 				pflSenderData.add(obj);
 			}else {
-				etowerData.add(obj);
+				etowerSenderData.add(obj);
 			}
 		});
-		request.setPflSenderDataApi(pflSenderData);
-		request.setNonPflSenderDataApi(nonPflSenderData);
-		request.setEtowerSenderData(etowerData);
+		request.setPflSenderData(pflSenderData);
+		request.setFastwaySenderData(fastwaySenderData);
+		request.setEparcelSenderData(etowerSenderData);
 		return request;
 	
 	}
+
+
+	/*
+	 * private PFLSenderDataRequest constructMCSRequest(CreateConsignmentRequest
+	 * orderDetail) {
+	 * 
+	 * PFLSenderDataRequest request = new PFLSenderDataRequest();
+	 * List<SenderDataApi> pflSenderData = new ArrayList<SenderDataApi>();
+	 * List<SenderDataApi> nonPflSenderData = new ArrayList<SenderDataApi>();
+	 * List<SenderDataApi> etowerData = new ArrayList<SenderDataApi>();
+	 * 
+	 * List<String> postCodeFWSubList =
+	 * D2ZSingleton.getInstance().getFWPostCodeZoneList(); Map<String, String>
+	 * postCodeZoneMap = D2ZSingleton.getInstance().getPostCodeZoneMap();
+	 * orderDetail.getConsignmentData().forEach(obj -> { String suburbState =
+	 * obj.getConsigneeSuburb().trim().toUpperCase().concat(obj.getConsigneePostcode
+	 * ().trim()); if("N0".equalsIgnoreCase(postCodeZoneMap.get(suburbState))) {
+	 * etowerData.add(obj); } else
+	 * if("V0".equalsIgnoreCase(postCodeZoneMap.get(suburbState))) {
+	 * nonPflSenderData.add(obj); } else
+	 * if(postCodeFWSubList.contains(obj.getConsigneeState().trim().toUpperCase().
+	 * concat(obj.getConsigneeSuburb().trim().toUpperCase()).concat(obj.
+	 * getConsigneePostcode().trim()))) { pflSenderData.add(obj); }else {
+	 * etowerData.add(obj); } }); request.setPflSenderDataApi(pflSenderData);
+	 * request.setNonPflSenderDataApi(nonPflSenderData);
+	 * request.setEtowerSenderData(etowerData); return request;
+	 * 
+	 * }
+	 */
 
 
 	private void makeCreateShippingOrderPFLCall (List<SenderDataApi> data,

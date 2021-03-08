@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.d2z.d2zservice.dao.ID2ZDao;
+import com.d2z.d2zservice.entity.TrackEvents;
 import com.d2z.d2zservice.model.PCACreateShippingResponse;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLTrackEvent;
@@ -41,6 +43,9 @@ public class AsyncService {
 	
 	@Autowired
 	AusPostProxy ausPostProxy;
+	
+	@Autowired
+	ID2ZDao d2zDao;
 	
 	private static Logger log = LoggerFactory.getLogger(AsyncService.class);
 	@Async("asyncExecutor")
@@ -107,5 +112,9 @@ public class AsyncService {
 		TrackingResponse response = ausPostProxy.trackingEvent(String.join(",", articleIDs));
 		return CompletableFuture.completedFuture(response);
     }
+	public CompletableFuture<List<TrackEvents>> makeCalltoDB(List<String> d2zArticleIds) {
+		List<TrackEvents> trackEvents = d2zDao.fetchEventsFromTrackEvents(d2zArticleIds);
+		return CompletableFuture.completedFuture(trackEvents);
+	}
 	
 }

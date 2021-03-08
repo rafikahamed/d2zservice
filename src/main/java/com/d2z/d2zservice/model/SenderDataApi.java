@@ -103,8 +103,7 @@ public class SenderDataApi {
 	private String zoneID;
 	private boolean dangerousGoods;
 	private String vendorId;
-
-
+	
 
 public String getVendorId() {
 	return vendorId;

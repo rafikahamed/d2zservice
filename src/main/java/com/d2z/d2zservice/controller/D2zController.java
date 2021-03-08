@@ -1,5 +1,8 @@
 package com.d2z.d2zservice.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,7 +60,9 @@ public class D2zController {
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/consignment-fileUpload")
     public List<SenderDataResponse> consignmentFileUpload( @RequestBody List<@Valid SenderData> orderDetailList) throws ReferenceNumberNotUniqueException, FailureResponseException{
-		List<SenderDataResponse> successMsg = d2zService.exportParcel(orderDetailList);
+		List<String> autoShipRefNbrs = new ArrayList<String>();
+
+		List<SenderDataResponse> successMsg = d2zService.exportParcel(orderDetailList,autoShipRefNbrs);
 		 Runnable r = new Runnable( ) {			
 		        public void run() {
 		        	
@@ -65,7 +70,19 @@ public class D2zController {
 		    			return obj.getReferenceNumber(); })
 		    				.collect(Collectors.toList());
 		        	d2zService.makeCallToEtowerBasedonSupplierUI(incomingRefNbr);
-		    		
+		        	
+		        	if(null!=autoShipRefNbrs && !autoShipRefNbrs.isEmpty()) {
+		    			System.out.println("Auto-Shipment Allocation");
+		    			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		    			String shipmentNumber = orderDetailList.get(0).getUserName()+simpleDateFormat.format(new Date());
+		    			try {
+							d2zService.allocateShipment(String.join(",", autoShipRefNbrs), shipmentNumber);
+						} catch (ReferenceNumberNotUniqueException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}        
+		            	
+		    		}
 		        }
 		     };
 		    new Thread(r).start();
@@ -297,6 +314,11 @@ public class D2zController {
 	@RequestMapping(method = RequestMethod.PUT, path = "/FDM")
 	public void triggerFDM(@RequestBody List<String> refNbrs) {
 		d2zService.triggerFDM(refNbrs);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/FDM")
+	public void triggerFDM() {
+		d2zService.triggerFDMLabel();
 	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "/auPost")

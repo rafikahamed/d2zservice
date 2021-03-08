@@ -641,6 +641,10 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				downloadInvoice.setServiceType(obj[8].toString());
 			if(obj[9] != null)
 				downloadInvoice.setAirwaybill(obj[9].toString());
+			if(obj[10] != null)
+				downloadInvoice.setSuburb(obj[10].toString());
+			if(obj[11] != null)
+				downloadInvoice.setZone(obj[11].toString());
 			downloadInvoiceList.add(downloadInvoice);
 		}
 		return downloadInvoiceList;
@@ -865,7 +869,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			return bytes;
 		}
 		
-		if("NZ".equalsIgnoreCase(serviceType)) {
+		if("NZ".equalsIgnoreCase(serviceType)  || "TL1".equalsIgnoreCase(serviceType)) {
 				List<String> artileIDList = d2zDao.fetchArticleId(refBarNumArray);
 				bytes = eTowerWrapper.printLabel(artileIDList);
 				return bytes;
@@ -931,6 +935,10 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				trackingLabel.setProductDescription(trackingArray[25].toString());
 			if (trackingArray[26] != null)
 				trackingLabel.setServiceType(trackingArray[26].toString());
+			if (trackingArray[28] != null)
+				trackingLabel.setD2zRate(trackingArray[28].toString());
+			if (trackingArray[29] != null)
+				trackingLabel.setBrokerRate(trackingArray[29].toString());
 			boolean setGS1DataType = false;
 			if(trackingLabel.getCarrier().equalsIgnoreCase("Express") || trackingLabel.getCarrier().equalsIgnoreCase("eParcel")) {
 				setGS1DataType = true;
@@ -969,6 +977,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		List<SenderData> parcelPostData = new ArrayList<SenderData>();
 		List<SenderData> fwData = new ArrayList<SenderData>();
 		List<SenderData> fw3Data = new ArrayList<SenderData>();
+		List<SenderData> mcsData = new ArrayList<SenderData>();
 
 		for (SenderData data : trackingLabelList) {
 			/*
@@ -983,10 +992,17 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				data.setSku(D2ZSingleton.getInstance().getFwPostCodeZoneNoMap().get(data.getConsigneePostcode()));
 				fwData.add(data);
 			
-			}else if ("MCS".equalsIgnoreCase(data.getServiceType()) 
+			}else if (("MCS".equalsIgnoreCase(data.getServiceType()))
 					&& data.getCarrier().equalsIgnoreCase("Fastway")) {
 				data.setSku(D2ZSingleton.getInstance().getFwPostCodeZoneNoMap().get(data.getConsigneePostcode()));
 				fwData.add(data);
+			} 
+			else if (("MCS".equalsIgnoreCase(data.getServiceType()))
+					&& data.getCarrier().equalsIgnoreCase("PFL")) {
+				mcsData.add(data);
+			} else if ("MC1".equalsIgnoreCase(data.getServiceType()) 
+					&& data.getCarrier().equalsIgnoreCase("PFL")) {
+				mcsData.add(data);
 			
 			}else if("FW3".equalsIgnoreCase(data.getServiceType())) {
 				fw3Data.add(data);
@@ -1025,6 +1041,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		JasperReport fwLabel = null;
 		JRBeanCollectionDataSource fw3DataSource;
 		JasperReport fw3Label = null;
+		JRBeanCollectionDataSource mcsDataSource;
+		JasperReport mcsLabel = null;
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 			if (!eParcelData.isEmpty()) {
@@ -1098,6 +1116,13 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				fw3Label = JasperCompileManager.compileReport(getClass().getResource("/FW3.jrxml").openStream());
 				JRSaver.saveObject(fw3Label, "FW3.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(fw3Label, parameters, fw3DataSource));
+			}
+			if (!mcsData.isEmpty()) {
+				System.out.println("Generating MCS..." + mcsData.size());
+				mcsDataSource = new JRBeanCollectionDataSource(mcsData);
+				mcsLabel = JasperCompileManager.compileReport(getClass().getResource("/MCSLabel.jrxml").openStream());
+				JRSaver.saveObject(mcsLabel, "MCSLabel.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(mcsLabel, parameters, mcsDataSource));
 			}
 			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
@@ -1824,8 +1849,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 					ZoneId zoneId = ZoneId.of ( "Australia/Sydney" );
 					int dayofWeek = LocalDate.now(zoneId).getDayOfWeek().getValue();
 					
-					if(dayofWeek>=6) {
-						//sat - Sun
+					if(dayofWeek>=5) {
+						//Fri - Sun
 						List<String> orderIds = fastwayOrderId.stream().map(PFLSubmitOrderData :: getOrderId).collect(Collectors.toList());
 						d2zDao.updateForPFLSubmitOrder(orderIds,"PFLSubmitOrder");
 					}else {

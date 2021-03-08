@@ -10,8 +10,31 @@ public class PFLResponseData {
 	private String matrix;
 	private String error;
 	private String code;
+	private String courier;
+	private String header;
+	private String footer;
+	
+	
 //	private List<PFLErrorResponse> errors;
 	
+	public String getCourier() {
+		return courier;
+	}
+	public void setCourier(String courier) {
+		this.courier = courier;
+	}
+	public String getHeader() {
+		return header;
+	}
+	public void setHeader(String header) {
+		this.header = header;
+	}
+	public String getFooter() {
+		return footer;
+	}
+	public void setFooter(String footer) {
+		this.footer = footer;
+	}
 	public String getStatus() {
 		return status;
 	}

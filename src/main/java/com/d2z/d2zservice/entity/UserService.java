@@ -42,6 +42,9 @@ public class UserService implements Serializable {
 	@Column(name="Service_IsDeleted")
 	private boolean service_isDeleted;
 	
+	@Column(name="Autoshipment")
+	private String autoShipment;
+	
 	@Column(name="Timestamp")
 	private Timestamp timestamp;
 
@@ -74,6 +77,16 @@ public class UserService implements Serializable {
 		this.rowId = rowId;
 	}
 	
+	
+	
+	public String getAutoShipment() {
+		return autoShipment;
+	}
+
+	public void setAutoShipment(String autoShipment) {
+		this.autoShipment = autoShipment;
+	}
+
 	public String getInjectionType() {
 		return this.injectionType;
 	}
