@@ -421,6 +421,15 @@ public class ETowerWrapper {
 				request.setShipperCountry("AU");
 
 			}
+			if ("TL2".equalsIgnoreCase(orderDetail.getServiceType())) {
+				request.setFacility("MEL");
+				orderDetail.setInjectionType("MEL");
+				request.setServiceCode("UBI.AU2AU.IPEC");
+				request.setShipperCity("Edwardstown");
+				request.setShipperState("SA");
+				request.setShipperCountry("AU");
+
+			}
 			request.setWeight(weight);
 			request.setInvoiceValue(orderDetail.getValue());
 			request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
@@ -771,6 +780,16 @@ s);
 			if ("TL1".equalsIgnoreCase(orderDetail.getServiceType())) {
 				request.setFacility("SYD");
 				orderDetail.setInjectionType("SYD");
+				request.setServiceCode("UBI.AU2AU.IPEC");
+				request.setShipperAddressLine1("Unit E1, 350 Parramatta Road");
+				request.setShipperCity("Homebush West");
+				request.setShipperState("NSW");
+				request.setShipperCountry("AU");
+
+			}
+			if ("TL2".equalsIgnoreCase(orderDetail.getServiceType())) {
+				request.setFacility("MEL");
+				orderDetail.setInjectionType("MEL");
 				request.setServiceCode("UBI.AU2AU.IPEC");
 				request.setShipperAddressLine1("Unit E1, 350 Parramatta Road");
 				request.setShipperCity("Homebush West");

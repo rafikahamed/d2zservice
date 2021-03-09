@@ -317,7 +317,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			makeCreateShippingOrderFilePFLCall(orderDetailList, senderDataResponseList, null, serviceType);
 			return senderDataResponseList;
 		}
-		if("TL1".equalsIgnoreCase(serviceType)) {
+		if("TL1".equalsIgnoreCase(serviceType)  || "TL2".equalsIgnoreCase(serviceType)) {
 			if (isPostcodeValidationReq) {
 			d2zValidator.isTollPostCodeValidUI(orderDetailList);
 			}
@@ -1242,7 +1242,7 @@ public class D2ZServiceImpl implements ID2ZService {
 						orderDetail.getUserName(), serviceType);
 				return senderDataResponseList;
 			}
-			if("TL1".equalsIgnoreCase(serviceType)) {
+			if("TL1".equalsIgnoreCase(serviceType) || "TL2".equalsIgnoreCase(serviceType)) {
 				if (isPostcodeValidationReq) {
 				d2zValidator.isTollPostCodeValid(orderDetail.getConsignmentData());
 				}
