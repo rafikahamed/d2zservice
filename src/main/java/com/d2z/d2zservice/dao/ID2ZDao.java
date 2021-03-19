@@ -243,6 +243,8 @@ public interface ID2ZDao {
 
 	public List<TrackEvents> fetchEventsFromTrackEvents(List<String> d2zArticleIds);
 
+	public List<String> fetchTrackingNumberFromEtowerResponse(List<String> artileIDList);
+
 
 
 }

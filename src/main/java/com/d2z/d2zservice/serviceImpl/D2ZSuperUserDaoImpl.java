@@ -1152,7 +1152,6 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			List<IncomingJobResponse> joblist = new ArrayList<IncomingJobResponse>();
 			for(IncomingJobs job :js){
 				IncomingJobResponse jobs = new IncomingJobResponse();
-				System.out.println("ATA:"+job.getAta());
 				jobs.setJobid(job.getID());
 				if(job.getEta()!=null){
 					jobs.setEta(job.getEta().toString());
@@ -1173,6 +1172,8 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				jobs.setOutturn(job.getOutturn());
 				jobs.setPiece(job.getPiece());
 				jobs.setWeight(job.getWeight());
+				jobs.setClearanceDate(job.getClearanceDate() != null?job.getClearanceDate().toString():"");
+				jobs.setInjectionDate(job.getInjectionDate() != null?job.getInjectionDate().toString():"");
 				joblist.add(jobs);
 			}
 			return  joblist;

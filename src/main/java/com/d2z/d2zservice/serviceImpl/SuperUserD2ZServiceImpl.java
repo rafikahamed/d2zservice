@@ -1926,7 +1926,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	}
 	
 	@Override
-	public UserMessage generateShipmentReport(IncomingJobResponse incomingJobs) {
+	public UserMessage generateShipmentReport(List<IncomingJobResponse> incomingJobs) {
+		for(IncomingJobResponse incomingJob :incomingJobs ) {
 			List<SurplusData> surplusData = new ArrayList<SurplusData>();
 //				if(incomingJobs.getSurplus()!=null && (incomingJobs.getSurplus().equalsIgnoreCase("True") ||
 //						incomingJobs.getSurplus().equalsIgnoreCase("Y")))
@@ -1934,12 +1935,12 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 //					incomingJobs.setSurplus("Y");
 //					surplusData = d2zDao.fetchSurplusData(incomingJobs.getMawb());
 //				}
-		   surplusData = d2zDao.fetchSurplusData(incomingJobs.getMawb());
-		   String toMail =	d2zDao.fetchEmailAddr(incomingJobs.getBroker());
-		   byte[] reportXL =  excelWriter.generateShipmentReport(incomingJobs,surplusData);
-		   emailUtil.sendReport("Shipment Summary Report"+" "+incomingJobs.getMawb(), toMail,"Please find attached the Shipment summary report."
-		   		+ "</br></br> ***Please note this is an automated email, please contact our CS team if you have any questions.***",reportXL,"Shipment Summary"+" "+incomingJobs.getMawb()+".xlsx");
-		
+		   surplusData = d2zDao.fetchSurplusData(incomingJob.getMawb());
+		   String toMail =	d2zDao.fetchEmailAddr(incomingJob.getBroker());
+		   byte[] reportXL =  excelWriter.generateShipmentReport(incomingJob,surplusData);
+		   emailUtil.sendReport("Shipment Summary Report"+" "+incomingJob.getMawb(), toMail,"Please find attached the Shipment summary report."
+		   		+ "</br></br> ***Please note this is an automated email, please contact our CS team if you have any questions.***",reportXL,"Shipment Summary"+" "+incomingJob.getMawb()+".xlsx");
+		}
 		UserMessage userMsg = new UserMessage();
 		userMsg.setMessage("Shipment Summary generated successfully");
 		return userMsg;

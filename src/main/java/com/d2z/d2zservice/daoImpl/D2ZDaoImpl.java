@@ -496,13 +496,13 @@ public class D2ZDaoImpl implements ID2ZDao {
 				LabelData labelData = barcodeMap.get(senderDataValue.getReferenceNumber());
 				senderDataObj.setBarcodelabelNumber(labelData.getBarCode());
 				senderDataObj.setArticleId(labelData.getArticleId());
-
-				if (labelData.getBarCode2D().equals(labelData.getArticleId())) {
+				if (senderDataValue.getServiceType().equalsIgnoreCase("TL1")) {
+					senderDataObj.setDatamatrix(labelData.getArticleId());
+				}
+				else if (labelData.getArticleId().equals(labelData.getBarCode2D())) {
 					senderDataObj.setBarcodelabelNumber(labelData.getArticleId());
 					senderDataObj.setDatamatrix(labelData.getArticleId());
 					senderDataObj.setCarrier("FastwayNZ");
-				} else if (senderDataValue.getServiceType().equalsIgnoreCase("TL1")) {
-					senderDataObj.setDatamatrix(labelData.getBarCode2D());
 				} else {
 					senderDataObj.setDatamatrix(
 							D2ZCommonUtil.formatDataMatrix(labelData.getBarCode2D().replaceAll("\\(|\\)|\u001d", "")));
@@ -1470,7 +1470,7 @@ public class D2ZDaoImpl implements ID2ZDao {
 	@Override
 	public List<PerformanceReportTrackingData> fetchArticleIdForPerformanceReport(int day, int month) {
 		List<PerformanceReportTrackingData> trackingData = new ArrayList<PerformanceReportTrackingData>();
-		List<Object[]> objArr = senderDataRepository.fetchArticleIdForPerformanceReport(month);
+		List<Object[]> objArr = senderDataRepository.fetchArticleIdForPerformanceReport(day);
 		objArr.forEach(obj -> trackingData.add(new PerformanceReportTrackingData(obj)));
 		return trackingData;
 	}
@@ -1617,7 +1617,6 @@ public class D2ZDaoImpl implements ID2ZDao {
 						e.printStackTrace();
 					}
 					if (eventTime.after(latestTime)) {
-						System.out.println(eventTime+"::::::"+latestTime);
 						insertTrackEvents(events,data.getArticleId(),trackingEvent);
 					}
 
@@ -1640,11 +1639,21 @@ public class D2ZDaoImpl implements ID2ZDao {
 		trackandTrace.setArticleID(articleId);
 		trackandTrace.setFileName("FDMTracking");
 		trackandTrace.setTrackEventDateOccured(trackingEvent.getTrackEventDateOccured());
-		trackandTrace.setTrackEventDetails(trackingEvent.getEventDetails());
 		trackandTrace.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
 		trackandTrace.setReference_number(articleId);
 		trackandTrace.setLocation(trackingEvent.getLocation());
 		trackandTrace.setTrackEventCode(trackingEvent.getStatusCode());
+		if(null == trackingEvent.getEventDetails() ) {
+		if("INCG".equalsIgnoreCase(trackingEvent.getStatusCode())) {
+			trackandTrace.setTrackEventDetails("Arrived at facility");
+		}else if("OBD".equalsIgnoreCase(trackingEvent.getStatusCode())) {
+			trackandTrace.setTrackEventDetails("On board for delivery");
+		}else if("DEL".equalsIgnoreCase(trackingEvent.getStatusCode())) {
+			trackandTrace.setTrackEventDetails("Package Delivered");
+		}
+		}else {
+			trackandTrace.setTrackEventDetails(trackingEvent.getEventDetails());
+		}
 		trackandTrace.setIsDeleted("N");
 		events.add(trackandTrace);		
 	}
@@ -1653,6 +1662,12 @@ public class D2ZDaoImpl implements ID2ZDao {
 	public List<TrackEvents> fetchEventsFromTrackEvents(List<String> articleIds) {
 		// TODO Auto-generated method stub
 		return trackEventsRepository.fetchEventsFromTrackEvents(articleIds);
+	}
+
+	@Override
+	public List<String> fetchTrackingNumberFromEtowerResponse(List<String> artileIDList) {
+		// TODO Auto-generated method stub
+		return eTowerResponseRepository.fetchTrackingNumberFromEtowerResponse(artileIDList);
 	}
 	
 

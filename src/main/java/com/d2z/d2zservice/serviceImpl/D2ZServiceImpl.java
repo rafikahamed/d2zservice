@@ -897,12 +897,17 @@ public class D2ZServiceImpl implements ID2ZService {
 				return bytes;
 		}
 
-		if("NZ".equalsIgnoreCase(serviceType) || "TL1".equalsIgnoreCase(serviceType)) {
+		if("NZ".equalsIgnoreCase(serviceType)) {
 				List<String> artileIDList = d2zDao.fetchArticleID(refBarNum);
 				bytes = eTowerWrapper.printLabel(artileIDList);
 				return bytes;
 		}
-		
+		if("TL1".equalsIgnoreCase(serviceType)) {
+			List<String> artileIDList = d2zDao.fetchArticleID(refBarNum);
+			List<String> trackingNo = d2zDao.fetchTrackingNumberFromEtowerResponse(artileIDList);
+			bytes = eTowerWrapper.printLabel(trackingNo);
+			return bytes;
+		}
 		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNum,identifier);
 		boolean pcalabel = false;
 		List<SenderData> trackingLabelList = populateDataForLabelGeneration(trackingLabelData);
@@ -2722,6 +2727,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			trackEventsMap.get(obj.getArticleID()).add(obj);
 			}else {
 				List<TrackEvents> eventList = new ArrayList<TrackEvents>();
+				eventList.add(obj);
 				trackEventsMap.put(obj.getArticleID(), eventList);
 			}
 		});
@@ -2958,7 +2964,7 @@ public class D2ZServiceImpl implements ID2ZService {
 	
 		long startTime = System.currentTimeMillis();
 
-			List<PerformanceReportTrackingData> trackingNumbers = d2zDao.fetchArticleIdForPerformanceReport(8,9);
+			List<PerformanceReportTrackingData> trackingNumbers = d2zDao.fetchArticleIdForPerformanceReport(12,12);
 			List<String> articleIds = trackingNumbers.stream().map(obj -> {
 				return obj.getArticleID();
 			}).collect(Collectors.toList());

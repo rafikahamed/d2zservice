@@ -389,7 +389,7 @@ public class D2ZSuperUserController {
 		return jobInfo;
 	}
 	@RequestMapping(method = RequestMethod.POST, path = "/shipmentReport")
-	public UserMessage generateShipmentReport(@RequestBody IncomingJobResponse job) {
+	public UserMessage generateShipmentReport(@RequestBody List<IncomingJobResponse> job) {
 		return superUserD2zService.generateShipmentReport(job);
 		
 	}

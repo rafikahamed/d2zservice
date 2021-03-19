@@ -9,6 +9,15 @@ public class ResponseData {
 	private String orderId;
 	private String referenceNo;
 	private String trackingNo;
+	private String connoteId;
+	
+	
+	public String getConnoteId() {
+		return connoteId;
+	}
+	public void setConnoteId(String connoteId) {
+		this.connoteId = connoteId;
+	}
 	private List<EtowerErrorResponse> errors;
 	public String getStatus() {
 		return status;

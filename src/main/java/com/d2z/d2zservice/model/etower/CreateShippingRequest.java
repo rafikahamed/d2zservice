@@ -32,7 +32,17 @@ public class CreateShippingRequest {
 	private String returnOption;
 	private boolean authorityToleave;
 	private String vendorid;
+	private String consignmentId;
 	
+	
+	public String getConsignmentId() {
+		return consignmentId;
+	}
+
+	public void setConsignmentId(String consignmentId) {
+		this.consignmentId = consignmentId;
+	}
+
 	public String getPhone() {
 		return phone;
 	}

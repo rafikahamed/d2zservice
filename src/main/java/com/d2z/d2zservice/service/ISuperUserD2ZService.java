@@ -187,6 +187,6 @@ public interface ISuperUserD2ZService{
 
 	public List<ProfitLossReport> profitLossReport(String fromDate, String toDate);
 
-	UserMessage generateShipmentReport(IncomingJobResponse jobs);
+	UserMessage generateShipmentReport(List<IncomingJobResponse> jobs);
 
 }

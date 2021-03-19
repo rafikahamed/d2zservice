@@ -109,7 +109,8 @@ public class ConsignmentValidator  implements
 			isValid= false;
 		}
 		
-		else if((Double.parseDouble(value.getWeight()) < 0 || Double.parseDouble(value.getWeight()) > 22)) {
+		else if(null != value.getServiceType() && !(value.getServiceType().equalsIgnoreCase("TL1") || value.getServiceType().equalsIgnoreCase("TL2")) 
+				&& (Double.parseDouble(value.getWeight()) < 0 || Double.parseDouble(value.getWeight()) > 22)) {
 
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getWeight()+","+"Weight should be between 0 and 22")

@@ -1,5 +1,6 @@
 package com.d2z.d2zservice.wrapper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -18,6 +19,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang.enums.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +73,7 @@ public class ETowerWrapper {
 			
 			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest,null);
 			status = parseCreateShippingOrderResponse(response, senderDataResponseList, barcodeMap,
-					gainLabelTrackingNo);
+					gainLabelTrackingNo,systemRefNbrMap);
 		}
 
 		/*if (gainLabelTrackingNo.size() == data.getConsignmentData().size()) {
@@ -88,7 +90,7 @@ public class ETowerWrapper {
 			};
 			new Thread(r).start();
 		} else {*/
-			if (null != status) {
+			if (null != status && gainLabelTrackingNo.size()>0) {
 				GainLabelsResponse gainLabelResponse = eTowerProxy.makeCallToGainLabels(gainLabelTrackingNo);
 				processGainLabelsResponse(gainLabelResponse, barcodeMap,systemRefNbrMap);
 			}
@@ -131,7 +133,7 @@ public class ETowerWrapper {
 		if (!eTowerRequest.isEmpty()) {
 			CreateShippingResponse response = eTowerProxy.makeCallForCreateShippingOrder(eTowerRequest,null);
 			status = parseCreateShippingOrderResponse(response, senderDataResponseList, barcodeMap,
-					gainLabelTrackingNo);
+					gainLabelTrackingNo,systemRefNbrMap);
 		}
 		/*if (gainLabelTrackingNo.size() == data.size()) {
 
@@ -463,7 +465,7 @@ s);
 
 	private String parseCreateShippingOrderResponse(CreateShippingResponse response,
 			List<SenderDataResponse> senderDataResponseList, Map<String, LabelData> barcodeMap,
-			List<String> gainLabelTrackingNo) throws FailureResponseException {
+			List<String> gainLabelTrackingNo,Map<String,String> systemRefNbrMap) throws FailureResponseException {
 
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 
@@ -479,13 +481,23 @@ s);
 					errorResponse.setReferenceNumber(data.getReferenceNo());
 					errorResponse.setTrackingNo(data.getTrackingNo());
 					errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
-					responseEntity.add(errorResponse);
-
+					if(!data.getReferenceNo().startsWith("TG")){
 					gainLabelTrackingNo.add(data.getTrackingNo());
 					SenderDataResponse senderDataresponse = new SenderDataResponse();
 					senderDataresponse.setReferenceNumber(data.getReferenceNo());
 					senderDataresponse.setBarcodeLabelNumber(data.getTrackingNo());
 					senderDataResponseList.add(senderDataresponse);
+					}
+					else {
+						LabelData labelData = new LabelData();
+						labelData.setBarCode(data.getTrackingNo());
+						labelData.setArticleId(data.getConnoteId());
+						labelData.setProvider("Etower");
+						barcodeMap.put(systemRefNbrMap.get(data.getReferenceNo().split("-")[0]), labelData);
+						errorResponse.setOrderId(data.getConnoteId());
+					}
+					responseEntity.add(errorResponse);
+
 
 				}
 				d2zDao.logEtowerResponse(responseEntity);
@@ -777,6 +789,9 @@ s);
 				request.setServiceOption("");
 
 			}
+			request.setWeight(weight);
+			request.setInvoiceValue(orderDetail.getValue());
+			request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
 			if ("TL1".equalsIgnoreCase(orderDetail.getServiceType())) {
 				request.setFacility("SYD");
 				orderDetail.setInjectionType("SYD");
@@ -785,9 +800,28 @@ s);
 				request.setShipperCity("Homebush West");
 				request.setShipperState("NSW");
 				request.setShipperCountry("AU");
+				String referenceNbr = "TG"+uniqueNumber;
+				request.setReferenceNo(referenceNbr);
+				systemRefNbrMap.put(referenceNbr, orderDetail.getReferenceNumber());
+
+					for(int i=1;i<=orderDetail.getShippedQuantity();i++) {
+						com.d2z.d2zservice.model.etower.CreateShippingRequest newrequest = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
+						try {
+						BeanUtils.copyProperties(newrequest, request);
+						}
+						catch(Exception e) {
+							e.printStackTrace();
+						}
+						System.out.println(newrequest.getReferenceNo());
+						newrequest.setConsignmentId(String.valueOf(i));
+						newrequest.setWeight(weight/orderDetail.getShippedQuantity());
+						//neworderDetail.setReferenceNumber(referenceNbr.concat("-"+newrequest.getConsignmentId()));
+						//systemRefNbrMap.put(newrequest.getReferenceNo().concat("-"+newrequest.getConsignmentId()), neworderDetail.getReferenceNumber());
+						eTowerRequest.add(newrequest);
+					}
 
 			}
-			if ("TL2".equalsIgnoreCase(orderDetail.getServiceType())) {
+			else if ("TL2".equalsIgnoreCase(orderDetail.getServiceType())) {
 				request.setFacility("MEL");
 				orderDetail.setInjectionType("MEL");
 				request.setServiceCode("UBI.AU2AU.IPEC");
@@ -795,12 +829,29 @@ s);
 				request.setShipperCity("Homebush West");
 				request.setShipperState("NSW");
 				request.setShipperCountry("AU");
-
+			/*	String referenceNbr = "TG"+uniqueNumber;
+					for(int i=1;i<=orderDetail.getShippedQuantity();i++) {
+						com.d2z.d2zservice.model.etower.CreateShippingRequest newrequest = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
+						SenderDataApi neworderDetail = new SenderDataApi();
+						try {
+						BeanUtils.copyProperties(newrequest, request);
+						BeanUtils.copyProperties(neworderDetail, orderDetail);	
+						}
+						catch(Exception e) {
+							e.printStackTrace();
+						}
+						System.out.println(newrequest.getReferenceNo());
+						newrequest.setConsignmentId(i);
+						newrequest.setWeight(weight/orderDetail.getShippedQuantity());
+						neworderDetail.setReferenceNumber(referenceNbr.concat("-"+newrequest.getConsignmentId()));
+						systemRefNbrMap.put(newrequest.getReferenceNo().concat("-"+newrequest.getConsignmentId()), neworderDetail.getReferenceNumber());
+						eTowerRequest.add(newrequest);
+						updatedOrderDetail.add(neworderDetail);
+					}*/
 			}
-			request.setWeight(weight);
-			request.setInvoiceValue(orderDetail.getValue());
-			request.getOrderItems().get(0).setUnitValue(orderDetail.getValue());
+			else {
 			eTowerRequest.add(request);
+			}
 			updatedOrderDetail.add(orderDetail);
 		}
 		data.setConsignmentData(updatedOrderDetail);
