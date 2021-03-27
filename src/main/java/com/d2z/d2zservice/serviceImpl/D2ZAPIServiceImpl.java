@@ -309,9 +309,13 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 		}*/}else {
 			autoShipment = ("Y").equals(userServiceRepository.fetchAutoShipmentIndicator(userId,serviceType));
 			System.out.println(userId+" : "+autoShipment);
-			if("RC1".equalsIgnoreCase(serviceType)) {
-				isPostcodeValidationReq = false;
-			}
+			
+		}
+		if("RC1".equalsIgnoreCase(serviceType)) {
+			isPostcodeValidationReq = false;
+		}
+		else if("RC2".equalsIgnoreCase(serviceType)) {
+			d2zValidator.isRC2PostCodeValid(orderDetail.getConsignmentData(),errorMap);
 		}
 		if(isPostcodeValidationReq) {
     		d2zValidator.isPostCodeValid(orderDetail.getConsignmentData(),errorMap);

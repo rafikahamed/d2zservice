@@ -156,5 +156,8 @@ public interface Senderdata_InvoicingRepository extends CrudRepository<Senderdat
 			"  DateAllocated between :fromDate and :toDate and Servicetype in ('HKG','HKG2') and brokerRate is not null and D2ZRate is not null \r\n" + 
 			"  group by Brokerusername")
 	List<String> getApgBrokerProfitDetails(@Param("fromDate") String fromDate, @Param("toDate") String toDate);
+
+	@Query("Select s from Senderdata_Invoicing s where s.articleId = :trackingNumber and s.uploadType = 'Manual'")
+	Senderdata_Invoicing fetchByArticleId(String trackingNumber);
 	
 }

@@ -654,7 +654,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			} else if ("HKG".equalsIgnoreCase(data.getServiceType())
 					|| "HKG2".equalsIgnoreCase(data.getServiceType())) {
 				parcelPostData.add(data);
-			}	else if ("RC1".equalsIgnoreCase(data.getServiceType())) {
+			}	else if ("RC1".equalsIgnoreCase(data.getServiceType()) || "RC2".equalsIgnoreCase(data.getServiceType())) {
 				Map<String,String> routeMap = D2ZSingleton.getInstance().getPostCodeFDMRouteMap();
 				String state = data.getConsigneeState().trim().toUpperCase();
 				String suburb = data.getConsigneeSuburb().trim().toUpperCase();
@@ -1348,9 +1348,12 @@ public class D2ZServiceImpl implements ID2ZService {
 		} else if (barcodeLabelNumber != null && !barcodeLabelNumber.trim().isEmpty() && datamatrix != null
 				&& !datamatrix.trim().isEmpty()) {
 			autoShipment = ("Y").equals(userServiceRepository.fetchAutoShipmentIndicator(userId,orderDetail.getConsignmentData().get(0).getServiceType()));
-			if("RC1".equalsIgnoreCase(orderDetail.getConsignmentData().get(0).getServiceType())) {
-				isPostcodeValidationReq = false;
-			}
+		
+		}
+		if("RC1".equalsIgnoreCase(orderDetail.getConsignmentData().get(0).getServiceType())) {
+			isPostcodeValidationReq = false;
+		}else if("RC2".equalsIgnoreCase(orderDetail.getConsignmentData().get(0).getServiceType())) {
+			d2zValidator.isRC2PostCodeValid(orderDetail.getConsignmentData());
 		}
 		if (isPostcodeValidationReq) {
 			d2zValidator.isPostCodeValid(orderDetail.getConsignmentData());
@@ -2160,7 +2163,11 @@ public class D2ZServiceImpl implements ID2ZService {
 					ffresponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
 					ffresponse.setSupplier("FDM");
 					ffresponse.setResponse("Pending");
+					if(data.getArticleId().length()>=20) {
 					consignment.setConnote_no(data.getArticleId().substring(3,19));
+					}else{
+						consignment.setConnote_no(data.getArticleId());
+					}
 					consignment.setTracking_connote(data.getArticleId());
 
 					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm");
@@ -2223,11 +2230,13 @@ public class D2ZServiceImpl implements ID2ZService {
 				fdmDetails.setConsignments(consignmentsArray);
 				request.setManifest(fdmDetails);
 
-				/*
-				 * Gson gson = new Gson(); String jsonStr = gson.toJson(request); JSONObject
-				 * json = new JSONObject(jsonStr); String requestXml = XML.toString(json);
-				 * byte[] contentInBytes = requestXml.getBytes();
-				 */
+				
+				// Gson gson = new Gson(); String jsonStr = gson.toJson(request); JSONObject
+				// json = new JSONObject(jsonStr); 
+				 //String requestXml = XML.toString(json);
+				 //System.out.println(requestXml);
+				// byte[] contentInBytes = requestXml.getBytes();
+				
 				//InputStream targetStream = new ByteArrayInputStream(contentInBytes);
 				// ftpUploader.fdmFileCreation(request);
 				// ftpUploader.ftpUpload(targetStream);

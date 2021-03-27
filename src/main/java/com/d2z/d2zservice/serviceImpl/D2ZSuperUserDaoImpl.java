@@ -50,6 +50,7 @@ import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
+import com.d2z.d2zservice.model.ManualInvoiceData;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLSubmitOrderData;
@@ -2228,6 +2229,33 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	@Override
 	public List<String> fetchMlid(List<String> refBarNumArray) {
 		return senderDataRepository.fetchMlid(refBarNumArray);
+	}
+
+	@Override
+	public UserMessage uploadManualInvoice(List<ManualInvoiceData> fileData) {
+		List<Senderdata_Invoicing> invoicingList = new ArrayList<Senderdata_Invoicing>();
+		UserMessage msg = new UserMessage();
+		try {
+		for(ManualInvoiceData data : fileData) {
+			Senderdata_Invoicing invoice = senderdata_InvoicingRepository.fetchByArticleId(data.getTrackingNumber());
+			if(invoice == null) {
+				invoice = new Senderdata_Invoicing();
+				invoice.setArticleId(data.getTrackingNumber());
+				invoice.setBrokerusername(data.getBrokerName());
+				invoice.setFuelSurcharge(new BigDecimal(data.getFuelSurcharge()));
+				invoice.setPostage(data.getPostage());
+				invoice.setAirwayBill(data.getAirwayBill());
+				invoice.setBrokerRate(new BigDecimal(data.getTotal()));
+				invoice.setUploadType("Manual");
+			}
+			invoicingList.add(invoice);
+			senderdata_InvoicingRepository.saveAll(invoicingList);
+		}
+		msg.setMessage("File Uploaded Successfully");
+		}catch(Exception e) {
+			msg.setMessage("Failed to upload file. Please try again later");
+		}
+		return msg;
 	}
 
 }

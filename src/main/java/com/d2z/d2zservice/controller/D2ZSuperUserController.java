@@ -37,6 +37,7 @@ import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.ExportConsignment;
 import com.d2z.d2zservice.model.InvoiceShipment;
+import com.d2z.d2zservice.model.ManualInvoiceData;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ParcelResponse;
@@ -507,4 +508,9 @@ public class D2ZSuperUserController {
 		return superUserD2zService.profitLossReport(fromDate,toDate);
 	}
 	
+	@RequestMapping( method = RequestMethod.POST, path = "/manualInvoice-fileUpload", consumes=MediaType.APPLICATION_JSON)
+    public UserMessage uploadManualInvoice(@RequestBody List<ManualInvoiceData> fileData) {
+		UserMessage successMsg = superUserD2zService.uploadManualInvoice(fileData);
+		return successMsg;
+    }
 }

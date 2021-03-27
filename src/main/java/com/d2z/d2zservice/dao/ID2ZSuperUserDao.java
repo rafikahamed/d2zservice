@@ -24,6 +24,7 @@ import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
+import com.d2z.d2zservice.model.ManualInvoiceData;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLSubmitOrderData;
@@ -271,6 +272,8 @@ public interface ID2ZSuperUserDao {
 	List<String> fetchArticleId(List<String> refBarNumArray);
 
 	List<String> fetchMlid(List<String> refBarNumArray);
+
+	UserMessage uploadManualInvoice(List<ManualInvoiceData> fileData);
 
 }
 

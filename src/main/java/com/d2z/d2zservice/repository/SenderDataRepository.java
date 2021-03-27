@@ -913,7 +913,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 			+  "and s.articleId in (:articleIds)")
 	List<String> fetchPerformanceReportDataByArticleId(List<String> articleIds);
 
-	@Query("SELECT t.articleId FROM SenderdataMaster t where t.reference_number in (:Reference_number) and t.servicetype = 'RC1'")
+	@Query("SELECT t.articleId FROM SenderdataMaster t where t.reference_number in (:Reference_number) and t.servicetype in ('RC1','RC2')")
 	List<String> fetchDataForFDMCall(@Param("Reference_number")String[] refNbrs);
 
 } 

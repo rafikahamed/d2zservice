@@ -464,7 +464,9 @@ public class D2ZDaoImpl implements ID2ZDao {
 				if (senderDataValue.getBarcodeLabelNumber().length() == 20) {
 					senderDataObj.setArticleId(senderDataValue.getBarcodeLabelNumber());
 					senderDataObj.setMlid(senderDataValue.getBarcodeLabelNumber());
-				} else {
+				} else if(senderDataValue.getBarcodeLabelNumber().length() < 20) {
+					senderDataObj.setArticleId(senderDataValue.getBarcodeLabelNumber());
+				}else {
 					senderDataObj.setArticleId(senderDataValue.getBarcodeLabelNumber().substring(18));
 				}
 				if (senderDataValue.getBarcodeLabelNumber().length() == 41)

@@ -27,6 +27,7 @@ import com.d2z.d2zservice.model.ExportShipment;
 import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.InvoiceShipment;
+import com.d2z.d2zservice.model.ManualInvoiceData;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ParcelResponse;
@@ -188,5 +189,8 @@ public interface ISuperUserD2ZService{
 	public List<ProfitLossReport> profitLossReport(String fromDate, String toDate);
 
 	UserMessage generateShipmentReport(List<IncomingJobResponse> jobs);
+
+	public UserMessage uploadManualInvoice(List<ManualInvoiceData> fileData);
+
 
 }

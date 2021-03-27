@@ -41,7 +41,17 @@ public class MasterPostCode implements Serializable {
 	@Column(name="FDMRoute")
 	private String fdmRoute;
 	
+	@Column(name="RC2Zone")
+	private String rc2Zone;
 	
+	public String getRc2Zone() {
+		return rc2Zone;
+	}
+
+	public void setRc2Zone(String rc2Zone) {
+		this.rc2Zone = rc2Zone;
+	}
+
 	public String getFdmRoute() {
 		return fdmRoute;
 	}

@@ -800,7 +800,8 @@ s);
 				request.setShipperCity("Homebush West");
 				request.setShipperState("NSW");
 				request.setShipperCountry("AU");
-				String referenceNbr = "TG"+uniqueNumber;
+				request.setServiceOption("");
+				String referenceNbr = "TG1"+uniqueNumber;
 				request.setReferenceNo(referenceNbr);
 				systemRefNbrMap.put(referenceNbr, orderDetail.getReferenceNumber());
 
@@ -829,25 +830,24 @@ s);
 				request.setShipperCity("Homebush West");
 				request.setShipperState("NSW");
 				request.setShipperCountry("AU");
-			/*	String referenceNbr = "TG"+uniqueNumber;
+				request.setServiceOption("");
+				String referenceNbr = "TG"+uniqueNumber;
+				request.setReferenceNo(referenceNbr);
+				systemRefNbrMap.put(referenceNbr, orderDetail.getReferenceNumber());
+
 					for(int i=1;i<=orderDetail.getShippedQuantity();i++) {
 						com.d2z.d2zservice.model.etower.CreateShippingRequest newrequest = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
-						SenderDataApi neworderDetail = new SenderDataApi();
 						try {
 						BeanUtils.copyProperties(newrequest, request);
-						BeanUtils.copyProperties(neworderDetail, orderDetail);	
 						}
 						catch(Exception e) {
 							e.printStackTrace();
 						}
 						System.out.println(newrequest.getReferenceNo());
-						newrequest.setConsignmentId(i);
+						newrequest.setConsignmentId(String.valueOf(i));
 						newrequest.setWeight(weight/orderDetail.getShippedQuantity());
-						neworderDetail.setReferenceNumber(referenceNbr.concat("-"+newrequest.getConsignmentId()));
-						systemRefNbrMap.put(newrequest.getReferenceNo().concat("-"+newrequest.getConsignmentId()), neworderDetail.getReferenceNumber());
 						eTowerRequest.add(newrequest);
-						updatedOrderDetail.add(neworderDetail);
-					}*/
+					}
 			}
 			else {
 			eTowerRequest.add(request);

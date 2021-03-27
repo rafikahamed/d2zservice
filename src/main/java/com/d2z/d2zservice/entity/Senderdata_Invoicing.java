@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.NamedStoredProcedureQueries;
@@ -32,8 +34,13 @@ public class Senderdata_Invoicing implements Serializable {
 	private int user_Id;
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name="Row_id")
+	private int rowId;
+	
 	@Column(name="Reference_number")
 	private String reference_number;
+	
 	
 	@Column(name="ArticleId")
 	private String articleId;
@@ -92,8 +99,20 @@ public class Senderdata_Invoicing implements Serializable {
 	@Column(name="Brokerusername")
 	private String brokerusername;
 	
+
+	@Column(name="Upload_type")
+	private String uploadType;
+	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	public String getUploadType() {
+		return uploadType;
+	}
+
+	public void setUploadType(String uploadType) {
+		this.uploadType = uploadType;
 	}
 
 	public int getUser_Id() {

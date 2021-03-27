@@ -56,6 +56,7 @@ import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.ExportConsignment;
 import com.d2z.d2zservice.model.InvoiceShipment;
+import com.d2z.d2zservice.model.ManualInvoiceData;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
@@ -978,6 +979,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		List<SenderData> fwData = new ArrayList<SenderData>();
 		List<SenderData> fw3Data = new ArrayList<SenderData>();
 		List<SenderData> mcsData = new ArrayList<SenderData>();
+		List<SenderData> fdmData = new ArrayList<SenderData>();
 
 		for (SenderData data : trackingLabelList) {
 			/*
@@ -1007,6 +1009,15 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			}else if("FW3".equalsIgnoreCase(data.getServiceType())) {
 				fw3Data.add(data);
 			}
+			else if ("RC1".equalsIgnoreCase(data.getServiceType()) || "RC2".equalsIgnoreCase(data.getServiceType())) {
+				Map<String,String> routeMap = D2ZSingleton.getInstance().getPostCodeFDMRouteMap();
+				String state = data.getConsigneeState().trim().toUpperCase();
+				String suburb = data.getConsigneeSuburb().trim().toUpperCase();
+				String postcode = data.getConsigneePostcode().trim();
+				String key = state.concat(suburb).concat(postcode);
+				data.setLabelSenderName(routeMap.get(key));
+				fdmData.add(data);
+			}  
 			else  if (data.getCarrier().equalsIgnoreCase("eParcel")) {
 				eParcelData.add(data);
 			} else if (data.getCarrier().equalsIgnoreCase("Express")) {
@@ -1043,6 +1054,8 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		JasperReport fw3Label = null;
 		JRBeanCollectionDataSource mcsDataSource;
 		JasperReport mcsLabel = null;
+		JRBeanCollectionDataSource fdmDataSource;
+		JasperReport fdmLabel = null;
 		try (ByteArrayOutputStream byteArray = new ByteArrayOutputStream()) {
 			List<JasperPrint> jasperPrintList = new ArrayList<JasperPrint>();
 			if (!eParcelData.isEmpty()) {
@@ -1123,6 +1136,13 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				mcsLabel = JasperCompileManager.compileReport(getClass().getResource("/MCSLabel.jrxml").openStream());
 				JRSaver.saveObject(mcsLabel, "MCSLabel.jasper");
 				jasperPrintList.add(JasperFillManager.fillReport(mcsLabel, parameters, mcsDataSource));
+			}
+			if (!fdmData.isEmpty()) {
+				System.out.println("Generating FDM..." + fdmData.size());
+				fdmDataSource = new JRBeanCollectionDataSource(fdmData);
+				fdmLabel = JasperCompileManager.compileReport(getClass().getResource("/FDM.jrxml").openStream());
+				JRSaver.saveObject(fdmLabel, "FDM.jasper");
+				jasperPrintList.add(JasperFillManager.fillReport(fdmLabel, parameters, fdmDataSource));
 			}
 			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
@@ -1944,6 +1964,11 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		UserMessage userMsg = new UserMessage();
 		userMsg.setMessage("Shipment Summary generated successfully");
 		return userMsg;
+	}
+
+	@Override
+	public UserMessage uploadManualInvoice(List<ManualInvoiceData> fileData) {
+		return d2zDao.uploadManualInvoice(fileData);
 	}
 	
 
