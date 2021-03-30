@@ -1643,7 +1643,11 @@ public class D2ZDaoImpl implements ID2ZDao {
 		trackandTrace.setTrackEventDateOccured(trackingEvent.getTrackEventDateOccured());
 		trackandTrace.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
 		trackandTrace.setReference_number(articleId);
+		if(trackingEvent.getLocation().contains("FDM")) {
+			trackandTrace.setLocation(trackingEvent.getLocation().replace("FDM ", ""));
+		}else {
 		trackandTrace.setLocation(trackingEvent.getLocation());
+		}
 		trackandTrace.setTrackEventCode(trackingEvent.getStatusCode());
 		if(null == trackingEvent.getEventDetails() ) {
 		if("INCG".equalsIgnoreCase(trackingEvent.getStatusCode())) {
