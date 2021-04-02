@@ -161,6 +161,8 @@ public interface ID2ZService {
 
 	public ResponseMessage createTrackEvents(List<TrackParcelResponse> request);
 
+	public void triggerTransVirtual();
+
 
 
 

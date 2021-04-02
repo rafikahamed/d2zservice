@@ -136,19 +136,19 @@ public class D2ZSingleton {
 				.map(daoObj -> {
 					return daoObj.getStateName().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
 				}).collect(Collectors.toList()));
-		masterTollPostCodeList = postCodeZoneDaoObj.stream().filter(obj -> obj.getTollZone() != "0")
+		masterTollPostCodeList = postCodeZoneDaoObj.stream().filter(obj -> !obj.getTollZone().equals("0"))
 				.map(daoObj -> {
 					return daoObj.getPostcodeId().getState().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
 				}).collect(Collectors.toList());
-		masterTollPostCodeList.addAll(postCodeZoneDaoObj.stream().filter(obj -> obj.getTollZone() != "0" && obj.getStateName()!=null)
+		masterTollPostCodeList.addAll(postCodeZoneDaoObj.stream().filter(obj -> !obj.getTollZone().equals("0") && obj.getStateName()!=null)
 				.map(daoObj -> {
 					return daoObj.getStateName().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
 				}).collect(Collectors.toList()));
-		masterRC2PostCodeList = postCodeZoneDaoObj.stream().filter(obj -> obj.getRc2Zone() != "0")
+		masterRC2PostCodeList = postCodeZoneDaoObj.stream().filter(obj -> !obj.getRc2Zone().equals("0"))
 				.map(daoObj -> {
 					return daoObj.getPostcodeId().getState().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
 				}).collect(Collectors.toList());
-		masterRC2PostCodeList.addAll(postCodeZoneDaoObj.stream().filter(obj -> obj.getRc2Zone() != "0" && obj.getStateName()!=null)
+		masterRC2PostCodeList.addAll(postCodeZoneDaoObj.stream().filter(obj -> !obj.getRc2Zone().equals("0") && obj.getStateName()!=null)
 				.map(daoObj -> {
 					return daoObj.getStateName().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
 				}).collect(Collectors.toList()));

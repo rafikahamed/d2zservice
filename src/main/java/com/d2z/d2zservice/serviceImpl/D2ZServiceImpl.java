@@ -110,6 +110,8 @@ import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.TrackingEvents;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.model.TransVirtual.Rows;
+import com.d2z.d2zservice.model.TransVirtual.TransVirtualRequest;
 import com.d2z.d2zservice.model.auspost.CreateShippingRequest;
 import com.d2z.d2zservice.model.auspost.FromAddress;
 import com.d2z.d2zservice.model.auspost.Items;
@@ -132,6 +134,7 @@ import com.d2z.d2zservice.proxy.AusPostProxy;
 import com.d2z.d2zservice.proxy.EbayProxy;
 import com.d2z.d2zservice.proxy.FDMProxy;
 import com.d2z.d2zservice.proxy.PcaProxy;
+import com.d2z.d2zservice.proxy.TransVirtualProxy;
 import com.d2z.d2zservice.repository.FFResponseRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.UserRepository;
@@ -193,6 +196,9 @@ public class D2ZServiceImpl implements ID2ZService {
 	@Autowired
 	private EbayProxy proxy;
 
+	@Autowired
+	private TransVirtualProxy transVirtualProxy;
+	
 	@Autowired
 	EmailUtil emailUtil;
 
@@ -3220,6 +3226,23 @@ public class D2ZServiceImpl implements ID2ZService {
 	public ResponseMessage createTrackEvents(List<TrackParcelResponse> request) {
 		// TODO Auto-generated method stub
 		return d2zDao.createTrackEvents(request);
+	}
+
+	@Override
+	public void triggerTransVirtual() {
+
+		TransVirtualRequest request= new TransVirtualRequest();
+		List<com.d2z.d2zservice.model.TransVirtual.Items> items = new ArrayList<com.d2z.d2zservice.model.TransVirtual.Items>();
+		com.d2z.d2zservice.model.TransVirtual.Items item = new com.d2z.d2zservice.model.TransVirtual.Items();
+		items.add(item);
+		List<Rows> rows = new ArrayList<Rows>();
+		Rows row = new Rows();
+		row.setItems(items);
+		rows.add(row);
+		request.setRows(rows);
+		
+		transVirtualProxy.makeCall(request);
+		
 	}
 
 	

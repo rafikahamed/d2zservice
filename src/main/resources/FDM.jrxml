@@ -184,7 +184,7 @@
 					<pen lineWidth="0.0" lineColor="#D9D2D2"/>
 				</box>
 				<textElement>
-					<font fontName="MyArial" size="16"/>
+					<font fontName="MyArial" size="16" isBold="true"/>
 					<paragraph leftIndent="3"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeSuburb}.concat(" ").concat($F{consigneeState}).concat(" ").concat($F{consigneePostcode}).toUpperCase()]]></textFieldExpression>
@@ -192,7 +192,7 @@
 			<textField isBlankWhenNull="true">
 				<reportElement x="14" y="105" width="238" height="20" uuid="e3db5101-d2dd-4c52-b832-65860990b61d"/>
 				<textElement>
-					<font fontName="MyArial" size="15"/>
+					<font fontName="MyArial" size="15" isBold="true"/>
 					<paragraph leftIndent="3"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeAddr1}]]></textFieldExpression>
@@ -205,7 +205,7 @@
 					<pen lineWidth="0.0" lineColor="#D9D2D2"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="MyArial" size="16"/>
+					<font fontName="MyArial" size="16" isBold="true"/>
 					<paragraph leftIndent="3"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeName}.toUpperCase()]]></textFieldExpression>
@@ -315,7 +315,7 @@
 			<textField isBlankWhenNull="true">
 				<reportElement x="15" y="125" width="238" height="20" uuid="7f74a157-ef3b-42cd-bd83-26cd818da7a7"/>
 				<textElement>
-					<font fontName="MyArial" size="15"/>
+					<font fontName="MyArial" size="15" isBold="true"/>
 					<paragraph leftIndent="3"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{consigneeAddr2}]]></textFieldExpression>
@@ -339,7 +339,7 @@
 			<textField isBlankWhenNull="true">
 				<reportElement x="12" y="27" width="354" height="24" uuid="66704d9b-79b3-43e6-92cb-d4fabc66996f"/>
 				<textElement>
-					<font fontName="MyArial" size="16" isBold="true"/>
+					<font fontName="MyArial" size="16" isBold="false"/>
 					<paragraph leftIndent="3"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{returnAddress1}.concat(", ").concat($F{returnAddress2})]]></textFieldExpression>

@@ -182,4 +182,11 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 				.header("Content-Disposition", "inline; filename=\"Label.pdf\"").body(poddata);
 	}
 	
+	@RequestMapping( method = RequestMethod.GET, path = "/triggerTransVirtual")
+    public ResponseMessage transVirtual() {
+		ResponseMessage msg = new ResponseMessage();
+		msg.setResponseMessage("Success");
+		 d2zService.triggerTransVirtual();
+		return msg;
+    }
 }
