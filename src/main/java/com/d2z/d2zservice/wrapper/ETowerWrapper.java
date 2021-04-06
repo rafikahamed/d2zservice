@@ -448,8 +448,7 @@ public class ETowerWrapper {
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 		for(String s : referencenumber)
 		{
-						DeleteShippingResponse data = eTowerProxy.makeCallToDelete("SW10S" +
-s);
+						DeleteShippingResponse data = eTowerProxy.makeCallToDelete(s);
 			ETowerResponse errorResponse = new ETowerResponse();
 			errorResponse.setAPIName("Delete Shipping Order");
 			errorResponse.setStatus(data.getStatus());

@@ -3245,6 +3245,13 @@ public class D2ZServiceImpl implements ID2ZService {
 		
 	}
 
+	@Override
+	public void etowerDelete(List<String> referenceNumbers) {
+		for(String referenceNumber : referenceNumbers) {
+			eTowerWrapper.DeleteShipingResponse(referenceNumbers);
+		}
+	}
+
 	
 	
 

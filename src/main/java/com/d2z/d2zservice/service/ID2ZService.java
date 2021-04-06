@@ -163,7 +163,7 @@ public interface ID2ZService {
 
 	public void triggerTransVirtual();
 
-
+	public void etowerDelete(List<String> referenceNumbers);
 
 
 }

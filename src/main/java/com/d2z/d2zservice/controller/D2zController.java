@@ -341,6 +341,12 @@ public class D2zController {
 		d2zService.makeCallToEtowerBasedonSupplierUI(referenceNumbers);
 	}
 	
+	@RequestMapping(method = RequestMethod.DELETE, path = "/etowercall")
+	public void triggeretowerDelete(@RequestBody List<String> referenceNumbers) {
+		d2zService.etowerDelete(referenceNumbers);
+	}
+
+	
 	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/shipmentarticleid/{shipmentNumber}")
 	public ResponseMessage allocateShipmentbyArticleID(@RequestBody String articleid,@PathVariable String shipmentNumber)
 			throws ReferenceNumberNotUniqueException {

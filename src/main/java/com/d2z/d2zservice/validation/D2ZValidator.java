@@ -708,7 +708,7 @@ public class D2ZValidator {
 			}
 		});
 		if(!incorrectPostcode_Suburb.isEmpty()) {
-			throw new InvalidSuburbPostcodeException("Invalid Combination of Consignee State, Postcode and Suburb",incorrectPostcode_Suburb);
+			throw new InvalidSuburbPostcodeException("Suburb is not in carrier serviced areas",incorrectPostcode_Suburb);
 		}
 		
 			
@@ -727,7 +727,7 @@ public class D2ZValidator {
 			}
 		});
 		if(!incorrectPostcode_Suburb.isEmpty()) {
-			throw new InvalidSuburbPostcodeException("Invalid Combination of Consignee State, Postcode and Suburb",incorrectPostcode_Suburb);
+			throw new InvalidSuburbPostcodeException("Suburb is not in carrier serviced areas",incorrectPostcode_Suburb);
 		}
 			
 	}
@@ -745,7 +745,7 @@ public class D2ZValidator {
 			String combination = state.concat(suburb).concat(postcode);
 			if(!postCodeZoneList.contains(combination)) {
 		   				 ValidationUtils.populateErrorDetails(obj.getReferenceNumber(),obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim(),
-						 "Invalid combination of Consignee State or Postcode or Suburb",errorMap) ;
+						 "Suburb is not in carrier serviced areas",errorMap) ;
 		
 			}
 			}
