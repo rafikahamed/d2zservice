@@ -311,6 +311,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			System.out.println(userId+" : "+autoShipment);
 			
 		}
+		System.out.println(isPostcodeValidationReq);
 		if("RC1".equalsIgnoreCase(serviceType)) {
 			isPostcodeValidationReq = false;
 		}

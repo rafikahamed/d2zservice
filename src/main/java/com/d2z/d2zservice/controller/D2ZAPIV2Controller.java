@@ -106,6 +106,7 @@ public ResponseEntity<Object> createConsignments(@Valid @RequestBody CreateConsi
 				}        
             	
     		}
+        	d2zService.makeVeloceCall(orderDetail.getConsignmentData());
     	d2zApiService.makeCallToEtowerBasedonSupplierUI(incomingRefNbr);
     	}else {
     		response.setStatus("Failure");

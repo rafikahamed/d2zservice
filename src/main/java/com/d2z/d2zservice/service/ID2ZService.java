@@ -1,6 +1,7 @@
 package com.d2z.d2zservice.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import javax.validation.Valid;
 import com.d2z.d2zservice.entity.CSTickets;
@@ -24,6 +25,7 @@ import com.d2z.d2zservice.model.PostCodeWeight;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
 import com.d2z.d2zservice.model.SenderData;
+import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
 import com.d2z.d2zservice.model.ShippingQuoteRequest;
@@ -164,6 +166,18 @@ public interface ID2ZService {
 	public void triggerTransVirtual();
 
 	public void etowerDelete(List<String> referenceNumbers);
+
+	public void eTowerMonitoring(Map<String,List<String>> monitoringMap);
+
+	public void fdmMonitoring(Map<String,List<String>> monitoringMap);
+
+	public void monitorAutoShipment(Map<String,List<String>> monitoringMap);
+
+	public void pflMonitoring(Map<String,List<String>> monitoringMap);
+
+	public void generateMonitoringReport(Map<String, List<String>> monitoringMap);
+
+	public void makeVeloceCall(List<SenderDataApi> consignmentData);
 
 
 }

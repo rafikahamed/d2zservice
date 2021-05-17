@@ -1675,6 +1675,46 @@ public class D2ZDaoImpl implements ID2ZDao {
 		// TODO Auto-generated method stub
 		return eTowerResponseRepository.fetchTrackingNumberFromEtowerResponse(artileIDList);
 	}
+
+	@Override
+	public List<String> missingCreateShippingOrder() {
+		// TODO Auto-generated method stub
+		return senderDataRepository.missingCreateShippingOrder();
+	}
+
+	@Override
+	public List<String> missingForecast() {
+		// TODO Auto-generated method stub
+		return senderDataRepository.missingForecast();
+	}
+
+	@Override
+	public List<String> missingFdmArticleIds() {
+		// TODO Auto-generated method stub
+		return senderDataRepository.missingFdmArticleIds();
+	}
+
+	@Override
+	public List<String> missingShipmentAllocation() {
+		// TODO Auto-generated method stub
+		return senderDataRepository.missingShipmentAllocation();
+	}
+
+	@Override
+	public List<String>  missingPFLIdsMonday() {
+		return senderDataRepository.missingPFLIdsMonday();
+	}
+
+	@Override
+	public List<String>  missingPFLIds() {
+		return senderDataRepository.missingPFLIds();		
+	}
+
+	@Override
+	public List<SenderdataMaster> fetchDataForVeloceCall(String[] refNbrs) {
+		// TODO Auto-generated method stub
+		return senderDataRepository.fetchServiceTypeByRefNbrs(refNbrs,"MY4");
+	}
 	
 
 }

@@ -23,9 +23,9 @@ public class EmailUtil {
 	private JavaMailSender mailSender;
 
 
-	public void sendReport(String subject, String toMail, String body, byte[] report,String fileName) {
+	public void sendReport(String subject,String name, String toMail, String body, byte[] report,String fileName) {
 
-		 String mailBody = "<body><h4> Dear Customer,</br></br>" +
+		 String mailBody = "<body><h4> Dear "+name+",</br></br>" +
 						   body + "</h4>" +
 						   "<h4>Regards, </br>" + "D2Z Support Team</h4>" + "</body> "; 
 		 MimeMessage message = mailSender.createMimeMessage(); 

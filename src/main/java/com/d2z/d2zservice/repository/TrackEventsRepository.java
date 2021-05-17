@@ -14,4 +14,13 @@ public interface TrackEventsRepository extends CrudRepository<TrackEvents, Long>
 
 	@Query("Select t FROM TrackEvents t where t.articleID in (:articleIds)")
 	List<TrackEvents> fetchEventsFromTrackEvents(List<String> articleIds);
+	
+	@Query(nativeQuery = true,value="SELECT distinct articleid \r\n"
+			+ "FROM   trackevents\r\n"
+			+ "WHERE  reference_number LIKE 'NEX%'\r\n"
+			+ "AND articleid NOT IN (SELECT DISTINCT articleid\r\n"
+			+ "FROM   trackevents\r\n"
+			+ "WHERE  trackeventcode IN ( 'DEL', 'OBD' ))\r\n"
+			+ "AND trackeventdateoccured < Dateadd(day, -2, Getdate())")
+	List<String> fetchPendingArticleIDs();
 }

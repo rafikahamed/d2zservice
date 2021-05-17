@@ -147,6 +147,7 @@ import com.d2z.d2zservice.validation.D2ZValidator;
 import com.d2z.d2zservice.wrapper.ETowerWrapper;
 import com.d2z.d2zservice.wrapper.PCAWrapper;
 import com.d2z.d2zservice.wrapper.PFLWrapper;
+import com.d2z.d2zservice.wrapper.VeloceWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.d2z.singleton.SingletonCounter;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
@@ -209,6 +210,9 @@ public class D2ZServiceImpl implements ID2ZService {
 	ETowerWrapper eTowerWrapper;
 
 	@Autowired
+	VeloceWrapper veloceWrapper;
+	
+	@Autowired
 	AusPostProxy ausPostProxy;
 
 	@Autowired
@@ -267,7 +271,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			if(request.getFastwaySenderDataUI().size()>0) {
 				makeCreateShippingOrderFilePFLCall(request.getPflSenderDataUI(),senderDataResponseList,orderDetailList.get(0).getUserName(), "FW"); 	
 			}
-			if(request.getEparcelSenderData().size()>0) {
+			if(request.getEparcelSenderDataUI().size()>0) {
 
 				String senderFileID = d2zDao.exportParcel(request.getEparcelSenderDataUI(), null); 
 				List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
@@ -1157,10 +1161,15 @@ public class D2ZServiceImpl implements ID2ZService {
 	public List<SenderDataResponse> createConsignments(CreateConsignmentRequest orderDetail,
 			List<String> autoShipRefNbrs) throws ReferenceNumberNotUniqueException, FailureResponseException {
 		Integer userId = userRepository.fetchUserIdbyUserName(orderDetail.getUserName());
+		String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
 		if (userId == null) {
 			throw new InvalidUserException("User does not exist", orderDetail.getUserName());
 		}
-		if (orderDetail.getConsignmentData().size() > 300) {
+		if(serviceType.equalsIgnoreCase("MY4") && orderDetail.getConsignmentData().size() > 50) {
+			throw new MaxSizeCountException("We are allowing max 50 records, Your Request contains - "
+					+ orderDetail.getConsignmentData().size() + " Records");
+		}
+		else if (orderDetail.getConsignmentData().size() > 300) {
 			throw new MaxSizeCountException("We are allowing max 300 records, Your Request contains - "
 					+ orderDetail.getConsignmentData().size() + " Records");
 		}
@@ -1181,7 +1190,6 @@ public class D2ZServiceImpl implements ID2ZService {
 		String datamatrix = orderDetail.getConsignmentData().get(0).getDatamatrix();
 		if (null == barcodeLabelNumber || barcodeLabelNumber.trim().isEmpty() || null == datamatrix
 				|| datamatrix.trim().isEmpty()) {
-			String serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
 			if(("MCS").equalsIgnoreCase(serviceType)){
 				MCSSenderDataRequest request = constructMCSRequest(orderDetail);
 				d2zValidator.isPostCodeZone4Valid(request.getEparcelSenderData());
@@ -1545,7 +1553,7 @@ public class D2ZServiceImpl implements ID2ZService {
 				if (!referenceNbrs.isEmpty()) {
 					triggerFDM(referenceNbrs);
 				}
-
+				
 				/*
 				 * List<SenderdataMaster> senderMasterData =
 				 * d2zDao.fetchDataBasedonSupplier(Arrays.asList(refNbrArray),"Freipost");
@@ -2672,7 +2680,7 @@ public class D2ZServiceImpl implements ID2ZService {
 			} else if (articleId.startsWith("BN") || articleId.startsWith("MP") || articleId.startsWith("MS")  || articleId.startsWith("WJY")) {
 				pflArticleIds.add(articleId);
 			} else {
-				d2zArticleIds.add(articleId);
+				 d2zArticleIds.add(articleId); 
 			}
 		}
 		if (eTowerArticleIds.size() > 0) {
@@ -3015,7 +3023,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		 
 		 
 		 byte[] attachmentData = excelWriter.generatePerformance(performanceReportData); 
-		 emailUtil.sendReport("Performance Report", "IT@d2z.com.au","Please find attached the Performance report",attachmentData,"PerformanceReport.xlsx");
+		 emailUtil.sendReport("Performance Report","Customer", "IT@d2z.com.au","Please find attached the Performance report",attachmentData,"PerformanceReport.xlsx");
 
 		 long endTime = System.currentTimeMillis();
 		 long executeTime = endTime - startTime;
@@ -3250,6 +3258,70 @@ public class D2ZServiceImpl implements ID2ZService {
 		for(String referenceNumber : referenceNumbers) {
 			eTowerWrapper.DeleteShipingResponse(referenceNumbers);
 		}
+	}
+
+	@Override
+	public void eTowerMonitoring(Map<String,List<String>> map) {
+			List<String> createOrderArticleIds = d2zDao.missingCreateShippingOrder();
+			if(createOrderArticleIds.size()>0) {
+			map.put("ETowerCreate", createOrderArticleIds);
+			}
+			List<String> forecast = d2zDao.missingForecast();
+			if(forecast.size()>0) {
+			map.put("ETowerForecast", forecast);
+			}
+	}
+
+	@Override
+	public void fdmMonitoring(Map<String,List<String>> map) {
+		List<String> fdmArticleIds = d2zDao.missingFdmArticleIds();
+		if(fdmArticleIds.size()>0) {
+		map.put("FDM", fdmArticleIds);
+		}
+	}
+
+	@Override
+	public void monitorAutoShipment(Map<String,List<String>> map) {
+		
+		List<String> autoShipmentmissed = d2zDao.missingShipmentAllocation();
+		if(autoShipmentmissed.size()>0) {
+		map.put("AutoShipment", autoShipmentmissed);
+		}
+	}
+
+	@Override
+	public void pflMonitoring(Map<String,List<String>> monitoringMap) {
+		List<String> pflMlidMissed = new ArrayList<String>();
+		ZoneId zoneId = ZoneId.of ( "Australia/Sydney" );
+		int dayofWeek = LocalDate.now(zoneId).getDayOfWeek().getValue();
+		if(dayofWeek == 0) {
+			d2zDao.missingPFLIdsMonday();
+		}else {
+			d2zDao.missingPFLIds();
+		}
+		if(pflMlidMissed.size()>0) {
+		monitoringMap.put("PFL",pflMlidMissed);
+		}
+	}
+
+
+	@Override
+	public void generateMonitoringReport(Map<String, List<String>> monitoringMap) {
+		 if(monitoringMap.size()>0) {
+		 byte[] attachmentData = excelWriter.generateMonitoringReport(monitoringMap); 
+		 emailUtil.sendReport("Monitoring Report","Team", "IT@d2z.com.au","Please find attached the Monitoring report",attachmentData,"MonitoringReport.xlsx");
+		 }else {
+			 emailUtil.sendEmail("Monitoring Report", "IT@d2z.com.au","No discrepancies found");
+		 }
+	}
+
+	@Override
+	public void makeVeloceCall(List<SenderDataApi> consignmentData) {
+		// TODO Auto-generated method stub
+		if (consignmentData.get(0).getServiceType().equalsIgnoreCase("MY4")) {
+			veloceWrapper.makeCalltoVeloce(consignmentData);
+		}
+
 	}
 
 	

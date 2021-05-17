@@ -3,7 +3,9 @@ package com.d2z.d2zservice.controller;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.validation.Valid;
@@ -37,6 +39,7 @@ import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.model.ShipmentDetails;
 import com.d2z.d2zservice.model.ShippingQuoteRequest;
 import com.d2z.d2zservice.model.TrackParcel;
+import com.d2z.d2zservice.model.TrackParcelResponse;
 import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
@@ -56,6 +59,18 @@ public class D2zController {
 	public UserDetails login(@RequestParam("userName") String userName, @RequestParam("passWord") String passWord) {
 		UserDetails userDetails = d2zService.login(userName, passWord);
 		return userDetails;
+    }
+	
+	@RequestMapping( method = RequestMethod.PUT, path = "/trackParcels")
+    public List<TrackParcelResponse> trackParcels(@RequestBody List<String> articleIds) {
+		List<TrackParcelResponse> trackParcelResponse = new ArrayList<TrackParcelResponse>();
+		try{
+			trackParcelResponse = d2zService.trackParcels(articleIds);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return trackParcelResponse;
     }
 	
 	@RequestMapping( method = RequestMethod.POST, path = "/consignment-fileUpload")

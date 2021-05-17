@@ -140,6 +140,7 @@ public class D2ZSingleton {
 				.map(daoObj -> {
 					return daoObj.getPostcodeId().getState().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());
 				}).collect(Collectors.toList());
+		System.out.println(masterTollPostCodeList.size());
 		masterTollPostCodeList.addAll(postCodeZoneDaoObj.stream().filter(obj -> !obj.getTollZone().equals("0") && obj.getStateName()!=null)
 				.map(daoObj -> {
 					return daoObj.getStateName().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());

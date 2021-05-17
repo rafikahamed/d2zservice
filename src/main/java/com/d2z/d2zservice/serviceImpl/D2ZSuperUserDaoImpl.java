@@ -38,6 +38,7 @@ import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.Senderdata_Invoicing;
+import com.d2z.d2zservice.entity.TrackEvents;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.model.AUWeight;
@@ -97,6 +98,7 @@ import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.Senderdata_InvoicingRepository;
 import com.d2z.d2zservice.repository.ServiceTypeListRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
+import com.d2z.d2zservice.repository.TrackEventsRepository;
 import com.d2z.d2zservice.repository.TransitTimeRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
@@ -176,11 +178,14 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	@Autowired
 	ParcelRepository parcelRepository;
 
+	@Autowired
+	TrackEventsRepository trackEventsRepository;
+	
 	@Override
-	public List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
-		List<Trackandtrace> trackingDetailsList = new ArrayList<Trackandtrace>();
+	public List<TrackEvents> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
+		List<TrackEvents> trackingDetailsList = new ArrayList<TrackEvents>();
 		for (UploadTrackingFileData fileDataValue : fileData) {
-			Trackandtrace trackingDetails = new Trackandtrace();
+			TrackEvents trackingDetails = new TrackEvents();
 			//trackingDetails.setRowId(D2ZCommonUtil.generateTrackID());
 			trackingDetails.setReference_number(fileDataValue.getReferenceNumber());
 			trackingDetails.setArticleID(fileDataValue.getConnoteNo());
@@ -194,15 +199,18 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			 * new InvalidDateException("Invalid Date"); }
 			 */
 			// trackingDetails.setTrackEventDateOccured(Timestamp.valueOf(fileDataValue.getTrackEventDateOccured()));
-			trackingDetails.setTrackEventDateOccured(fileDataValue.getTrackEventDateOccured());
+			  LocalDateTime date = LocalDateTime.parse(fileDataValue.getTrackEventDateOccured(), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+
+			trackingDetails.setTrackEventDateOccured(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(date));
 			trackingDetails.setFileName(fileDataValue.getFileName());
 			trackingDetails.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
+			trackingDetails.setLocation(fileDataValue.getLocation());
 			trackingDetails.setIsDeleted("N");
 			// trackAndTraceRepository.save(trackingDetails);
 			trackingDetailsList.add(trackingDetails);
 		}
-		List<Trackandtrace> insertedData = (List<Trackandtrace>) trackAndTraceRepository.saveAll(trackingDetailsList);
-		trackAndTraceRepository.updateTracking();
+		List<TrackEvents> insertedData = (List<TrackEvents>) trackEventsRepository.saveAll(trackingDetailsList);
+		//trackAndTraceRepository.updateTracking();
 		trackAndTraceRepository.deleteDuplicates();
 		return insertedData;
 	}
@@ -1727,6 +1735,28 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				Double totalNexb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
 				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalNexb)));
 			}
+			else if(incomingJobDetails.getBroker().equalsIgnoreCase("BLOB") && incomingJobDetails.getConsignee().equalsIgnoreCase("BLUE")) {
+				Double processNexb = Double.valueOf(incomingJobDetails.getWeight())*(0.1);
+				shipmemntCharge.setProcess(Double.valueOf(twoDForm.format(processNexb)));
+				Double pickUpCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.4)) > 90 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.4)) : 90;
+				shipmemntCharge.setPickUp(Double.valueOf(twoDForm.format(pickUpCharge)));
+				shipmemntCharge.setDocs((double) 60);
+				Double airportCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.6)) > 60 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.6)) : 60;
+				shipmemntCharge.setAirport(Double.valueOf(twoDForm.format(airportCharge)));
+				Double totalNexb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
+				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalNexb)));
+			}
+			else if(incomingJobDetails.getBroker().equalsIgnoreCase("FPB") && incomingJobDetails.getConsignee().equalsIgnoreCase("PFL")) {
+				Double processNexb = Double.valueOf(incomingJobDetails.getHawb())*(0.22);
+				shipmemntCharge.setProcess(Double.valueOf(twoDForm.format(processNexb)));
+				Double pickUpCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.18)) > 99 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.18)) : 99;
+				shipmemntCharge.setPickUp(Double.valueOf(twoDForm.format(pickUpCharge)));
+				shipmemntCharge.setDocs((double) 61.60);
+				Double airportCharge = (Double.valueOf(incomingJobDetails.getWeight())*(0.62)) > 61.60 ? (Double.valueOf(incomingJobDetails.getWeight())*(0.62)) : 61.60;
+				shipmemntCharge.setAirport(Double.valueOf(twoDForm.format(airportCharge)));
+				Double totalNexb = shipmemntCharge.getProcess() + shipmemntCharge.getPickUp() + shipmemntCharge.getDocs() + shipmemntCharge.getAirport();
+				shipmemntCharge.setTotal(Double.valueOf(twoDForm.format(totalNexb)));
+			}
 			shipmentChargesList.add(shipmemntCharge);
 		}
 		return shipmentChargesList;
@@ -2237,6 +2267,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 		UserMessage msg = new UserMessage();
 		try {
 		for(ManualInvoiceData data : fileData) {
+			SenderdataMaster senderDataMaster = senderDataRepository.fetchDataArticleId(data.getTrackingNumber());
 			Senderdata_Invoicing invoice = senderdata_InvoicingRepository.fetchByArticleId(data.getTrackingNumber());
 			if(invoice == null) {
 				invoice = new Senderdata_Invoicing();
@@ -2247,6 +2278,18 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 				invoice.setAirwayBill(data.getAirwayBill());
 				invoice.setBrokerRate(new BigDecimal(data.getTotal()));
 				invoice.setUploadType("Manual");
+				invoice.setInvoiced("N");
+				invoice.setBilled("N");
+				if(senderDataMaster != null) {
+					invoice.setUser_Id(senderDataMaster.getUser_ID());
+					invoice.setConsignee_Postcode(senderDataMaster.getConsignee_Postcode());
+					invoice.setConsignee_Suburb(senderDataMaster.getConsignee_Suburb());
+					invoice.setReference_number(senderDataMaster.getReference_number());
+					invoice.setServicetype(senderDataMaster.getServicetype());
+					invoice.setBarcodelabelNumber(senderDataMaster.getBarcodelabelNumber());
+					invoice.setCarrier(senderDataMaster.getCarrier());
+					invoice.setDateAllocated(senderDataMaster.getTimestamp());
+				}
 			}
 			invoicingList.add(invoice);
 			senderdata_InvoicingRepository.saveAll(invoicingList);
@@ -2256,6 +2299,17 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			msg.setMessage("Failed to upload file. Please try again later");
 		}
 		return msg;
+	}
+
+	@Override
+	public List<String> downloadFDMArticleIds() {
+		return senderDataRepository.downloadFDMArticleIds();
+	}
+
+	@Override
+	public List<String> downloadPendingTracking() {
+		// TODO Auto-generated method stub
+		return trackEventsRepository.fetchPendingArticleIDs();
 	}
 
 }

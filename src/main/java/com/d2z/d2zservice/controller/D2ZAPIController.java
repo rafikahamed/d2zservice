@@ -95,7 +95,7 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 		    			return obj.getReferenceNumber(); })
 		    				.collect(Collectors.toList());
 		        	d2zService.makeCallToEtowerBasedonSupplierUI(incomingRefNbr);
-		        	
+		        	d2zService.makeVeloceCall(orderDetail.getConsignmentData());
 		        	if(null!=autoShipRefNbrs && !autoShipRefNbrs.isEmpty()) {
 		    			System.out.println("Auto-Shipment Allocation");
 		    			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");

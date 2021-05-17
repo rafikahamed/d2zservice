@@ -1,5 +1,9 @@
 package com.d2z.d2zservice.scheduler;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
@@ -73,7 +77,7 @@ public class Scheduler {
 //		}
 //	}
 
-	@Scheduled(cron = "0 0 2,8,14 * * ?", zone = "GMT")
+	@Scheduled(cron = "0 0 2,8,14,20 * * ?", zone = "GMT")
 	public void updateRates() {
 		try {
 			System.out.println("Scheduling - Rates update");
@@ -148,6 +152,16 @@ public class Scheduler {
 		}
 	}
 	
+	@Scheduled(cron = "0 0 12 * * ?",zone = "GMT")
+	public void monitoring() {
+			Map<String,List<String>> monitoringMap = new HashMap<String,List<String>>();
+			d2zService.eTowerMonitoring(monitoringMap);
+			d2zService.fdmMonitoring(monitoringMap);
+			d2zService.monitorAutoShipment(monitoringMap);	
+			d2zService.pflMonitoring(monitoringMap);
+			d2zService.generateMonitoringReport(monitoringMap);
+	}
+
 	
 
 }

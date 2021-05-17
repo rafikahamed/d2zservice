@@ -513,4 +513,14 @@ public class D2ZSuperUserController {
 		UserMessage successMsg = superUserD2zService.uploadManualInvoice(fileData);
 		return successMsg;
     }
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/downloadFDMdata")
+	public List<String> downloadFDMArticleIds() {
+		return superUserD2zService.downloadFDMArticleIds();
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/downloadPendingTracking")
+	public List<String> downloadPendingTracking() {
+		return superUserD2zService.downloadPendingTracking();
+	}
 }

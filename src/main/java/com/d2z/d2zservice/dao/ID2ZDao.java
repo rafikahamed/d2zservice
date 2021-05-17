@@ -245,6 +245,20 @@ public interface ID2ZDao {
 
 	public List<String> fetchTrackingNumberFromEtowerResponse(List<String> artileIDList);
 
+	public List<String> missingCreateShippingOrder();
+
+	public List<String> missingForecast();
+
+	public List<String> missingFdmArticleIds();
+
+	public List<String> missingShipmentAllocation();
+
+	public List<String> missingPFLIdsMonday();
+
+	public List<String> missingPFLIds();
+
+	public List<SenderdataMaster> fetchDataForVeloceCall(String[] refNbrs);
+
 
 
 }

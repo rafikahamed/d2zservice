@@ -1,5 +1,8 @@
 package com.d2z.d2zservice.util;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -124,6 +127,24 @@ public class D2ZCommonUtil {
 		fdmList.add("33PEH");
 		return fdmList;
 	}
+	
+
+    public static String sha1Encrpytion(String input)
+    {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            byte[] messageDigest = md.digest(input.getBytes());
+            BigInteger no = new BigInteger(1, messageDigest);
+            String hashtext = no.toString(16);
+            while (hashtext.length() < 32) {
+                hashtext = "0" + hashtext;
+            }
+            return hashtext;
+        }
+          catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
 	
 	/*public static int generateTrackID() {
 		Random rnd = new Random();

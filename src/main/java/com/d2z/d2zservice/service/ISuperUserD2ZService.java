@@ -192,5 +192,9 @@ public interface ISuperUserD2ZService{
 
 	public UserMessage uploadManualInvoice(List<ManualInvoiceData> fileData);
 
+	public List<String> downloadFDMArticleIds();
+
+	public List<String> downloadPendingTracking();
+
 
 }

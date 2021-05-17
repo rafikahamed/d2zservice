@@ -2,6 +2,7 @@ package com.d2z.d2zservice.excelWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.Map;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -332,6 +333,53 @@ public class ExcelWriter {
 	     for(int i = 0; i < columns.length; i++) {
 	         sheet.autoSizeColumn(i);
 	     }
+	
+	     byte[] xls = null;
+	     try {
+	     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	     	workbook.write(baos);
+	     	 xls = baos.toByteArray();
+	     	workbook.close();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	     return xls;
+	}
+
+
+
+	public byte[] generateMonitoringReport(Map<String, List<String>> monitoringMap) {
+		Workbook workbook = new XSSFWorkbook();
+
+		monitoringMap.forEach((key,value) -> {
+			//Header for Enquiry Reports
+			String[] columns = {"Article ID"};
+		 
+			Sheet sheet = workbook.createSheet(key);
+			CellStyle style = workbook.createCellStyle();
+			Font font = workbook.createFont();//Create font
+		    font.setBold(true);//Make font bold
+		    style.setFont(font);
+			Row headerRow = sheet.createRow(0);
+			for(int i = 0; i < columns.length; i++) {
+	         Cell cell = headerRow.createCell(i);
+	         cell.setCellValue(columns[i]);
+	         cell.setCellStyle(style);
+			}
+			int rowNum = 1;
+			
+			for(String articleID : value) {
+		         Row row = sheet.createRow(rowNum++);
+		         row.createCell(0).setCellValue(articleID);
+	      	}
+	     
+		     for(int i = 0; i < columns.length; i++) {
+		         sheet.autoSizeColumn(i);
+		     }
+		});
+		
+	
 	
 	     byte[] xls = null;
 	     try {

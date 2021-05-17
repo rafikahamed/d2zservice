@@ -2,6 +2,7 @@ package com.d2z.d2zservice.dao;
 
 import java.util.List;
 import java.util.Map;
+
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
@@ -14,6 +15,7 @@ import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.entity.TrackEvents;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.model.AUWeight;
@@ -46,7 +48,7 @@ import com.d2z.d2zservice.model.etower.TrackingEventResponse;
 
 public interface ID2ZSuperUserDao {
 
-	List<Trackandtrace> uploadTrackingFile(List<UploadTrackingFileData> fileData);
+	List<TrackEvents> uploadTrackingFile(List<UploadTrackingFileData> fileData);
 
 	List<Trackandtrace> uploadArrivalReport(List<ArrivalReportFileData> fileData);
 
@@ -274,6 +276,10 @@ public interface ID2ZSuperUserDao {
 	List<String> fetchMlid(List<String> refBarNumArray);
 
 	UserMessage uploadManualInvoice(List<ManualInvoiceData> fileData);
+
+	List<String> downloadFDMArticleIds();
+
+	List<String> downloadPendingTracking();
 
 }
 

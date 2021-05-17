@@ -37,6 +37,7 @@ import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
+import com.d2z.d2zservice.entity.TrackEvents;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 //import com.d2z.d2zservice.excelWriter.ShipmentDetailsWriter;
@@ -162,7 +163,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 	@Override
 	public UserMessage uploadTrackingFile(List<UploadTrackingFileData> fileData) {
 		UserMessage userMsg = new UserMessage();
-		List<Trackandtrace> insertedData = d2zDao.uploadTrackingFile(fileData);
+		List<TrackEvents> insertedData = d2zDao.uploadTrackingFile(fileData);
 		if (insertedData.isEmpty()) {
 			userMsg.setMessage("Failed to upload data");
 			return userMsg;
@@ -548,7 +549,9 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 					reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getCost()));
 					reconcileObj.setSupplierWeight(reconcile.getChargedWeight());
 					reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
-				} else if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("PFL") || reconcileData.get(0).getSupplierType().equalsIgnoreCase("APG")) {
+				} else if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("PFL") 
+						|| reconcileData.get(0).getSupplierType().equalsIgnoreCase("APG")
+						|| reconcileData.get(0).getSupplierType().equalsIgnoreCase("FDM")) {
 					reconcileObj.setSupplierCharge(BigDecimal.valueOf(reconcile.getCost()));
 					reconcileObj.setSupplierWeight(reconcile.getChargedWeight());
 					reconcileObj.setWeightDifference((reconcileObj.getSupplierWeight()) - (reconcileObj.getD2ZWeight()));
@@ -563,7 +566,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			if (reconcileObj.getBrokerUserName() != null) {
 				reconcileReferenceNum.add(reconcileObj.getReference_number());
 			} else {
-				if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("UBI")) {
+				if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("UBI")||reconcileData.get(0).getSupplierType().equalsIgnoreCase("FDM")) {
 					reconcileObj.setArticleId(reconcile.getArticleNo());
 				} else if (reconcileData.get(0).getSupplierType().equalsIgnoreCase("PFL")) {
 					reconcileObj.setReference_number(reconcile.getRefrenceNumber());
@@ -1958,7 +1961,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		   surplusData = d2zDao.fetchSurplusData(incomingJob.getMawb());
 		   String toMail =	d2zDao.fetchEmailAddr(incomingJob.getBroker());
 		   byte[] reportXL =  excelWriter.generateShipmentReport(incomingJob,surplusData);
-		   emailUtil.sendReport("Shipment Summary Report"+" "+incomingJob.getMawb(), toMail,"Please find attached the Shipment summary report."
+		   emailUtil.sendReport("Shipment Summary Report"+" "+incomingJob.getMawb(), "Customer",toMail,"Please find attached the Shipment summary report."
 		   		+ "</br></br> ***Please note this is an automated email, please contact our CS team if you have any questions.***",reportXL,"Shipment Summary"+" "+incomingJob.getMawb()+".xlsx");
 		}
 		UserMessage userMsg = new UserMessage();
@@ -1971,5 +1974,11 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		return d2zDao.uploadManualInvoice(fileData);
 	}
 	
-
+	public List<String> downloadFDMArticleIds(){
+		return d2zDao.downloadFDMArticleIds();
+	}
+	
+	public List<String> downloadPendingTracking(){
+		return d2zDao.downloadPendingTracking();
+	}
 }

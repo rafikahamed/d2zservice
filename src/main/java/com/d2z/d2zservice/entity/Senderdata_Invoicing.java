@@ -34,7 +34,7 @@ public class Senderdata_Invoicing implements Serializable {
 	private int user_Id;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="Row_id")
 	private int rowId;
 	
@@ -103,8 +103,19 @@ public class Senderdata_Invoicing implements Serializable {
 	@Column(name="Upload_type")
 	private String uploadType;
 	
+	@Column(name="Carrier")
+	private String carrier;
+	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	public String getCarrier() {
+		return carrier;
+	}
+
+	public void setCarrier(String carrier) {
+		this.carrier = carrier;
 	}
 
 	public String getUploadType() {

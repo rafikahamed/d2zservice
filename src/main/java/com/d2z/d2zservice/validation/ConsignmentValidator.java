@@ -143,6 +143,14 @@ public class ConsignmentValidator  implements
 				isValid= false;
 			}
 		}
+		if("MY4".equalsIgnoreCase(value.getServiceType())){
+			if(null == value.getCourier()) {
+				context.disableDefaultConstraintViolation();
+				context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getCourier()+","+"Courier is mandatory")
+				.addConstraintViolation();
+				isValid= false;
+			}
+		}
 		if((null!=value.getBarcodeLabelNumber() && !value.getBarcodeLabelNumber().isEmpty()) && (null == value.getDatamatrix()  || value.getDatamatrix().isEmpty())) {
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getDatamatrix()+","+"Please provide valid Datamatrix")

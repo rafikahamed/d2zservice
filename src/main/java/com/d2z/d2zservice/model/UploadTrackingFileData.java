@@ -1,16 +1,21 @@
 package com.d2z.d2zservice.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 public class UploadTrackingFileData {
 
 	private String referenceNumber;
 	private String connoteNo;
 	private String trackEventDetails;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+	//@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	private String trackEventDateOccured;
 	private String fileName;
+	private String location;
 	
+	public String getLocation() {
+		return location;
+	}
+	public void setLocation(String location) {
+		this.location = location;
+	}
 	public String getFileName() {
 		return fileName;
 	}
