@@ -82,10 +82,12 @@ public class AusPostProxy {
 		RestTemplate template = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add("account-number", "0008433003");
+		//headers.add("account-number", "0008433003");
+		headers.add("account-number", "9416852");
 		 String base64encodedString = null;
 		try {
-			base64encodedString = Base64.getEncoder().encodeToString("b38ca324-caf7-4d80-8c4a-e9862a4e5ba6:456hg4%tgC".getBytes("utf-8"));
+			//base64encodedString = Base64.getEncoder().encodeToString("b38ca324-caf7-4d80-8c4a-e9862a4e5ba6:456hg4%tgC".getBytes("utf-8"));
+			base64encodedString = Base64.getEncoder().encodeToString("09733bc5-ad1f-4584-a6c2-593b2dd6bb35:G4%FFT5$$22f444".getBytes("utf-8"));
 			System.out.println("base64encodedString ::: "+ base64encodedString);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

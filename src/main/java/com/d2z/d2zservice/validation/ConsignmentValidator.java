@@ -101,7 +101,7 @@ public class ConsignmentValidator  implements
 			.addConstraintViolation();
 			isValid= false;
 		}
-		else if(null != value.getServiceType() && value.getServiceType().equalsIgnoreCase("MCS") && (Double.parseDouble(value.getWeight()) <= 0 || Double.parseDouble(value.getWeight()) >= 5)) {
+		else if(null != value.getServiceType() && value.getServiceType().startsWith("MCS") && (Double.parseDouble(value.getWeight()) <= 0 || Double.parseDouble(value.getWeight()) >= 5)) {
 
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getWeight()+","+"Weight should be between 0 and 5")

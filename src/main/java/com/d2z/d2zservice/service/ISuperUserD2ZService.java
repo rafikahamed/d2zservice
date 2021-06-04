@@ -31,6 +31,7 @@ import com.d2z.d2zservice.model.ManualInvoiceData;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ParcelResponse;
+import com.d2z.d2zservice.model.PendingTrackingDetails;
 import com.d2z.d2zservice.model.ProfitLossReport;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.ResponseMessage;
@@ -194,7 +195,7 @@ public interface ISuperUserD2ZService{
 
 	public List<String> downloadFDMArticleIds();
 
-	public List<String> downloadPendingTracking();
+	public List<PendingTrackingDetails> downloadPendingTracking();
 
 
 }

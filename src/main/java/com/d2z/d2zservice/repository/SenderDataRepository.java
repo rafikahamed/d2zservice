@@ -981,5 +981,13 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	
 	@Query("SELECT s FROM SenderdataMaster s where s.reference_number in (:refNbrs) and s.servicetype = :serviceType")
 	List<SenderdataMaster> fetchServiceTypeByRefNbrs(String[] refNbrs,String serviceType);
+
+	@Query(nativeQuery = true,value ="select s.articleId from SENDERDATA_MASTER s\r\n"
+			+ "inner join eTowerResponse e on s.articleId = e.TrackingNo\r\n"
+			+ "where s.Servicetype='MY4' and s.timestamp > Dateadd(day,-1,Getdate())\r\n"
+			+ "and s.Status = 'Shipment Allocated'\r\n"
+			+ "and e.APIName = 'Veloce'\r\n"
+			+ "and e.Status != 'Successful'")
+	List<String> missingVeloceArticleIds();
  
 } 

@@ -1715,6 +1715,12 @@ public class D2ZDaoImpl implements ID2ZDao {
 		// TODO Auto-generated method stub
 		return senderDataRepository.fetchServiceTypeByRefNbrs(refNbrs,"MY4");
 	}
+
+	@Override
+	public List<String> missingVeloceArticleIds() {
+		// TODO Auto-generated method stub
+		return senderDataRepository.missingVeloceArticleIds();
+	}
 	
 
 }

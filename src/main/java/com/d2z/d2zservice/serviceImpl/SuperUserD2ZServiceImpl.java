@@ -65,6 +65,7 @@ import com.d2z.d2zservice.model.PFLSubmitOrderData;
 import com.d2z.d2zservice.model.PFLTrackingResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
+import com.d2z.d2zservice.model.PendingTrackingDetails;
 import com.d2z.d2zservice.model.PflTrackEventRequest;
 import com.d2z.d2zservice.model.ProfitLossReport;
 import com.d2z.d2zservice.model.ReconcileData;
@@ -1978,7 +1979,19 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 		return d2zDao.downloadFDMArticleIds();
 	}
 	
-	public List<String> downloadPendingTracking(){
-		return d2zDao.downloadPendingTracking();
+	public List<PendingTrackingDetails> downloadPendingTracking(){
+		List<PendingTrackingDetails> pendingList = new ArrayList<PendingTrackingDetails>();
+		List<String> trackingList = d2zDao.downloadPendingTracking();
+		Iterator itr = trackingList.iterator();
+		while (itr.hasNext()) {
+			PendingTrackingDetails trackingDetail = new PendingTrackingDetails();
+			Object[] trackingArray = (Object[]) itr.next();
+			if (trackingArray[0] != null)
+				trackingDetail.setArticleId(trackingArray[0].toString());
+			if (trackingArray[1] != null)
+				trackingDetail.setDate(trackingArray[1].toString());
+			pendingList.add(trackingDetail);
+		}
+		return pendingList;
 	}
 }

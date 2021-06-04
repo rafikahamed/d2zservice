@@ -259,6 +259,8 @@ public interface ID2ZDao {
 
 	public List<SenderdataMaster> fetchDataForVeloceCall(String[] refNbrs);
 
+	public List<String> missingVeloceArticleIds();
+
 
 
 }

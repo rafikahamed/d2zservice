@@ -94,7 +94,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 
 		}
 		if(null==barcodeLabelNumber || barcodeLabelNumber.trim().isEmpty() || null==datamatrix || datamatrix.trim().isEmpty()) {
-			if (("MCS").equalsIgnoreCase(serviceType)) {
+			if (serviceType.startsWith("MCS")) {
 
 				MCSSenderDataRequest request = constructMCSRequest(orderDetail);
 				d2zValidator.isPostCodeZone4Valid(request.getEparcelSenderData(),errorMap);

@@ -259,8 +259,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		List<SenderDataResponse> senderDataResponseList = new ArrayList<SenderDataResponse>();
 		SenderDataResponse senderDataResponse = null;
 		String serviceType = orderDetailList.get(0).getServiceType();
-		if (("MCS").equalsIgnoreCase(
-				serviceType)) {
+		if (serviceType.startsWith("MCS")) {
 
 			MCSSenderDataRequest request = constructMCSRequest(orderDetailList);
 			d2zValidator.isPostCodeZone4ValidUI(request.getEparcelSenderDataUI());
@@ -1190,7 +1189,7 @@ public class D2ZServiceImpl implements ID2ZService {
 		String datamatrix = orderDetail.getConsignmentData().get(0).getDatamatrix();
 		if (null == barcodeLabelNumber || barcodeLabelNumber.trim().isEmpty() || null == datamatrix
 				|| datamatrix.trim().isEmpty()) {
-			if(("MCS").equalsIgnoreCase(serviceType)){
+			if(serviceType.startsWith("MCS")){
 				MCSSenderDataRequest request = constructMCSRequest(orderDetail);
 				d2zValidator.isPostCodeZone4Valid(request.getEparcelSenderData());
 			
@@ -3322,6 +3321,14 @@ public class D2ZServiceImpl implements ID2ZService {
 			veloceWrapper.makeCalltoVeloce(consignmentData);
 		}
 
+	}
+
+	@Override
+	public void veloceMonitoring(Map<String, List<String>> map) {
+		List<String> articleIds = d2zDao.missingVeloceArticleIds();
+		if(articleIds.size()>0) {
+		map.put("Veloce", articleIds);
+		}		
 	}
 
 	

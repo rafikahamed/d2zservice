@@ -179,5 +179,7 @@ public interface ID2ZService {
 
 	public void makeVeloceCall(List<SenderDataApi> consignmentData);
 
+	public void veloceMonitoring(Map<String, List<String>> monitoringMap);
+
 
 }
