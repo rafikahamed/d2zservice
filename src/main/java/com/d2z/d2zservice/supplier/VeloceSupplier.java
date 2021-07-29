@@ -41,7 +41,6 @@ public class VeloceSupplier {
 	
 	@Value("${jasypt.encryptor.password}")
 	private String encryptionPassword;
-	
 	@Autowired
 	private SupplierInterface supplier;
 
