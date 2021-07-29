@@ -370,6 +370,8 @@ public class ExcelWriter {
 			int rowNum = 1;
 			
 			for(String articleID : value) {
+				String[] arr = articleID.split(",");
+				System.out.println(arr);
 		         Row row = sheet.createRow(rowNum++);
 		         row.createCell(0).setCellValue(articleID);
 	      	}

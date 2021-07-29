@@ -85,7 +85,8 @@ public class D2zController {
 		    			return obj.getReferenceNumber(); })
 		    				.collect(Collectors.toList());
 		        	d2zService.makeCallToEtowerBasedonSupplierUI(incomingRefNbr);
-		        	
+		    		d2zService.sendDataToTrackingDB(incomingRefNbr);
+
 		        	if(null!=autoShipRefNbrs && !autoShipRefNbrs.isEmpty()) {
 		    			System.out.println("Auto-Shipment Allocation");
 		    			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -335,6 +336,10 @@ public class D2zController {
 	public void triggerFDM() {
 		d2zService.triggerFDMLabel();
 	}
+	@RequestMapping(method = RequestMethod.GET, path = "/PFL/{key}/{token}")
+	public void triggerPFL(@RequestBody List<String> orderids,@PathVariable String key,@PathVariable String token) {
+		d2zService.triggerpflSubmitOrder(orderids,key,token);
+	}
 
 	@RequestMapping(method = RequestMethod.GET, path = "/auPost")
 	public void triggerAuPost() {
@@ -351,9 +356,13 @@ public class D2zController {
 		d2zService.makeCalltoAusPost(referenceNumbers);
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, path = "/etowercall")
-	public void triggeretower(@RequestBody List<String> referenceNumbers) {
-		d2zService.makeCallToEtowerBasedonSupplierUI(referenceNumbers);
+	@RequestMapping(method = RequestMethod.GET, path = "/etowercall/{apiName}")
+	public void triggeretower(@RequestBody List<String> referenceNumbers,@PathVariable String apiName) {
+		if(apiName.equalsIgnoreCase("create")) {
+			d2zService.makeCallToEtowerBasedonSupplierUI(referenceNumbers);
+		}else if(apiName.equalsIgnoreCase("forecast")) {
+			d2zService.makeEtowerForecastCall(referenceNumbers);
+		}
 	}
 	
 	@RequestMapping(method = RequestMethod.DELETE, path = "/etowercall")

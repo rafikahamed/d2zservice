@@ -611,7 +611,7 @@ public class ETowerWrapper {
 				orderDetail.setInjectionType("MEL3");
 				orderDetail.setCarrier("Express");
 			} 
-			else if ("MCS".equalsIgnoreCase(orderDetail.getServiceType())) {
+			else if ((orderDetail.getServiceType()).startsWith("MCS")) {
 				request.setFacility("SYD2");
 				orderDetail.setInjectionType("SYD2");
 			} else if ("1PS3".equalsIgnoreCase(orderDetail.getServiceType())) {
@@ -923,7 +923,7 @@ public class ETowerWrapper {
 				request.setTrackingNo(orderDetail.getArticleId());
 				//Random rnd = new Random();
 				int uniqueNumber = SingletonCounter.getInstance().getEtowerCount();
-				request.setReferenceNo("SW10A" + uniqueNumber);
+				request.setReferenceNo("SW10B" + uniqueNumber);
 				request.setRecipientCompany(orderDetail.getConsigneeCompany());
 				String recpName = orderDetail.getConsignee_name().length() > 34
 						? orderDetail.getConsignee_name().substring(0, 34)

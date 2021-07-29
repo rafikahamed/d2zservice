@@ -1,13 +1,14 @@
 package com.d2z.d2zservice.init;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -16,12 +17,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import com.github.ulisesbocchio.jar.resources.JarResourceLoader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 
 @SpringBootApplication(exclude = {ErrorMvcAutoConfiguration.class})
 @EnableAutoConfiguration 
+@EnableEncryptableProperties
 @ComponentScan({ "com.d2z.d2zservice.*"})
 @EnableJpaRepositories(basePackages="com.d2z.d2zservice.repository")
 @EnableTransactionManagement

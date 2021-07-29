@@ -24,5 +24,8 @@ public interface UserServiceRepository extends CrudRepository<UserService, Long>
 
 	 @Query ("Select u.autoShipment from UserService u where u.userId = :user_Id and u.serviceType = :serviceType")
 	String fetchAutoShipmentIndicator(@Param("user_Id") Integer userId,@Param("serviceType") String serviceType);
+
+	 @Query ("Select u.postcodeValidation from UserService u where u.userId = :userId and u.serviceType = :serviceType")
+	String fetchPostCodeValidationRequired(Integer userId, String serviceType);
 	
 }

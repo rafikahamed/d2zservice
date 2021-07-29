@@ -152,7 +152,7 @@ public class Scheduler {
 		}
 	}
 	
-	@Scheduled(cron = "0 0 12 * * ?",zone = "GMT")
+	@Scheduled(cron = "0 0 0 * * ?",zone = "GMT")
 	public void monitoring() {
 			Map<String,List<String>> monitoringMap = new HashMap<String,List<String>>();
 			d2zService.eTowerMonitoring(monitoringMap);

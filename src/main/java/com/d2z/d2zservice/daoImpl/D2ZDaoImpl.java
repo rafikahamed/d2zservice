@@ -1,10 +1,8 @@
 package com.d2z.d2zservice.daoImpl;
 
-import java.awt.Label;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -14,10 +12,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
+
 import com.d2z.d2zservice.dao.ID2ZDao;
+import com.d2z.d2zservice.dto.ConsignmentDTO;
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
@@ -25,11 +26,15 @@ import com.d2z.d2zservice.entity.Currency;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.EbayResponse;
 import com.d2z.d2zservice.entity.FastwayPostcode;
-import com.d2z.d2zservice.entity.MasterPostCode;
+import com.d2z.d2zservice.entity.MasterPostCodeZones;
+import com.d2z.d2zservice.entity.MasterPostcode;
+import com.d2z.d2zservice.entity.NZPostcodes;
+import com.d2z.d2zservice.entity.PFLPostcode;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.StarTrackPostcode;
+import com.d2z.d2zservice.entity.SupplierEntity;
 import com.d2z.d2zservice.entity.SystemRefCount;
 import com.d2z.d2zservice.entity.TrackEvents;
 import com.d2z.d2zservice.entity.Trackandtrace;
@@ -37,6 +42,7 @@ import com.d2z.d2zservice.entity.TrackingEvent;
 import com.d2z.d2zservice.entity.TransitTime;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
+import com.d2z.d2zservice.entity.Veloce;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.CreateEnquiryRequest;
@@ -77,14 +83,18 @@ import com.d2z.d2zservice.repository.CurrencyRepository;
 import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.EbayResponseRepository;
 import com.d2z.d2zservice.repository.FastwayPostcodeRepository;
+import com.d2z.d2zservice.repository.LabelLogicRepository;
 import com.d2z.d2zservice.repository.MasterPostcodeRepository;
+import com.d2z.d2zservice.repository.MasterPostcodeZonesRepository;
 import com.d2z.d2zservice.repository.NzPostcodesRepository;
 import com.d2z.d2zservice.repository.PFLPostcodeRepository;
 import com.d2z.d2zservice.repository.ParcelRepository;
+import com.d2z.d2zservice.repository.PostcodeLogicRepository;
 import com.d2z.d2zservice.repository.PostcodeZoneRepository;
 import com.d2z.d2zservice.repository.ReturnsRepository;
 import com.d2z.d2zservice.repository.SenderDataRepository;
 import com.d2z.d2zservice.repository.StarTrackPostcodeRepository;
+import com.d2z.d2zservice.repository.SupplierRepository;
 import com.d2z.d2zservice.repository.SystemRefCountRepository;
 import com.d2z.d2zservice.repository.TrackAndTraceRepository;
 import com.d2z.d2zservice.repository.TrackEventsRepository;
@@ -92,10 +102,9 @@ import com.d2z.d2zservice.repository.TrackingEventRepository;
 import com.d2z.d2zservice.repository.TransitTimeRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.repository.UserServiceRepository;
+import com.d2z.d2zservice.repository.VeloceRepository;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
 import com.d2z.d2zservice.validation.D2ZValidator;
-import com.d2z.d2zservice.entity.NZPostcodes;
-import com.d2z.d2zservice.entity.PFLPostcode;
 //import com.d2z.d2zservice.wrapper.FreipostWrapper;
 import com.d2z.singleton.D2ZSingleton;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
@@ -180,11 +189,26 @@ public class D2ZDaoImpl implements ID2ZDao {
 	PFLPostcodeRepository pflPostcodesRepository;
 
 	@Autowired
-	MasterPostcodeRepository masterPostcodesRepository;
+	MasterPostcodeZonesRepository masterPostcodesZonesRepository;
+	
+	@Autowired
+	MasterPostcodeRepository masterPostcodeRepository;
 	
 	@Autowired
 	TrackEventsRepository trackEventsRepository;
 
+	@Autowired
+	SupplierRepository supplierRepository;
+	
+	@Autowired
+	PostcodeLogicRepository postcodeLogicRepository;
+	
+	@Autowired
+	LabelLogicRepository labelLogicRepository;
+	
+	@Autowired
+	VeloceRepository veloceRepository;
+	
 	@Override
 	public String exportParcel(List<SenderData> orderDetailList, Map<String, LabelData> barcodeMap) {
 		Map<String, String> postCodeStateMap = D2ZSingleton.getInstance().getPostCodeStateMap();
@@ -285,7 +309,7 @@ public class D2ZDaoImpl implements ID2ZDao {
 				}
 
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
-				if ("MCS".equalsIgnoreCase(senderDataValue.getServiceType())) {
+				if ((senderDataValue.getServiceType().startsWith("MCS"))) {
 					senderDataObj.setMlid(senderDataObj.getArticleId().substring(0, 5));
 					senderDataObj.setInjectionState("SYD");
 				}
@@ -297,7 +321,7 @@ public class D2ZDaoImpl implements ID2ZDao {
 				senderDataObj.setArticleId(pflLabel.getTrackingNo());
 				senderDataObj.setMlid(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
-				if ("MCS".equalsIgnoreCase(senderDataValue.getServiceType())) {
+				if ((senderDataValue.getServiceType().startsWith("MCS"))) {
 					senderDataObj.setCarrier("Fastway");
 				}
 				if (!"1PS4".equalsIgnoreCase(senderDataValue.getServiceType())) {
@@ -377,6 +401,11 @@ public class D2ZDaoImpl implements ID2ZDao {
 		}
 		System.out.println(trackingDetails.size());
 		return trackingDetails;
+	}
+	
+	@Override
+	public List<SenderdataMaster> fetchLabelData(List<String> articleIds) {
+		return (List<SenderdataMaster>) senderDataRepository.fetchDataArticleIds(articleIds);
 	}
 
 	@Override
@@ -511,7 +540,7 @@ public class D2ZDaoImpl implements ID2ZDao {
 				}
 
 				senderDataObj.setInjectionState(senderDataValue.getInjectionState());
-				if ("MCS".equalsIgnoreCase(senderDataValue.getServiceType())) {
+				if ((senderDataValue.getServiceType()).startsWith("MCS")) {
 					senderDataObj.setMlid(senderDataObj.getArticleId().substring(0, 5));
 					senderDataObj.setInjectionState("SYD");
 				}
@@ -523,7 +552,7 @@ public class D2ZDaoImpl implements ID2ZDao {
 				senderDataObj.setArticleId(pflLabel.getTrackingNo());
 				senderDataObj.setMlid(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
-				if ("MCS".equalsIgnoreCase(senderDataValue.getServiceType())) {
+				if (senderDataValue.getServiceType().startsWith("MCS")) {
 					senderDataObj.setCarrier("Fastway");
 				} else if (!"1PS4".equalsIgnoreCase(senderDataValue.getServiceType())) {
 					senderDataObj.setCarrier("FastwayM");
@@ -1545,6 +1574,7 @@ public class D2ZDaoImpl implements ID2ZDao {
 	public List<String> fetchMlid(List<String> refBarNum) {
 		return senderDataRepository.fetchMlid(refBarNum);
 	}
+	
 
 	@Override
 	public List<String> fetchPerformanceReportDataByArticleId(List<String> articleIds) {
@@ -1589,9 +1619,9 @@ public class D2ZDaoImpl implements ID2ZDao {
 	}
 
 	@Override
-	public List<MasterPostCode> fetchAllMasterPostCodeZone() {
+	public List<MasterPostCodeZones> fetchAllMasterPostCodeZone() {
 		// TODO Auto-generated method stub
-		return (List<MasterPostCode>) masterPostcodesRepository.findAll();
+		return (List<MasterPostCodeZones>) masterPostcodesZonesRepository.findAll();
 	}
 
 	@Override
@@ -1618,7 +1648,7 @@ public class D2ZDaoImpl implements ID2ZDao {
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
-					if (eventTime.after(latestTime)) {
+					if (eventTime.after(latestTime) && (!eventDB.getTrackEventCode().equalsIgnoreCase("DEL") || !eventDB.getTrackEventCode().equalsIgnoreCase("Delivered"))) {
 						insertTrackEvents(events,data.getArticleId(),trackingEvent);
 					}
 
@@ -1677,6 +1707,12 @@ public class D2ZDaoImpl implements ID2ZDao {
 	}
 
 	@Override
+	public List<String> fetchTrackingNumberFromEtowerResponse(String articleID) {
+		// TODO Auto-generated method stub
+		return eTowerResponseRepository.fetchTrackingNumberFromEtowerResponse(articleID);
+	}
+	
+	@Override
 	public List<String> missingCreateShippingOrder() {
 		// TODO Auto-generated method stub
 		return senderDataRepository.missingCreateShippingOrder();
@@ -1721,6 +1757,155 @@ public class D2ZDaoImpl implements ID2ZDao {
 		// TODO Auto-generated method stub
 		return senderDataRepository.missingVeloceArticleIds();
 	}
+
+	@Override
+	public List<SenderdataMaster> createConsignment(List<SenderdataMaster> senderDataMaster) {
+		return (List<SenderdataMaster>) senderDataRepository.saveAll(senderDataMaster);
+	}
+
+	@Override
+	public void generateBarcode(String fileSeqId) {
+		storProcCall(fileSeqId);		
+	}
+
+	@Override
+	public void fetchAllMasterPostCodeZone(String columnName,List<ConsignmentDTO> consignmentList) {
+		
+		// TODO Auto-generated method stub
+		//Map<String,String> postcodeMap = new HashMap<String,String>();
+		System.out.println(columnName);
+		consignmentList.forEach(consignment ->{
+		 MasterPostcode masterData=  masterPostcodeRepository.fetchAllMasterPostCodeZone(
+				 consignment.getConsigneeState().toUpperCase().trim(),consignment.getConsigneeSuburb().toUpperCase().trim(),consignment.getConsigneePostcode().trim());
+		 if(null !=masterData) {
+		 consignment.setSupplierAuthId(masterData.getValueFromObject(masterData,columnName));
+		 }else {
+			 consignment.setSupplierAuthId("0");
+		 } 
+		});
+		/* Iterator itr = masterData.iterator();
+			while (itr.hasNext()) {
+				Object[] arr = (Object[]) itr.next();
+				System.out.println(arr[4].toString());
+				postcodeMap.put(arr[0].toString()+arr[1].toString()+arr[2].toString(), arr[4].toString());
+				postcodeMap.put(arr[0].toString()+arr[1].toString()+arr[3].toString(), arr[4].toString());
+			}*/
+		//return postcodeMap;
+	}
+
+	@Override
+	public boolean fetchAutoShipmentIndicator(int userId, String serviceType) {
+		return "Y".equalsIgnoreCase(userServiceRepository.fetchAutoShipmentIndicator(userId,serviceType));
+	}
+
+	@Override
+	public boolean fetchPostCodeValidationRequired(int userId, String serviceType) {
+		return !("N".equalsIgnoreCase(userServiceRepository.fetchPostCodeValidationRequired(userId,serviceType)));
+	}
+
+	@Override
+	public SupplierEntity fetchSupplierData(int supplierAuthId) {
+		System.out.println(supplierAuthId);
+		return supplierRepository.findById(supplierAuthId).get();
+	}
+
+	@Override
+	public int fetchNextFileSeqId() {
+		return senderDataRepository.fetchNextSeq();
+	}
+
+	@Override
+	public String getPostCodeLogic(String serviceType) {
+		return postcodeLogicRepository.findByServiceType(serviceType);
+	}
+
+	@Override
+	public String fetchLabelName(String serviceType, String carrier) {
+		return labelLogicRepository.findLabelName(serviceType,carrier);
+	}
 	
+	@Override
+	public String fetchFDMRoute(String state, String suburb, String postcode) {
+		return masterPostcodeRepository.fetchFDMRoute(state,suburb,postcode);
+	}
+
+	@Override
+	public List<Trackandtrace> insertIntoTrackandTrace(List<Trackandtrace> list) {
+		return (List<Trackandtrace>) trackAndTraceRepository.saveAll(list);
+	}
+
+	@Override
+	public List<Object[]> fetchServiceTypeCarrier(List<String> ids,String identifier){
+		List<Object[]> result = new ArrayList<Object[]>();
+		if("referenceNumber".equalsIgnoreCase(identifier)) {
+			result = senderDataRepository.fetchServiceTypeCarrierByRefNbr(ids);
+		}else {
+			result = senderDataRepository.fetchServiceTypeCarrierByArticleId(ids);
+		}
+		return result;
+	}
+	
+	@Override
+	public Map<String, List<String>> fetchtrackingIdentifier(List<String> refBarNum,String identifier) {
+		Map<String,List<String>> map = new HashMap<String,List<String>>();
+		List<Object[]> result = fetchServiceTypeCarrier(refBarNum,identifier);
+		result.forEach(obj -> {
+			String serviceType = (String)obj[1];
+			String carrier = (String)obj[2];
+			String trackingIdentifier = fetchTrackingIdentifier(serviceType,carrier);
+			if(null==trackingIdentifier || trackingIdentifier.isEmpty()) {
+				trackingIdentifier = "0";
+			}
+			if(map.containsKey(trackingIdentifier)) {
+				List<String> ids = map.get(trackingIdentifier);
+				ids.add((String)obj[0]);
+			}else {
+				List<String> ids = new ArrayList<String>();
+				ids.add((String)obj[0]);
+				map.put(trackingIdentifier, ids);
+			}
+		});
+		return map;
+	}
+	
+	private String fetchTrackingIdentifier(String serviceType, String carrier) {
+ 		return labelLogicRepository.fetchTrackingIdentifier(serviceType,carrier);
+	}
+
+	@Override
+	public Map<String, List<String>> fetchLabelName(List<String> refBarNum,String identifier) {
+		Map<String,List<String>> labelMap = new HashMap<String,List<String>>();
+		List<Object[]> result = fetchServiceTypeCarrier(refBarNum,identifier);
+		result.forEach(obj -> {
+			String serviceType = (String)obj[1];
+			String carrier = (String)obj[2];
+			String label = fetchLabelName(serviceType,carrier);
+			System.out.println(serviceType+"::"+carrier+"::"+label);
+			if(labelMap.containsKey(label)) {
+				List<String> ids = labelMap.get(label);
+				if("TL1".equalsIgnoreCase(serviceType)) {
+					ids.addAll(fetchTrackingNumberFromEtowerResponse((String)obj[0]));
+				}else {
+					ids.add((String)obj[0]);
+				}
+			}else {
+				List<String> ids = new ArrayList<String>();
+				if("TL1".equalsIgnoreCase(serviceType)) {
+					ids.addAll(fetchTrackingNumberFromEtowerResponse((String)obj[0]));
+				}else {
+					ids.add((String)obj[0]);
+				}
+				labelMap.put(label, ids);
+			}
+		});
+		return labelMap;
+	}
+
+	@Override
+	public Veloce findVeloceValues(String servicetype) {
+		return veloceRepository.find(servicetype);
+	}
+
+
 
 }

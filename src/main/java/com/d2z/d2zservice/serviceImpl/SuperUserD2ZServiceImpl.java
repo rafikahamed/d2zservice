@@ -31,6 +31,7 @@ import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.IncomingJobs;
 import com.d2z.d2zservice.entity.IncomingJobsLogic;
+import com.d2z.d2zservice.entity.InvoicingZones;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -57,7 +58,9 @@ import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.ExportConsignment;
 import com.d2z.d2zservice.model.InvoiceShipment;
+import com.d2z.d2zservice.model.InvoicingZonesModel;
 import com.d2z.d2zservice.model.ManualInvoiceData;
+import com.d2z.d2zservice.model.MasterPostCodeModel;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
@@ -998,12 +1001,12 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 				data.setSku(D2ZSingleton.getInstance().getFwPostCodeZoneNoMap().get(data.getConsigneePostcode()));
 				fwData.add(data);
 			
-			}else if (("MCS".equalsIgnoreCase(data.getServiceType()))
+			}else if (data.getServiceType().startsWith("MCS")
 					&& data.getCarrier().equalsIgnoreCase("Fastway")) {
 				data.setSku(D2ZSingleton.getInstance().getFwPostCodeZoneNoMap().get(data.getConsigneePostcode()));
 				fwData.add(data);
 			} 
-			else if (("MCS".equalsIgnoreCase(data.getServiceType()))
+			else if (data.getServiceType().startsWith("MCS")
 					&& data.getCarrier().equalsIgnoreCase("PFL")) {
 				mcsData.add(data);
 			} else if ("MC1".equalsIgnoreCase(data.getServiceType()) 
@@ -1885,6 +1888,7 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 					try {
 						pflWrapper.createSubmitOrderPFL(orderIds, serviceType);
 					} catch (FailureResponseException e) {
+						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					});
@@ -1993,5 +1997,16 @@ public class SuperUserD2ZServiceImpl implements ISuperUserD2ZService {
 			pendingList.add(trackingDetail);
 		}
 		return pendingList;
+	}
+
+	@Override
+	public UserMessage uploadMasterPostcode(List<MasterPostCodeModel> fileData) {
+		// TODO Auto-generated method stub
+		return d2zDao.uploadMasterPostcode(fileData);
+	}
+
+	@Override
+	public UserMessage uploadInvoicingZones(List<InvoicingZonesModel> fileData) {
+		return d2zDao.uploadMasterInvoicingZones(fileData);
 	}
 }

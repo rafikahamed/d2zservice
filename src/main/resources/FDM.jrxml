@@ -120,7 +120,7 @@
 					<font fontName="MyArial" size="16" isBold="true"/>
 					<paragraph leftIndent="3"/>
 				</textElement>
-				<textFieldExpression><![CDATA["GINC: ".concat($F{barcodeLabelNumber}.substring(3,19))]]></textFieldExpression>
+				<textFieldExpression><![CDATA["GINC: ".concat($F{barcodeLabelNumber}.length()<19 ? "" : $F{barcodeLabelNumber}.substring(3,19))]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="12" y="97" width="228" height="24" uuid="5fc0e880-e4a4-44d7-9fb3-723d465b8a66"/>
@@ -266,7 +266,7 @@
 					<font fontName="MyArial" size="12" isBold="true"/>
 					<paragraph leftIndent="3"/>
 				</textElement>
-				<textFieldExpression><![CDATA["SSCC: ".concat("(").concat($F{barcodeLabelNumber}.substring( 0, 2 )).concat(") ").concat($F{barcodeLabelNumber}.substring( 2, 19 )).concat(" ").concat($F{barcodeLabelNumber}.substring( 19))]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{barcodeLabelNumber}.length()<19?$F{barcodeLabelNumber}:"SSCC: ".concat("(").concat($F{barcodeLabelNumber}.substring( 0, 2 )).concat(") ").concat($F{barcodeLabelNumber}.substring( 2, 19 )).concat(" ").concat($F{barcodeLabelNumber}.substring( 19))]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="284" y="289" width="77" height="15" uuid="91f26331-ef38-49fa-8ae9-d5aa9f6ddbe9"/>

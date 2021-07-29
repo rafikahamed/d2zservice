@@ -100,7 +100,16 @@ public class SenderData {
 	private String vendorId;
 	private String d2zRate;
 	private String brokerRate;
+	private String labelName;
 	
+	public String getLabelName() {
+		return labelName;
+	}
+
+	public void setLabelName(String labelName) {
+		this.labelName = labelName;
+	}
+
 	public String getD2zRate() {
 		return d2zRate;
 	}

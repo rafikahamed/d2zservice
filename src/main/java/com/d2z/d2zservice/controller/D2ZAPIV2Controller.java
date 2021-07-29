@@ -108,6 +108,8 @@ public ResponseEntity<Object> createConsignments(@Valid @RequestBody CreateConsi
     		}
         	d2zService.makeVeloceCall(orderDetail.getConsignmentData());
     	d2zApiService.makeCallToEtowerBasedonSupplierUI(incomingRefNbr);
+		d2zService.sendDataToTrackingDB(incomingRefNbr);
+
     	}else {
     		response.setStatus("Failure");
     		status = HttpStatus.BAD_REQUEST;

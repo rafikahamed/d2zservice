@@ -16,6 +16,9 @@ public interface ETowerResponseRepository extends CrudRepository<ETowerResponse,
 
      @Query("SELECT e.trackingNo FROM ETowerResponse e where orderId in (:artileIDList)")
 	List<String> fetchTrackingNumberFromEtowerResponse(List<String> artileIDList);
+
+     @Query("SELECT e.trackingNo FROM ETowerResponse e where orderId = :artileID")
+	List<String> fetchTrackingNumberFromEtowerResponse(String artileID);
      
  
 }

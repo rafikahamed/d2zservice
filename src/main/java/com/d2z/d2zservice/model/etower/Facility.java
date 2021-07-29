@@ -1,28 +1,29 @@
 package com.d2z.d2zservice.model.etower;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public enum Facility {
 
 	ADL("33G7N"),
-    SYD("33G7K"),
+    SYD("33G7K","33Y9G"),
     BNE2("33G7M"),
     MEL("33G7L"),
     PER("33G7P"),
 	MEL2("33QU7");
 	
-	
  
-    private String mlid;
+    private List<String> mlid;
  
-    Facility(String mlid) {
-        this.mlid = mlid;
+    Facility(String ...mlid) {
+        this.mlid = Arrays.asList(mlid);
     }
  
     
     
-    public String getFacility() {
+    public List<String> getFacility() {
         return mlid;
     }
     
@@ -33,7 +34,8 @@ public enum Facility {
     {
         for(Facility facility : Facility.values())
         {
-            lookup.put(facility.getFacility(), facility);
+        	for(String name: facility.mlid)
+            lookup.put(name, facility);
         }
     }
   

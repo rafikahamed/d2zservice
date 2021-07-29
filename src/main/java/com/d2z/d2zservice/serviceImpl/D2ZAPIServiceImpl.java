@@ -92,6 +92,8 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 			datamatrix= orderDetail.getConsignmentData().get(0).getDatamatrix();
 		    serviceType = orderDetail.getConsignmentData().get(0).getServiceType();
 
+		}else {
+			return;
 		}
 		if(null==barcodeLabelNumber || barcodeLabelNumber.trim().isEmpty() || null==datamatrix || datamatrix.trim().isEmpty()) {
 			if (serviceType.startsWith("MCS")) {
@@ -125,8 +127,18 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 					}
 				}
 				if(request.getEparcelSenderData().size()>0) {
+					try {
+					eTowerWrapper.makeCreateShippingOrderEtowerCallForAPIData(orderDetail,senderDataResponseList);
+					}
+					catch(Exception e) {
+						List<String> refNbrList = request.getFastwaySenderData().stream().map(obj->{
+							return obj.getReferenceNumber();
+						}).collect(Collectors.toList());
+						for(String referenceNumber : refNbrList)
+						ValidationUtils.populateErrorDetails(referenceNumber, "", "Shipment Error. Please contact us", errorMap);
+					}
 
-					String senderFileID = d2zDao.createConsignments(request.getEparcelSenderData(), userId,
+				/*	String senderFileID = d2zDao.createConsignments(request.getEparcelSenderData(), userId,
 							orderDetail.getUserName(), null);
 					List<String> insertedOrder = d2zDao.fetchBySenderFileID(senderFileID);
 					SenderDataResponse senderDataResponse = null;
@@ -143,7 +155,7 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 						senderDataResponse.setInjectionPort(obj[5] != null ? obj[5].toString() : "");
 						senderDataResponseList.add(senderDataResponse);
 					
-					}
+					}*/
 				}
 				/*
 									 * PFLSenderDataRequest request = constructMCSRequest(orderDetail);

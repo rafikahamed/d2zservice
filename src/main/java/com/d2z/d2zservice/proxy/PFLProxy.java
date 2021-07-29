@@ -2,9 +2,9 @@ package com.d2z.d2zservice.proxy;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -22,7 +22,6 @@ import com.d2z.d2zservice.model.PFLTrackingResponse;
 import com.d2z.d2zservice.model.PflCreateShippingRequest;
 import com.d2z.d2zservice.model.PflPrintLabelRequest;
 import com.d2z.d2zservice.model.PflTrackEventRequest;
-import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.security.HMACGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -119,17 +118,99 @@ public class PFLProxy {
 		currentDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String currentDate = currentDateFormat.format(new Date());
 		System.out.println("US: " + currentDateFormat.format(new Date()));
-		if("FW".equalsIgnoreCase(serviceType) || ("FW3".equalsIgnoreCase(serviceType))) {
+		if("Fastway".equalsIgnoreCase(serviceType)) {
 			SECRET_KEY = "U00T659VKM1YBHJGFE9SC326EHFKWE7B";
 			Token = "FVJMJGYLC74QIAGRPJREJBAHOQZ3H0LM";
-		}else if("1PS4".equalsIgnoreCase(serviceType)){
+		}
+		
+		else if("eParcel".equalsIgnoreCase(serviceType)){
 			uri = "/app/services/eparcels/submit";
 			SECRET_KEY = "U00T659VKM1YBHJGFE9SC326EHFKWE7B";
 			Token = "FVJMJGYLC74QIAGRPJREJBAHOQZ3H0LM";
-		}else {
-		 SECRET_KEY = "3VXSOS7WUSF4DS6V5LXS8ER14KR2TMP6";
-		 Token = "QT6P9I85LHETLYP43G7J440GD6W77TFX";
 		}
+		else if("PFL".equalsIgnoreCase(serviceType)){
+			SECRET_KEY="0GLP8Y9VV7ISHOD8ZBFGMT57EW03N89L";
+			Token="7QS98P09KR22DCFYRJVUFCHC8L5CIBZT";
+		}else {
+		
+			SECRET_KEY = "3VXSOS7WUSF4DS6V5LXS8ER14KR2TMP6";
+			Token = "QT6P9I85LHETLYP43G7J440GD6W77TFX";
+		}
+		
+		String url = baseURL + uri;
+
+		String authorizationHeader = hmacGenerator.calculatePFLHMAC(SECRET_KEY,
+				uri,Token);
+		HttpHeaders headers = new HttpHeaders();
+
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add("SHIPMENTAPI-DATE", currentDate);
+		headers.add("SHIPMENTAPI-AUTH", Token + ":" + authorizationHeader);
+
+		System.out.println("Request Headers:: " + headers.toString());
+		ObjectWriter ow1 = new ObjectMapper().writer();
+		String jsonReq = null;
+		try {
+			jsonReq = ow1.writeValueAsString(orderIds);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Request Body:: " + jsonReq);
+
+		HttpEntity<String> httpEntity = new HttpEntity<String>(jsonReq, headers);
+		try {
+			ResponseEntity<PFLSubmitOrderResponse> responseEntity = template.exchange(url, HttpMethod.POST,
+					httpEntity, PFLSubmitOrderResponse.class);
+			System.out.println(responseEntity.getStatusCode());
+			response = responseEntity.getBody();
+			ObjectWriter ow = new ObjectMapper().writer();
+			try {
+				jsonResponse = ow.writeValueAsString(response);
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+		} catch (HttpStatusCodeException e) {
+			System.out.println("error code :" + e.getStatusCode());
+			jsonResponse = e.getResponseBodyAsString();
+			System.out.println(jsonResponse);
+		}
+		System.out.println("Response :: " + jsonResponse);
+		return response;
+	}
+
+public PFLSubmitOrderResponse createSubmitOrderPFL(PFLSubmitOrderRequest orderIds, String SECRET_KEY,String Token) {
+		
+		String uri = "/app/services/multicourier/submit";
+		RestTemplate template = new RestTemplate();
+		String jsonResponse = null;
+		PFLSubmitOrderResponse response = null;
+		//String SECRET_KEY = null;
+		//String Token = null;
+		String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
+		SimpleDateFormat currentDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+		currentDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		String currentDate = currentDateFormat.format(new Date());
+		System.out.println("US: " + currentDateFormat.format(new Date()));
+	/*	if("Fastway".equalsIgnoreCase(serviceType)) {
+			SECRET_KEY = "U00T659VKM1YBHJGFE9SC326EHFKWE7B";
+			Token = "FVJMJGYLC74QIAGRPJREJBAHOQZ3H0LM";
+		}
+		
+		else if("eParcel".equalsIgnoreCase(serviceType)){
+			uri = "/app/services/eparcels/submit";
+			SECRET_KEY = "U00T659VKM1YBHJGFE9SC326EHFKWE7B";
+			Token = "FVJMJGYLC74QIAGRPJREJBAHOQZ3H0LM";
+		}
+		else if("PFL".equalsIgnoreCase(serviceType)){
+			SECRET_KEY="0GLP8Y9VV7ISHOD8ZBFGMT57EW03N89L";
+			Token="7QS98P09KR22DCFYRJVUFCHC8L5CIBZT";
+		}else {
+		
+			SECRET_KEY = "3VXSOS7WUSF4DS6V5LXS8ER14KR2TMP6";
+			Token = "QT6P9I85LHETLYP43G7J440GD6W77TFX";
+		}*/
+		
 		String url = baseURL + uri;
 
 		String authorizationHeader = hmacGenerator.calculatePFLHMAC(SECRET_KEY,

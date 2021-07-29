@@ -18,8 +18,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import com.d2z.d2zservice.dao.ID2ZBrokerDao;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
 import com.d2z.d2zservice.entity.AUPostResponse;
@@ -30,9 +32,12 @@ import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FFResponse;
 import com.d2z.d2zservice.entity.IncomingJobs;
 import com.d2z.d2zservice.entity.IncomingJobsLogic;
+import com.d2z.d2zservice.entity.InvoicingZones;
+import com.d2z.d2zservice.entity.MasterPostcode;
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Parcels;
+import com.d2z.d2zservice.entity.PostCodeId;
 import com.d2z.d2zservice.entity.Reconcile;
 import com.d2z.d2zservice.entity.ReconcileND;
 import com.d2z.d2zservice.entity.Returns;
@@ -51,13 +56,14 @@ import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
+import com.d2z.d2zservice.model.InvoicingZonesModel;
 import com.d2z.d2zservice.model.ManualInvoiceData;
+import com.d2z.d2zservice.model.MasterPostCodeModel;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLSubmitOrderData;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.ParcelResponse;
-import com.d2z.d2zservice.model.PerformanceReportTrackingData;
 import com.d2z.d2zservice.model.ProfitLossReport;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
@@ -88,6 +94,8 @@ import com.d2z.d2zservice.repository.ETowerResponseRepository;
 import com.d2z.d2zservice.repository.FFResponseRepository;
 import com.d2z.d2zservice.repository.IncomingJobsLogicRepository;
 import com.d2z.d2zservice.repository.IncomingJobsRepository;
+import com.d2z.d2zservice.repository.InvoicingZonesRepository;
+import com.d2z.d2zservice.repository.MasterPostcodeRepository;
 import com.d2z.d2zservice.repository.MlidRepository;
 import com.d2z.d2zservice.repository.NonD2ZDataRepository;
 import com.d2z.d2zservice.repository.ParcelRepository;
@@ -180,6 +188,12 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 
 	@Autowired
 	TrackEventsRepository trackEventsRepository;
+	
+	@Autowired
+	MasterPostcodeRepository masterPostcodesRepository;
+	
+	@Autowired
+	InvoicingZonesRepository invoicingZonesRepository;
 	
 	@Override
 	public List<TrackEvents> uploadTrackingFile(List<UploadTrackingFileData> fileData) {
@@ -2310,6 +2324,61 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 	public List<String> downloadPendingTracking() {
 		// TODO Auto-generated method stub
 		return trackEventsRepository.fetchPendingArticleIDs();
+	}
+
+	@Override
+	public UserMessage uploadMasterPostcode(List<MasterPostCodeModel> fileData) {
+		List<MasterPostcode> masterList = new ArrayList<MasterPostcode>();
+		for(MasterPostCodeModel data:fileData) {
+			MasterPostcode masterData = new MasterPostcode();
+			PostCodeId id = new PostCodeId();
+			id.setPostcode(data.getPostcode());
+			id.setSuburb(data.getSuburb());
+			id.setState(data.getState());
+			masterData.setPostcodeId(id);
+			masterData.setZone(data.getZone());
+			masterData.setStateName(data.getStateName());
+			masterData.setPflZone(data.getPflZone());
+			masterData.setFastwayZone(data.getFastwayZone());
+			masterData.setFdmRoute(data.getFdmRoute());
+			masterData.setTollZone(data.getTollZone());
+			masterData.setRcZone(data.getRcZone());
+			masterData.setMcsZone(data.getMcsZone());
+			masterData.setVcZone(data.getVcZone());
+			masterList.add(masterData);
+		}
+		masterPostcodesRepository.saveAll(masterList);
+		// TODO Auto-generated method stub
+		UserMessage msg = new UserMessage();
+		msg.setMessage("File Uploaded Successfully");
+		return msg;
+	}
+
+	@Override
+	public UserMessage uploadMasterInvoicingZones(List<InvoicingZonesModel> fileData) {
+		List<InvoicingZones> masterList = new ArrayList<InvoicingZones>();
+		for(InvoicingZonesModel data:fileData) {
+			InvoicingZones masterData = new InvoicingZones();
+			PostCodeId id = new PostCodeId();
+			id.setPostcode(data.getPostcode());
+			id.setSuburb(data.getSuburb());
+			id.setState(data.getState());
+			masterData.setPostcodeId(id);
+			masterData.setMcs65ul(data.getMcs65ul());
+			masterData.setMcs5amsc(data.getMcs5amsc());
+			masterData.setMcs3cne(data.getMcs3cne());
+			masterData.setMcsgsx(data.getMcsgsx());
+			masterData.setRcInvZone(data.getRcInvZone());
+			masterData.setFdmVc1(data.getFdmVc1());
+			masterData.setFdmZone(data.getFdmZone());
+			masterData.setFastwayZoneId(data.getFastwayZoneId());
+			masterList.add(masterData);
+		}
+		invoicingZonesRepository.saveAll(masterList);
+		// TODO Auto-generated method stub
+		UserMessage msg = new UserMessage();
+		msg.setMessage("File Uploaded Successfully");
+		return msg;
 	}
 
 }

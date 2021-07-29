@@ -45,6 +45,9 @@ public class UserService implements Serializable {
 	@Column(name="Autoshipment")
 	private String autoShipment;
 	
+	@Column(name="PostcodeValidation")
+	private String postcodeValidation;
+	
 	@Column(name="Timestamp")
 	private Timestamp timestamp;
 

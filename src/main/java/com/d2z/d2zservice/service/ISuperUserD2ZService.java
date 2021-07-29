@@ -27,7 +27,9 @@ import com.d2z.d2zservice.model.ExportShipment;
 import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.InvoiceShipment;
+import com.d2z.d2zservice.model.InvoicingZonesModel;
 import com.d2z.d2zservice.model.ManualInvoiceData;
+import com.d2z.d2zservice.model.MasterPostCodeModel;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ParcelResponse;
@@ -196,6 +198,10 @@ public interface ISuperUserD2ZService{
 	public List<String> downloadFDMArticleIds();
 
 	public List<PendingTrackingDetails> downloadPendingTracking();
+
+	public UserMessage uploadMasterPostcode(List<MasterPostCodeModel> fileData);
+
+	public UserMessage uploadInvoicingZones(List<InvoicingZonesModel> fileData);
 
 
 }

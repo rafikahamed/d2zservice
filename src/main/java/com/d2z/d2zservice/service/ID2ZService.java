@@ -181,5 +181,11 @@ public interface ID2ZService {
 
 	public void veloceMonitoring(Map<String, List<String>> monitoringMap);
 
+	public void makeEtowerForecastCall(List<String> incomingRefNbr);
+
+	void triggerpflSubmitOrder(List<String> orderIds, String key, String token);
+
+	public void sendDataToTrackingDB(List<String> incomingRefNbr);
+
 
 }

@@ -3,18 +3,17 @@ package com.d2z.singleton;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.FastwayPostcode;
-import com.d2z.d2zservice.entity.MasterPostCode;
+import com.d2z.d2zservice.entity.MasterPostCodeZones;
+import com.d2z.d2zservice.entity.NZPostcodes;
+import com.d2z.d2zservice.entity.PFLPostcode;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.StarTrackPostcode;
 import com.d2z.d2zservice.util.BeanUtil;
-import com.d2z.d2zservice.entity.NZPostcodes;
-import com.d2z.d2zservice.entity.PFLPostcode;
 
 public class D2ZSingleton {
 	
@@ -103,7 +102,7 @@ public class D2ZSingleton {
 		}
 	
 	private void getMasterPostcode() {
-		List<MasterPostCode> postCodeZoneDaoObj = d2zDao.fetchAllMasterPostCodeZone();
+		List<MasterPostCodeZones> postCodeZoneDaoObj = d2zDao.fetchAllMasterPostCodeZone();
 		masterPflPostCodeZoneList = postCodeZoneDaoObj.stream().filter(obj -> obj.getPflZone().equalsIgnoreCase("1"))
 				.map(daoObj -> {
 					return daoObj.getPostcodeId().getState().concat(daoObj.getPostcodeId().getSuburb()).concat(daoObj.getPostcodeId().getPostcode());

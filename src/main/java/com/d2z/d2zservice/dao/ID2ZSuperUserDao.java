@@ -26,7 +26,9 @@ import com.d2z.d2zservice.model.CreateJobRequest;
 import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.IncomingJobResponse;
+import com.d2z.d2zservice.model.InvoicingZonesModel;
 import com.d2z.d2zservice.model.ManualInvoiceData;
+import com.d2z.d2zservice.model.MasterPostCodeModel;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
 import com.d2z.d2zservice.model.PFLSubmitOrderData;
@@ -280,6 +282,10 @@ public interface ID2ZSuperUserDao {
 	List<String> downloadFDMArticleIds();
 
 	List<String> downloadPendingTracking();
+
+	UserMessage uploadMasterPostcode(List<MasterPostCodeModel> fileData);
+
+	UserMessage uploadMasterInvoicingZones(List<InvoicingZonesModel> fileData);
 
 }
 

@@ -4,8 +4,10 @@ import java.sql.Blob;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.sql.rowset.serial.SerialBlob;
 import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.d2z.d2zservice.entity.Mlid;
 import com.d2z.d2zservice.entity.NonD2ZData;
 import com.d2z.d2zservice.entity.Reconcile;
@@ -36,8 +39,14 @@ import com.d2z.d2zservice.model.D2ZRatesData;
 import com.d2z.d2zservice.model.DownloadInvice;
 import com.d2z.d2zservice.model.DropDownModel;
 import com.d2z.d2zservice.model.ExportConsignment;
+import com.d2z.d2zservice.model.ExportDelete;
+import com.d2z.d2zservice.model.ExportShipment;
+import com.d2z.d2zservice.model.HeldParcel;
+import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.model.InvoiceShipment;
+import com.d2z.d2zservice.model.InvoicingZonesModel;
 import com.d2z.d2zservice.model.ManualInvoiceData;
+import com.d2z.d2zservice.model.MasterPostCodeModel;
 import com.d2z.d2zservice.model.NotBilled;
 import com.d2z.d2zservice.model.OpenEnquiryResponse;
 import com.d2z.d2zservice.model.ParcelResponse;
@@ -56,10 +65,6 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.WeightUpload;
 import com.d2z.d2zservice.model.Zone;
 import com.d2z.d2zservice.model.ZoneRequest;
-import com.d2z.d2zservice.model.ExportDelete;
-import com.d2z.d2zservice.model.ExportShipment;
-import com.d2z.d2zservice.model.HeldParcel;
-import com.d2z.d2zservice.model.IncomingJobResponse;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.d2z.d2zservice.service.ISuperUserD2ZService;
 
@@ -524,4 +529,15 @@ public class D2ZSuperUserController {
 	public List<PendingTrackingDetails> downloadPendingTracking() {
 		return superUserD2zService.downloadPendingTracking();
 	}
+	@RequestMapping( method = RequestMethod.POST, path = "/master-postcode", consumes=MediaType.APPLICATION_JSON)
+    public UserMessage uploadMasterPostcode(@RequestBody List<MasterPostCodeModel> fileData) {
+		UserMessage successMsg = superUserD2zService.uploadMasterPostcode(fileData);
+		return successMsg;
+    }
+	@RequestMapping( method = RequestMethod.POST, path = "/master-invoicingZones", consumes=MediaType.APPLICATION_JSON)
+    public UserMessage uploadMasterInvoicingZones(@RequestBody List<InvoicingZonesModel> fileData) {
+		UserMessage successMsg = superUserD2zService.uploadInvoicingZones(fileData);
+		return successMsg;
+    }
+	
 }

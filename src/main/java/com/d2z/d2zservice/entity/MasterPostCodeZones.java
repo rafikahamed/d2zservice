@@ -10,8 +10,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="MasterPostcodeZones")
-@NamedQuery(name="MasterPostCode.findAll", query="SELECT p FROM MasterPostCode p")
-public class MasterPostCode implements Serializable {
+@NamedQuery(name="MasterPostCodeZones.findAll", query="SELECT p FROM MasterPostCodeZones p")
+public class MasterPostCodeZones implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@EmbeddedId

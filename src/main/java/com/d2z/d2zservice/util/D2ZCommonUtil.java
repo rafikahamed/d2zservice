@@ -1,5 +1,6 @@
 package com.d2z.d2zservice.util;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -12,13 +13,21 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
+import java.util.Locale;
 import java.util.TimeZone;
 
+import org.jasypt.encryption.StringEncryptor;
+import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
+import org.jasypt.encryption.pbe.config.SimpleStringPBEConfig;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
-public class D2ZCommonUtil {
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
+public class D2ZCommonUtil {
+	
 	public static String getCurrentTimestamp() {
 		Date date = new Date();
 		String currentTimestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Timestamp(date.getTime()));
@@ -134,21 +143,77 @@ public class D2ZCommonUtil {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             byte[] messageDigest = md.digest(input.getBytes());
-            BigInteger no = new BigInteger(1, messageDigest);
-            String hashtext = no.toString(16);
-            while (hashtext.length() < 32) {
-                hashtext = "0" + hashtext;
+            StringBuilder sb = new StringBuilder();
+            for (byte b : messageDigest) {
+                sb.append(String.format("%02x", b));
             }
-            return hashtext;
+            return sb.toString();
         }
           catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
+
+	public static String convertToJsonString(Object request) {
+		ObjectWriter writer = new ObjectMapper().writer();
+		String jsonRequest = null;
+		try {
+			jsonRequest = writer.writeValueAsString(request);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return jsonRequest;
+	}
+
+	public static BigDecimal calculateCubicWeight(String serviceType, Double weight) {
+		Double modifiedWeight = weight;
+		if(serviceType.equalsIgnoreCase("VC1")) {
+		if(weight>0.5 && weight<=1) {
+			modifiedWeight = 0.5;
+		}else if(weight>1 && weight <=2) {
+			modifiedWeight = weight - 0.5;
+		}else if( weight>2) {
+			modifiedWeight = weight - 1;
+		}
+		}
+		return BigDecimal.valueOf(modifiedWeight);
+	}
 	
+	public static String formatDate() {
+		String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
+		SimpleDateFormat currentDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+		currentDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		String currentDate = currentDateFormat.format(new Date());
+		return currentDate;
+	}
 	/*public static int generateTrackID() {
 		Random rnd = new Random();
 		int uniqueNumber = 100000 + rnd.nextInt(900000);
 		return uniqueNumber;
 	}*/
+	
+		public static StringEncryptor stringEncryptor(String encryptionPassword) {
+			System.out.println(encryptionPassword);
+		    PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
+		    SimpleStringPBEConfig config = new SimpleStringPBEConfig();
+		    config.setPassword(encryptionPassword);
+		    config.setAlgorithm("PBEWithMD5AndDES");
+		    config.setKeyObtentionIterations("1000");
+		    config.setPoolSize("1");
+		    config.setProviderName("SunJCE");
+		    config.setSaltGeneratorClassName("org.jasypt.salt.RandomSaltGenerator");
+		    config.setIvGeneratorClassName("org.jasypt.iv.NoIvGenerator");
+		    config.setStringOutputType("base64");
+		    encryptor.setConfig(config);
+		    return encryptor;
+		}
+
+		public static String getCarrierName(String supplierName) {
+			String carrier = "";
+			String[] supplierArr = supplierName.split("-");
+			if (supplierArr.length > 1) {
+				carrier = supplierArr[1];
+			}
+			return carrier;			
+		}
 }

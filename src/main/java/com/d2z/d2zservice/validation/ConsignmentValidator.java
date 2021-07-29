@@ -28,7 +28,7 @@ public class ConsignmentValidator  implements
 			.addConstraintViolation();
 			isValid= false;
 		}
-		if(null == value.getConsigneeState() || value.getConsigneeState().isEmpty()) {
+		if(!(null != value.getServiceType() && (value.getServiceType().startsWith("MY") || value.getServiceType().startsWith("SG"))) && (null == value.getConsigneeState() || value.getConsigneeState().isEmpty())) {
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getConsigneeState()+","+"Consignee State is mandatory")
 			.addConstraintViolation();
@@ -143,14 +143,6 @@ public class ConsignmentValidator  implements
 				isValid= false;
 			}
 		}
-		if("MY4".equalsIgnoreCase(value.getServiceType())){
-			if(null == value.getCourier()) {
-				context.disableDefaultConstraintViolation();
-				context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getCourier()+","+"Courier is mandatory")
-				.addConstraintViolation();
-				isValid= false;
-			}
-		}
 		if((null!=value.getBarcodeLabelNumber() && !value.getBarcodeLabelNumber().isEmpty()) && (null == value.getDatamatrix()  || value.getDatamatrix().isEmpty())) {
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getDatamatrix()+","+"Please provide valid Datamatrix")
@@ -170,6 +162,16 @@ public class ConsignmentValidator  implements
 				.addConstraintViolation();
 				isValid= false;
 			}
+		}
+		
+		if(null != value.getServiceType() && value.getServiceType().startsWith("VC")) {
+			if((null==value.getBarcodeLabelNumber() || value.getBarcodeLabelNumber().isEmpty()) || (null == value.getDatamatrix()  || value.getDatamatrix().isEmpty())) {
+				context.disableDefaultConstraintViolation();
+				context.buildConstraintViolationWithTemplate(value.getReferenceNumber()+","+value.getBarcodeLabelNumber()+","+"BarcodeLabelNumber and Datamatrix are mandatory")
+				.addConstraintViolation();
+				isValid= false;
+			}
+
 		}
 		return isValid;
 	}

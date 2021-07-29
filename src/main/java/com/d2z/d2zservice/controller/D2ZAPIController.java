@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.exception.PCAlabelException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
@@ -37,6 +39,9 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.repository.CSTicketsRepository;
 import com.d2z.d2zservice.repository.UserRepository;
 import com.d2z.d2zservice.service.ID2ZService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 @RestController
 @Validated
@@ -66,6 +71,15 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
     }
 	@RequestMapping( method = RequestMethod.POST, path = "/trackEvents")
     public ResponseMessage trackEvents(@RequestBody List<TrackParcelResponse> request) {
+		   ObjectWriter ow1 = new ObjectMapper().writer();
+		 String jsonReq = null;
+			try {
+				jsonReq = ow1.writeValueAsString(request);
+			} catch (JsonProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        System.out.println("Track Events Request :: " + jsonReq);
 		return d2zService.createTrackEvents(request);
     }
 	
@@ -96,6 +110,8 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 		    				.collect(Collectors.toList());
 		        	d2zService.makeCallToEtowerBasedonSupplierUI(incomingRefNbr);
 		        	d2zService.makeVeloceCall(orderDetail.getConsignmentData());
+		    		d2zService.sendDataToTrackingDB(incomingRefNbr);
+
 		        	if(null!=autoShipRefNbrs && !autoShipRefNbrs.isEmpty()) {
 		    			System.out.println("Auto-Shipment Allocation");
 		    			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");

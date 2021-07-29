@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
+import com.d2z.d2zservice.entity.SupplierEntity;
 import com.d2z.d2zservice.entity.TrackEvents;
 import com.d2z.d2zservice.model.PCACreateShippingResponse;
 import com.d2z.d2zservice.model.PCATrackEventResponse;
@@ -21,10 +22,14 @@ import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
 import com.d2z.d2zservice.model.PflTrackEventRequest;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
+import com.d2z.d2zservice.model.veloce.VeloceTrackingResponse;
 import com.d2z.d2zservice.proxy.AusPostProxy;
 import com.d2z.d2zservice.proxy.ETowerProxy;
 import com.d2z.d2zservice.proxy.PFLProxy;
 import com.d2z.d2zservice.proxy.PcaProxy;
+import com.d2z.d2zservice.supplier.EtowerSupplier;
+import com.d2z.d2zservice.supplier.PFLSupplier;
+import com.d2z.d2zservice.supplier.VeloceSupplier;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,6 +48,16 @@ public class AsyncService {
 	
 	@Autowired
 	AusPostProxy ausPostProxy;
+	
+	@Autowired
+	PFLSupplier pflSupplier;
+	
+	@Autowired
+	EtowerSupplier etowerSupplier;
+	
+	@Autowired
+	VeloceSupplier veloceSupplier;
+	
 	
 	@Autowired
 	ID2ZDao d2zDao;
@@ -115,6 +130,34 @@ public class AsyncService {
 	public CompletableFuture<List<TrackEvents>> makeCalltoDB(List<String> d2zArticleIds) {
 		List<TrackEvents> trackEvents = d2zDao.fetchEventsFromTrackEvents(d2zArticleIds);
 		return CompletableFuture.completedFuture(trackEvents);
+	}
+	
+	@Async("asyncExecutor")
+	public CompletableFuture<TrackingEventResponse> makeCalltoEtower(List<String> articleIds,SupplierEntity config)  
+    {
+		log.info("Etower Tracking");
+		TrackingEventResponse response = etowerSupplier.makeTrackingCall(articleIds,config);
+		return CompletableFuture.completedFuture(response);
+    }
+	@Async("asyncExecutor")
+	public CompletableFuture<List<PFLTrackingResponseDetails>> makeCalltoPFL(List<String> articleIds,SupplierEntity config)  
+    {
+		log.info("PFL Tracking");
+		List<PFLTrackingResponseDetails> pflTrackingDetails = pflSupplier.makeTrackingCall(articleIds,config);
+		return CompletableFuture.completedFuture(pflTrackingDetails);
+    }
+	@Async("asyncExecutor")
+	public CompletableFuture<TrackingResponse> makeCalltoAuPost(List<String> articleIDs,SupplierEntity config)
+    {
+		log.info("AuPost Tracking");
+		TrackingResponse response = ausPostProxy.trackingEvent(String.join(",", articleIDs));
+		return CompletableFuture.completedFuture(response);
+    }
+	@Async("asyncExecutor")
+	public CompletableFuture<VeloceTrackingResponse> makeCalltoVeloce(List<String> ids, SupplierEntity supplier) {
+		log.info("Veloce Tracking");
+		VeloceTrackingResponse response = veloceSupplier.makeTrackingCall(ids,supplier);
+		return CompletableFuture.completedFuture(response);
 	}
 	
 }

@@ -3,6 +3,8 @@ package com.d2z.d2zservice.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -77,6 +79,9 @@ public class SenderdataMaster implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
+	@Column(name="Cust_Reference")
+	private String cust_reference; 
+	
 	@Column(name="Reference_number")
 	private String reference_number;
 
@@ -257,6 +262,16 @@ public class SenderdataMaster implements Serializable {
 	@Column(name="VendorId")
 	private String vendorId;
 	
+	
+	
+	public String getCust_reference() {
+		return cust_reference;
+	}
+
+	public void setCust_reference(String cust_reference) {
+		this.cust_reference = cust_reference;
+	}
+
 	public String getVendorId() {
 		return vendorId;
 	}
@@ -306,13 +321,21 @@ public class SenderdataMaster implements Serializable {
 		this.carrier = carrier;
 	}
 
-	@OneToMany(mappedBy="senderData",fetch = FetchType.LAZY)
+	@OneToMany(mappedBy="senderData",fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST})
     List<Trackandtrace> trackAndTrace = null;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "MLID",referencedColumnName = "MLID", insertable=false, updatable=false)
 	ConsignmentCount consignmentCount;
 	
+
+	public List<Trackandtrace> getTrackAndTrace() {
+		return trackAndTrace;
+	}
+
+	public void setTrackAndTrace(List<Trackandtrace> trackAndTrace) {
+		this.trackAndTrace = trackAndTrace;
+	}
 
 	public String getConsigneeCompany() {
 		return consigneeCompany;

@@ -104,6 +104,15 @@ public class SenderDataApi {
 	private boolean dangerousGoods;
 	private String vendorId;
 	private String courier;
+	private String custReference;
+	
+public String getCustReference() {
+		return custReference;
+	}
+
+	public void setCustReference(String custReference) {
+		this.custReference = custReference;
+	}
 
 public String getCourier() {
 		return courier;

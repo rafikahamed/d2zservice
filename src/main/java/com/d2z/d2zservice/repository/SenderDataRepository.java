@@ -3,6 +3,7 @@ package com.d2z.d2zservice.repository;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
@@ -35,6 +36,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	List<String> fetchLabelFileName(@Param("userId") Integer userId);
 
 	@Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y' order by rowId asc") 
+    @EntityGraph(attributePaths = "trackAndTrace")
 	List<SenderdataMaster> fetchConsignmentData(@Param("fileName") String fileName);
 	 
 	@Procedure(name = "consignee_delete")
@@ -81,6 +83,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 		void manifestCreation(@Param("ManifestNumber") String ManifestNumber, @Param("Reference_number") String[] Reference_number);
 
 	@Query("Select t from SenderdataMaster t where t.reference_number = :reference_number") 
+    @EntityGraph(attributePaths = "trackAndTrace")
 	SenderdataMaster fetchByReferenceNumbers(@Param("reference_number") String referenceNumber);
 	 
 	@Procedure(name = "shipment_allocation")
@@ -93,27 +96,34 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	void updateRates();
 	
 	@Query("SELECT t FROM SenderdataMaster t where t.filename = :fileName and t.isDeleted != 'Y' and t.manifest_number is null") 
+    @EntityGraph(attributePaths = "trackAndTrace")
 	List<SenderdataMaster> fetchManifestData(@Param("fileName") String fileName);
 
 	@Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.airwayBill = :shipmentNumber and t.isDeleted = 'N'") 
+    @EntityGraph(attributePaths = "trackAndTrace")
 	List<SenderdataMaster> fetchShipmentData(@Param("shipmentNumber") String shipmentNumber,@Param("userId") List<Integer> userId);
 	
 	@Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.articleId IN (:articleid) and t.isDeleted = 'N'") 
+    @EntityGraph(attributePaths = "trackAndTrace")
 	List<SenderdataMaster> fetchShipmentDatabyArticleId(@Param("articleid")List <String> shipmentNumber,@Param("userId") List<Integer> userId);
 	
 	@Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.reference_number IN (:referencenumber) and t.isDeleted = 'N'") 
+    @EntityGraph(attributePaths = "trackAndTrace")
 	List<SenderdataMaster> fetchShipmentDatabyReference(@Param("referencenumber") List<String> shipmentNumber,@Param("userId") List<Integer> userId);
 	
 	@Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.barcodelabelNumber IN (:barcodelabelNumber) and t.isDeleted = 'N'") 
+    @EntityGraph(attributePaths = "trackAndTrace")
 	List<SenderdataMaster> fetchShipmentDatabyBarcode(@Param("barcodelabelNumber") List<String> shipmentNumber,@Param("userId") List<Integer> userId);
 
 	@Query(nativeQuery = true, value="SELECT DISTINCT t.manifest_number FROM senderdata_master t where t.user_ID IN (:userId) and t.AirwayBill is null and t.isDeleted = 'N'") 
 	List<String> fetchManifestNumber(@Param("userId") List<Integer> userId);
 	
 	 @Query("SELECT t FROM SenderdataMaster t where t.user_ID IN (:userId) and t.manifest_number = :manifestNumber and t.airwayBill is null") 
+	 @EntityGraph(attributePaths = "trackAndTrace")
 	 List<SenderdataMaster> fetchConsignmentByManifest(@Param("manifestNumber") String manifestNumber, @Param("userId") List<Integer> userId);
 
 	 @Query("SELECT t FROM SenderdataMaster t where t.reference_number in :referenceNumbers and (t.airwayBill is not null or t.isDeleted = 'Y')") 
+	 @EntityGraph(attributePaths = "trackAndTrace")
 	 List<SenderdataMaster> findRefNbrByShipmentNbr(@Param("referenceNumbers") String[] referenceNumbers);
 	 
 	 @Query("SELECT DISTINCT(t.airwayBill), t.timestamp FROM SenderdataMaster t where t.user_ID IN (:userId) and t.isDeleted = 'N' order by t.timestamp desc") 
@@ -637,12 +647,14 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 void deleteConsignments(@Param("Reference_number") String Reference_number);
 	 
 	 @Query("SELECT s FROM SenderdataMaster s  where s.reference_number in (:referenceNumbers) ")
+	 @EntityGraph(attributePaths = "trackAndTrace")
 	 List<SenderdataMaster> fetchConsignmentsByRefNbr(@Param("referenceNumbers") List<String> referenceNumbers);
 	 
 	@Query("SELECT s FROM SenderdataMaster s JOIN s.consignmentCount c where s.reference_number in (:referenceNumbers) and s.mlid = c.mlid and c.supplier = :supplier")
-	 List<SenderdataMaster> fetchDataBasedonSupplier(@Param("referenceNumbers") List<String> referenceNumbers,@Param("supplier") String supplier);
+    @EntityGraph(attributePaths = "trackAndTrace")
+	List<SenderdataMaster> fetchDataBasedonSupplier(@Param("referenceNumbers") List<String> referenceNumbers,@Param("supplier") String supplier);
 
-	 @Query("SELECT s.articleId FROM SenderdataMaster s JOIN s.consignmentCount c where s.reference_number in (:referenceNumbers) and s.mlid = c.mlid and (c.supplier = 'eTower' or c.supplier = 'eTowerForecast')")
+	 @Query(nativeQuery = true, value="SELECT s.articleId FROM senderdata_master s Inner JOIN ConsignmentCount c  on  s.mlid = c.mlid  where s.reference_number in (:referenceNumbers) and c.supplier like 'eTower%'")
 	 List<String> fetchDataForEtowerForeCastCall(@Param("referenceNumbers") String[] referenceNumbers);
 	 
 	 @Query("SELECT distinct(s.airwayBill) FROM SenderdataMaster s where s.user_ID = :userId")
@@ -650,6 +662,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 
 
 	 @Query("SELECT s FROM SenderdataMaster s where s.reference_number in (:referenceNumbers) and (s.manifest_number is not null or s.airwayBill is not null)") 
+	 @EntityGraph(attributePaths = "trackAndTrace")
 	 List<SenderdataMaster> fetchConsignmentsManifestShippment(@Param("referenceNumbers") List<String> referenceNumbers);
 
 
@@ -792,6 +805,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 
 
 	@Query("SELECT t FROM SenderdataMaster t where t.articleId in (:refNbrs) and t.isDeleted = 'N'")
+    @EntityGraph(attributePaths = "trackAndTrace")
 	List<SenderdataMaster> fetchDataForAusPost(List<String>  refNbrs);
 	
 	@Query("SELECT t.reference_number FROM SenderdataMaster t where t.articleId in (:article) ")
@@ -800,7 +814,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT t.cubic_Weight FROM SenderdataMaster t where  t.articleId in (:articleID)")
 	List<BigDecimal> fetchcubicweight(List<String> articleID);
 
-	@Query(nativeQuery = true,value ="SELECT s.mlid,s.serviceType FROM senderdata_master s where ( s.carrier = 'FastwayM' or s.servicetype='1PS4' ) and s.reference_number in (:refNbrs)")
+	@Query(nativeQuery = true,value ="SELECT s.mlid,s.carrier FROM senderdata_master s where ( s.carrier like 'Fastway%' or s.carrier='PFL' or s.servicetype='1PS4' ) and s.reference_number in (:refNbrs)")
 	List<Object[]> fetchDataforPFLSubmitOrder(String[] refNbrs);
 
 	@Modifying(flushAutomatically = true,clearAutomatically = true)
@@ -822,9 +836,11 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	void updateweight(@Param("weight") Double weight, @Param("articleid") String articleid);
 	
 	@Query("SELECT s FROM SenderdataMaster s where s.articleId = :identifier")
+    @EntityGraph(attributePaths = "trackAndTrace")
 	SenderdataMaster fetchDataArticleId(@Param("identifier") String identifier);
 	
 	@Query("SELECT s FROM SenderdataMaster s where s.reference_number = :identifier")
+    @EntityGraph(attributePaths = "trackAndTrace")
 	SenderdataMaster fetchDataReferenceNum(@Param("identifier") String identifier);
 	
 	@Query("SELECT s.barcodelabelNumber FROM SenderdataMaster s where s.articleId = :articleID")
@@ -839,6 +855,15 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT s.servicetype FROM SenderdataMaster s where s.mlid = :mlid")
 	String fetchServiceTypeByMlid(String mlid);
 
+	@Query("SELECT s FROM SenderdataMaster s where s.articleId in (:identifier)")
+    @EntityGraph(attributePaths = "trackAndTrace")
+	List<SenderdataMaster> fetchDataArticleIds(@Param("identifier") List<String> identifier);
+	
+	@Query("SELECT s FROM SenderdataMaster s where s.reference_number in (:identifier)")
+    @EntityGraph(attributePaths = "trackAndTrace")
+	SenderdataMaster fetchDataReferenceNumbers(@Param("identifier") List<String> identifier);
+	
+	
 	
 	  @Query(nativeQuery = true,value =
 	  "select s.articleId,s.consignee_name,s.consignee_addr1,s.consignee_addr2,s.consignee_suburb,"
@@ -891,7 +916,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	 */
 	List<Object[]> fetchArticleIdForPerformanceReport(Integer month);
 
-	@Query(nativeQuery = true,value = "select s.mlid,s.serviceType	from senderdata_master s "
+	@Query(nativeQuery = true,value = "select s.mlid,s.carrier	from senderdata_master s "
 			+ "where s.mlid in (select connoteNo from trackandtrace t where t.fileName = 'PFLSubmitOrder')")
 	List<Object[]> fetchDataForPFLSubmitOrder();
 
@@ -916,7 +941,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT t.articleId FROM SenderdataMaster t where t.reference_number in (:Reference_number) and t.servicetype in ('RC1','RC2')")
 	List<String> fetchDataForFDMCall(@Param("Reference_number")String[] refNbrs);
 
-	@Query(nativeQuery = true,value ="select s.articleId from SENDERDATA_MASTER s\r\n"
+	@Query(nativeQuery = true,value ="select s.articleId,e.TrackingNo,e.APIName, e.ErrorMessage,e.Timestamp from SENDERDATA_MASTER s\r\n"
 			+ "inner join ConsignmentCount c on s.mlid = c.mlid\r\n"
 			+ "inner join eTowerResponse e on s.articleId = e.TrackingNo\r\n"
 			+ "where c.Supplier like 'eTower%'\r\n"
@@ -926,7 +951,7 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 			+ "and e.Status != 'Success'")
 	List<String> missingCreateShippingOrder();
 
-	@Query(nativeQuery = true,value ="select s.articleId from SENDERDATA_MASTER s\r\n"
+	@Query(nativeQuery = true,value ="select s.articleId,e.TrackingNo,e.APIName, e.ErrorMessage,e.Timestamp from SENDERDATA_MASTER s\r\n"
 			+ "inner join ConsignmentCount c on s.mlid = c.mlid\r\n"
 			+ "inner join eTowerResponse e on s.articleId = e.TrackingNo\r\n"
 			+ "where c.Supplier = 'eTower'\r\n"
@@ -975,11 +1000,12 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 			+ "order by s.timestamp desc" )
 	List<String> missingPFLIds();
 
-	@Query(nativeQuery = true, value="select distinct ArticleId from SENDERDATA_MASTER where Servicetype like 'RC%' and ArticleId like '002%'\r\n"
+	@Query(nativeQuery = true, value="select distinct ArticleId from q where Servicetype like 'RC%' and ArticleId like '002%'\r\n"
 			+ "and ArticleId not in (select distinct ArticleID from TrackEvents where TrackEventCode='DEL')")
 	List<String> downloadFDMArticleIds();
 	
 	@Query("SELECT s FROM SenderdataMaster s where s.reference_number in (:refNbrs) and s.servicetype = :serviceType")
+    @EntityGraph(attributePaths = "trackAndTrace")
 	List<SenderdataMaster> fetchServiceTypeByRefNbrs(String[] refNbrs,String serviceType);
 
 	@Query(nativeQuery = true,value ="select s.articleId from SENDERDATA_MASTER s\r\n"
@@ -989,5 +1015,15 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 			+ "and e.APIName = 'Veloce'\r\n"
 			+ "and e.Status != 'Successful'")
 	List<String> missingVeloceArticleIds();
+
+	@Query("SELECT s FROM SenderdataMaster s where s.reference_number in (:refBarNum) or s.articleId in (:refBarNum)")
+    @EntityGraph(attributePaths = "trackAndTrace")
+	List<SenderdataMaster> fetchDataByArticleIDOrRefNbr(List<String> refBarNum);
+
+	@Query(nativeQuery = true,value = "select s.articleId,s.serviceType,s.carrier from SENDERDATA_MASTER s where s.articleId in (:refBarNum)")
+	List<Object[]> fetchServiceTypeCarrierByArticleId(List<String> refBarNum);
+	
+	@Query(nativeQuery = true,value = "select s.articleId,s.serviceType,s.carrier from SENDERDATA_MASTER s where s.reference_number in (:refBarNum)")
+	List<Object[]> fetchServiceTypeCarrierByRefNbr(List<String> refBarNum);
  
 } 

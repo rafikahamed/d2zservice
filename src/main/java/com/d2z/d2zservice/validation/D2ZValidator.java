@@ -1,32 +1,38 @@
 package com.d2z.d2zservice.validation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.dao.ID2ZSuperUserDao;
+import com.d2z.d2zservice.dto.ConsignmentDTO;
 import com.d2z.d2zservice.entity.NonD2ZData;
-import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.Returns;
+import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.InvalidServiceTypeException;
 import com.d2z.d2zservice.exception.InvalidSuburbPostcodeException;
+import com.d2z.d2zservice.exception.InvalidUserException;
+import com.d2z.d2zservice.exception.MaxSizeCountException;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
+import com.d2z.d2zservice.model.ErrorDetails;
+import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.d2zservice.model.PFLSenderDataFileRequest;
 import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.ReconcileData;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.util.ValidationUtils;
-import com.d2z.d2zservice.model.ErrorDetails;
-import com.d2z.d2zservice.model.HeldParcel;
 import com.d2z.singleton.D2ZSingleton;
 
 @Service
@@ -38,6 +44,14 @@ public class D2ZValidator {
 	@Autowired
     private ID2ZSuperUserDao d2zSuperUserDao;
 
+	public Integer validateUser(String userName) {
+		Integer userId = d2zDao.fetchUserIdbyUserName(userName);
+		if (userId<0) {
+			throw new InvalidUserException("User does not exist", userName);
+		}		
+		return userId;
+	}
+	
 	public void isPostCodeValid(List<SenderDataApi> senderData) {
 		List<String> postCodeZoneList = D2ZSingleton.getInstance().getPostCodeZoneList();
 		List<String> postCodeStateNameList = D2ZSingleton.getInstance().getPostCodeStateNameList();
@@ -800,5 +814,68 @@ public class D2ZValidator {
 		
 			
 	}
+
+	public Map<String,List<SenderDataApi>> validateServiceType(CreateConsignmentRequest orderDetail, Map<String, List<ErrorDetails>> errorMap) {
+		List<String> authorizedServiceTypes = d2zDao.fetchServiceTypeByUserName(orderDetail.getUserName());
+		 Map<String,List<SenderDataApi>> consignmentMap = new HashMap<String,List<SenderDataApi>>();
+		orderDetail.getConsignmentData().stream().collect(Collectors.groupingBy(SenderDataApi::getServiceType))
+				.forEach((serviceType, orderIds) -> {	
+					if(authorizedServiceTypes.contains(serviceType)) {
+						consignmentMap.put(serviceType, orderIds);
+					}else {
+						orderIds.forEach(obj -> {
+							ValidationUtils.populateErrorDetails(obj.getReferenceNumber(),obj.getServiceType(),
+									 "Invalid Service Type",errorMap) ;
+						});
+					}
+				});	
+		return consignmentMap;
+	}
+
+	public static void maxOrderValidation(List<SenderDataApi> consignmentData) {
+		if("MY4".equalsIgnoreCase(consignmentData.get(0).getServiceType())) {
+			if(consignmentData.size() > 50) {
+				throw new MaxSizeCountException("We are allowing max 50 records, Your Request contains - "
+						+ consignmentData.size() + " Records");			}
+		}
+		else if (consignmentData.size() > 300) {
+			throw new MaxSizeCountException("We are allowing max 300 records, Your Request contains - "
+					+ consignmentData.size() + " Records");
+		
+		}		
+	}
+
+	public static List<ConsignmentDTO> validatePostcode(List<ConsignmentDTO> consignments, Map<String, List<ErrorDetails>> errorMap) {
+		consignments.forEach(obj -> {
+			 ValidationUtils.populateErrorDetails(obj.getReferenceNumber(),obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim(),
+					 "Suburb is not in carrier serviced areas",errorMap) ;
+			 });
+		return ValidationUtils.removeInvalidconsignments(consignments, errorMap);
+	}
+
+	public void validationReferenceNumber(CreateConsignmentRequest orderDetail,Map<String, List<ErrorDetails>> errorMap) {
+		List<String> refNbrs = orderDetail.getConsignmentData().stream().map(SenderDataApi::getReferenceNumber).collect(Collectors.toList());
+		List<String> duplicate = findDuplicateinRequest(refNbrs);
+		List<SenderdataMaster> consignments = d2zDao.fetchConsignmentsByRefNbr(refNbrs);
+		if (consignments.size() > 0) {
+			duplicate.addAll(
+					consignments.stream().map(SenderdataMaster::getReference_number).collect(Collectors.toList()));
+		}
+		duplicate.forEach(obj -> {
+			ValidationUtils.populateErrorDetails(obj, obj, "Reference Number must be unique", errorMap);
+		});
+		ValidationUtils.removeInvalidconsignments(orderDetail, errorMap);
+	}
+
+	private List<String> findDuplicateinRequest(List<String> referenceNumbers) {
+		Set<String> items = new HashSet<String>();
+        return referenceNumbers.stream()
+                .filter(n -> !items.add(n))
+                .collect(Collectors.toList());
+	}
+
+
+		
+
 
 }

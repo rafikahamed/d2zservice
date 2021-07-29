@@ -5,7 +5,7 @@
 
 	<groupId>com.d2z</groupId>
 	<artifactId>d2z-prodservice</artifactId>
-	<version>0.3.20-SNAPSHOT</version>
+	<version>0.3.44-SNAPSHOT</version>
 	<name>d2z-service</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -221,6 +221,12 @@
         <version>1.18.20</version>
         <scope>provided</scope>
   		</dependency>
+  		
+  		<dependency>
+    		<groupId>org.mapstruct</groupId>
+    		<artifactId>mapstruct</artifactId>
+    		<version>1.4.2.Final</version> 
+		</dependency>
 		
 		<!-- Font extension jar -->
 		<dependency>
@@ -299,17 +305,43 @@
 	    <artifactId>commons-net</artifactId>
 	    <version>3.3</version>
 	</dependency>
-	
+	<dependency>
+  		<groupId>com.github.ulisesbocchio</groupId>
+  		<artifactId>jasypt-spring-boot-starter</artifactId>
+  		<version>3.0.3</version>
+	</dependency>
+	<dependency>
+    <groupId>org.apache.pdfbox</groupId>
+    <artifactId>pdfbox</artifactId>
+    <version>2.0.4</version>
+</dependency>
 	</dependencies>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-                	<includeSystemScope>true</includeSystemScope>
-            	</configuration>
-			</plugin>
+	<plugin>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-maven-plugin</artifactId>
+		<configuration>
+			<includeSystemScope>true</includeSystemScope>
+			<annotationProcessorPaths>
+				<path>
+					<groupId>org.mapstruct</groupId>
+					<artifactId>mapstruct-processor</artifactId>
+					<version>1.4.2.Final</version>
+				</path>
+				<path>
+					<groupId>org.projectlombok</groupId>
+					<artifactId>lombok</artifactId>
+					<version>1.18.20</version>
+				</path>
+				<path>
+					<groupId>org.projectlombok</groupId>
+					<artifactId>lombok-mapstruct-binding</artifactId>
+					<version>0.2.0</version>
+				</path>
+			</annotationProcessorPaths>
+		</configuration>
+	</plugin>
 		
   <!-- <plugin>
     <groupId>org.jvnet.jaxb2.maven2</groupId>

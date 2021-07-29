@@ -5,10 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
+import com.d2z.d2zservice.dao.ID2ZDao;
+import com.d2z.d2zservice.dto.ConsignmentDTO;
+import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.ErrorDetails;
 import com.d2z.d2zservice.model.MCSSenderDataRequest;
@@ -16,6 +21,7 @@ import com.d2z.d2zservice.model.PFLSenderDataRequest;
 import com.d2z.d2zservice.model.SenderDataApi;
 
 public class ValidationUtils {
+	
 
 	public static Map<String,List<ErrorDetails>> populateErrorDetails(Errors errors) {
 
@@ -70,6 +76,12 @@ public class ValidationUtils {
 		 orderDetail.setConsignmentData(data);
 		
 	}
+	public static List<ConsignmentDTO> removeInvalidconsignments(List<ConsignmentDTO> orderDetail,
+			Map<String, List<ErrorDetails>> errorMap) {
+		 Set<String> incorrectRefNbrs = errorMap.keySet();
+		 return orderDetail.stream().filter(obj -> !incorrectRefNbrs.contains(obj.getReferenceNumber())).collect(Collectors.toList());
+		
+	}
 	public static void removeInvalidconsignments(MCSSenderDataRequest orderDetail,
 			Map<String, List<ErrorDetails>> errorMap) {
 		 Set<String> incorrectRefNbrs = errorMap.keySet();
@@ -86,5 +98,7 @@ public class ValidationUtils {
 		 orderDetail.setEtowerSenderData(data);
 		
 	}
+
+	
 
 }

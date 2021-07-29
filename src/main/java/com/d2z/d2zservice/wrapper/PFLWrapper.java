@@ -7,10 +7,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.ETowerResponse;
+import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.model.PFLCreateShippingResponse;
 import com.d2z.d2zservice.model.PFLResponseData;
@@ -162,6 +165,18 @@ public class PFLWrapper {
 			}
 		}
 	}
+	public void createSubmitOrderPFL(List<String> orderIds, String key,String token) throws FailureResponseException {
+		PFLSubmitOrderRequest pflSubmitOrder = new PFLSubmitOrderRequest();
+		pflSubmitOrder.setIds(orderIds);
+		PFLSubmitOrderResponse pflSubmitResponse = pflProxy.createSubmitOrderPFL(pflSubmitOrder,key,token);
+		logPflSubmitResponse(pflSubmitResponse, orderIds);
+		if(pflSubmitResponse==null) {
+			throw new FailureResponseException("Error in file – please contact customer support");
+		}else {
+			if(pflSubmitResponse.getResult() != null) {
+			}
+		}
+	}
 	
 	public void DeleteOrderPFL(List<String> orderIds, String ServiceType) throws FailureResponseException {
 		PFLSubmitOrderRequest pflSubmitOrder = new PFLSubmitOrderRequest();
@@ -180,6 +195,8 @@ public class PFLWrapper {
 		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
 			if(pflSubmitResponse != null) {
 				if(pflSubmitResponse.getError() != null) {
+					if(pflSubmitResponse.getError_ids()!=null) {
+				
 					for(String orderIdVal:pflSubmitResponse.getError_ids()) {
 						ETowerResponse errorResponse = new ETowerResponse();
 						errorResponse.setAPIName("PFL - Submit order");
@@ -190,8 +207,10 @@ public class PFLWrapper {
 						errorResponse.setStatus("Error");
 						responseEntity.add(errorResponse);
 					}
+					
 					d2zDao.logEtowerResponse(responseEntity);
 					throw new FailureResponseException("Error in file – please contact customer support");
+					}
 				}else {
 					for(String successOrder:orderIds) {
 						ETowerResponse errorResponse = new ETowerResponse();

@@ -2,22 +2,27 @@ package com.d2z.d2zservice.dao;
 
 import java.util.List;
 import java.util.Map;
+
+import com.d2z.d2zservice.dto.ConsignmentDTO;
 import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
 import com.d2z.d2zservice.entity.FastwayPostcode;
-import com.d2z.d2zservice.entity.IncomingJobs;
-import com.d2z.d2zservice.entity.MasterPostCode;
+import com.d2z.d2zservice.entity.MasterPostCodeZones;
+import com.d2z.d2zservice.entity.NZPostcodes;
+import com.d2z.d2zservice.entity.PFLPostcode;
 import com.d2z.d2zservice.entity.PostcodeZone;
 import com.d2z.d2zservice.entity.Returns;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.StarTrackPostcode;
+import com.d2z.d2zservice.entity.SupplierEntity;
 import com.d2z.d2zservice.entity.SystemRefCount;
 import com.d2z.d2zservice.entity.TrackEvents;
 import com.d2z.d2zservice.entity.Trackandtrace;
 import com.d2z.d2zservice.entity.User;
 import com.d2z.d2zservice.entity.UserService;
+import com.d2z.d2zservice.entity.Veloce;
 import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.ClientDashbaord;
 import com.d2z.d2zservice.model.EditConsignmentRequest;
@@ -28,7 +33,6 @@ import com.d2z.d2zservice.model.EnquiryResponse;
 import com.d2z.d2zservice.model.EnquiryUpdate;
 import com.d2z.d2zservice.model.HeldParcelDetails;
 import com.d2z.d2zservice.model.PFLSubmitOrderData;
-import com.d2z.d2zservice.model.PerformanceReportData;
 import com.d2z.d2zservice.model.PerformanceReportTrackingData;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.ReturnsAction;
@@ -42,8 +46,6 @@ import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.model.auspost.TrackingResponse;
 import com.d2z.d2zservice.model.etower.LabelData;
 import com.d2z.d2zservice.model.etower.TrackingEventResponse;
-import com.d2z.d2zservice.entity.NZPostcodes;
-import com.d2z.d2zservice.entity.PFLPostcode;
 import com.ebay.soap.eBLBaseComponents.CompleteSaleResponseType;
 
 public interface ID2ZDao {
@@ -237,7 +239,7 @@ public interface ID2ZDao {
 
 	public List<String> fetchDataForFDMCall(String[] refNbrs);
 
-	public List<MasterPostCode> fetchAllMasterPostCodeZone();
+	public List<MasterPostCodeZones> fetchAllMasterPostCodeZone();
 
 	public ResponseMessage createTrackEvents(List<TrackParcelResponse> request);
 
@@ -260,7 +262,39 @@ public interface ID2ZDao {
 	public List<SenderdataMaster> fetchDataForVeloceCall(String[] refNbrs);
 
 	public List<String> missingVeloceArticleIds();
+	
+	public List<SenderdataMaster> createConsignment(List<SenderdataMaster> senderDataMaster);
+	
+	public void generateBarcode(String fileSeqId);
 
+	public void fetchAllMasterPostCodeZone(String serviceType, List<ConsignmentDTO> consignmentList);
 
+	public boolean fetchAutoShipmentIndicator(int userId, String serviceType);
+
+	public boolean fetchPostCodeValidationRequired(int userId, String serviceType);
+
+	public SupplierEntity fetchSupplierData(int supplierAuthId);
+
+	public int fetchNextFileSeqId();
+
+	public String getPostCodeLogic(String serviceType);
+
+	public String fetchLabelName(String servicetype, String carrier);
+
+	List<SenderdataMaster> fetchLabelData(List<String> refBarNum);
+
+	public String fetchFDMRoute(String state, String suburb, String postcode);
+
+	public List<Trackandtrace> insertIntoTrackandTrace(List<Trackandtrace> list);
+
+	public Map<String, List<String>> fetchLabelName(List<String> refBarNum,String identifier);
+		
+	public List<String> fetchTrackingNumberFromEtowerResponse(String articleID);
+
+	List<Object[]> fetchServiceTypeCarrier(List<String> ids, String identifier);
+
+	Map<String, List<String>> fetchtrackingIdentifier(List<String> refBarNum, String identifier);
+
+	public Veloce findVeloceValues(String servicetype);
 
 }
