@@ -859,11 +859,6 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
     @EntityGraph(attributePaths = "trackAndTrace")
 	List<SenderdataMaster> fetchDataArticleIds(@Param("identifier") List<String> identifier);
 	
-	@Query("SELECT s FROM SenderdataMaster s where s.reference_number in (:identifier)")
-    @EntityGraph(attributePaths = "trackAndTrace")
-	SenderdataMaster fetchDataReferenceNumbers(@Param("identifier") List<String> identifier);
-	
-	
 	
 	  @Query(nativeQuery = true,value =
 	  "select s.articleId,s.consignee_name,s.consignee_addr1,s.consignee_addr2,s.consignee_suburb,"
@@ -941,63 +936,79 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	@Query("SELECT t.articleId FROM SenderdataMaster t where t.reference_number in (:Reference_number) and t.servicetype in ('RC1','RC2')")
 	List<String> fetchDataForFDMCall(@Param("Reference_number")String[] refNbrs);
 
-	@Query(nativeQuery = true,value ="select s.articleId,e.TrackingNo,e.APIName, e.ErrorMessage,e.Timestamp from SENDERDATA_MASTER s\r\n"
-			+ "inner join ConsignmentCount c on s.mlid = c.mlid\r\n"
-			+ "inner join eTowerResponse e on s.articleId = e.TrackingNo\r\n"
-			+ "where c.Supplier like 'eTower%'\r\n"
-			+ "and s.timestamp > Dateadd(day,-1,Getdate())\r\n"
-			+ "and s.Status IN ('Consignment Created','Shipment Allocated')\r\n"
-			+ "and e.APIName = 'Create Shipping Order'\r\n"
-			+ "and e.Status != 'Success'")
+	@Query(nativeQuery = true,value ="SELECT APIName,trackingNo,errorMessage,timestamp\n" +
+			"FROM   etowerresponse\n" +
+			"WHERE  errormessage IS NOT NULL\n" +
+			"       AND errormessage NOT LIKE 'TrackingNoalreadyexists'\n" +
+			"       AND timestamp > Dateadd(day, -2, Getdate()) \n")
 	List<String> missingCreateShippingOrder();
 
-	@Query(nativeQuery = true,value ="select s.articleId,e.TrackingNo,e.APIName, e.ErrorMessage,e.Timestamp from SENDERDATA_MASTER s\r\n"
-			+ "inner join ConsignmentCount c on s.mlid = c.mlid\r\n"
-			+ "inner join eTowerResponse e on s.articleId = e.TrackingNo\r\n"
-			+ "where c.Supplier = 'eTower'\r\n"
-			+ "and s.timestamp > Dateadd(day,-1,Getdate())\r\n"
-			+ "and s.Status = 'Shipment Allocated'\r\n"
-			+ "and e.APIName = 'Forecast'\r\n"
-			+ "and e.Status != 'Success'")
+	@Query(nativeQuery = true,value ="SELECT ArticleID" +
+			"FROM   senderdata_master" +
+			"WHERE  mlid IN (SELECT mlid" +
+			"                FROM   consignmentcount" +
+			"                WHERE  supplier = 'etower')" +
+			"       AND status = 'shipment allocated'" +
+			"       AND timestamp > Dateadd(day, -1, Getdate())\n" +
+			"       AND articleid NOT IN (SELECT DISTINCT trackingno\n" +
+			"                             FROM   etowerresponse\n" +
+			"                             WHERE  apiname  = 'Forecast'\n" +
+			"                                    AND status = 'Success' and timestamp > Dateadd(day,-1,Getdate())) \n")
 	List<String> missingForecast();
 
-	@Query(nativeQuery = true,value ="Select s.articleID from senderdata_master s inner join FFResponse  ff\r\n"
-			+ "on s.ArticleId = ff.ArticleId\r\n"
-			+ "where  s.servicetype in ('RC1','RC2')\r\n"
-			+ "and ff.Response != '200'\r\n"
-			+ "and s.timestamp>Dateadd(day,-1,Getdate())\r\n"
-			+ "and s.status = 'Shipment Allocated' \r\n"
-			+ "order by s.timestamp desc")
+	@Query(nativeQuery = true,value ="SELECT articleid\n" +
+			"FROM   senderdata_master\n" +
+			"WHERE  servicetype IN ( 'RC1', 'RC2' )\n" +
+			"       AND timestamp > Dateadd(day, -1, Getdate())\n" +
+			"       AND status = 'Shipment Allocated'\n" +
+			"       AND articleid NOT IN (SELECT distinct articleid\n" +
+			"                             FROM   ffresponse\n" +
+			"                             WHERE  supplier = 'FDM'\n" +
+			"                                    AND response = '200') ")
 	List<String> missingFdmArticleIds();
 
-	@Query(nativeQuery = true,value ="Select s.articleID from senderdata_master s inner join userservice us \r\n"
-			+ "on s.user_id = us.user_id \r\n"
-			+ "where  s.servicetype = us.servicetype\r\n"
-			+ "and us.Autoshipment = 'Y' \r\n"
-			+ "and s.timestamp>Dateadd(day,-1,Getdate())\r\n"
-			+ "and s.status != 'Shipment Allocated' \r\n"
-			+ "and s.Sender_Files_ID like '%API%'\r\n"
-			+ "order by s.timestamp desc")
+	@Query(nativeQuery = true,value ="Select s.articleID from senderdata_master s inner join userservice us \n" +
+			"on s.user_id = us.user_id \n" +
+			"where  s.servicetype = us.servicetype\n" +
+			"and us.Autoshipment = 'Y' \n" +
+			"and s.timestamp>Dateadd(day,-3,Getdate())\n" +
+			"and s.status != 'Shipment Allocated' \n" +
+			"and s.Sender_Files_ID like '%API%'\n" +
+			"order by s.timestamp desc")
 	List<String> missingShipmentAllocation();
 
-	@Query(nativeQuery = true, value="Select s.mlid,s.Timestamp from senderdata_master s inner join eTowerResponse  e on s.mlid = e.OrderId\r\n"
-			+ "where  (s.Servicetype = '1PS4' or carrier = 'FastwayM')\r\n"
-			+ "and s.timestamp>Dateadd(day,-3,Getdate())\r\n"
-			+ "and s.status = 'Shipment Allocated' \r\n"
-			+ "and e.APIName = 'PFL - Submit Order'\r\n"
-			+ "and e.Status != 'Success'\r\n"
-			+ "order by s.timestamp desc")
+	
+	@Query(nativeQuery = true,value ="Select s.articleID from senderdata_master s inner join userservice us \n" +
+			"on s.user_id = us.user_id \n" +
+			"where  s.servicetype = us.servicetype\n" +
+			"and us.Autoshipment = 'Y' \n" +
+			"and s.timestamp>Dateadd(day,-3,Getdate())\n" +
+			"and s.status != 'Shipment Allocated' \n" +
+			"and s.Sender_Files_ID like '%UI%'\n" +
+			"and Manifest_number is not null\n" +
+			"order by s.timestamp desc")
+	List<String> missingShipmentAllocationUI();
+
+	@Query(nativeQuery = true, value="SELECT mlid\n" +
+			"FROM   senderdata_master\n" +
+			"WHERE  status = 'shipment allocated'\n" +
+			"       AND carrier IN ( 'Fastway', 'PFL', 'FastwayM' )\n" +
+			"       AND timestamp > Dateadd(day, -3, Getdate())\n" +
+			"       AND mlid NOT IN (SELECT DISTINCT orderid\n" +
+			"                        FROM   etowerresponse\n" +
+			"                        WHERE  apiname = 'PFL - Submit order'\n" +
+			"                               AND status = 'success') ")
 	List<String> missingPFLIdsMonday();
 	
-	@Query(nativeQuery = true, value="Select s.mlid,s.Timestamp from \r\n"
-			+ "senderdata_master s inner join eTowerResponse e \r\n"
-			+ "on s.mlid = e.OrderId\r\n"
-			+ "where (s.Servicetype = '1PS4' or carrier = 'FastwayM')\r\n"
-			+ "and s.timestamp>Dateadd(day,-1,Getdate())\r\n"
-			+ "and s.status = 'Shipment Allocated' \r\n"
-			+ "and e.APIName = 'PFL - Submit Order'\r\n"
-			+ "and e.Status != 'Success'\r\n"
-			+ "order by s.timestamp desc" )
+	@Query(nativeQuery = true, value="SELECT mlid\n" +
+			"FROM   senderdata_master\n" +
+			"WHERE  status = 'shipment allocated'\n" +
+			"       AND carrier IN ( 'Fastway', 'PFL', 'FastwayM' )\n" +
+			"       AND timestamp > Dateadd(day, -2, Getdate())\n" +
+			"       AND mlid NOT IN (SELECT DISTINCT orderid\n" +
+			"                        FROM   etowerresponse\n" +
+			"                        WHERE  apiname = 'PFL - Submit order'\n" +
+			"                               AND status = 'success') " )
 	List<String> missingPFLIds();
 
 	@Query(nativeQuery = true, value="select distinct ArticleId from q where Servicetype like 'RC%' and ArticleId like '002%'\r\n"
@@ -1025,5 +1036,24 @@ public interface SenderDataRepository extends CrudRepository<SenderdataMaster, L
 	
 	@Query(nativeQuery = true,value = "select s.articleId,s.serviceType,s.carrier from SENDERDATA_MASTER s where s.reference_number in (:refBarNum)")
 	List<Object[]> fetchServiceTypeCarrierByRefNbr(List<String> refBarNum);
+
+	 @Query("SELECT s FROM SenderdataMaster s  where s.reference_number in (:referenceNumbers) ")
+	List<SenderdataMaster> fetchByRefNbr(List<String> referenceNumbers);
+
+	@Query("SELECT s FROM SenderdataMaster s where s.articleId in (:identifier)")
+	List<SenderdataMaster> fetchByArticleIds(List<String> identifier);
+
+	@Query(nativeQuery = true,value = "select s.airwayBill,s.reference_number,s.articleId from SENDERDATA_MASTER s where s.articleId in (:ids) and  isdeleted = 'N'")
+	List<Object[]> fetchAirwayBillByArticleIds(List<String> ids);
+
+	@Query(nativeQuery = true,value = "select s.airwayBill,s.reference_number,s.articleId from SENDERDATA_MASTER s where s.reference_number in (:ids) and  isdeleted = 'N'")
+	List<Object[]> fetchAirwayBillByRefNbr(List<String> ids);
+
+	@Modifying(flushAutomatically = true,clearAutomatically = true)
+	@Transactional
+	@Query("Update SenderdataMaster s set s.airwayBill = :airwayBill, s.status = 'SHIPMENT ALLOCATED', \n"+
+									  "s.timestamp = :timestamp where s.reference_number IN (:referenceNumbers) and  isdeleted = 'N'")
+	Integer updateAirwayBill(@Param("referenceNumbers") List<String> referenceNumbers, @Param("airwayBill") String shipmentNumber, @Param("timestamp") String timestamp);
+	
  
 } 

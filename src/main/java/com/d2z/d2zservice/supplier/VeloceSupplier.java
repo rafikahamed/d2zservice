@@ -110,7 +110,7 @@ public class VeloceSupplier {
 			consignment.setShipper_state_name(data.getShipperState()==null?"":data.getShipperState());
 			consignment.setShipper_name(data.getShipperName()==null?"":data.getShipperName());
 			consignment.setShipper_postcode(data.getShipperPostcode()==null?"":data.getShipperPostcode());
-			consignment.setShipper_ref(data.getReferenceNumber());
+			consignment.setShipper_ref(data.getCustReference());
 			consignment.setTracking_id(data.getBarcodelabelNumber());
 			consignment.setWarehouse_code("VELOCE_WAREHOUSE");
 			consignment.setWeight(String.valueOf(data.getWeight()));

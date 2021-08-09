@@ -142,6 +142,8 @@ public interface ID2ZDao {
 
 	public void updateRates();
 
+	public int fetchUserIdbyUserNameAndRole(String userName);
+	
 	public int fetchUserIdbyUserName(String userName);
 
 	public List<SenderdataMaster> fetchDataBasedonSupplier(List<String> incomingRefNbr, String string);
@@ -296,5 +298,15 @@ public interface ID2ZDao {
 	Map<String, List<String>> fetchtrackingIdentifier(List<String> refBarNum, String identifier);
 
 	public Veloce findVeloceValues(String servicetype);
+
+	List<Object[]> fetchAirwayBill(List<String> ids, String identifier);
+
+	Map<String, List<SenderdataMaster>> fetchallocationIdentifier(List<SenderdataMaster> data);
+
+	public List<SenderdataMaster> fetchConsignments(List<String> ids, String identifier);
+
+	public int updateAirwayBill(List<String> validData, String shipmentNumber);
+
+	List<SenderdataMaster> fetchByRefNbr(List<String> ids);
 
 }

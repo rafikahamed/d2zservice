@@ -24,9 +24,11 @@ import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.exception.InvalidUserException;
 import com.d2z.d2zservice.exception.MaxSizeCountException;
 import com.d2z.d2zservice.exception.PCAlabelException;
+import com.d2z.d2zservice.exception.ReferenceNumberNotUniqueException;
 import com.d2z.d2zservice.model.CreateConsignmentRequest;
 import com.d2z.d2zservice.model.CreateConsignmentResponse;
 import com.d2z.d2zservice.model.ErrorDetails;
+import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.model.TrackParcelResponse;
 import com.d2z.d2zservice.service.IConsignmentService;
 import com.d2z.d2zservice.util.ValidationUtils;
@@ -94,4 +96,10 @@ public class ConsignmentController {
 		trackParcelResponse = service.trackParcels(articleIds,identifier);
 		return trackParcelResponse;
     }
+    
+    @RequestMapping( method = RequestMethod.POST, path = "/consignments/shipment/{identifier}/{shipmentNumber}")
+    public ResponseMessage allocateShipment(@RequestBody List<String> ids,@PathVariable String identifier,@PathVariable String shipmentNumber) throws ReferenceNumberNotUniqueException {
+		return 	service.allocateShipment(ids,identifier,shipmentNumber);
+    }
 }
+

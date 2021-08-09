@@ -2345,6 +2345,7 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			masterData.setRcZone(data.getRcZone());
 			masterData.setMcsZone(data.getMcsZone());
 			masterData.setVcZone(data.getVcZone());
+			masterData.setMc2Zone(data.getMc2Zone());
 			masterList.add(masterData);
 		}
 		masterPostcodesRepository.saveAll(masterList);
@@ -2372,6 +2373,12 @@ public class D2ZSuperUserDaoImpl implements ID2ZSuperUserDao {
 			masterData.setFdmVc1(data.getFdmVc1());
 			masterData.setFdmZone(data.getFdmZone());
 			masterData.setFastwayZoneId(data.getFastwayZoneId());
+			masterData.setPostZone(data.getPostZone());
+			masterData.setMcsD2Z(data.getMcsD2Z());
+			masterData.setVcD2Z(data.getVcD2Z());
+			masterData.setMcs7EQ(data.getMcs7EQ());
+			masterData.setFdmRoute(data.getFdmRoute());
+			masterData.setVcSortCode(data.getVcSortCode());
 			masterList.add(masterData);
 		}
 		invoicingZonesRepository.saveAll(masterList);

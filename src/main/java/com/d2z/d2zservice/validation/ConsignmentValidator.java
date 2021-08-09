@@ -52,7 +52,7 @@ public class ConsignmentValidator  implements
 			.addConstraintViolation();
 			isValid= false;
 		}
-			else if(null != value.getServiceType() && (value.getServiceType().startsWith("FW") || value.getServiceType().startsWith("MC"))) {
+			else if(null != value.getServiceType() && (value.getServiceType().startsWith("FW"))) {
 					if(isFastwayAddressValid(value.getConsigneeAddr1().replaceAll("[^a-zA-Z0-9]", ""))){
 						System.out.println(value.getReferenceNumber()+","+value.getConsigneeAddr1());
 						context.disableDefaultConstraintViolation();

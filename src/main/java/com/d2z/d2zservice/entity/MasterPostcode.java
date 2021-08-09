@@ -48,6 +48,17 @@ public class MasterPostcode implements Serializable {
 	@Column(name="PostZone")
 	private String postZone;
 	
+	@Column(name="MC2Zone")
+	private String mc2Zone;
+	
+	public String getMc2Zone() {
+		return mc2Zone;
+	}
+
+	public void setMc2Zone(String mc2Zone) {
+		this.mc2Zone = mc2Zone;
+	}
+
 	public String getValueFromObject(Object object, String fieldName) {
         // get class
         Class clazz = object.getClass() ;

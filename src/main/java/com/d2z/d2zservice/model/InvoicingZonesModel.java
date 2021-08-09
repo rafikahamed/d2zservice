@@ -15,5 +15,11 @@ public class InvoicingZonesModel {
 	private String fastwayZoneId;
 	private String mcsgsx;
 	private String fdmVc1;
+	private String postZone;
+	private String mcsD2Z;
+	private String vcD2Z;
+	private String mcs7EQ;
+	private String fdmRoute;
+	private String vcSortCode;
 
 }

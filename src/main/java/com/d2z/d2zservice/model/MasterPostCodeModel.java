@@ -16,4 +16,5 @@ public class MasterPostCodeModel {
  private String rcZone;
  private String mcsZone;
  private String vcZone;
+ private String mc2Zone;
 }

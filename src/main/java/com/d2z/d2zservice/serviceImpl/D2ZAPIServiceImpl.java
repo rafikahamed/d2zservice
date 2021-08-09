@@ -459,13 +459,8 @@ public class D2ZAPIServiceImpl implements ID2ZAPIService{
 
 	@Override
 	public void makeCallToEtowerBasedonSupplierUI(List<String> incomingRefNbr) {
-		 Runnable r = new Runnable( ) {			
-		        public void run() {
+		
 		List<SenderdataMaster> eTowerOrders = d2zDao.fetchDataBasedonSupplier(incomingRefNbr,"eTower");
 		eTowerWrapper.makeCalltoEtower(eTowerOrders);
-	
-		   }
-    };
-   new Thread(r).start();
 	}
 }

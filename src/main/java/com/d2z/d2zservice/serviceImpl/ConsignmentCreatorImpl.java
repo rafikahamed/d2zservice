@@ -1,6 +1,8 @@
 package com.d2z.d2zservice.serviceImpl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,7 @@ import com.d2z.d2zservice.model.ErrorDetails;
 import com.d2z.d2zservice.model.SenderDataApi;
 import com.d2z.d2zservice.model.SenderDataResponse;
 import com.d2z.d2zservice.service.ConsignmentCreator;
+import com.d2z.d2zservice.service.ShipmentAllocator;
 import com.d2z.d2zservice.supplier.EtowerSupplier;
 import com.d2z.d2zservice.supplier.PFLSupplier;
 import com.d2z.d2zservice.supplier.Tracker;
@@ -54,6 +57,9 @@ public class ConsignmentCreatorImpl implements ConsignmentCreator {
 	
 	@Autowired
 	Tracker tracker;
+	
+	@Autowired
+	ShipmentAllocator allocator;
 	
 	@Override
 	public Map<String,ConsignmentConfig> fetchConfigDetails(Map<String,List<SenderDataApi>> request,int userId,String fileSeqId,Map<String, List<ErrorDetails>> errorMap){
@@ -102,86 +108,117 @@ public class ConsignmentCreatorImpl implements ConsignmentCreator {
 	}
 	
 	@Override
-	public void createConsignment(Map<String,List<SenderDataApi>> request,int userId,Map<String, List<ErrorDetails>> errorMap) {
+	public List<SenderdataMaster> createConsignment(Map<String,List<SenderDataApi>> request,int userId,Map<String, List<ErrorDetails>> errorMap,List<String> autoShipRefNbrs ) {
 		Map<String,ConsignmentConfig> consignmentConfig = fetchConfigDetails(request, userId, "D2ZAPI"+dao.fetchNextFileSeqId(),errorMap);
-		
+		List<SenderdataMaster> savedData = new ArrayList<SenderdataMaster>();
+        
 		consignmentConfig.forEach((serviceType,config) ->{
 			
 			config.getSupplierConsignmentMap().forEach((supplier,consignments) -> {
 			
 				if(supplier.getSupplierName().contains("PFL")){
-					makeCalltoPFL(consignments, supplier,errorMap);
+					List<ConsignmentDTO> invalidConsignment = consignments.stream().filter(data->isAddressInvalid(data)).collect(Collectors.toList());
+					consignments.removeAll(invalidConsignment);
+					if(consignments.size()>0) {
+						savedData.addAll(makeCalltoPFL(consignments, supplier,errorMap));
+					}
+					if(invalidConsignment.size()>0) {
+						savedData.addAll(generateBarcode(invalidConsignment));
+					}
 				}
 				else if(supplier.getSupplierName().contains("ETOWER")) {
-					makeCalltoEtower(consignments, supplier,errorMap);
+					savedData.addAll(makeCalltoEtower(consignments, supplier,errorMap));
 				}
 				else if(supplier.getSupplierName().contains("D2Z")) {
-					generateBarcode(consignments);
+					savedData.addAll(generateBarcode(consignments));
 				}else if(supplier.getSupplierName().contains("TRANSVIRTUAL")){
-					saveTransvirtualConsignments(consignments,supplier.getSupplierName());
+					savedData.addAll(saveTransvirtualConsignments(consignments,supplier.getSupplierName()));
 				}else if(supplier.getSupplierName().contains("VELOCE")) {
-					saveVeloceConsignments(consignments, supplier);
+					savedData.addAll(saveVeloceConsignments(consignments, supplier));
 				}
 				else{
-				saveConsignment(consignments);
+					savedData.addAll(saveConsignment(consignments));
 				}
+				
+				
 				
 			});
 			
+			if(config.isAutoShipmentIndicator()) {
+				autoShipRefNbrs.addAll(savedData.stream().map(SenderdataMaster :: getReference_number).collect(Collectors.toList()));
+			}
+			
 		});
 		
+		return savedData;
 	}
 	
-private void makeCalltoEtower(List<ConsignmentDTO> consignments, SupplierEntity supplier,
+private boolean isAddressInvalid(ConsignmentDTO data) {
+	String addr1 = data.getConsigneeAddr1();
+	String addr2 = data.getConsigneeAddr2();
+	boolean isInvalidAddr1 = D2ZValidator.isPFLAddressValid(addr1.replaceAll("[^a-zA-Z0-9]", ""));
+	boolean isInvalidAddr2 = false;
+	if(addr2!=null) {
+		isInvalidAddr2 = D2ZValidator.isPFLAddressValid(addr2.replaceAll("[^a-zA-Z0-9]", ""));
+	}
+	return isInvalidAddr1 || isInvalidAddr2;
+	}
+private List<SenderdataMaster> makeCalltoEtower(List<ConsignmentDTO> consignments, SupplierEntity supplier,
 		Map<String, List<ErrorDetails>> errorMap) {
-
+	List<SenderdataMaster> savedData = new ArrayList<SenderdataMaster>();
 	try {
 		List<ConsignmentDTO> modifiedData = etowerSupplier.createOrder(consignments, supplier);
-		saveConsignment(modifiedData);
+		savedData = saveConsignment(modifiedData);
 	} catch (FailureResponseException e) {
 		consignments.forEach(obj->{
 		ValidationUtils.populateErrorDetails(obj.getReferenceNumber(), "", "Shipment Error. Please contact us", errorMap);
 		});
-	}		
+	}	
+	return savedData;
 	
 }
-	private void saveTransvirtualConsignments(List<ConsignmentDTO> consignments,String supplierName) {
+	private List<SenderdataMaster> saveTransvirtualConsignments(List<ConsignmentDTO> consignments,String supplierName) {
 		consignments.stream().forEach(obj->{
 			obj.setCarrier(D2ZCommonUtil.getCarrierName(supplierName));
 		});		
-		saveConsignment(consignments);
+		return saveConsignment(consignments);
 	}
-	private void saveVeloceConsignments(List<ConsignmentDTO> consignments,SupplierEntity supplier) {
+	private List<SenderdataMaster> saveVeloceConsignments(List<ConsignmentDTO> consignments,SupplierEntity supplier) {
 		consignments.stream().forEach(obj->{
 			obj.setCarrier(D2ZCommonUtil.getCarrierName(supplier.getSupplierName()));
 		});		
-		saveConsignment(consignments);
 		new Thread(() -> veloceSupplier.createOrder(consignments, supplier)).start();
+		return saveConsignment(consignments);
+
 	}
-	private void generateBarcode(List<ConsignmentDTO> consignments) {
+	private  List<SenderdataMaster> generateBarcode(List<ConsignmentDTO> consignments) {
+		List<SenderdataMaster> savedData = new ArrayList<SenderdataMaster>();
+
 		consignments.stream().forEach(obj->{
 			obj.setBarcodelabelNumber(null);
 			obj.setCarrier("eParcel");
 		});
 		saveConsignment(consignments);
 		dao.generateBarcode(consignments.get(0).getSenderFilesID());
-		new Thread(() -> {
-			List<SenderdataMaster> eTowerOrders = dao.fetchDataBasedonSupplier(consignments.stream().map(obj -> obj.getReferenceNumber()).collect(Collectors.toList()), "eTower");
-			if(eTowerOrders.size()>0) {
-				eTowerWrapper.makeCalltoEtower(eTowerOrders);
-			}
-		}).start();
+		savedData = dao.fetchConsignmentsByRefNbr(consignments.stream().map(ConsignmentDTO :: getReferenceNumber).collect(Collectors.toList()));
+		return savedData;
 	}
-	private void makeCalltoPFL(List<ConsignmentDTO> consignments, SupplierEntity supplier,
+	private List<SenderdataMaster> makeCalltoPFL(List<ConsignmentDTO> consignments, SupplierEntity supplier,
 			Map<String, List<ErrorDetails>> errorMap) {
+		List<SenderdataMaster> savedData = new ArrayList<SenderdataMaster>();
 		try {
 			List<ConsignmentDTO> modifiedData = pflSupplier.createOrder(consignments, supplier);
-			saveConsignment(modifiedData);
+			savedData = saveConsignment(modifiedData);
 		} catch (FailureResponseException e) {
+			if("Not available because remote service!".equalsIgnoreCase(e.getMessage())) {
+				generateBarcode(consignments);
+			}else {
 			consignments.forEach(obj->{
 			ValidationUtils.populateErrorDetails(obj.getReferenceNumber(), "", "Shipment Error. Please contact us", errorMap);
 			});
-		}		
+			}
+		}
+		return savedData;
 	}
 	public List<ConsignmentDTO> convertToDTO(List<SenderDataApi> request,int userId,String fileSeqId){
 
@@ -304,10 +341,10 @@ private void makeCalltoEtower(List<ConsignmentDTO> consignments, SupplierEntity 
 			senderDataObj.setDatamatrix(senderDataValue.getDatamatrix());
 			senderDataObj.setInjectionState(senderDataValue.getInjectionState());
 			senderDataObj.setConsignee_Email(senderDataValue.getConsigneeEmail());
-			senderDataObj.setStatus(senderDataValue.getStatus());
+			senderDataObj.setStatus("CONSIGNMENT CREATED");
 			senderDataObj.setInjectionType(senderDataValue.getInjectionType());
 			senderDataObj.setTimestamp(D2ZCommonUtil.getAETCurrentTimestamp());
-			senderDataObj.setIsDeleted(senderDataValue.getIsDeleted());
+			senderDataObj.setIsDeleted("N");
 			senderDataObj.setD2zRate(senderDataValue.getD2zRate());
 			senderDataObj.setBrokerRate(senderDataValue.getBrokerRate());
 			senderDataObj.setCarrier(senderDataValue.getCarrier());
@@ -343,7 +380,7 @@ private void makeCalltoEtower(List<ConsignmentDTO> consignments, SupplierEntity 
 		return list;
 	}
 	@Override
-	public ResponseEntity<Object> sendResponse(List<SenderDataApi> request,Map<String, List<ErrorDetails>> errorMap,int intialRequestSize) {
+	public ResponseEntity<Object> sendResponse(List<SenderdataMaster> savedData,Map<String, List<ErrorDetails>> errorMap,int intialRequestSize,List<String> autoshipRefNbrs,String userName) {
 		CreateConsignmentResponse response = new CreateConsignmentResponse();
 		List<SenderDataResponse> responseList = new ArrayList<SenderDataResponse>();
 		HttpStatus status = null;
@@ -355,15 +392,21 @@ private void makeCalltoEtower(List<ConsignmentDTO> consignments, SupplierEntity 
 				responseList.add(responseData);
 			}
 		}	
-		List<String> referenceNumbers = request.stream().map(SenderDataApi::getReferenceNumber)
-			   .filter(obj -> !errorMap.keySet().contains(obj))
-			   .collect(Collectors.toList());
-		if(referenceNumbers.size()>0) {
-		List<SenderdataMaster> savedData = dao.fetchConsignmentsByRefNbr(referenceNumbers);
+		
+		if(savedData.size()>0) {
 		new Thread(() -> {
-			if(savedData.size()>0) {
-				tracker.saveData(savedData);
+			if(autoshipRefNbrs.size()>0) {
+				List<SenderdataMaster> data = savedData.stream().filter(obj ->autoshipRefNbrs.contains(obj.getReference_number())).collect(Collectors.toList());
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+    			String shipmentNumber = userName+simpleDateFormat.format(new Date());
+				allocator.autoAllocate(data, shipmentNumber);
 			}
+			
+			List<SenderdataMaster> eTowerOrders = dao.fetchDataBasedonSupplier(savedData.stream().map(SenderdataMaster::getReference_number).collect(Collectors.toList()), "eTower");
+			if(eTowerOrders.size()>0) {
+				eTowerWrapper.makeCalltoEtower(eTowerOrders);
+			}
+			tracker.saveData(savedData);
 		}).start();
 		savedData.forEach(data->{
 			SenderDataResponse responseData = new SenderDataResponse();
@@ -377,16 +420,16 @@ private void makeCalltoEtower(List<ConsignmentDTO> consignments, SupplierEntity 
 			responseList.add(responseData);
 		});
 		}
-		if(intialRequestSize == referenceNumbers.size()) {
+		if(intialRequestSize == savedData.size()) {
 			status = HttpStatus.OK;
 			response.setStatus("Success");
-		}else if(referenceNumbers.size() ==0) {
+		}else if(savedData.size() ==0) {
 			status = HttpStatus.BAD_REQUEST;
 			ErrorDetails err = new ErrorDetails();
 			err.setValue(errorMap.keySet().toString());
 			response.setErrors(err);
 			response.setStatus("Failure");
-		}else if( referenceNumbers.size() < intialRequestSize) {
+		}else if( savedData.size() < intialRequestSize) {
 			ErrorDetails err = new ErrorDetails();
 			err.setValue(errorMap.keySet().toString());
 			response.setErrors(err);
@@ -400,12 +443,7 @@ private void makeCalltoEtower(List<ConsignmentDTO> consignments, SupplierEntity 
 		return new ResponseEntity(response,status);
 	}
 
-	@Override
-	public void allocateShipment(List<String> request) {
-		// TODO Auto-generated method stub
-		
-	}
-	
+
 	
 	
 

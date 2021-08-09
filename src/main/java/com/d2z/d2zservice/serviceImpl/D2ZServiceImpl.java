@@ -842,10 +842,12 @@ public class D2ZServiceImpl implements ID2ZService {
 			}
 			final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			SimpleOutputStreamExporterOutput exporterOutput = new SimpleOutputStreamExporterOutput(outputStream);
+			if(jasperPrintList.size()>0) {
 			JRPdfExporter exporter = new JRPdfExporter();
 			exporter.setExporterInput(SimpleExporterInput.getInstance(jasperPrintList));
 			exporter.setExporterOutput(exporterOutput);
 			exporter.exportReport();
+			}
 			// return the PDF in bytes
 			bytes = outputStream.toByteArray();
 			// bytes = JasperExportManager.exportReportToPdf(jasperPrint);
@@ -922,22 +924,13 @@ public class D2ZServiceImpl implements ID2ZService {
 			return bytes;
 		}
 		List<String> trackingLabelData = d2zDao.trackingLabel(refBarNum,identifier);
-		boolean pcalabel = false;
 		List<SenderData> trackingLabelList = populateDataForLabelGeneration(trackingLabelData);
-		if (trackingLabelList.get(0).getCarrier().equalsIgnoreCase("StarTrack")) {
-			if (trackingLabelList.size() > 1) {
-				throw new PCAlabelException("Starttrack Label request can contain only one reference number",
-						refBarNum);
-			} else {
-				pcalabel = true;
+		System.out.println(trackingLabelList.size());
+		if (trackingLabelList.size() > 0) {
+				bytes = generateLabel(trackingLabelList);
+			}else {
+				System.out.println("Label Request : "+D2ZCommonUtil.convertToJsonString(trackingLabelList));
 			}
-
-		}
-		if (!pcalabel) {
-			bytes = generateLabel(trackingLabelList);
-		} else {
-			bytes = pcaWrapper.pcalabel(trackingLabelList.get(0).getReferenceNumber());
-		}
 		return bytes;
 	}
 

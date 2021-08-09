@@ -28,6 +28,7 @@ import com.d2z.d2zservice.model.veloce.DeliveryStatus;
 import com.d2z.d2zservice.model.veloce.VeloceTrackResponse;
 import com.d2z.d2zservice.model.veloce.VeloceTrackingResponse;
 import com.d2z.d2zservice.service.ConsignmentTracker;
+import com.d2z.d2zservice.supplier.Tracker;
 
 @Service
 public class ConsignmentTrackerImpl implements ConsignmentTracker{
@@ -38,81 +39,73 @@ public class ConsignmentTrackerImpl implements ConsignmentTracker{
 	@Autowired
 	AsyncService aysncService;
 	
+	@Autowired
+	Tracker tracker;
+	
 	@Override
 	public List<TrackParcelResponse> trackParcels(List<String> trackingNos,String identifier){
-		List<TrackParcelResponse> trackPracelsResponse = new ArrayList<TrackParcelResponse>();
-
-        Map<String,List<String>> trackingMap = dao.fetchtrackingIdentifier(trackingNos, identifier);
-        if(trackingMap.size()>0) {
-        Map<SupplierEntity,List<String>> trackingSupplierMap = new HashMap<SupplierEntity,List<String>>();
-
-        trackingMap.forEach((supplierId,trackingIds) -> {
-        	 if(Integer.parseInt(supplierId) == 0) {
-  				SupplierEntity supplier = new SupplierEntity();
-  				supplier.setSupplierName("D2Z");
-  				trackingSupplierMap.put(supplier,trackingIds);
-  			}
-        	 else if(Integer.parseInt(supplierId)>0) {
- 				SupplierEntity supplier = dao.fetchSupplierData(Integer.parseInt(supplierId));
- 				trackingSupplierMap.put(supplier,trackingIds);
- 			}
-        });
-        CompletableFuture<TrackingEventResponse> eTowerResponse = new CompletableFuture<TrackingEventResponse>();
-		CompletableFuture<TrackingResponse> auPostResponse = new CompletableFuture<TrackingResponse>();
-		CompletableFuture<List<TrackEvents>> trackEvents = new CompletableFuture<List<TrackEvents>>();
-	    CompletableFuture<List<PFLTrackingResponseDetails>> pflResponse = new CompletableFuture<List<PFLTrackingResponseDetails>>();
-        CompletableFuture<VeloceTrackingResponse> veloceResponse = new CompletableFuture<VeloceTrackingResponse>();
-
-	    for (Map.Entry<SupplierEntity,List<String>> entry : trackingSupplierMap.entrySet()) {
-	    	SupplierEntity supplier = entry.getKey();
-	    	List<String> ids = entry.getValue();
-        	if(supplier.getSupplierName().contains("PFL")) {
-    			pflResponse = aysncService.makeCalltoPFL(ids,supplier);
-           	}else {
-        		pflResponse.complete(null);
-        	}
-        	if(supplier.getSupplierName().contains("ETOWER")) {
-    			eTowerResponse = aysncService.makeCalltoEtower(ids,supplier);
-        	}else {
-        		eTowerResponse.complete(null);
-        		}
-        	if(supplier.getSupplierName().contains("AUPOST")) {
-    			auPostResponse = aysncService.makeCalltoAuPost(ids,supplier);
-        	}else {
-        		auPostResponse.complete(null);
-        		}
-        	if(supplier.getSupplierName().contains("D2Z")) {
-        		System.out.println(supplier.getSupplierName());
-    			trackEvents = aysncService.makeCalltoDB(ids);
-        	}else {
-        		trackEvents.complete(null);
-        		}
-        	if(supplier.getSupplierName().contains("VELOCE")) {
-        		System.out.println(supplier.getSupplierName());
-        		veloceResponse = aysncService.makeCalltoVeloce(ids,supplier);
-        	}else {
-        		veloceResponse.complete(null);
-        		}
-        }
-
-		CompletableFuture.allOf(eTowerResponse, auPostResponse, trackEvents, pflResponse).join();
-
-		try {
-			aggreateTrackParcelResponse(eTowerResponse.get(), auPostResponse.get(), trackEvents.get(), pflResponse.get(),
-					trackPracelsResponse,veloceResponse.get());
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        }
-
-		return trackPracelsResponse;
-	
+		return tracker.trackParcels(trackingNos,identifier);
 	}
-
+	/*
+	 * @Override public List<TrackParcelResponse> trackParcels(List<String>
+	 * trackingNos,String identifier){ List<TrackParcelResponse>
+	 * trackPracelsResponse = new ArrayList<TrackParcelResponse>();
+	 * 
+	 * Map<String,List<String>> trackingMap =
+	 * dao.fetchtrackingIdentifier(trackingNos, identifier);
+	 * if(trackingMap.size()>0) { Map<SupplierEntity,List<String>>
+	 * trackingSupplierMap = new HashMap<SupplierEntity,List<String>>();
+	 * 
+	 * trackingMap.forEach((supplierId,trackingIds) -> {
+	 * if(Integer.parseInt(supplierId) == 0) { SupplierEntity supplier = new
+	 * SupplierEntity(); supplier.setSupplierName("D2Z");
+	 * trackingSupplierMap.put(supplier,trackingIds); } else
+	 * if(Integer.parseInt(supplierId)>0) { SupplierEntity supplier =
+	 * dao.fetchSupplierData(Integer.parseInt(supplierId));
+	 * trackingSupplierMap.put(supplier,trackingIds); } });
+	 * CompletableFuture<TrackingEventResponse> eTowerResponse = new
+	 * CompletableFuture<TrackingEventResponse>();
+	 * CompletableFuture<TrackingResponse> auPostResponse = new
+	 * CompletableFuture<TrackingResponse>(); CompletableFuture<List<TrackEvents>>
+	 * trackEvents = new CompletableFuture<List<TrackEvents>>();
+	 * CompletableFuture<List<PFLTrackingResponseDetails>> pflResponse = new
+	 * CompletableFuture<List<PFLTrackingResponseDetails>>();
+	 * CompletableFuture<VeloceTrackingResponse> veloceResponse = new
+	 * CompletableFuture<VeloceTrackingResponse>();
+	 * 
+	 * for (Map.Entry<SupplierEntity,List<String>> entry :
+	 * trackingSupplierMap.entrySet()) { SupplierEntity supplier = entry.getKey();
+	 * List<String> ids = entry.getValue();
+	 * if(supplier.getSupplierName().contains("PFL")) { pflResponse =
+	 * aysncService.makeCalltoPFL(ids,supplier); }else { pflResponse.complete(null);
+	 * } if(supplier.getSupplierName().contains("ETOWER")) { eTowerResponse =
+	 * aysncService.makeCalltoEtower(ids,supplier); }else {
+	 * eTowerResponse.complete(null); }
+	 * if(supplier.getSupplierName().contains("AUPOST")) { auPostResponse =
+	 * aysncService.makeCalltoAuPost(ids,supplier); }else {
+	 * auPostResponse.complete(null); }
+	 * if(supplier.getSupplierName().contains("D2Z")) {
+	 * System.out.println(supplier.getSupplierName()); trackEvents =
+	 * aysncService.makeCalltoDB(ids); }else { trackEvents.complete(null); }
+	 * if(supplier.getSupplierName().contains("VELOCE")) {
+	 * System.out.println(supplier.getSupplierName()); veloceResponse =
+	 * aysncService.makeCalltoVeloce(ids,supplier); }else {
+	 * veloceResponse.complete(null); } }
+	 * 
+	 * CompletableFuture.allOf(eTowerResponse, auPostResponse, trackEvents,
+	 * pflResponse).join();
+	 * 
+	 * try { aggreateTrackParcelResponse(eTowerResponse.get(), auPostResponse.get(),
+	 * trackEvents.get(), pflResponse.get(),
+	 * trackPracelsResponse,veloceResponse.get()); } catch (InterruptedException e)
+	 * { // TODO Auto-generated catch block e.printStackTrace(); } catch
+	 * (ExecutionException e) { // TODO Auto-generated catch block
+	 * e.printStackTrace(); } }
+	 * 
+	 * return trackPracelsResponse;
+	 * 
+	 * }
+	 */
 
 	private List<TrackParcelResponse> aggreateTrackParcelResponse(TrackingEventResponse eTowerResponse,
 			TrackingResponse auPostResponse, List<TrackEvents> trackEvents,

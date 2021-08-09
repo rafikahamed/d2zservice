@@ -136,7 +136,11 @@ public class EtowerSupplier {
 				obj.setArticleId(resp.getTrackingNo());
 				obj.setMlid(obj.getArticleId().substring(0, 5));
 				obj.setInjectionState("SYD");
-				obj.setCarrier("eParcel");
+				if(obj.getCarrier()==null || obj.getCarrier().isEmpty()) {
+					obj.setCarrier("eParcel");
+				}else {
+				obj.setCarrier(obj.getCarrier().concat("eParcel"));
+				}
 			}
 		});
 	}
@@ -220,7 +224,7 @@ public class EtowerSupplier {
 		incomingRequest.forEach(orderDetail -> {
 			com.d2z.d2zservice.model.etower.CreateShippingRequest request = new com.d2z.d2zservice.model.etower.CreateShippingRequest();
 			int uniqueNumber = SingletonCounter.getInstance().getEtowerCount();
-			request.setReferenceNo("SW11A" + uniqueNumber);
+			request.setReferenceNo("SW10A" + uniqueNumber);
 			systemRefNbrMap.put(request.getReferenceNo(), orderDetail.getReferenceNumber());
 			request.setRecipientCompany(orderDetail.getConsigneeCompany());
 			String recpName = orderDetail.getConsigneeName().length() > 34
@@ -275,5 +279,61 @@ public class EtowerSupplier {
 				baseURL + config.getSupplierTrackingUri(), articleIds,
 				constructHeader(config, baseURL+config.getSupplierTrackingUri(),HttpMethod.POST), TrackingEventResponse.class);
 		return responeEntity.getBody();
+	}
+	
+	private void logForecastResponse(CreateShippingResponse response) {
+		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
+
+		if (response != null) {
+			List<ResponseData> responseData = response.getData();
+			if (responseData == null && null != response.getErrors()) {
+				for (EtowerErrorResponse error : response.getErrors()) {
+					ETowerResponse errorResponse = new ETowerResponse();
+					errorResponse.setAPIName("Forecast");
+					errorResponse.setStatus(response.getStatus());
+					errorResponse.setErrorCode(error.getCode());
+					errorResponse.setErrorMessage(error.getMessage());
+					responseEntity.add(errorResponse);
+				}
+			}
+
+			for (ResponseData data : responseData) {
+				List<EtowerErrorResponse> errors = data.getErrors();
+				if (null == errors) {
+					ETowerResponse errorResponse = new ETowerResponse();
+					errorResponse.setAPIName("Forecast");
+					errorResponse.setStatus(data.getStatus());
+					errorResponse.setOrderId(data.getOrderId());
+					errorResponse.setReferenceNumber(data.getReferenceNo());
+					errorResponse.setTrackingNo(data.getTrackingNo());
+					errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
+					responseEntity.add(errorResponse);
+				} else {
+					for (EtowerErrorResponse error : errors) {
+						ETowerResponse errorResponse = new ETowerResponse();
+						errorResponse.setAPIName("Forecast");
+						errorResponse.setStatus(response.getStatus());
+						errorResponse.setStatus(data.getStatus());
+						errorResponse.setOrderId(data.getOrderId());
+						errorResponse.setReferenceNumber(data.getReferenceNo());
+						errorResponse.setTrackingNo(data.getTrackingNo());
+						errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
+						errorResponse.setErrorCode(error.getCode());
+						errorResponse.setErrorMessage(error.getMessage());
+						responseEntity.add(errorResponse);
+					}
+				}
+			}
+		}
+		d2zDao.logEtowerResponse(responseEntity);
+
+	}
+
+	public void allocateShipment(List<String> articleIds,SupplierEntity config) {
+		ResponseEntity<CreateShippingResponse> responeEntity = supplier.makeCall(HttpMethod.POST,
+				baseURL + config.getSupplierAllocateUri(), articleIds ,
+				constructHeader(config, baseURL+config.getSupplierAllocateUri(),HttpMethod.POST), CreateShippingResponse.class);
+		CreateShippingResponse etowerResponse = responeEntity.getBody();
+		logForecastResponse(etowerResponse);		
 	}
 }

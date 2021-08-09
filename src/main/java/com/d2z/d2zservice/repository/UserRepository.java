@@ -68,5 +68,8 @@ public interface UserRepository extends CrudRepository<User, Long>{
 			"   status='open' and Client_Broker_id is not null ) and role_id=2") 
 	@EntityGraph(attributePaths = "userService")
 	List<User> fetchEmailDetails();
+	
+	@Query("Select t.user_Id from User t where t.username = :userName and t.role_Id = 3")
+	Integer fetchUserIdbyUserNameAndRole(@Param("userName") String userName);
 
 }

@@ -22,6 +22,8 @@ import com.d2z.d2zservice.entity.SupplierEntity;
 import com.d2z.d2zservice.exception.FailureResponseException;
 import com.d2z.d2zservice.model.PFLCreateShippingResponse;
 import com.d2z.d2zservice.model.PFLResponseData;
+import com.d2z.d2zservice.model.PFLSubmitOrderRequest;
+import com.d2z.d2zservice.model.PFLSubmitOrderResponse;
 import com.d2z.d2zservice.model.PFLTrackEvent;
 import com.d2z.d2zservice.model.PFLTrackingResponse;
 import com.d2z.d2zservice.model.PFLTrackingResponseDetails;
@@ -117,11 +119,14 @@ public class PFLSupplier {
 					ETowerResponse errorResponse = new ETowerResponse();
 					errorResponse.setAPIName("PFL - Create order");
 					errorResponse.setReferenceNumber(systemRefNbrMap.get(refNbr));
-					errorResponse.setErrorMessage(errMsg);
+					errorResponse.setErrorMessage(errMsg.trim());
 					errorResponse.setStatus("Error");
 					responseEntity.add(errorResponse);
 					d2zDao.logEtowerResponse(responseEntity);
+					throw new FailureResponseException(errMsg.trim());
+					
 				}
+				
 			}
 			if(null!=pflResponse.getResult()) {
 			for(PFLResponseData pflData: pflResponse.getResult()) {
@@ -196,7 +201,7 @@ public class PFLSupplier {
 		
 		ResponseEntity<PFLTrackingResponse> responseEntity =  supplier.makeCall(HttpMethod.POST,
 				baseURL + config.getSupplierTrackingUri(), D2ZCommonUtil.convertToJsonString(pflTrackEvent),
-				constructHeader(config, config.getSupplierLabelUri()), PFLTrackingResponse.class);
+				constructHeader(config, config.getSupplierTrackingUri()), PFLTrackingResponse.class);
 		
 		PFLTrackingResponse pflTrackResp = responseEntity.getBody();
 		if(pflTrackResp.getResult() != null) {
@@ -215,5 +220,57 @@ public class PFLSupplier {
 		}
 		}		
 		return pflTrackingDetails;
+	}
+	
+	public void allocateShipment(List<String> orderIds, SupplierEntity config) throws FailureResponseException {
+		
+		ResponseEntity<PFLSubmitOrderResponse> responeEntity = supplier.makeCall(HttpMethod.POST,
+				baseURL + config.getSupplierAllocateUri(), constructSubmitOrderRequest(orderIds),
+				constructHeader(config, config.getSupplierAllocateUri()), PFLSubmitOrderResponse.class);
+		PFLSubmitOrderResponse pflResponse = responeEntity.getBody();
+		logPflSubmitResponse(pflResponse,orderIds);
+		if(pflResponse==null) {
+			throw new FailureResponseException("Error in file – please contact customer support");
+		}	
+	}
+
+	private String constructSubmitOrderRequest(List<String> orderIds) {
+		PFLSubmitOrderRequest pflSubmitOrder = new PFLSubmitOrderRequest();
+		pflSubmitOrder.setIds(orderIds);
+		return D2ZCommonUtil.convertToJsonString(pflSubmitOrder);
+	}
+	
+	private void logPflSubmitResponse(PFLSubmitOrderResponse pflSubmitResponse, List<String> orderIds) throws FailureResponseException{
+		List<ETowerResponse> responseEntity = new ArrayList<ETowerResponse>();
+			if(pflSubmitResponse != null) {
+				if(pflSubmitResponse.getError() != null) {
+					if(pflSubmitResponse.getError_ids()!=null) {
+				
+					for(String orderIdVal:pflSubmitResponse.getError_ids()) {
+						ETowerResponse errorResponse = new ETowerResponse();
+						errorResponse.setAPIName("PFL - Submit order");
+						errorResponse.setOrderId(orderIdVal);
+						errorResponse.setErrorCode(pflSubmitResponse.getCode());
+						errorResponse.setErrorMessage(pflSubmitResponse.getError());
+						errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
+						errorResponse.setStatus("Error");
+						responseEntity.add(errorResponse);
+					}
+					
+					d2zDao.logEtowerResponse(responseEntity);
+					throw new FailureResponseException("Error in file – please contact customer support");
+					}
+				}else {
+					for(String successOrder:orderIds) {
+						ETowerResponse errorResponse = new ETowerResponse();
+						errorResponse.setAPIName("PFL - Submit order");
+						errorResponse.setOrderId(successOrder);
+						errorResponse.setTimestamp(Timestamp.valueOf(D2ZCommonUtil.getAETCurrentTimestamp()));
+						errorResponse.setStatus("Success");
+						responseEntity.add(errorResponse);
+					}
+					d2zDao.logEtowerResponse(responseEntity);
+				}
+			}
 	}
 }

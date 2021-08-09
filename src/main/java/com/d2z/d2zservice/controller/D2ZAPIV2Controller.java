@@ -94,6 +94,7 @@ public ResponseEntity<Object> createConsignments(@Valid @RequestBody CreateConsi
     			err.setValue(invalidData.toString());
     			response.setErrors(err);
     		}
+    		new Thread(()->{
     		if(null!=autoShipRefNbrs && !autoShipRefNbrs.isEmpty()) {
     			System.out.println("Auto-Shipment Allocation");
     			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -109,7 +110,7 @@ public ResponseEntity<Object> createConsignments(@Valid @RequestBody CreateConsi
         	d2zService.makeVeloceCall(orderDetail.getConsignmentData());
     	d2zApiService.makeCallToEtowerBasedonSupplierUI(incomingRefNbr);
 		d2zService.sendDataToTrackingDB(incomingRefNbr);
-
+    		}).start();
     	}else {
     		response.setStatus("Failure");
     		status = HttpStatus.BAD_REQUEST;

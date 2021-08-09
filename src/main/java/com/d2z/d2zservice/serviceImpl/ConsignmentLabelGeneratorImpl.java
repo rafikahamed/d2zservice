@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import com.d2z.d2zservice.dao.ID2ZDao;
 import com.d2z.d2zservice.entity.SenderdataMaster;
 import com.d2z.d2zservice.entity.SupplierEntity;
+import com.d2z.d2zservice.mapper.SenderDataMapper;
 import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.service.ConsignmentLabelGenerator;
 import com.d2z.d2zservice.supplier.EtowerSupplier;
@@ -71,8 +72,8 @@ public class ConsignmentLabelGeneratorImpl implements ConsignmentLabelGenerator{
 		
 		labelData.forEach(consignment -> {
 			
-		SenderData trackingLabel =  new SenderData();//SenderDataMapper.INSTANCE.convertSenderdataMasterToSenderData(consignment);
-			trackingLabel.setReferenceNumber(consignment.getReference_number());
+		SenderData trackingLabel =  SenderDataMapper.INSTANCE.convertSenderdataMasterToSenderData(consignment);
+			/*trackingLabel.setReferenceNumber(consignment.getReference_number());
 			trackingLabel.setConsigneeName(consignment.getConsignee_name());
 			trackingLabel.setConsigneeAddr1(consignment.getConsignee_addr1());
 			trackingLabel.setConsigneeSuburb(consignment.getConsignee_Suburb());
@@ -100,15 +101,8 @@ public class ConsignmentLabelGeneratorImpl implements ConsignmentLabelGenerator{
 			trackingLabel.setProductDescription(consignment.getProduct_Description());
 			trackingLabel.setServiceType(consignment.getServicetype());
 			trackingLabel.setD2zRate(consignment.getD2zRate());
-			trackingLabel.setBrokerRate(consignment.getBrokerRate());
+			trackingLabel.setBrokerRate(consignment.getBrokerRate());*/
 	
-	    
-	    if("FDM".equalsIgnoreCase(labelName)) {
-		String state = consignment.getConsignee_State().trim().toUpperCase();
-		String suburb = consignment.getConsignee_Suburb().trim().toUpperCase();
-		String postcode = consignment.getConsignee_Postcode().trim();
-		trackingLabel.setLabelSenderName(dao.fetchFDMRoute(state,suburb,postcode));
-		}
 	    
 	    if("FWLabel".equalsIgnoreCase(labelName)) {
 	    	trackingLabel.setSku(D2ZSingleton.getInstance().getFwPostCodeZoneNoMap().get(trackingLabel.getConsigneePostcode()));

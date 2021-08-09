@@ -160,6 +160,7 @@ public class Scheduler {
 			d2zService.monitorAutoShipment(monitoringMap);	
 			d2zService.veloceMonitoring(monitoringMap);
 			d2zService.pflMonitoring(monitoringMap);
+			
 			d2zService.generateMonitoringReport(monitoringMap);
 	}
 

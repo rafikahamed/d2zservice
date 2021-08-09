@@ -7,10 +7,10 @@ import java.util.Map;
 
 public enum Facility {
 
-	ADL("33G7N"),
+	//ADL("33G7N"),
     SYD("33G7K","33Y9G"),
     BNE2("33G7M"),
-    MEL("33G7L"),
+    MEL("33G7L","33G7N"),
     PER("33G7P"),
 	MEL2("33QU7");
 	

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.poi.ss.formula.functions.T;
@@ -44,13 +46,15 @@ public class D2ZValidator {
 	@Autowired
     private ID2ZSuperUserDao d2zSuperUserDao;
 
-	public Integer validateUser(String userName) {
-		Integer userId = d2zDao.fetchUserIdbyUserName(userName);
-		if (userId<0) {
-			throw new InvalidUserException("User does not exist", userName);
-		}		
-		return userId;
-	}
+	public Integer validateUser(String userName) {   Integer userId = 0 ;
+	   try {
+		      userId = d2zDao.fetchUserIdbyUserNameAndRole(userName);
+		   }
+		   catch (NullPointerException exception){
+		      throw new InvalidUserException("User does not exist", userName);
+		   }
+		   return userId;
+}
 	
 	public void isPostCodeValid(List<SenderDataApi> senderData) {
 		List<String> postCodeZoneList = D2ZSingleton.getInstance().getPostCodeZoneList();
@@ -848,7 +852,7 @@ public class D2ZValidator {
 	public static List<ConsignmentDTO> validatePostcode(List<ConsignmentDTO> consignments, Map<String, List<ErrorDetails>> errorMap) {
 		consignments.forEach(obj -> {
 			 ValidationUtils.populateErrorDetails(obj.getReferenceNumber(),obj.getConsigneeState().trim().toUpperCase()+"-"+obj.getConsigneeSuburb().trim().toUpperCase()+"-"+obj.getConsigneePostcode().trim(),
-					 "Suburb is not in carrier serviced areas",errorMap) ;
+					 "Invalid suburb/postcode combination",errorMap) ;
 			 });
 		return ValidationUtils.removeInvalidconsignments(consignments, errorMap);
 	}
@@ -874,7 +878,12 @@ public class D2ZValidator {
                 .collect(Collectors.toList());
 	}
 
-
+	public static boolean isPFLAddressValid(String address) {
+		String regex = "\\Bpobox|pobox\\B|\\Bpocase|pocase\\B|\\Bbox|box\\B|\\BBx|Bx\\B|\\Bparcel|parcel\\B";
+		Pattern p = Pattern.compile(regex,Pattern.CASE_INSENSITIVE); 
+		Matcher m = p.matcher(address); 
+		return m.find();
+	}
 		
 
 

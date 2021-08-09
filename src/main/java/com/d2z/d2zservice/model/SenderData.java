@@ -101,7 +101,16 @@ public class SenderData {
 	private String d2zRate;
 	private String brokerRate;
 	private String labelName;
+	private String zoneRoute;
 	
+	public String getZoneRoute() {
+		return zoneRoute;
+	}
+
+	public void setZoneRoute(String zoneRoute) {
+		this.zoneRoute = zoneRoute;
+	}
+
 	public String getLabelName() {
 		return labelName;
 	}

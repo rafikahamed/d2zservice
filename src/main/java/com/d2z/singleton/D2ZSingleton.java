@@ -95,9 +95,9 @@ public class D2ZSingleton {
 		getPostCodeZone();
 		getRates_PostCodeWeight();
 		getFWPostCodeZone();
-		getSTPostCodeZone();
+		//getSTPostCodeZone();
 		getNZPostCodeZone();
-		getPFLPostCodeZone();
+		//getPFLPostCodeZone();
 		getMasterPostcode();
 		}
 	
@@ -236,14 +236,15 @@ public class D2ZSingleton {
 
 	}
 
-	private void getSTPostCodeZone(){
-		List<StarTrackPostcode> postCodeSTZoneDaoObj = d2zDao.fetchSTPostCodeZone();
-		STPostCodeZoneList = postCodeSTZoneDaoObj.stream().map(daoObj -> {
-			return daoObj.getStPostCodeId().getState().concat(daoObj.getStPostCodeId().getSuburb().concat(daoObj.getStPostCodeId().getPostcode()));
-		}).collect(Collectors.toList());
-		System.out.println(STPostCodeZoneList.size());
-	}
-	
+	/*
+	 * private void getSTPostCodeZone(){ List<StarTrackPostcode>
+	 * postCodeSTZoneDaoObj = d2zDao.fetchSTPostCodeZone(); STPostCodeZoneList =
+	 * postCodeSTZoneDaoObj.stream().map(daoObj -> { return
+	 * daoObj.getStPostCodeId().getState().concat(daoObj.getStPostCodeId().getSuburb
+	 * ().concat(daoObj.getStPostCodeId().getPostcode()));
+	 * }).collect(Collectors.toList());
+	 * System.out.println(STPostCodeZoneList.size()); }
+	 */	
 	public static Map<String, String> getPostCodeStateMap(){
 		return postCodeStateMap;
 	}

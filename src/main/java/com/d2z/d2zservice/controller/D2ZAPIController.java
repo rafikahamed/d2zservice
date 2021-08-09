@@ -38,6 +38,7 @@ import com.d2z.d2zservice.model.TrackParcelResponse;
 import com.d2z.d2zservice.model.UserMessage;
 import com.d2z.d2zservice.repository.CSTicketsRepository;
 import com.d2z.d2zservice.repository.UserRepository;
+import com.d2z.d2zservice.service.IConsignmentService;
 import com.d2z.d2zservice.service.ID2ZService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,15 +59,19 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 	@Autowired
 	private UserRepository userRepository;
 	
+	@Autowired
+	private  IConsignmentService service;
+	
 	@RequestMapping( method = RequestMethod.PUT, path = "/trackParcels")
     public List<TrackParcelResponse> trackParcels(@RequestBody List<String> articleIds) {
 		List<TrackParcelResponse> trackParcelResponse = new ArrayList<TrackParcelResponse>();
-		try{
+		/*try{
 			trackParcelResponse = d2zService.trackParcels(articleIds);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
-		}
+		}*/
+		trackParcelResponse = service.trackParcels(articleIds, "articleId");
 		return trackParcelResponse;
     }
 	@RequestMapping( method = RequestMethod.POST, path = "/trackEvents")

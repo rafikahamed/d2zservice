@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
@@ -321,7 +322,7 @@ public class D2ZDaoImpl implements ID2ZDao {
 				senderDataObj.setArticleId(pflLabel.getTrackingNo());
 				senderDataObj.setMlid(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
-				if ((senderDataValue.getServiceType().startsWith("MCS"))) {
+				if ((senderDataValue.getServiceType().startsWith("MCS")) || senderDataValue.getServiceType().equalsIgnoreCase("FW") ) {
 					senderDataObj.setCarrier("Fastway");
 				}
 				if (!"1PS4".equalsIgnoreCase(senderDataValue.getServiceType())) {
@@ -552,7 +553,7 @@ public class D2ZDaoImpl implements ID2ZDao {
 				senderDataObj.setArticleId(pflLabel.getTrackingNo());
 				senderDataObj.setMlid(pflLabel.getArticleId());
 				senderDataObj.setDatamatrix(pflLabel.getMatrix());
-				if (senderDataValue.getServiceType().startsWith("MCS")) {
+				if (senderDataValue.getServiceType().startsWith("MCS") || senderDataValue.getServiceType().equalsIgnoreCase("FW") ) {
 					senderDataObj.setCarrier("Fastway");
 				} else if (!"1PS4".equalsIgnoreCase(senderDataValue.getServiceType())) {
 					senderDataObj.setCarrier("FastwayM");
@@ -1732,8 +1733,10 @@ public class D2ZDaoImpl implements ID2ZDao {
 
 	@Override
 	public List<String> missingShipmentAllocation() {
-		// TODO Auto-generated method stub
-		return senderDataRepository.missingShipmentAllocation();
+		List<String> apiList = senderDataRepository.missingShipmentAllocation();
+		   List<String> uiList = senderDataRepository.missingShipmentAllocation();
+		   apiList.addAll(uiList);
+		   return apiList;
 	}
 
 	@Override
@@ -1757,6 +1760,12 @@ public class D2ZDaoImpl implements ID2ZDao {
 		// TODO Auto-generated method stub
 		return senderDataRepository.missingVeloceArticleIds();
 	}
+	
+	@Override
+	  public int fetchUserIdbyUserNameAndRole(String userName) {
+	   return userRepository.fetchUserIdbyUserNameAndRole(userName);
+	}
+
 
 	@Override
 	public List<SenderdataMaster> createConsignment(List<SenderdataMaster> senderDataMaster) {
@@ -1844,7 +1853,30 @@ public class D2ZDaoImpl implements ID2ZDao {
 		}
 		return result;
 	}
-	
+	@Override
+	public List<Object[]> fetchAirwayBill(List<String> ids,String identifier){
+		List<Object[]> result = new ArrayList<Object[]>();
+		if("referenceNumber".equalsIgnoreCase(identifier)) {
+			result = senderDataRepository.fetchAirwayBillByRefNbr(ids);
+		}else {
+			result = senderDataRepository.fetchAirwayBillByArticleIds(ids);
+		}
+		return result;
+	}
+	@Override
+	public List<SenderdataMaster> fetchConsignments(List<String> ids,String identifier){
+		List<SenderdataMaster> result = new ArrayList<SenderdataMaster>();
+		if("referenceNumber".equalsIgnoreCase(identifier)) {
+			result = senderDataRepository.fetchByRefNbr(ids);
+		}else {
+			result = senderDataRepository.fetchByArticleIds(ids);
+		}
+		return result;
+	}
+	@Override
+	public List<SenderdataMaster> fetchByRefNbr(List<String> ids){
+		return senderDataRepository.fetchByRefNbr(ids);
+	}
 	@Override
 	public Map<String, List<String>> fetchtrackingIdentifier(List<String> refBarNum,String identifier) {
 		Map<String,List<String>> map = new HashMap<String,List<String>>();
@@ -1866,6 +1898,26 @@ public class D2ZDaoImpl implements ID2ZDao {
 			}
 		});
 		return map;
+	}
+	
+	@Override
+	public Map<String,List<SenderdataMaster>> fetchallocationIdentifier(List<SenderdataMaster> data) {
+		Map<String,List<SenderdataMaster>> identifierMap = new HashMap<String,List<SenderdataMaster>>();
+
+		data.forEach(consignment ->{
+			 String supplierAuthId=  labelLogicRepository.fetchAllocationIdentifier(consignment.getServicetype(),consignment.getCarrier());
+			
+				if(identifierMap.containsKey(supplierAuthId)) {
+					List<SenderdataMaster> ids = identifierMap.get(supplierAuthId);
+					ids.add(consignment);
+				}else {
+					List<SenderdataMaster> ids = new ArrayList<SenderdataMaster>();
+					ids.add(consignment);
+					identifierMap.put(supplierAuthId, ids);
+				}
+			    
+			});
+		return identifierMap;
 	}
 	
 	private String fetchTrackingIdentifier(String serviceType, String carrier) {
@@ -1904,6 +1956,12 @@ public class D2ZDaoImpl implements ID2ZDao {
 	@Override
 	public Veloce findVeloceValues(String servicetype) {
 		return veloceRepository.find(servicetype);
+	}
+
+	@Override
+	public int updateAirwayBill(List<String> validData, String shipmentNumber) {
+		// TODO Auto-generated method stub
+		return senderDataRepository.updateAirwayBill(validData, shipmentNumber,D2ZCommonUtil.getAETCurrentTimestamp());
 	}
 
 

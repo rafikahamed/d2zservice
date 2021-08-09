@@ -43,6 +43,8 @@ import com.d2z.d2zservice.model.TrackParcelResponse;
 import com.d2z.d2zservice.model.TrackingDetails;
 import com.d2z.d2zservice.model.UserDetails;
 import com.d2z.d2zservice.model.UserMessage;
+import com.d2z.d2zservice.service.ConsignmentLabelGenerator;
+import com.d2z.d2zservice.service.IConsignmentService;
 import com.d2z.d2zservice.service.ID2ZService;
 
 @RestController
@@ -53,7 +55,13 @@ public class D2zController {
 	Logger logger = LoggerFactory.getLogger(D2zController.class);
 
 	@Autowired
+	ConsignmentLabelGenerator labelGenerator;
+	
+	@Autowired
 	private ID2ZService d2zService;
+	
+	@Autowired
+	private  IConsignmentService service;
 
 	@RequestMapping(method = RequestMethod.GET, path = "/login")
 	public UserDetails login(@RequestParam("userName") String userName, @RequestParam("passWord") String passWord) {
@@ -64,12 +72,13 @@ public class D2zController {
 	@RequestMapping( method = RequestMethod.PUT, path = "/trackParcels")
     public List<TrackParcelResponse> trackParcels(@RequestBody List<String> articleIds) {
 		List<TrackParcelResponse> trackParcelResponse = new ArrayList<TrackParcelResponse>();
-		try{
+		/*try{
 			trackParcelResponse = d2zService.trackParcels(articleIds);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
-		}
+		}*/
+		trackParcelResponse = service.trackParcels(articleIds, "articleId");
 		return trackParcelResponse;
     }
 	
@@ -214,7 +223,7 @@ public class D2zController {
 	public ResponseEntity<byte[]> trackingLabel(@RequestBody String refBarNum, @PathVariable String identifier) throws PCAlabelException{
 		System.out.println("Incoming refBarNum :: " + refBarNum);
 		List<String> refBarNumArray = Stream.of(refBarNum.split(",")).collect(Collectors.toList());
-		byte[] bytes = d2zService.trackingLabel(refBarNumArray,identifier);
+		byte[] bytes = labelGenerator.generateLabel(refBarNumArray, identifier);
 		return ResponseEntity.ok()
 				// Specify content type as PDF
 				.header("Content-Type", "application/pdf; charset=UTF-8")

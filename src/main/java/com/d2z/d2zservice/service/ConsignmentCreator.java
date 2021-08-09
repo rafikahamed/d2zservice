@@ -15,11 +15,10 @@ public interface ConsignmentCreator {
 	
 	public Map<String,ConsignmentConfig> fetchConfigDetails(Map<String,List<SenderDataApi>> request,int userId,String fileSeqId,Map<String, List<ErrorDetails>> errorMap);
 		
-	public void createConsignment(Map<String,List<SenderDataApi>> request,int userId,Map<String, List<ErrorDetails>> errorMap);
+	public List<SenderdataMaster> createConsignment(Map<String,List<SenderDataApi>> request,int userId,Map<String, List<ErrorDetails>> errorMap, List<String> autoShipRefNbrs);
 	
 	public List<SenderdataMaster> saveConsignment(List<ConsignmentDTO> request);
 	
-	public ResponseEntity<Object> sendResponse(List<SenderDataApi> request,Map<String, List<ErrorDetails>> errorMap,int intialRequestSize);
+	public ResponseEntity<Object> sendResponse(List<SenderdataMaster> savedData,Map<String, List<ErrorDetails>> errorMap,int intialRequestSize,List<String> autoShipRefNbrs, String userName);
 	
-	public void allocateShipment(List<String> request);
 }

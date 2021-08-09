@@ -5,9 +5,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.d2z.d2zservice.entity.SenderdataMaster;
@@ -26,7 +28,9 @@ public class Tracker {
 	SupplierInterface supplier;
 	
 	public void saveData(List<SenderdataMaster> savedData) {
+		if(savedData.size()>0) {
 		supplier.makeCall(HttpMethod.POST, url+"/track", constructRequest(savedData), constructHeader(), String.class);
+		}
 	}
 
 	private HttpHeaders constructHeader() {
@@ -58,6 +62,11 @@ public class Tracker {
 
 	public void createEvents(List<TrackParcelResponse> request) {
 		supplier.makeCall(HttpMethod.POST, url+"/trackEvents",D2ZCommonUtil.convertToJsonString(request), constructHeader(), String.class);
+	}
+
+	public List<TrackParcelResponse> trackParcels(List<String> trackingNos, String identifier) {
+		ResponseEntity<List<TrackParcelResponse>> responseEntity = supplier.makeCall(HttpMethod.POST, url+"/trackParcels/"+identifier,trackingNos, constructHeader(), new ParameterizedTypeReference<List<TrackParcelResponse>>() {});
+		return responseEntity.getBody();
 	}
 
 }

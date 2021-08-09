@@ -41,6 +41,72 @@ public class InvoicingZones implements Serializable{
 	
 	@Column(name="FDMVC1")
 	private String fdmVc1;
+	
+	@Column(name="PostZone")
+	private String postZone;
+	
+	@Column(name="MCSD2Z")
+	private String mcsD2Z;
+	
+	@Column(name="VCD2Z")
+	private String vcD2Z;
+	
+	@Column(name="MCS7EQ")
+	private String mcs7EQ;
+	
+	@Column(name="FDMRoute")
+	private String fdmRoute;
+	
+	@Column(name="VCSortCode")
+	private String vcSortCode;
+
+	public String getPostZone() {
+		return postZone;
+	}
+
+	public void setPostZone(String postZone) {
+		this.postZone = postZone;
+	}
+
+	public String getMcsD2Z() {
+		return mcsD2Z;
+	}
+
+	public void setMcsD2Z(String mcsD2Z) {
+		this.mcsD2Z = mcsD2Z;
+	}
+
+	public String getVcD2Z() {
+		return vcD2Z;
+	}
+
+	public void setVcD2Z(String vcD2Z) {
+		this.vcD2Z = vcD2Z;
+	}
+
+	public String getMcs7EQ() {
+		return mcs7EQ;
+	}
+
+	public void setMcs7EQ(String mcs7eq) {
+		mcs7EQ = mcs7eq;
+	}
+
+	public String getFdmRoute() {
+		return fdmRoute;
+	}
+
+	public void setFdmRoute(String fdmRoute) {
+		this.fdmRoute = fdmRoute;
+	}
+
+	public String getVcSortCode() {
+		return vcSortCode;
+	}
+
+	public void setVcSortCode(String vcSortCode) {
+		this.vcSortCode = vcSortCode;
+	}
 
 	public PostCodeId getPostcodeId() {
 		return postcodeId;
