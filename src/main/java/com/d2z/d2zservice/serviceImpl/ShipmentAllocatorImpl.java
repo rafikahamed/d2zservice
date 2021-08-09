@@ -25,6 +25,7 @@ import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.service.ConsignmentCreator;
 import com.d2z.d2zservice.service.ShipmentAllocator;
 import com.d2z.d2zservice.supplier.EtowerSupplier;
+import com.d2z.d2zservice.supplier.FDMSupplier;
 import com.d2z.d2zservice.supplier.PFLSupplier;
 import com.d2z.d2zservice.supplier.Tracker;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
@@ -41,6 +42,10 @@ public class ShipmentAllocatorImpl implements ShipmentAllocator {
 	
 	@Autowired
 	EtowerSupplier etowerSupplier;
+	
+	@Autowired
+	FDMSupplier fdmSupplier;
+	
 	
 	@Autowired
 	Tracker tracker;
@@ -220,8 +225,7 @@ public class ShipmentAllocatorImpl implements ShipmentAllocator {
 	}
 
 	private void makeCallToFDM(List<SenderdataMaster> consignments, SupplierEntity supplier) {
-		// TODO Auto-generated method stub
-		
+		fdmSupplier.allocateShipment(consignments, supplier);
 	}
 
 	private Map<List<SupplierEntity>,List<SenderdataMaster>> fetchSupplierConsignmentMap(Map<String,List<SenderdataMaster>> identifierMap) {

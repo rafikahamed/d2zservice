@@ -8,6 +8,7 @@ import com.d2z.d2zservice.entity.APIRates;
 import com.d2z.d2zservice.entity.AUPostResponse;
 import com.d2z.d2zservice.entity.CSTickets;
 import com.d2z.d2zservice.entity.ETowerResponse;
+import com.d2z.d2zservice.entity.FFResponse;
 import com.d2z.d2zservice.entity.FastwayPostcode;
 import com.d2z.d2zservice.entity.MasterPostCodeZones;
 import com.d2z.d2zservice.entity.NZPostcodes;
@@ -308,5 +309,7 @@ public interface ID2ZDao {
 	public int updateAirwayBill(List<String> validData, String shipmentNumber);
 
 	List<SenderdataMaster> fetchByRefNbr(List<String> ids);
+
+	public void saveFFResponse(List<FFResponse> fFResponseList);
 
 }
