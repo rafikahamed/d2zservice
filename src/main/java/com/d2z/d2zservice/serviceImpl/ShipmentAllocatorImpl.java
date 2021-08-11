@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.d2z.d2zservice.supplier.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,10 +25,6 @@ import com.d2z.d2zservice.mapper.ConsignmentDTOMapper;
 import com.d2z.d2zservice.model.ResponseMessage;
 import com.d2z.d2zservice.service.ConsignmentCreator;
 import com.d2z.d2zservice.service.ShipmentAllocator;
-import com.d2z.d2zservice.supplier.EtowerSupplier;
-import com.d2z.d2zservice.supplier.FDMSupplier;
-import com.d2z.d2zservice.supplier.PFLSupplier;
-import com.d2z.d2zservice.supplier.Tracker;
 import com.d2z.d2zservice.util.D2ZCommonUtil;
 
 
@@ -45,6 +42,9 @@ public class ShipmentAllocatorImpl implements ShipmentAllocator {
 	
 	@Autowired
 	FDMSupplier fdmSupplier;
+
+	@Autowired
+	TransVirtualSupplier transVirtualSupplier;
 	
 	
 	@Autowired
@@ -214,9 +214,9 @@ public class ShipmentAllocatorImpl implements ShipmentAllocator {
 		else if(supplier.getSupplierName().contains("ETOWER")) {
 			makeCalltoEtower(consignments, supplier);
 		}
-		/*else if(supplier.getSupplierName().contains("TRANSVIRTUAL")){
+		else if(supplier.getSupplierName().contains("TRANSVIRTUAL")){
 			makeCallToTransvirtual(consignments,supplier);
-		}else if(supplier.getSupplierName().contains("VELOCE")) {
+		}/*else if(supplier.getSupplierName().contains("VELOCE")) {
 			saveVeloceConsignments(consignments, supplier);
 		}*/else if(supplier.getSupplierName().contains("FDM")) {
 			makeCallToFDM(consignments, supplier);
@@ -226,6 +226,10 @@ public class ShipmentAllocatorImpl implements ShipmentAllocator {
 
 	private void makeCallToFDM(List<SenderdataMaster> consignments, SupplierEntity supplier) {
 		fdmSupplier.allocateShipment(consignments, supplier);
+	}
+
+	private void makeCallToTransvirtual(List<SenderdataMaster> consignments, SupplierEntity supplier) {
+		transVirtualSupplier.allocateShipment(consignments, supplier);
 	}
 
 	private Map<List<SupplierEntity>,List<SenderdataMaster>> fetchSupplierConsignmentMap(Map<String,List<SenderdataMaster>> identifierMap) {

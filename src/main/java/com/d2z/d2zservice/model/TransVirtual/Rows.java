@@ -7,13 +7,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Rows {
 	
-	private int Qty = 1;
-	private String Description ="Carton";
-	private String ItemContentsDescription="Carton";
-	private int ItemRowChargeQty=1;
-	private List<Items> Items;
-
 	@JsonProperty("Qty")
+	public int Qty;
+	@JsonProperty("Description")
+	public String Description;
+	@JsonProperty("ItemContentsDescription")
+	public String ItemContentsDescription;
+	@JsonProperty("Weight")
+	public String Weight;
+	@JsonProperty("Width")
+	public String Width;
+
 	public int getQty() {
 		return Qty;
 	}
@@ -22,7 +26,6 @@ public class Rows {
 		Qty = qty;
 	}
 
-	@JsonProperty("Description")
 	public String getDescription() {
 		return Description;
 	}
@@ -30,7 +33,7 @@ public class Rows {
 	public void setDescription(String description) {
 		Description = description;
 	}
-	@JsonProperty("ItemContentsDescription")
+
 	public String getItemContentsDescription() {
 		return ItemContentsDescription;
 	}
@@ -38,25 +41,64 @@ public class Rows {
 	public void setItemContentsDescription(String itemContentsDescription) {
 		ItemContentsDescription = itemContentsDescription;
 	}
-	@JsonProperty("ItemRowChargeQty")
-	public int getItemRowChargeQty() {
-		return ItemRowChargeQty;
+
+	public String getWeight() {
+		return Weight;
 	}
 
-	public void setItemRowChargeQty(int itemRowChargeQty) {
-		ItemRowChargeQty = itemRowChargeQty;
+	public void setWeight(String weight) {
+		Weight = weight;
 	}
-	@JsonProperty("Items")
-	public List<Items> getItems() {
-		if(Items == null) {
-			return new ArrayList<Items>();
-		}
+
+	public String getWidth() {
+		return Width;
+	}
+
+	public void setWidth(String width) {
+		Width = width;
+	}
+
+	public String getLength() {
+		return Length;
+	}
+
+	public void setLength(String length) {
+		Length = length;
+	}
+
+	public String getHeight() {
+		return Height;
+	}
+
+	public void setHeight(String height) {
+		Height = height;
+	}
+
+	public String getReference() {
+		return Reference;
+	}
+
+	public void setReference(String reference) {
+		Reference = reference;
+	}
+
+	public List<com.d2z.d2zservice.model.TransVirtual.Items> getItems() {
 		return Items;
 	}
 
-	public void setItems(List<Items> items) {
+	public void setItems(List<com.d2z.d2zservice.model.TransVirtual.Items> items) {
 		Items = items;
 	}
+
+	@JsonProperty("Length")
+	public String Length;
+	@JsonProperty("Height")
+	public String Height;
+	@JsonProperty("Reference")
+	public String Reference;
+	@JsonProperty("Items")
+	public List<Items> Items;
+
 	
 	
 	
