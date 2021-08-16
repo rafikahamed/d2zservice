@@ -5,13 +5,12 @@ import com.d2z.d2zservice.model.SenderData;
 import com.d2z.d2zservice.model.TransVirtual.Items;
 import com.d2z.d2zservice.model.TransVirtual.Rows;
 import com.d2z.d2zservice.model.TransVirtual.TransVirtualRequest;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT,componentModel = "spring")
+
+
 public interface TransVirtualRequestMapper {
 
     TransVirtualRequestMapper INSTANCE = Mappers.getMapper(TransVirtualRequestMapper.class);
@@ -47,10 +46,10 @@ public interface TransVirtualRequestMapper {
             @Mapping(target="Qty", source = "shippedQuantity"),
             @Mapping(target="Description", source = "product_Description"),
             @Mapping(target="ItemContentsDescription", source = "product_Description"),
-            @Mapping(target="Weight", source = "weight"),
-            @Mapping(target="Width", source = "dimensions_Width"),
-            @Mapping(target="Length", source = "dimensions_Length"),
-            @Mapping(target="Height", source = "dimensions_Height"),
+            @Mapping(target="Weight", source = "weight",defaultValue = "1.0"),
+            @Mapping(target="Width", source = "dimensions_Width", defaultValue = "1.0"),
+            @Mapping(target="Length", source = "dimensions_Length",defaultValue = "1.0"),
+            @Mapping(target="Height", source = "dimensions_Height",defaultValue = "1.0"),
             @Mapping(target="Reference", source = "reference_number")
     })
     Rows convertSenderdataMasterToRows(SenderdataMaster senderdataMaster);

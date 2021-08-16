@@ -9,12 +9,4 @@ import lombok.Setter;
 public class Items {
 	@JsonProperty("Barcode")
 	public String Barcode;
-
-	public String getBarcode() {
-		return Barcode;
-	}
-
-	public void setBarcode(String barcode) {
-		Barcode = barcode;
-	}
 }
