@@ -46,6 +46,8 @@ public class TransVirtualRequest {
 
 	@JsonProperty("ReceiverAddress")
 	private String ReceiverAddress;
+	@JsonProperty("ReceiverAddress2")
+	private String ReceiverAddress2;
 	@JsonProperty("ReceiverSuburb")
 	private String ReceiverSuburb;
 	@JsonProperty("ReceiverPostcode")
