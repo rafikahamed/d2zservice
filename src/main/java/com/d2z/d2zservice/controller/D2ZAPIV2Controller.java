@@ -1,15 +1,12 @@
 package com.d2z.d2zservice.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.d2z.d2zservice.service.ShipmentAllocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +41,9 @@ private  ID2ZAPIService d2zApiService;
 
 @Autowired
 private  ID2ZService d2zService;
+
+@Autowired
+private ShipmentAllocator allocator;
 
 @RequestMapping(method = RequestMethod.POST, path = "/consignments-create")
 public ResponseEntity<Object> createConsignments(@Valid @RequestBody CreateConsignmentRequest orderDetail,Errors errors) throws FailureResponseException {
@@ -100,7 +100,9 @@ public ResponseEntity<Object> createConsignments(@Valid @RequestBody CreateConsi
     			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
     			String shipmentNumber = orderDetail.getUserName()+simpleDateFormat.format(new Date());
     			try {
-					d2zService.allocateShipment(String.join(",", autoShipRefNbrs), shipmentNumber);
+				//	d2zService.allocateShipment(String.join(",", autoShipRefNbrs), shipmentNumber);
+			    allocator.allocateShipment(autoShipRefNbrs,shipmentNumber,"referenceNumber");
+
 				} catch (ReferenceNumberNotUniqueException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

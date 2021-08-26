@@ -1,9 +1,11 @@
 package com.d2z.d2zservice.controller;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.Valid;
 
+import com.d2z.d2zservice.service.ShipmentAllocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,8 @@ public class D2zBrokerController {
 	@Autowired
 	private ID2ZService d2zService;
 
+	@Autowired
+    private ShipmentAllocator allocator;
 	@RequestMapping(method = RequestMethod.GET, path = "/company-details")
 	public List<DropDownModel> companyDetails(@RequestParam("brokerId") String brokerId) {
 		return brokerD2zService.companyDetails(brokerId);
@@ -96,7 +100,9 @@ public class D2zBrokerController {
 	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/shipment/{shipmentNumber}")
 	public ResponseMessage allocateShipment(@RequestBody String referenceNumbers,@PathVariable String shipmentNumber)
 			throws ReferenceNumberNotUniqueException {
-		return d2zService.allocateShipment(referenceNumbers.toString(), shipmentNumber);
+		//return d2zService.allocateShipment(referenceNumbers.toString(), shipmentNumber);
+		return    allocator.allocateShipment(Collections.singletonList(referenceNumbers),shipmentNumber,"referenceNumber");
+
 	}
 	
 }

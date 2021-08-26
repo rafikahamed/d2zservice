@@ -1,6 +1,7 @@
 package com.d2z.d2zservice.controller;
 
 import java.sql.Blob;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -8,6 +9,7 @@ import java.util.stream.Stream;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.ws.rs.core.MediaType;
 
+import com.d2z.d2zservice.service.ShipmentAllocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +81,9 @@ public class D2ZSuperUserController {
 	
 	@Autowired
 	private ID2ZService d2zService;
+
+	@Autowired
+	private ShipmentAllocator allocator;
 
 	@RequestMapping( method = RequestMethod.POST, path = "/track-fileUpload", consumes=MediaType.APPLICATION_JSON)
     public UserMessage uploadTrackingFile(@RequestBody List<UploadTrackingFileData> fileData) {
@@ -438,8 +443,9 @@ public class D2ZSuperUserController {
 	}
 	
 	@RequestMapping(method = RequestMethod.PUT, path = "/allocate-shipment/{shipmentNumber}")
-	 public ResponseMessage allocateShipment(@RequestBody String articleid, @PathVariable String shipmentNumber)  {
-		return  superUserD2zService.allocateShipment(articleid,shipmentNumber);
+	 public ResponseMessage allocateShipment(@RequestBody String articleid, @PathVariable String shipmentNumber) throws ReferenceNumberNotUniqueException {
+		//return  superUserD2zService.allocateShipment(articleid,shipmentNumber);
+		return allocator.allocateShipment(Collections.singletonList(articleid),shipmentNumber,"articleId");
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/tracking-status")

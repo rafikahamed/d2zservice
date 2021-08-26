@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.validation.Valid;
+
+import com.d2z.d2zservice.service.ShipmentAllocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,7 @@ public class SPCourierController {
 
 	@Autowired
 	private ID2ZService d2zService;
+
 
 	@RequestMapping(method = RequestMethod.GET, path = "/login")
 	public UserDetails login(@RequestParam("userName") String userName, @RequestParam("passWord") String passWord) {

@@ -1,14 +1,12 @@
 package com.d2z.d2zservice.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.validation.Valid;
+
+import com.d2z.d2zservice.service.ShipmentAllocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +61,9 @@ public class D2zController {
 	@Autowired
 	private  IConsignmentService service;
 
+	@Autowired
+	private ShipmentAllocator shipmentAllocator;
+
 	@RequestMapping(method = RequestMethod.GET, path = "/login")
 	public UserDetails login(@RequestParam("userName") String userName, @RequestParam("passWord") String passWord) {
 		UserDetails userDetails = d2zService.login(userName, passWord);
@@ -101,7 +102,8 @@ public class D2zController {
 		    			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		    			String shipmentNumber = orderDetailList.get(0).getUserName()+simpleDateFormat.format(new Date());
 		    			try {
-							d2zService.allocateShipment(String.join(",", autoShipRefNbrs), shipmentNumber);
+							//d2zService.allocateShipment(String.join(",", autoShipRefNbrs), shipmentNumber);
+							shipmentAllocator.allocateShipment( autoShipRefNbrs, shipmentNumber,"referenceNumber");
 						} catch (ReferenceNumberNotUniqueException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -383,7 +385,9 @@ public class D2zController {
 	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/shipmentarticleid/{shipmentNumber}")
 	public ResponseMessage allocateShipmentbyArticleID(@RequestBody String articleid,@PathVariable String shipmentNumber)
 			throws ReferenceNumberNotUniqueException {
-		return d2zService.allocateShipmentArticleid(articleid.toString(), shipmentNumber);
+		  return shipmentAllocator.allocateShipment( Collections.singletonList(articleid), shipmentNumber,"articleId");
+
+		//	return d2zService.allocateShipmentArticleid(articleid.toString(), shipmentNumber);
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/currency")

@@ -2,11 +2,14 @@ package com.d2z.d2zservice.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.validation.Valid;
+
+import com.d2z.d2zservice.service.ShipmentAllocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +64,9 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 	
 	@Autowired
 	private  IConsignmentService service;
+
+	@Autowired
+	private ShipmentAllocator allocator;
 	
 	@RequestMapping( method = RequestMethod.PUT, path = "/trackParcels")
     public List<TrackParcelResponse> trackParcels(@RequestBody List<String> articleIds) {
@@ -122,7 +128,8 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 		    			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		    			String shipmentNumber = orderDetail.getUserName()+simpleDateFormat.format(new Date());
 		    			try {
-							d2zService.allocateShipment(String.join(",", autoShipRefNbrs), shipmentNumber);
+						//	d2zService.allocateShipment(String.join(",", autoShipRefNbrs), shipmentNumber);
+							allocator.allocateShipment(autoShipRefNbrs,shipmentNumber,"referenceNumber");
 						} catch (ReferenceNumberNotUniqueException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -143,11 +150,14 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
 	
 	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/{referenceNumbers}/shipment/{shipmentNumber}")
 	 public ResponseMessage allocateShipment(@PathVariable String referenceNumbers,@PathVariable String shipmentNumber) throws ReferenceNumberNotUniqueException {
-		return  d2zService.allocateShipment(referenceNumbers,shipmentNumber);
+		//return  d2zService.allocateShipment(referenceNumbers,shipmentNumber);
+		return allocator.allocateShipment(Collections.singletonList(referenceNumbers),shipmentNumber,"referenceNumber");
 	}
 	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/shipment/{shipmentNumber}")
 	 public ResponseMessage shipmentAllocation(@RequestBody String referenceNumbers,@PathVariable String shipmentNumber) throws ReferenceNumberNotUniqueException {
-		return  d2zService.allocateShipment(referenceNumbers,shipmentNumber);
+		//return  d2zService.allocateShipment(referenceNumbers,shipmentNumber);
+		return allocator.allocateShipment(Collections.singletonList(referenceNumbers),shipmentNumber,"referenceNumber");
+
 	}
 	
 	@RequestMapping( method = RequestMethod.DELETE, path = "/consignments")
@@ -179,7 +189,9 @@ Logger logger = LoggerFactory.getLogger(D2ZAPIController.class);
     @RequestMapping(method = RequestMethod.PUT, path = "/consignments/shipmentarticleid/{shipmentNumber}")
 	public ResponseMessage allocateShipmentbyArticleID(@RequestBody String articleid,@PathVariable String shipmentNumber)
 			throws ReferenceNumberNotUniqueException {
-		return d2zService.allocateShipmentArticleid(articleid.toString(), shipmentNumber);
+		//return d2zService.allocateShipmentArticleid(articleid.toString(), shipmentNumber);
+		 return allocator.allocateShipment(Collections.singletonList(articleid),shipmentNumber,"articleid");
+
 	}
 
 	@RequestMapping(method = RequestMethod.POST, path = "/create-enquiry")

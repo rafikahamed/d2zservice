@@ -1,9 +1,12 @@
 package com.d2z.d2zservice.controller;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.validation.Valid;
+
+import com.d2z.d2zservice.service.ShipmentAllocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,8 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 	
 	@Autowired
     private  ID2ZService d2zService;
+	@Autowired
+	private ShipmentAllocator allocator;
 	
 	@RequestMapping( method = RequestMethod.GET, path = "/trackParcel/referenceNumber/{referenceNumbers}")
     public List<ParcelStatus> trackParcel(@PathVariable List<String> referenceNumbers) {
@@ -65,11 +70,15 @@ Logger logger = LoggerFactory.getLogger(D2zController.class);
 	
 	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/{referenceNumbers}/shipment/{shipmentNumber}")
 	 public ResponseMessage allocateShipment(@PathVariable String referenceNumbers,@PathVariable String shipmentNumber) throws ReferenceNumberNotUniqueException {
-		return  d2zService.allocateShipment(referenceNumbers,shipmentNumber);
+		//return  d2zService.allocateShipment(referenceNumbers,shipmentNumber);
+		return allocator.allocateShipment(Collections.singletonList(referenceNumbers),shipmentNumber,"referenceNumber");
+
 	}
 	@RequestMapping(method = RequestMethod.PUT, path = "/consignments/shipment/{shipmentNumber}")
 	 public ResponseMessage shipmentAllocation(@RequestBody String referenceNumbers,@PathVariable String shipmentNumber) throws ReferenceNumberNotUniqueException {
-		return  d2zService.allocateShipment(referenceNumbers,shipmentNumber);
+		//return  d2zService.allocateShipment(referenceNumbers,shipmentNumber);
+		return allocator.allocateShipment(Collections.singletonList(referenceNumbers),shipmentNumber,"referenceNumber");
+
 	}
 	
 	@RequestMapping( method = RequestMethod.DELETE, path = "/consignments")
